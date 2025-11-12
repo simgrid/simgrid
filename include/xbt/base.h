@@ -1,6 +1,6 @@
 /* xbt.h - Public interface to the xbt (SimGrid's toolbox)                  */
 
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -42,12 +42,12 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v339(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.38)")
-#define XBT_ATTRIB_DEPRECATED_v340(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.39)")
-#define XBT_ATTRIB_DEPRECATED_v341(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.40)")
+#define XBT_ATTRIB_DEPRECATED_v403(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.2)")
+#define XBT_ATTRIB_DEPRECATED_v404(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.3)")
+#define XBT_ATTRIB_DEPRECATED_v405(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v4.4)")
 
 /* Work around https://github.com/microsoft/vscode-cpptools/issues/4503 */
 #ifdef __INTELLISENSE__
@@ -141,7 +141,8 @@
 #define _XBT_STRINGIFY_A_28_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_29_, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_STRINGIFY_A_29_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_30_, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_STRINGIFY_A_30_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_31_, __VA_ARGS__)(__VA_ARGS__)
-#define _XBT_STRINGIFY_A_31_(...) error_maximum_size_of_XBT_STRINGIFY_ARGS_reached
+#define _XBT_STRINGIFY_A_31_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_32_, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_STRINGIFY_A_32_(...) error_maximum_size_of_XBT_STRINGIFY_ARGS_reached
 
 /* Rationale of XBT_PUBLIC:
  *   * This is for library symbols visible from the application-land.

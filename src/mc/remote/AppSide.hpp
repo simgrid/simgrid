@@ -1,6 +1,6 @@
 /* mc::remote::AppSide: the Application-side of the channel                 */
 
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,8 +9,10 @@
 #define SIMGRID_MC_CLIENT_H
 
 #include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/mc_protocol.h"
 
 #include <memory>
+#include <unordered_map>
 
 namespace simgrid::mc {
 
@@ -30,13 +32,17 @@ public:
   void handle_messages();
 
 private:
-  void handle_deadlock_check(const s_mc_message_int_t* msg) const;
-  void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
-  void handle_finalize(const s_mc_message_int_t* msg) const;
+  void handle_deadlock_check(const s_mc_message_int_t* msg);
+  void send_executed_transition(kernel::actor::ActorImpl* actor, bool want_transition);
+  void handle_simcall_execute(const s_mc_message_simcall_execute_t* message);
+  void handle_replay(const s_mc_message_int_t* msg);
+  void handle_one_way(const s_mc_message_one_way_t* msg);
+  void handle_finalize(const s_mc_message_int_t* msg);
   void handle_fork(const s_mc_message_fork_t* msg);
   void handle_wait_child(const s_mc_message_int_t* msg);
-  void handle_actors_status() const;
-  void handle_actors_maxpid() const;
+  void send_actor_status(bool want_transitions);
+  void handle_actors_status(const s_mc_message_actors_status_t* msg);
+  void handle_actors_maxpid();
 
 public:
   Channel const& get_channel() const { return channel_; }

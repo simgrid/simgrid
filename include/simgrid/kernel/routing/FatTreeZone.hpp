@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -120,9 +120,9 @@ class XBT_PRIVATE FatTreeZone : public ClusterBase {
   std::vector<std::shared_ptr<FatTreeLink>> links_;
   std::vector<unsigned int> nodes_by_level_;
 
-  void add_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
+  void add_internal_link(FatTreeNode* parent, unsigned int parent_port, FatTreeNode* child, unsigned int child_port);
   int get_level_position(const unsigned int level);
-  void generate_switches(const s4u::ClusterCallbacks& set_callbacks);
+  void generate_switches();
   void generate_labels();
   int connect_node_to_parents(FatTreeNode* node);
   bool are_related(FatTreeNode* parent, FatTreeNode* child) const;
@@ -136,13 +136,7 @@ public:
   FatTreeZone& operator=(const FatTreeZone&) = delete;
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
 
-  /**
-   * @brief Parse the topology parameters from string format
-   *
-   * @param topo_parameters String with topology, e.g. "2;4,4;1,2;1,2"
-   */
-  static s4u::FatTreeParams parse_topo_parameters(const std::string& topo_parameters);
-  /** @brief Checks topology parameters */
+    /** @brief Checks topology parameters */
   static void check_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
                              const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
   /** @brief Set FatTree topology */
@@ -154,7 +148,7 @@ public:
    *
    * Suppose that set_topology and add_processing_node have already been called
    */
-  void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
+  void build_upper_levels();
   void generate_dot_file(const std::string& filename = "fat_tree.dot") const;
 };
 } // namespace simgrid::kernel::routing

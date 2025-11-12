@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,6 +23,18 @@ NetPoint::NetPoint(const std::string& name, NetPoint::Type componentType) : name
 {
   simgrid::s4u::Engine::get_instance()->netpoint_register(this);
   simgrid::kernel::routing::NetPoint::on_creation(*this);
+}
+
+std::vector<NetZoneImpl*> NetPoint::get_all_englobing_zones() const
+{
+  std::vector<NetZoneImpl*> path;
+  NetZoneImpl* current = this->englobing_zone_;
+  while (current != nullptr) {
+    path.insert(path.begin(), current);
+    current = current->get_parent();
+  }
+  path.shrink_to_fit();
+  return path;
 }
 
 NetPoint* NetPoint::set_englobing_zone(NetZoneImpl* netzone_p)

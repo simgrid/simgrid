@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -103,23 +103,23 @@ int main(int argc, char** argv)
   /* dog-bone platform */
   std::unordered_map<std::string, sg4::Host*> hosts;
   std::unordered_map<std::string, sg4::Link*> links;
-  auto* zone = sg4::create_full_zone("dog_zone");
+  auto* zone = e.get_netzone_root();
   for (const auto& name : {"S1", "S2", "C1", "C2"}) {
-    hosts[name] = zone->create_host(name, 1e6)->seal();
+    hosts[name] = zone->add_host(name, 1e6)->seal();
   }
 
   for (const auto& name : {"L1", "L2", "L3", "L4"}) {
-    links[name] = zone->create_link(name, 1e9)->set_latency(1e-9)->seal();
+    links[name] = zone->add_link(name, 1e9)->set_latency(1e-9)->seal();
   }
-  links["L0"] = zone->create_link("L0", 1e3)->seal();
+  links["L0"] = zone->add_link("L0", 1e3)->seal();
   zone->add_route(hosts["S1"], hosts["C1"], {links["L1"], links["L0"], links["L2"]});
   zone->add_route(hosts["S2"], hosts["C2"], {links["L3"], links["L0"], links["L4"]});
   zone->seal();
 
-  sg4::Actor::create("", hosts["S1"], sender, "C1", nullptr);
-  sg4::Actor::create("", hosts["C1"], receiver);
-  sg4::Actor::create("", hosts["S2"], sender, "C2", links["L4"]);
-  sg4::Actor::create("", hosts["C2"], receiver);
+  hosts["S1"]->add_actor("", sender, "C1", nullptr);
+  hosts["C1"]->add_actor("", receiver);
+  hosts["S2"]->add_actor("", sender, "C2", links["L4"]);
+  hosts["C2"]->add_actor("", receiver);
 
   e.run();
 

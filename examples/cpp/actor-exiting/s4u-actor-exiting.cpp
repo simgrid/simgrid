@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,6 +76,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]); /* - Load the platform description */
 
+  /* Register a callback in the Actor::on_creation signal. It will be called for started actors */
+  sg4::Actor::on_creation_cb([](sg4::Actor const& actor) { XBT_INFO("Actor %s starts now", actor.get_cname()); });
   /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
   sg4::Actor::on_termination_cb(
       [](sg4::Actor const& actor) { XBT_INFO("Actor %s terminates now", actor.get_cname()); });
@@ -84,9 +86,9 @@ int main(int argc, char* argv[])
       [](sg4::Actor const& actor) { XBT_INFO("Actor %s gets destroyed now", actor.get_cname()); });
 
   /* Create some actors */
-  sg4::Actor::create("A", e.host_by_name("Tremblay"), actor_a);
-  sg4::Actor::create("B", e.host_by_name("Fafard"), actor_b);
-  sg4::Actor::create("C", e.host_by_name("Ginette"), actor_c);
+  e.host_by_name("Tremblay")->add_actor("A", actor_a);
+  e.host_by_name("Fafard")->add_actor("B", actor_b);
+  e.host_by_name("Ginette")->add_actor("C", actor_c);
 
   e.run(); /* - Run the simulation */
 

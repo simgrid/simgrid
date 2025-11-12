@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -94,12 +94,12 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("load_test", e.host_by_name("MyHost1"), execute_load_test);
-  sg4::Actor::create("change_speed", e.host_by_name("MyHost1"), change_speed);
+  e.host_by_name("MyHost1")->add_actor("load_test", execute_load_test);
+  e.host_by_name("MyHost2")->add_actor("change_speed", change_speed);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.2f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.2f", e.get_clock());
 
   return 0;
 }

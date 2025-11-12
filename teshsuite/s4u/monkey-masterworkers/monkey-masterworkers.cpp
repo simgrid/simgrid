@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  auto* rootzone = sg4::create_full_zone("root");
+  auto* rootzone = e.get_netzone_root();
   std::vector<sg4::Host*> worker_hosts;
 
   int todo = cfg_task_count; // remaining amount of tasks to execute, a shared variable
@@ -110,20 +110,20 @@ int main(int argc, char* argv[])
   // get it once for all, to reduce the amount of simcalls during actor reboot
   sg4::Mailbox* mailbox = sg4::Mailbox::by_name("mailbox");
 
-  sg4::Host* master_host = rootzone->create_host("lilibeth 0", 1e9); // Host where the master will stay
+  sg4::Host* master_host = rootzone->add_host("lilibeth 0", 1e9); // Host where the master will stay
   for (int i = 1; i < cfg_host_count; i++) {
     auto hostname = "lilibeth " + std::to_string(i);
-    auto* host    = rootzone->create_host(hostname, 1e9);
-    auto* link    = rootzone->create_link(hostname, "1MBps")->set_latency("24us")->seal();
+    auto* host    = rootzone->add_host(hostname, 1e9);
+    auto* link    = rootzone->add_link(hostname, "1MBps")->set_latency("24us")->seal();
     rootzone->add_route(master_host, host, {link});
     worker_hosts.push_back(host);
   }
   rootzone->seal();
 
-  sg4::Actor::create("master", master_host, master, mailbox)->daemonize()->set_auto_restart(true);
+  master_host->add_actor("master", master, mailbox)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
-    sg4::Actor::create("worker", h, worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
+    h->add_actor("worker", worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
     id++;
   }
 

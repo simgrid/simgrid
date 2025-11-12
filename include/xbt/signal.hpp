@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,6 +41,8 @@ public:
   void disconnect(unsigned int id) { handlers_.erase(id); }
   /** Remove all callbacks */
   void disconnect_slots() { handlers_.clear(); }
+  /** Returns the amount of callbacks */
+  int size() { return handlers_.size(); }
 };
 } // namespace simgrid::xbt
 

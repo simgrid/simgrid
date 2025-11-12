@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -110,7 +110,7 @@ static double sata_dynamic_sharing(const sg4::Disk* /*disk*/, double /*capacity*
 /** @brief Creates an SSD disk, setting the appropriate callback for non-linear resource sharing */
 static void create_ssd_disk(sg4::Host* host, const std::string& disk_name)
 {
-  auto* disk = host->create_disk(disk_name, "240MBps", "170MBps");
+  auto* disk = host->add_disk(disk_name, "240MBps", "170MBps");
   disk->set_sharing_policy(sg4::Disk::Operation::READ, sg4::Disk::SharingPolicy::NONLINEAR,
                            std::bind(&ssd_dynamic_sharing, disk, "read", std::placeholders::_1, std::placeholders::_2));
   disk->set_sharing_policy(
@@ -122,7 +122,7 @@ static void create_ssd_disk(sg4::Host* host, const std::string& disk_name)
 /** @brief Same for a SATA disk, only read operation follows a non-linear resource sharing */
 static void create_sata_disk(sg4::Host* host, const std::string& disk_name)
 {
-  auto* disk = host->create_disk(disk_name, "68MBps", "50MBps");
+  auto* disk = host->add_disk(disk_name, "68MBps", "50MBps");
   disk->set_sharing_policy(sg4::Disk::Operation::READ, sg4::Disk::SharingPolicy::NONLINEAR,
                            std::bind(&sata_dynamic_sharing, disk, std::placeholders::_1, std::placeholders::_2));
   /* this is the default behavior, expliciting only to make it clearer */
@@ -133,17 +133,17 @@ static void create_sata_disk(sg4::Host* host, const std::string& disk_name)
 int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
-  /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("bob_zone");
-  auto* bob  = zone->create_host("bob", 1e6);
+  /* simple platform containing 1 host and 2 disks */
+  auto* zone = e.get_netzone_root();
+  auto* bob  = zone->add_host("bob", 1e6);
   create_ssd_disk(bob, "Edel (SSD)");
   create_sata_disk(bob, "Griffon (SATA II)");
   zone->seal();
 
-  sg4::Actor::create("", bob, host);
+  bob->add_actor("", host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
 
   return 0;
 }

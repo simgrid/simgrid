@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,7 +49,7 @@ resource::StandardLinkImpl* WifiZone::do_create_link(const std::string& name, co
   xbt_assert(wifi_link_ == nullptr,
              "WIFI netzone %s contains more than one link. Please only declare one, the wifi link.", get_cname());
 
-  wifi_link_ = get_network_model()->create_wifi_link(name, bandwidths);
+  wifi_link_ = get_network_model()->create_wifi_link(name, bandwidths, this);
   wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return wifi_link_;
 }

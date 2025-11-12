@@ -46,13 +46,13 @@ Please apply the following checklist before releasing.
   - You can interrupt the build on jenkins, as it was tested just before
   - This builds the tar.gz artefact.
 
-- Download the simgrid-doc-3.X.Y (artefact of pipeline 'pages' on framagit)
+- Download the simgrid-doc-4.X.Y (artefact of pipeline 'pages' on framagit)
   Download the tgz file (artefact of the pipeline 'stable' on framagit)
-- Tag the git repository v3.XX.X and push it to framagit and ghub
+- Tag the git repository v4.XX.X and push it to framagit and ghub
 - Document the tag on framagit and ghub
-  - Upload the files simgrid-3.XX.tar.gz and simgrid-doc-3_XX.zip
+  - Upload the files simgrid-4.XX.tar.gz and simgrid-doc-4_XX.zip
   - Add a link to the version of the ChangeLog that comes with this tag.
-    https://framagit.org/simgrid/simgrid/-/blob/v3.35/ChangeLog
+    https://framagit.org/simgrid/simgrid/-/blob/v4.0/ChangeLog
 - Update the website
   - emacs org/org-templates/level-0.org to change the release version and the tgz link.
   - jed .gitlab-ci.yml
@@ -62,9 +62,10 @@ Please apply the following checklist before releasing.
   - git commit -a && git push # Check that the pipeline goes well on framagit
 
 - Rebuild and upload the python package
-  - rm -rf dist/ ; python3 -m build --outdir dist/ # Build and test the package
+  - Download the simgrid-*.tar.gz artefact from a build-pip job on inria gitlab CI
+  - (alternatively, build it locally) rm -rf dist/ ; python3 -m build --outdir dist/
   - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
-    twine upload dist/simgrid-*.tar.gz # User and password should be located in ~/.pypirc
+    twine upload dist/simgrid-*.tar.gz # User and token should be located in ~/.pypirc
 
 @subsection inside_release_c_publishing Publishing the release if it's a stable one (3.XX not 3.XX.Y)
 
@@ -76,12 +77,12 @@ Please apply the following checklist before releasing.
     - Link to the ChangeLog on framagit (the version of that tag)
  - Also mail some other lists (G5K users)
 - Release the debian package
-  - rm -f ../simgrid_3.*.orig.tar.xz
+  - rm -f ../simgrid_4.*.orig.tar.xz
   - uscan # download the new version
-  - gbp import-orig ../simgrid_3.*.orig.tar.xz
+  - gbp import-orig ../simgrid_4.*.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
-  - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
-  - edit debian/libsimgrid3.XY.install and debian/control: s/simgrid3.XX/simgrid3.XY/
+  - git mv debian/libsimgrid4.XX.install debian/libsimgrid4.XY.install
+  - edit debian/libsimgrid4.XY.install and debian/control: s/simgrid3.XX/simgrid4.XY/
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Push the stable branch to github to rebuild and push the stable Docker images
   - It downloads the latest tag on framagit, but sometimes gets out of synch.
@@ -91,20 +92,23 @@ Please apply the following checklist before releasing.
     (tuto-mc is not based on simgrid/stable but rebuilds from the git)
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
 - Add the new simgrid/stable image to the .gitlab-ci.yml of:
-  - https://framagit.org/simgrid/simgrid-template-s4u/
+  - https://framagit.org/simgrid/simgrid-template-s4u/  (tutorial-s4u on my disk)
   - https://framagit.org/simgrid/simgrid-template-smpi/
+  - https://framagit.org/simgrid/simgrid-template-model-checking
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
-- Create the template for the next release in ChangeLog, NEWS and Release_Notes.rst files
+- Create the template for the next release in ChangeLog NEWS Release_Notes.rst files
   Release Target date: https://en.wikipedia.org/wiki/Equinox
-- Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
+- Bump release number to 4.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
   - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro
+  - jed docs/source/Doxyfile: ask doxygen to ignore the new XBT_ATTRIB_DEPRECATED_v??? macro
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
 - Regenerate the unstable docker with this new version
+- Merge all patches (Debian, etc) back to the git tree
 
 Release numbering semantic:
   - 3.X is a named release.

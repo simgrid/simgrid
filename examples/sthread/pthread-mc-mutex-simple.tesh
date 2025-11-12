@@ -12,4 +12,4 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > The thread 1 is terminating.
 > The thread 0 is terminating.
 > User's main is terminating.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 19 unique states visited; 2 explored traces (2 transition replays, 21 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 24 unique states visited; 2 explored traces (2 transition replays, 25 states visited overall)

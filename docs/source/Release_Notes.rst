@@ -1,7 +1,7 @@
 .. release_notes:
 
-SimGrid 4 Release Notes
-=======================
+SimGrid 4.x Release Notes
+=========================
 
 This page gathers some release notes, to shed light on the recent and current development of SimGrid.
 Version 3.12 was the last pure release of SimGrid 3 while all versions starting with v3.13 can be seen as usable pre-versions of SimGrid 4.
@@ -789,9 +789,135 @@ is an application bug (and help us understand its root cause), or whether it is 
 Finally, **we fixed dozens of bugs and vastly optimized the verification code** to improve our chances to find a wild
 bug. Still, we did not find any such bug yet, so the chase continues.
 
-Version 3.37 (unreleased)
--------------------------
+Version 4.0 (March 12. 2025)
+----------------------------
 
+After almost 10 years of development, we have finally reached the point where we can release the first version of the 4.x serie. The
+S4U API is now more consistent and more intuitive. Although we still plan to improve SimGrid in the future, we
+feelt that the recent publication of this `paper describing the evolutions since SimGrid v3 <https://hal.science/hal-04909441>`_
+was the perfect opportunity for doing this major release of SimGrid.
+
+We have many plans for the future. Short-term plans include further simplification of the platform creation API and
+making it possible to dynamically change the platform (e.g., add nodes and update the routing).  The model checker is
+currently under active development, including an upcoming parallel exploration algorithm. We also have many ideas for
+medium- and long-term developments. For instance, allowing users to easily define resource sharing models would be nice,
+as would be the possibility to compute these models in parallel for efficiency. Obviously, SimGrid will never be the
+ultimate tool that caters to every conceivable use case.  Instead, we would like to foster a vibrant ecosystem of
+user-provided plugins that are contributed by the community. While we have many ideas for augmenting SimGrid and its
+surounding ecosystem, our days only have 24 hours. Therefore, if you need a feature the best is to implement it for
+yourself and then share it with the SimGrid community.  We believe that the current code makes it easy for newcomers to
+dive in and contribute.  Please tell us if you see something we could improve to make this process even easier.
+
+In this context, the 4.0 version introduces several changes with respect to v3.36, as described hereafter.
+
+We reworked **the platform generation API** to simplify it and make it more natural. Earlier, users had to specify the routing
+algorithm used in the root netzone (the one that comprises the whole platform), and they had to create this netzone themselves
+before installing it in the Engine. This forced either a manual handling of the parent/child relationships between zones (as in
+v3.36 and earlier), or a duplication of the API between the Engine and the Netzone classes that can both contain Netzones. The
+root netzone now gets created automatically, using the Full routing scheme. If the user wants a platform with a Full root netzone,
+then it's already there. If users want the root netzone to use another routing algorithm, they can simply add a new netzone
+with the desired routing algorithm under the root netzone, and create the whole platform in this new netzone.
+Consequently the ``create_*_zone()`` methods were replaced with ``NetZone::add_netzone_*()`` methods. The
+``NetZone::set_parent()`` method is no longer useful (and thus deprecated).  Overall, we feel that the entire platform
+creation process is much more natural.
+
+**Regarding the bindings API**, we reintroduced **Java bindings**. Users can now use the S4U API from Java, as
+demonstrated in the many examples. It was also an opportunity to proofread the S4U API during the port to Java, which
+included explaining the changes to the platform generated API discussed above. A remaining main issue is that the Java
+bindings are not documented yet, because Java is not supported by `Sphinx <https://www.sphinx-doc.org>`_ and `breath
+<https://breathe.readthedocs.io/en/latest/>`_, the systems we use to generate the SimGrid documentation. This is very
+unfortunate, and frustrating because the Java API is very close to the C++ API. An option would be to add the Java
+documentation manually in Sphinx, but it would be very time-consuming process. Any helping patch would be extremely
+welcome!  Porting the S4U API to Java was a big commitment (requiring 5k lines of C++ and 3.5k lines of Java for the
+library, plus 5k lines of Java for the examples). We think that Java is a much better programming language than C++ to
+use by students, as it is relatively easy and very forgiving, while C++ should be reserved to seasoned programmers who
+can then benefit of its added power.  Python is also an easy lanthage, but it is meant for small scripts. The
+medium-sized projects that are typically written during the course of a student's graduate-level projects are probably
+better written in Java than in Python. To be perfectly honest, another motivation for the Java API development was fun.
+Writing this code felt like solving a very large grid of Sudoku, requiring care but not being too difficult once you
+figured it out. We may consider implementing Rust bindings in the future, but a concern is the added maintenance burden
+if we add too many bindings.
+
+The **Python bindings** were also extended, with two great contributions. Sergey Teryoshkin added many missing bindings, while
+Jean-Noël Quintin implemented most of the MPI standard in Python for SimGrid. Many thanks, guys!
+
+**On the software lifecycle side**, given the current (improved) form of the S4U API, it was time to release SimGrid 4.0. 
+The only missing pieces before the big jump seem to be some portions of the documentation which were not ported from Doxygen to Sphinx.
+
+We are done deprecating the old xbt_dict and xbt_dynar data containers, which will be fully removed in future releases.
+
+**On the model-checking side**, we worked mostly on improving the performance of the verification process, and fixed some bugs.
+Our preferred algorithm (ODPOR reduction + Best-first exploration to enable random walk) is now much faster and consumes much
+less memory, being 5x faster on small scenarios. But since performance is now linear with the number of states, while it used to
+be polynomial, 5x faster is the lowest performance boost you can expect from the new version. The number of states to explore
+for a given scenario is still the same (ODPOR was not improved), but we now can explore these states much faster.
+
+**On the storage simulation side**, we finally allowed disks to be turned off and on, just like it was already possible for hosts and
+links. When a disk is turned off, all the I/O activities currently using it are canceled. When the disk is turned
+back on, these activities have to be manually restarted. Moreover, if disks are attached to a host and this host is turned off
+(resp. on), the disks are also turned off (resp. on).
+
+**On the interface front**, we added a few signals for better consistency across activities and resources. Additionally,
+the platform parsing now raises a ``on_platform_sealed()``  when the platform cannot be modified anymore and its routing has
+been set.
+
+Version 4.1 (November 11. 2025)
+-------------------------------
+
+**On the platform side**, we added the ability to unseal a network zone, allowing users to add elements (e.g., hosts, links,
+routes) to it even after the simulation started. This is still not sufficient to provide full-fledged dynamic platforms as it
+is not possible to remove elements from netzones yet, but that's a start.
+
+**On the bindings side**, we added several missing functions to both the Python and Java bindings. Some functions may still be missing, so
+do not hesitate to drop us a note (or better, propose a patch) if you need functionality that is missing. We also plugged some memleaks in
+the Java bindings. Something's still rotten somewhere, as can be seen if you create and destroy thousands of actors or more, but the current
+state is already much better than it previously was.
+
+**On the software quality side**, we refactored our whole CI infrastructure. The Inria instance of Jenkins has been phased out, so
+we converted almost everything to gitlab, with some runners still running on github (to access MacOSX and Arm runners) or Inria's
+cloudstack (to get a FreeBSD runner and to access VMs that do not need to be reinstalled each time). We still need to
+reinstantiate a test using valgrind to detect memleaks in our code.
+
+**On the model-checking side**, we added the ability to check for race conditions in the user code. This feature needs to add a
+specific pass to the clang LLVM compiler, to make the memory accesses observable by our tool. This feature is usable (see the
+tutorial) and we already use it for teaching purposes at our institutions, but the additional LLVM pass still lives in its separate repository for now.
+
+We are working on a parallel explorer leveraging all cores to accelerate the exploration, but unfortunately, we did not manage to find all the bugs in our parallel explorer yet. We have a race condition somewhere :( Of course,
+the temptation to run the model-checker on itself to find this kind of bugs is really high, but it poses tremendous difficulties,
+as described hereafter if you're interested.
+
+First, our model-checker cannot observe network communications, and unfortunately this is how the checker and the verified application
+interact. So, if the checker verifies another checker, the verifier checker will not be able to see all interactions of the
+verified checker with its environment. Observing the communications is probably easy enough (even if implementing the BSD logic
+in the checker may be time-consuming), but this then poses practical challenges to ensure that all UNIX processes involved in
+the communication are properly enrolled in the simulation. These issues have been partially solved in other projects, such as
+remote-simgrid or TANSIV, but doing so in the context of the model-checker will certainly take months for somebody working
+full-time worker on it, and such a person has yet to be hired.
+
+Some of us claim that verifying the verifier could still work without observing the communication, provided that the
+verified checker is never forked in the middle, but always properly re-started from the start to explore other paths (i.e., using
+:ref:`--cfg=model-check/no-fork:on<cfg=model-check/no-fork>`). In this case, the verified checker will fork the external processes and interact with them in
+a way that may be transparent to the verifier checker. Some of us have doubts about whether this could work. Even if we can
+make it work without observing the communications, many other actions of our checker implementation are not observed
+yet. We use many atomic operations all over the place, and some parts of our code uses futexes. None of these mechanisms are
+observed by our LLVM pass yet. Observing atomic operations is probably simple enough, and we could change our implementation to
+remove the futexes (whose semantic is far from being trivial if we try to add them to our verification logic).
+
+Another difficulty is that sthread injects a S4U engine within the verified application, while the checker already has one such
+engine, which is a singleton. Running the model-checker on itself would require to either change the s4u engine to allow several engines to co-exist in
+the same UNIX process, or to ensure that the checker does not instantiate any engine. The former sounds very difficult given the
+amount of `static` variables scattering the state of the engine. We should give the latter a try to see how hard it really is.
+
+And finally, we suspect that the main issue is a memory consistency issue, but we did have not implemented TSO or PSO consistency
+logics yet. For now, our race detection algorithm assumes strict consistency where no operations get reordered. While it's enough
+to find some bugs in simple codes, this is probably not sufficient to find our bug.
+
+In summary, this is a lot of work before we can even try to verify our tool with itself. We are probably doomed to use other tools but
+hellgrind gets fooled by the atomic operations while the thread sanitizer TSan works but do not report anything useful (which is why we
+suspect that the bug may be related to tricky memory consistency issues).
+
+Version 4.2 (unreleased)
+------------------------
 
 .. |br| raw:: html
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,7 +25,7 @@ static void run_ping_test(sg4::Link const* testlink)
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
 
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("host1"), [mailbox, testlink]() {
+  simgrid::s4u::Host::by_name("host1")->add_actor("sender", [mailbox, testlink]() {
     double start_time   = simgrid::s4u::Engine::get_clock();
     static auto message = std::string("message");
     mailbox->put(&message, 1e10);
@@ -34,8 +34,7 @@ static void run_ping_test(sg4::Link const* testlink)
              testlink->get_bandwidth(), testlink->get_latency(), end_time - start_time,
              simgrid::config::get_value<double>("network/TCP-gamma"));
   });
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("host2"),
-                              [mailbox]() { mailbox->get<std::string>(); });
+  simgrid::s4u::Host::by_name("host2")->add_actor("receiver", [mailbox]() { mailbox->get<std::string>(); });
   simgrid::s4u::this_actor::sleep_for(500);
 }
 
@@ -82,13 +81,13 @@ int main(int argc, char** argv)
   sg4::Engine::set_config("network/crosstraffic:0");
 
   simgrid::s4u::Engine engine(&argc, argv);
-  auto* zone  = sg4::create_full_zone("world");
-  auto const* host1 = zone->create_host("host1", 1e6)->seal();
-  auto const* host2 = zone->create_host("host2", 1e6)->seal();
-  auto* testlink    = zone->create_link("L1", 1e10)->seal();
+  auto* zone        = engine.get_netzone_root();
+  auto const* host1 = zone->add_host("host1", 1e6)->seal();
+  auto const* host2 = zone->add_host("host2", 1e6)->seal();
+  auto* testlink    = zone->add_link("L1", 1e10)->seal();
   zone->add_route(host1, host2, {testlink});
 
-  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);
+  engine.host_by_name("host1")->add_actor("dispatcher", main_dispatcher, testlink);
   engine.run();
 
   return 0;

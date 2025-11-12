@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -116,8 +116,8 @@ int main(int argc, char* argv[])
   e.load_deployment(argv[2]);
 
   // Add a new host programatically, and attach a state profile to it
-  auto* root     = e.get_netzone_root();
-  auto* lilibeth = root->create_host("Lilibeth", 1e15);
+  auto* root     = e.netzone_by_name_or_null("AS0");
+  auto* lilibeth = root->add_host("Lilibeth", 1e15);
   auto link      = e.link_by_name("10");
   root->add_route(e.host_by_name("Tremblay"), lilibeth, {link});
   lilibeth->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("lilibeth_profile", R"(
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   lilibeth->seal();
 
   // Create an actor on that new host, to monitor its own state
-  auto actor = sg4::Actor::create("sleeper", lilibeth, []() {
+  auto actor = lilibeth->add_actor("sleeper", []() {
     XBT_INFO("Start sleeping...");
     sg4::this_actor::sleep_for(1);
     XBT_INFO("done sleeping.");
@@ -137,6 +137,6 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
   return 0;
 }

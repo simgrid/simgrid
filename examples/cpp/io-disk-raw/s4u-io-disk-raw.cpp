@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +13,7 @@ namespace sg4 = simgrid::s4u;
 static void host()
 {
   /* -Add an extra disk in a programmatic way */
-  sg4::Host::current()->create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7)->seal();
+  sg4::Host::current()->add_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7)->seal();
 
   /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", sg4::Host::current()->get_cname());
@@ -64,10 +64,10 @@ int main(int argc, char** argv)
       XBT_INFO("  %s -> %s", key.c_str(), value.c_str());
   }
 
-  sg4::Actor::create("", e.host_by_name("bob"), host);
+  e.host_by_name("bob")->add_actor("", host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
 
   return 0;
 }

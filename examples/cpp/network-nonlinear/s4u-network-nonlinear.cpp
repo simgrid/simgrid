@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,6 +7,7 @@
  * network links.
  */
 
+#include "simgrid/s4u/Engine.hpp"
 #include <simgrid/s4u.hpp>
 #include <string>
 
@@ -65,7 +66,7 @@ public:
   void operator()()
   {
     /* Where we store all incoming msgs */
-    std::unordered_map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
+    std::map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
     sg4::ActivitySet pending_comms;
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
@@ -109,18 +110,18 @@ static double link_nonlinear(const sg4::Link* link, double capacity, int n)
 }
 
 /** @brief Create a simple 2-hosts platform */
-static void load_platform()
+static void load_platform(simgrid::s4u::Engine& e)
 {
   /* Creates the platform
    *  ________                 __________
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = sg4::create_full_zone("Zone1");
-  auto* sender   = zone->create_host("sender", 1)->seal();
-  auto* receiver = zone->create_host("receiver", 1)->seal();
+  auto* zone     = e.get_netzone_root();
+  auto* sender   = zone->add_host("sender", 1)->seal();
+  auto* receiver = zone->add_host("receiver", 1)->seal();
 
-  auto* link = zone->create_split_duplex_link("link1", 1e6);
+  auto* link = zone->add_split_duplex_link("link1", 1e6);
   /* setting same callbacks (could be different) for link UP/DOWN in split-duplex link */
   link->get_link_up()->set_sharing_policy(
       sg4::Link::SharingPolicy::NONLINEAR,
@@ -135,8 +136,8 @@ static void load_platform()
   zone->seal();
 
   /* create actors Sender/Receiver */
-  sg4::Actor::create("receiver", receiver, Receiver(9));
-  sg4::Actor::create("sender", sender, Sender(9));
+  receiver->add_actor("receiver", Receiver(9));
+  sender->add_actor("sender", Sender(9));
 }
 
 /*************************************************************************************************/
@@ -145,7 +146,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform */
-  load_platform();
+  load_platform(e);
 
   /* runs the simulation */
   e.run();

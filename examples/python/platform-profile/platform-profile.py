@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -41,12 +41,12 @@ if __name__ == '__main__':
 
     # Add a new host programmatically, and attach a simple speed profile to it (alternate between full and half speed
     # every two seconds
-    lili = e.netzone_root.create_host("Lilibeth", 25e6)
+    lili = e.netzone_root.add_host("Lilibeth", 25e6)
     lili.set_speed_profile("""0 1.0
     2 0.5""", 4)
     lili.seal()
 
     # Add a watcher of the changes
-    Actor.create("watcher", Host.by_name("Fafard"), watcher)
+    e.host_by_name("Fafard").add_actor("watcher", watcher)
 
     e.run()

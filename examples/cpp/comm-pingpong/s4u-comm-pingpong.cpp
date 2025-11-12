@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,12 +49,12 @@ int main(int argc, char* argv[])
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");
   sg4::Mailbox* mb2 = e.mailbox_by_name_or_create("Mailbox 2");
 
-  sg4::Actor::create("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2);
-  sg4::Actor::create("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1);
+  e.host_by_name("Tremblay")->add_actor("pinger", pinger, mb1, mb2);
+  e.host_by_name("Jupiter")->add_actor("ponger", ponger, mb2, mb1);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.3f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.3f", e.get_clock());
 
   return 0;
 }

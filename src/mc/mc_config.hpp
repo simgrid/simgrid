@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -23,11 +23,15 @@ extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_property_file;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_comms_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_debug;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_debug_optimality;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_output_lts;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _sg_mc_timeout;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_depth;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_max_errors;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_befs_threshold;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_random_seed;
+extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_parallel_thread;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_k_alternatives;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _sg_mc_dot_output_file;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_strategy;

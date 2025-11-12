@@ -1,0 +1,10 @@
+# Base image
+FROM opensuse/tumbleweed:latest
+
+# Check on https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html for new releases.
+# We currently use 2025.3 (and this file needs to be edited for the CI to build a new image and pick a new version)
+
+RUN zypper addrepo https://yum.repos.intel.com/oneapi oneAPI
+RUN zypper --no-gpg-checks install -y ninja cmake intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran gawk git cmake python313-pybind11-devel python313-numpy-devel perl graphviz-devel eigen3-devel boost-devel libboost_context-devel java-21-openjdk-devel valgrind-devel diffutils nlohmann_json-devel
+
+# intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-compiler-dpcpp-cpp-runtime

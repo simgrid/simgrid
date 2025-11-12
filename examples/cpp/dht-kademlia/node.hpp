@@ -1,13 +1,10 @@
-/* Copyright (c) 2012-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef KADEMLIA_NODE_HPP
 #define KADEMLIA_NODE_HPP
-#include "answer.hpp"
-#include "message.hpp"
 #include "routing_table.hpp"
 #include "s4u-dht-kademlia.hpp"
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2002-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
+#include <threads.h>
 #include <unistd.h>
 
 #if HAVE_VALGRIND_H
@@ -21,7 +22,9 @@
 
 /* We don't want to intercept pthread within SimGrid. Instead we should provide the real implem to SimGrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
+static int (*raw_pthread_detach)(pthread_t);
 static int (*raw_pthread_join)(pthread_t, void**);
+static void (*raw_pthread_exit)(void*);
 static int (*raw_pthread_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*);
 static int (*raw_pthread_mutex_lock)(pthread_mutex_t*);
 static int (*raw_pthread_mutex_trylock)(pthread_mutex_t*);
@@ -47,6 +50,7 @@ static int (*raw_pthread_cond_destroy)(pthread_cond_t*);
 
 static unsigned int (*raw_sleep)(unsigned int);
 static int (*raw_usleep)(useconds_t);
+static int (*raw_time)(time_t*);
 static int (*raw_gettimeofday)(struct timeval*, void*);
 
 static sem_t* (*raw_sem_open)(const char*, int);
@@ -60,6 +64,7 @@ static int (*raw_sem_timedwait)(sem_t*, const struct timespec*);
 static void intercepter_init()
 {
   raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
+  raw_pthread_detach        = dlsym(RTLD_NEXT, "pthread_detach");
   raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
   raw_pthread_mutex_init    = dlsym(RTLD_NEXT, "pthread_mutex_init");
   raw_pthread_mutex_lock    = dlsym(RTLD_NEXT, "pthread_mutex_lock");
@@ -73,19 +78,20 @@ static void intercepter_init()
   raw_pthread_mutexattr_getrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_getrobust");
   raw_pthread_mutexattr_setrobust = dlsym(RTLD_NEXT, "pthread_mutexattr_setrobust");
 
-  raw_pthread_barrier_init = dlsym(RTLD_NEXT, "raw_pthread_barrier_init");
-  raw_pthread_barrier_wait = dlsym(RTLD_NEXT, "raw_pthread_barrier_wait");
-  raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "raw_pthread_barrier_destroy");
+  raw_pthread_barrier_init    = dlsym(RTLD_NEXT, "pthread_barrier_init");
+  raw_pthread_barrier_wait    = dlsym(RTLD_NEXT, "pthread_barrier_wait");
+  raw_pthread_barrier_destroy = dlsym(RTLD_NEXT, "pthread_barrier_destroy");
 
-  raw_pthread_cond_init      = dlsym(RTLD_NEXT, "raw_pthread_cond_init");
-  raw_pthread_cond_signal    = dlsym(RTLD_NEXT, "raw_pthread_cond_signal");
-  raw_pthread_cond_broadcast = dlsym(RTLD_NEXT, "raw_pthread_cond_broadcast");
-  raw_pthread_cond_wait      = dlsym(RTLD_NEXT, "raw_pthread_cond_wait");
-  raw_pthread_cond_timedwait = dlsym(RTLD_NEXT, "raw_pthread_cond_timedwait");
-  raw_pthread_cond_destroy   = dlsym(RTLD_NEXT, "raw_pthread_cond_destroy");
+  raw_pthread_cond_init      = dlsym(RTLD_NEXT, "pthread_cond_init");
+  raw_pthread_cond_signal    = dlsym(RTLD_NEXT, "pthread_cond_signal");
+  raw_pthread_cond_broadcast = dlsym(RTLD_NEXT, "pthread_cond_broadcast");
+  raw_pthread_cond_wait      = dlsym(RTLD_NEXT, "pthread_cond_wait");
+  raw_pthread_cond_timedwait = dlsym(RTLD_NEXT, "pthread_cond_timedwait");
+  raw_pthread_cond_destroy   = dlsym(RTLD_NEXT, "pthread_cond_destroy");
 
   raw_sleep        = dlsym(RTLD_NEXT, "sleep");
   raw_usleep       = dlsym(RTLD_NEXT, "usleep");
+  raw_time         = dlsym(RTLD_NEXT, "time");
   raw_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
 
   raw_sem_open = dlsym(RTLD_NEXT, "sem_open");
@@ -97,23 +103,13 @@ static void intercepter_init()
   raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
 }
 
-static int sthread_inside_simgrid = 1;
-void sthread_enable(void)
-{ // Start intercepting all pthread calls
-  sthread_inside_simgrid = 0;
-}
-void sthread_disable(void)
-{ // Stop intercepting all pthread calls
-  sthread_inside_simgrid = 1;
-}
-
 #define _STHREAD_CONCAT(a, b) a##b
 #define intercepted_pthcall(name, raw_params, call_params, sim_params)                                                 \
   int _STHREAD_CONCAT(pthread_, name) raw_params                                                                       \
   {                                                                                                                    \
     if (_STHREAD_CONCAT(raw_pthread_, name) == NULL)                                                                   \
       intercepter_init();                                                                                              \
-    if (sthread_inside_simgrid)                                                                                        \
+    if (!sthread_is_enabled())                                                                                         \
       return _STHREAD_CONCAT(raw_pthread_, name) call_params;                                                          \
                                                                                                                        \
     sthread_disable();                                                                                                 \
@@ -134,7 +130,17 @@ intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* 
 
 intercepted_pthcall(create, (pthread_t * thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg),
                     (thread, attr, start_routine, arg), ((sthread_t*)thread, attr, start_routine, arg));
+intercepted_pthcall(detach, (pthread_t thread), (thread), ((sthread_t)thread));
 intercepted_pthcall(join, (pthread_t thread, void** retval), (thread, retval), ((sthread_t)thread, retval));
+void pthread_exit(void* retval)
+{ // our macros do not cope properly with void non-returning functions
+  if (raw_pthread_exit == NULL)
+    intercepter_init();
+  if (!sthread_is_enabled())
+    raw_pthread_exit(retval);
+  sthread_disable();
+  sthread_exit(retval);
+}
 
 intercepted_pthcall(mutex_init, (pthread_mutex_t * mutex, const pthread_mutexattr_t* attr), (mutex, attr),
                     ((sthread_mutex_t*)mutex, (sthread_mutexattr_t*)attr));
@@ -163,7 +169,7 @@ intercepted_pthcall(cond_destroy, (pthread_cond_t * cond), (cond), ((sthread_con
   {                                                                                                                    \
     if (_STHREAD_CONCAT(raw_, name) == NULL)                                                                           \
       intercepter_init();                                                                                              \
-    if (sthread_inside_simgrid)                                                                                        \
+    if (!sthread_is_enabled())                                                                                         \
       return _STHREAD_CONCAT(raw_, name) call_params;                                                                  \
                                                                                                                        \
     sthread_disable();                                                                                                 \
@@ -192,6 +198,7 @@ intercepted_call(int, sem_timedwait, (sem_t * sem, const struct timespec* abs_ti
 #define TIMEZONE_TYPE void
 #endif
 intercepted_call(int, gettimeofday, (struct timeval * tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz), (tv, tz), (tv));
+intercepted_call(time_t, time, (time_t * t), (t), (t));
 intercepted_call(unsigned int, sleep, (unsigned int seconds), (seconds), (seconds));
 intercepted_call(int, usleep, (useconds_t usec), (usec), (((double)usec) / 1000000.));
 
@@ -211,12 +218,14 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
 int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, int (*init)(int, char**, char**),
                       void (*fini)(void), void (*rtld_fini)(void), void* stack_end)
 {
+  sthread_do_initialize();
+
   /* Save the real main function address */
   raw_main = main;
 
-  /* Find the real __libc_start_main()... */
+  /* Find the real __libc_start_main(). It cannot fail since our wrapper was picked. */
   typeof(&__libc_start_main) orig = dlsym(RTLD_NEXT, "__libc_start_main");
-  /* ... and call it with our custom main function */
+  /* Call it with our custom main function */
 #if HAVE_VALGRIND_H
   /* ... unless valgrind is used, and this instance is not the target program (but the valgrind launcher) */
   if (getenv("VALGRIND_LIB") && !RUNNING_ON_VALGRIND)

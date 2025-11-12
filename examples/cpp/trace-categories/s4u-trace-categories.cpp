@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -63,8 +63,8 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_tracing_category("data", "0 0 1");     // blue
   simgrid::instr::declare_tracing_category("finalize", "0 0 0"); // black
 
-  sg4::Actor::create("master", e.host_by_name("Tremblay"), master);
-  sg4::Actor::create("worker", e.host_by_name("Fafard"), worker);
+  e.host_by_name("Tremblay")->add_actor("master", master);
+  e.host_by_name("Fafard")->add_actor("worker", worker);
 
   e.run();
   return 0;

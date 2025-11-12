@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -150,11 +150,11 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", e.host_by_name("alice"), server);
-  simgrid::s4u::Actor::create("client", e.host_by_name("bob"), client);
+  e.host_by_name("alice")->add_actor("server", server);
+  e.host_by_name("bob")->add_actor("client", client);
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
   return 0;
 }

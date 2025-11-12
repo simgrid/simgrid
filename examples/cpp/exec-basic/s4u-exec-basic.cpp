@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("executor", e.host_by_name("Tremblay"), executor);
-  sg4::Actor::create("privileged", e.host_by_name("Tremblay"), privileged);
+  e.host_by_name("Tremblay")->add_actor("executor", executor);
+  e.host_by_name("Tremblay")->add_actor("privileged", privileged);
 
   e.run();
 

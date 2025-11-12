@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("node1"), main_dispatcher);
+  engine.host_by_name("node1")->add_actor("dispatcher", main_dispatcher);
   engine.run();
 
   return 0;
@@ -65,7 +65,7 @@ void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
   for (auto const& pair : mboxes) {
-    simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name(pair.first.c_str()), [mailbox, pair, data_size]() {
+    simgrid::s4u::Host::by_name(pair.first.c_str())->add_actor("sender", [mailbox, pair, data_size]() {
       double start_time          = simgrid::s4u::Engine::get_clock();
       static std::string message = "message";
       mailbox->put(&message, data_size);
@@ -73,8 +73,8 @@ void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes
       XBT_INFO("Actual result: Sending %d bytes from '%s' to '%s' takes %f seconds.", data_size,
               simgrid::s4u::this_actor::get_host()->get_cname(), pair.second.c_str(), end_time - start_time);
     });
-    simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(pair.second.c_str()),
-                                [mailbox]() { mailbox->get<std::string>(); });
+    simgrid::s4u::Host::by_name(pair.second.c_str())->add_actor("receiver",
+                [mailbox]() { mailbox->get<std::string>(); });
     auto* l = (simgrid::kernel::resource::WifiLinkImpl*)simgrid::s4u::Link::by_name("AP1")->get_impl();
     for(auto i=1; i<=22; i++) {
       l->set_host_rate(simgrid::s4u::Host::by_name("Station "+std::to_string(i)), 0);

@@ -99,6 +99,8 @@ Existing Configuration Items
 
 - **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
 - **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/fullstack:** :ref:`cfg=debug/fullstack`
+- **debug/lmm-leaks:** :ref:`cfg=debug/lmm-leaks`
 - **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
 - **exception/cutpath:** :ref:`cfg=exception/cutpath`
@@ -667,27 +669,6 @@ Our current DPOR implementation could be improved in may ways. We are
 currently improving its efficiency (both in term of reduction ability
 and computational speed).
 
-.. _cfg=model-check/strategy:
-
-Guiding strategy
-................
-
-**Option** model-check/strategy **Default:** "none"
-
-Even after the DPOR's reduction, the state space that we have to explore remains huge. SimGrid provides several guiding
-strategies aiming at converging faster toward bugs. By default, none of these strategy is enabled, and SimGrid does a regular
-DFS exploration.
-
- - **max_match_comm**: Try to minimize the number of in-fly communication by appairing matching send and receive. This tend to
-   produce nicer backtraces, in particular when a user-level ``send`` is broken down internally into a ``send_async`` + ``wait``.
-   This strategy will ensure that the ``wait`` occures as soon as possible, easing the understanding of the user who do not
-   expect her ``send`` to be split.
- - **min_match_comm**: Try to maximize the number of in-fly communication by not appairing matching send and receive. This is
-   the exact opposite strategy, but it is still useful as it tend to explore first the branches where the risk of deadlock is
-   higher.
- - **uniform**: this is a boring random strategy where choices are based on a uniform sampling of possible choices.
-   Surprisingly, it gives really really good results.
-
 .. _cfg=model-check/dot-output:
 
 Dot Output
@@ -768,7 +749,7 @@ Exploration strategies
 By default, the model checker follows a depth-first exploration, but several other strategies exist. The following list may be
 incomplete, so you'd better look at the code or speak with us for more information.
 
- - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end.
+ - **uniform**: Randomly pick the next branch to explore each time that the exploration reaches an end (i.e., on backtrack).
  - **none**: default value instructing SimGrid to follow a depth-first exploration.
 
 .. _cfg=model-check/cached-states-interval:
@@ -785,9 +766,12 @@ the begining.
 
 By default, one in every 1000 states is cached this way. If the used value is 0, then no state gets cached. Caching too little
 states forces many useless transitions replays (consuming time) while caching too much states may exhaust the memory and other
-resources. Increasing the maximal amount of open file per process on your machine may allow to cache more states if your memory
-allows. States get removed from the memory once they become useless, so your resource consumption should plateau at some point
-during the exploration.
+resources (SimGrid will refuse caching more states if the file limit is almost reached). Increasing the maximal amount of open
+file per process on your machine with ``ulimit -n <value>`` may allow to cache more states if your memory allows. States get
+removed from the memory once they become useless, so your resource consumption *should* plateau at some point during the
+exploration. This is not true when the randomized exploration strategy is used, as it keeps exploring random branches that must
+be stored, while branches can only removed once every branches on their left was explored. A random exploration results in
+sparsly explored trees where no memory can be reclaimed.
 
 .. _cfg=model-check/no-fork:
 
@@ -979,7 +963,6 @@ the slowest to the most efficient:
 
  - **thread:** very slow factory using full featured, standard threads.
    They are slow but very standard. Some debuggers or profilers only work with this factory.
- - **ucontext:** fast factory using System V contexts (Linux and FreeBSD only)
  - **boost:** This uses the `context
    implementation <http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html>`_
    of the boost library for a performance that is comparable to our
@@ -997,7 +980,7 @@ debugging-friendly contexts, as they allow one to set breakpoints
 anywhere with gdb and visualize backtraces for all processes, in order
 to debug concurrency issues. Valgrind is also more comfortable with
 threads, but it should be usable with all factories (Exception: the
-callgrind tool really dislikes raw and ucontext factories).
+callgrind tool really dislikes the raw factory).
 
 .. _cfg=contexts/stack-size:
 
@@ -1066,7 +1049,7 @@ simulations may well fail in parallel mode. It is described in
 
 Note that this feature is only tested on Linux. It may or may not work on other systems.
 
-If you are using the **ucontext** or **raw** context factories, you can
+If you are using the **raw** context factory, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling the same number of user contexts at each
 run. To activate this, set the ``contexts/nthreads`` item to the amount
@@ -1771,6 +1754,17 @@ disable this option to request that SimGrid not attempt any cleanups at
 the end of the simulation. Since the Unix process is ending anyway,
 the operating system will wipe it all.
 
+.. _cfg=debug/lmm-leaks:
+
+Cleanup at Termination
+......................
+
+**Option** ``debug/lmm-leaks`` **default:** off
+
+Under some conditions, not all LMM variables are cleaned at the end of the simulation. As this is most certainly due to a bug,
+you may want to activate this option to get more information about the leaked variables. Note that taking all the system
+backtraces will hurt the performance of your simulation.
+
 .. _cfg=path:
 
 Search Path
@@ -1827,6 +1821,18 @@ backtrace shown when an exception is thrown. This is mainly useful for
 the tests: the full file path would makes the tests non-reproducible because
 the paths of source files depend of the build settings. That would
 break most of the tests since their output is continually compared.
+
+.. _cfg=debug/fullstack:
+
+Trim the exception backtrace
+----------------------------
+
+**Option** ``debug/fullstack`` **default:** on
+
+By default, the exception backtrace is trimmed to remove internal symbols that are useless and troubling for the user, but it
+may happen that this trimming feature is buggy on some architectures. This may be as bad as completely empty stack traces. This
+option is intended for the users facing such issue, allowing them to request complete, untrimmed stack traces. The result will
+contain cruft, but at least not being completely empty.
 
 .. _logging_config:
 

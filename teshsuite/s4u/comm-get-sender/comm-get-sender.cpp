@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,8 +35,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("send", e.host_by_name("Tremblay"), sender_fun);
-  simgrid::s4u::Actor::create("receive", e.host_by_name("Tremblay"), receiver_fun);
+  e.host_by_name("Tremblay")->add_actor("send", sender_fun);
+  e.host_by_name("Tremblay")->add_actor("receive", receiver_fun);
 
   e.run();
   return 0;

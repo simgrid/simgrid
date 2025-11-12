@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,10 +6,8 @@
 #ifndef SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 #define SIMGRID_MC_ODPOR_WAKEUP_TREE_HPP
 
-#include "src/mc/explo/odpor/WakeupTreeIterator.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
-#include "xbt/asserts.h"
 
 #include <memory>
 #include <optional>
@@ -18,6 +16,9 @@
 #include <vector>
 
 namespace simgrid::mc::odpor {
+
+/** @brief Describes how a tree insertion was carried out */
+enum class InsertionResult { leaf, interior_node, root };
 
 /**
  * @brief A single node in a wakeup tree
@@ -39,7 +40,7 @@ private:
   WakeupTreeNode* parent_ = nullptr;
 
   /** An ordered list of children of for this node in the tree */
-  std::list<WakeupTreeNode*> children_;
+  std::list<std::unique_ptr<WakeupTreeNode>> children_ = {};
 
   /** @brief The contents of the node */
   std::shared_ptr<Transition> action_ = nullptr;
@@ -47,12 +48,13 @@ private:
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
 
+  PartialExecution sequence_ = PartialExecution{};
+
   /** Allows the owning tree to insert directly into the child */
   friend WakeupTree;
-  friend WakeupTreeIterator;
 
 public:
-  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u) {}
+  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u), sequence_({u}) {}
 
   WakeupTreeNode()                                 = default;
   ~WakeupTreeNode()                                = default;
@@ -69,7 +71,7 @@ public:
   bool is_leaf() const { return children_.empty(); }
   bool is_root() const { return parent_ == nullptr; }
   aid_t get_actor() const { return action_->aid_; }
-  PartialExecution get_sequence() const;
+  const PartialExecution& get_sequence() const;
 
   /** @brief Return a shared pointer to the transition if the action exists.
 
@@ -77,12 +79,12 @@ public:
    *  In that case, get_action() return nullptr.
    **/
   std::shared_ptr<Transition> get_action() const { return action_; }
-  const std::list<WakeupTreeNode*>& get_ordered_children() const { return children_; }
+  const std::list<std::unique_ptr<WakeupTreeNode>>& get_ordered_children() const { return children_; }
 
   std::string string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const;
 
   /** Insert a node `node` as a new child of this node */
-  void add_child(WakeupTreeNode* node);
+  void add_child(std::unique_ptr<WakeupTreeNode> node);
 
   /**
    * @brief returns true iff calling object is a subset of called object
@@ -94,12 +96,28 @@ public:
 
   WakeupTreeNode* get_node_after_actor(aid_t aid) const
   {
-    for (auto const node : children_)
+    for (auto const& node : children_)
       if (node->get_actor() == aid)
-        return node;
+        return node.get();
 
     return nullptr;
   }
+
+  long get_size() const
+  {
+    long res = 0;
+    for (auto const& child : children_) {
+      res += 1;
+      res += child->get_size();
+    }
+    return res;
+  }
+
+  // Does the actual job of recursively inserting a sequence inside a WuT.
+  // The second version needs to return the node in order for the calling method to obtain
+  // the inserted sequence.
+  InsertionResult recursive_insert(WakeupTree& father, PartialExecution& w);
+  WakeupTreeNode* recursive_insert_and_get_inserted_seq(WakeupTree& father, PartialExecution& w);
 };
 
 /**
@@ -114,7 +132,6 @@ public:
  * then, represent paths that are guaranteed to explore different parts
  * of the search space.
  *
- * Iteration over a wakeup tree occurs as a post-order traversal of its nodes
  *
  * @note A wakeup tree is defined relative to some execution `E`. The
  * structure itself does not hold onto a reference of the execution with
@@ -127,71 +144,25 @@ public:
  */
 class WakeupTree {
 private:
-  WakeupTreeNode* root_;
+  std::unique_ptr<WakeupTreeNode> root_;
 
-  /**
-   * @brief All of the nodes that are currently are a part of the tree
-   *
-   * @invariant Each node event maps itself to the owner of that node,
-   * i.e. the unique pointer that manages the data at the address. The tree owns all
-   * of the addresses that are referenced by the nodes WakeupTreeNode.
-   * ODPOR guarantees that nodes are persisted as long as needed.
-   */
-  std::unordered_map<WakeupTreeNode*, std::unique_ptr<WakeupTreeNode>> nodes_;
+  // Returns a pointer to the lastly inserted node
+  WakeupTreeNode* insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
 
-  void insert_node(std::unique_ptr<WakeupTreeNode> node);
-  void insert_sequence_after(WakeupTreeNode* node, const PartialExecution& w);
-  void remove_node(WakeupTreeNode* node);
   bool contains(const WakeupTreeNode* node) const;
-
-  /**
-   * @brief Removes the node `root` and all of its descendants from
-   * this wakeup tree
-   *
-   * @throws: If the node `root` is not contained in this tree, an
-   * exception is raised
-   */
-  void remove_subtree_rooted_at(WakeupTreeNode* root);
-
-  /**
-   * @brief Adds a new node to the tree, disconnected from
-   * any other, which represents the partial execution
-   * "fragment" `u`
-   */
-  WakeupTreeNode* make_node(std::shared_ptr<Transition> u);
-
-  /* Allow the iterator to access the contents of the tree */
-  friend WakeupTreeIterator;
 
 public:
   WakeupTree();
   explicit WakeupTree(std::unique_ptr<WakeupTreeNode> root);
 
   /**
-   * @brief Creates a copy of the subtree whose root is the node
-   * `root` in this tree
+   * @brief extract the subtree after the left-most action
    */
-  static WakeupTree make_subtree_rooted_at(WakeupTreeNode* root);
-
-  auto begin() const { return WakeupTreeIterator(*this); }
-  auto end() const { return WakeupTreeIterator(); }
+  WakeupTree get_first_subtree();
 
   std::vector<std::string> get_single_process_texts() const;
 
   std::string string_of_whole_tree() const;
-
-  /**
-   * @brief Remove the subtree of the smallest (with respect
-   * to the tree's "<" relation) single-process node.
-   *
-   * A "single-process" node is one whose execution represents
-   * taking a single action (i.e. those of the root node). The
-   * smallest under "<" is that which is continuously selected and
-   * removed by ODPOR.
-   *
-   * If the tree is empty, this method has no effect.
-   */
-  void remove_min_single_process_subtree();
 
   void remove_subtree_at_aid(aid_t proc);
 
@@ -202,19 +173,7 @@ public:
    * considered "empty" if it only contains the root node;
    * that is, if it is "uninteresting". In such a case,
    */
-  bool empty() const { return nodes_.size() == static_cast<size_t>(1); }
-
-  /**
-   * @brief Returns the number of *non-empty* entries in the tree, viz. the
-   * number of nodes in the tree that have an action mapped to them
-   */
-  size_t get_num_entries() const { return not empty() ? (nodes_.size() - 1) : static_cast<size_t>(0); }
-
-  /**
-   * @brief Returns the number of nodes in the tree, including the root node
-   */
-  size_t get_num_nodes() const { return nodes_.size(); }
-
+  bool empty() const { return root_->children_.size() == 0; }
   /**
    * @brief Gets the actor of the node that is the "smallest" (with respect
    * to the tree's "<" relation) single-process node.
@@ -232,9 +191,6 @@ public:
   std::optional<WakeupTreeNode*> get_min_single_process_node() const;
 
   void insert_at_root(std::shared_ptr<Transition> u);
-
-  /** @brief Describes how a tree insertion was carried out */
-  enum class InsertionResult { leaf, interior_node, root };
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree
@@ -254,9 +210,9 @@ public:
    * | and add `v.w'` as a new leaf, ordered after all already existing nodes
    * | of the form `v.w''`
    *
-   * This method performs the post-order search of part one and the insertion of
-   * `v.w'` of part two of the above procedure. Note that the execution will
-   * provide `v.w'` (see `Execution::get_shortest_odpor_sq_subset_insertion()`).
+   * This method performs a recursive exploration of the existing tree. Compared
+   * to the method proposed in the original paper, it is linear in the height of
+   * the WuT and not in its size.
    *
    * @invariant: It is assumed that this tree is a wakeup tree
    * with respect to the given execution `E`
@@ -265,6 +221,7 @@ public:
    * as a leaf node in the tree
    */
   InsertionResult insert(const PartialExecution& seq);
+
   /**
    * @brief Does the same as 'insert' but instead of returning a result type, yield the
    * inserted sequence.
@@ -279,7 +236,7 @@ public:
   std::vector<aid_t> get_direct_children_actors() const
   {
     std::vector<aid_t> result;
-    for (auto const leaf : root_->get_ordered_children())
+    for (auto const& leaf : root_->get_ordered_children())
       result.push_back(leaf->get_actor());
     return result;
   }
@@ -307,6 +264,18 @@ public:
    *
    */
   void force_insert(const PartialExecution& seq);
+
+  long get_size() const
+  {
+    long res = 1;
+    for (auto const& child : root_->children_) {
+      res += 1;
+      res += child->get_size();
+    }
+    return res;
+  }
+
+  friend WakeupTreeNode;
 };
 
 } // namespace simgrid::mc::odpor

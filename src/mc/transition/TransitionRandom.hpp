@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,7 +16,7 @@ class RandomTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  RandomTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   bool depends(const Transition* other) const override
   {
     if (other->type_ < type_)
@@ -24,7 +24,8 @@ public:
 
     return aid_ == other->aid_;
   } // Independent with any other transition
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 };
 
 } // namespace simgrid::mc

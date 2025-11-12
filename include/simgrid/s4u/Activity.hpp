@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -25,9 +25,7 @@ XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Activity>;
-#endif
 
 namespace s4u {
 
@@ -36,11 +34,7 @@ namespace s4u {
  * This class is the ancestor of every activities that an actor can undertake.
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
-#ifdef SWIG 
-class XBT_PUBLIC Activity { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
-#endif
 
 #ifndef DOXYGEN
   friend ActivitySet;
@@ -216,9 +210,6 @@ public:
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 
 #ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ActivityPtr>& activities, double timeout); // XBT_ATTRIB_DEPRECATED_v339
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t test_any(const std::vector<ActivityPtr>& activities);
-
   friend void intrusive_ptr_release(Activity* a)
   {
     if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
@@ -253,57 +244,52 @@ template <class AnyActivity> class Activity_T : public Activity {
   std::string tracing_category_ = "";
   std::function<void(void*)> clean_fun_; // used if detached
 
-  inline static xbt::signal<void(AnyActivity const&)> on_start;
+  static xbt::signal<void(AnyActivity const&)> on_start;
   xbt::signal<void(AnyActivity const&)> on_this_start;
-  inline static xbt::signal<void(AnyActivity const&)> on_completion;
+  static xbt::signal<void(AnyActivity const&)> on_completion;
   xbt::signal<void(AnyActivity const&)> on_this_completion;
-  inline static xbt::signal<void(AnyActivity const&)> on_suspend;
+  static xbt::signal<void(AnyActivity const&)> on_suspend;
   xbt::signal<void(AnyActivity const&)> on_this_suspend;
-  inline static xbt::signal<void(AnyActivity const&)> on_resume;
+  static xbt::signal<void(AnyActivity const&)> on_resume;
   xbt::signal<void(AnyActivity const&)> on_this_resume;
-  inline static xbt::signal<void(AnyActivity&)> on_veto;
+  static xbt::signal<void(AnyActivity&)> on_veto;
   xbt::signal<void(AnyActivity&)> on_this_veto;
 
 protected:
-  void fire_on_start() const override { on_start(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_start() const override;
   void fire_on_this_start() const override { on_this_start(static_cast<const AnyActivity&>(*this)); }
-  void fire_on_completion() const override { on_completion(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_completion() const override;
   void fire_on_this_completion() const override { on_this_completion(static_cast<const AnyActivity&>(*this)); }
-  void fire_on_suspend() const override { on_suspend(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_suspend() const override;
   void fire_on_this_suspend() const override { on_this_suspend(static_cast<const AnyActivity&>(*this)); }
-  void fire_on_resume() const override { on_resume(static_cast<const AnyActivity&>(*this)); }
+  void fire_on_resume() const override;
   void fire_on_this_resume() const override { on_this_resume(static_cast<const AnyActivity&>(*this)); }
-  void fire_on_veto() override { on_veto(static_cast<AnyActivity&>(*this)); }
+  void fire_on_veto() override;
   void fire_on_this_veto() override { on_this_veto(static_cast<AnyActivity&>(*this)); }
 
 public:
   /*! \static Add a callback fired when any activity starts (no veto) */
-  static void on_start_cb(const std::function<void(AnyActivity const&)>& cb) { on_start.connect(cb); }
+  static void on_start_cb(const std::function<void(AnyActivity const&)>& cb);
   /*!  Add a callback fired when this specific activity starts (no veto) */
   void on_this_start_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_start.connect(cb); }
   /*! \static Add a callback fired when any activity completes (either normally, cancelled or failed) */
-  static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_completion.connect(cb); }
+  static void on_completion_cb(const std::function<void(AnyActivity const&)>& cb);
   /*! Add a callback fired when this specific activity completes (either normally, cancelled or failed) */
   void on_this_completion_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_completion.connect(cb); }
   /*! \static Add a callback fired when any activity is suspended */
-  static void on_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_suspend.connect(cb); }
+  static void on_suspend_cb(const std::function<void(AnyActivity const&)>& cb);
   /*! Add a callback fired when this specific activity is suspended */
   void on_this_suspend_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_suspend.connect(cb); }
   /*! \static Add a callback fired when any activity is resumed after being suspended */
-  static void on_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_resume.connect(cb); }
+  static void on_resume_cb(const std::function<void(AnyActivity const&)>& cb);
   /*! Add a callback fired when this specific activity is resumed after being suspended */
   void on_this_resume_cb(const std::function<void(AnyActivity const&)>& cb) { on_this_resume.connect(cb); }
   /*! \static Add a callback fired each time that any activity fails to start because of a veto (e.g., unsolved
    *  dependency or no resource assigned) */
-  static void on_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_veto.connect(cb); }
+  static void on_veto_cb(const std::function<void(AnyActivity&)>& cb);
   /*! Add a callback fired each time that this specific activity fails to start because of a veto (e.g., unsolved
    *  dependency or no resource assigned) */
   void on_this_veto_cb(const std::function<void(AnyActivity&)>& cb) { on_this_veto.connect(cb); }
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return deprecated_wait_any_for(activities, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout) { return deprecated_wait_any_for(activities, timeout); }
-#endif
 
   AnyActivity* add_successor(ActivityPtr a)
   {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -73,6 +73,15 @@ public:
     file->close(); // Unlinking the file on "disk" does not close the file and free the object
 
     show_info(disks);
+
+    // Open another file on disk without a "content" property
+    filename = "/lib/libc.so";
+    file     = sg4::File::open(filename, nullptr);
+    write    = file->write(4096); // Write 4 Kbytes
+    XBT_INFO("Create a %llu bytes file named '%s' on /", write, filename.c_str());
+    file->close();
+
+    show_info(disks);
   }
 };
 
@@ -81,7 +90,7 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
   sg_storage_file_system_init();
   e.load_platform(argv[1]);
-  sg4::Actor::create("host", e.host_by_name("bob"), MyHost());
+  e.host_by_name("bob")->add_actor("host", MyHost());
   e.run();
 
   return 0;

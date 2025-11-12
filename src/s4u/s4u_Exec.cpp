@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,6 +17,51 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
 namespace simgrid::s4u {
+template <> xbt::signal<void(Exec&)> Activity_T<Exec>::on_veto             = xbt::signal<void(Exec&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_start      = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_completion = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_suspend    = xbt::signal<void(Exec const&)>();
+template <> xbt::signal<void(Exec const&)> Activity_T<Exec>::on_resume     = xbt::signal<void(Exec const&)>();
+template <> void Activity_T<Exec>::fire_on_start() const
+{
+  on_start(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_completion() const
+{
+  on_completion(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_suspend() const
+{
+  on_suspend(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_resume() const
+{
+  on_resume(static_cast<const Exec&>(*this));
+}
+template <> void Activity_T<Exec>::fire_on_veto()
+{
+  on_veto(static_cast<Exec&>(*this));
+}
+template <> void Activity_T<Exec>::on_start_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_start.connect(cb);
+}
+template <> void Activity_T<Exec>::on_completion_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_completion.connect(cb);
+}
+template <> void Activity_T<Exec>::on_suspend_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_suspend.connect(cb);
+}
+template <> void Activity_T<Exec>::on_resume_cb(const std::function<void(Exec const&)>& cb)
+{
+  on_resume.connect(cb);
+}
+template <> void Activity_T<Exec>::on_veto_cb(const std::function<void(Exec&)>& cb)
+{
+  on_veto.connect(cb);
+}
 
 Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {
@@ -52,25 +97,6 @@ Exec* Exec::do_start()
   fire_on_start();
   fire_on_this_start();
   return this;
-}
-
-ssize_t Exec::deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout) // XBT_ATTRIB_DEPRECATED_v339
-{
-  if (execs.empty())
-    return -1;
-  ActivitySet set;
-  for (const auto& exec : execs)
-    set.push(exec);
-  try {
-    auto* ret = set.wait_any_for(timeout).get();
-    for (size_t i = 0; i < execs.size(); i++)
-      if (execs[i].get() == ret)
-        return i;
-
-  } catch (TimeoutException& e) {
-    return -1;
-  }
-  return -1;
 }
 
 ExecPtr Exec::set_bound(double bound)
@@ -138,6 +164,8 @@ ExecPtr Exec::set_thread_count(int thread_count)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the bytes_amounts of an exec after its start");
+  xbt_assert(thread_count > 0, "The number of threads must be positive");
+
   kernel::actor::simcall_object_access(pimpl_.get(), [this, thread_count] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_thread_count(thread_count);
   });
@@ -316,32 +344,4 @@ sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout)
     status = SG_ERROR_HOST;
   }
   return status;
-}
-
-ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count) // XBT_ATTRIB_DEPRECATED_v339
-{
-  std::vector<simgrid::s4u::ExecPtr> s4u_execs;
-  for (size_t i = 0; i < count; i++)
-    s4u_execs.emplace_back(execs[i], false);
-
-  ssize_t pos = simgrid::s4u::Exec::deprecated_wait_any_for(s4u_execs, -1.0);
-  for (size_t i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<size_t>(pos) != i)
-      s4u_execs[i]->add_ref();
-  }
-  return pos;
-}
-
-ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout) // XBT_ATTRIB_DEPRECATED_v339
-{
-  std::vector<simgrid::s4u::ExecPtr> s4u_execs;
-  for (size_t i = 0; i < count; i++)
-    s4u_execs.emplace_back(execs[i], false);
-
-  ssize_t pos = simgrid::s4u::Exec::deprecated_wait_any_for(s4u_execs, timeout);
-  for (size_t i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<size_t>(pos) != i)
-      s4u_execs[i]->add_ref();
-  }
-  return pos;
 }

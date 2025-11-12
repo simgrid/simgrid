@@ -1,4 +1,4 @@
-/* Copyright (c) 2003-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2003-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,13 +33,14 @@ int main(int argc, char* argv[])
   }
 
   simgrid::s4u::Exec::on_completion_cb([](simgrid::s4u::Exec const& exec) {
-    XBT_INFO("Exec '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(),
-             exec.get_start_time(), exec.get_finish_time());
+    XBT_INFO("Exec '%s' on %s is complete (start time: %f, finish time: %f)", exec.get_cname(),
+             exec.get_host()->get_cname(), exec.get_start_time(), exec.get_finish_time());
   });
 
   simgrid::s4u::Comm::on_completion_cb([](simgrid::s4u::Comm const& comm) {
-    XBT_INFO("Comm '%s' is complete (start time: %f, finish time: %f)", comm.get_cname(),
-             comm.get_start_time(), comm.get_finish_time());
+    XBT_INFO("Comm '%s' from %s to %s is complete (start time: %f, finish time: %f)", comm.get_cname(),
+             comm.get_source()->get_cname(), comm.get_destination()->get_cname(), comm.get_start_time(),
+             comm.get_finish_time());
   });
 
   e.run();

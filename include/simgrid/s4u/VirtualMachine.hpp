@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,11 +30,7 @@ public:
  * The total computing power that the contained actors can get is constrained to the virtual machine size.
  *
  */
-#ifdef SWIG 
-class XBT_PUBLIC VirtualMachine { // Pretend to Swig that VirtualMachine does not inherit from Host, to see if it helps
-#else
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
-#endif
 
   kernel::resource::VirtualMachineImpl* const pimpl_vm_;
 

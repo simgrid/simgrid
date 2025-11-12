@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          
+# Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package. 
@@ -85,17 +85,17 @@ if __name__ == '__main__':
 
   mailbox = Mailbox.by_name("mailbox")
 
-  rootzone = NetZone.create_full_zone("Zone1")
-  main = rootzone.create_host("lilibeth 0", 1e9)
+  rootzone = e.netzone_root
+  main = rootzone.add_host("lilibeth 0", 1e9)
   Actor.create("master", main, master).set_auto_restart(True)
 
   for i in range(1, host_count):
-    link = rootzone.create_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
-    host = rootzone.create_host(f"lilibeth {i}", 1e9)
+    link = rootzone.add_split_duplex_link(f"link {i}", "1MBps").set_latency("24us")
+    host = rootzone.add_host(f"lilibeth {i}", 1e9)
     rootzone.add_route(main, host, [link])
     Actor.create("worker", host, worker, i).set_auto_restart(True)
 
-  e.netzone_root.seal()
+  rootzone.seal()
   e.run()
 
   this_actor.info("WE SURVIVED!")

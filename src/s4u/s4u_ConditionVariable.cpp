@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -79,18 +79,22 @@ void ConditionVariable::wait(const std::unique_lock<Mutex>& lock)
   do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, -1);
 }
 
-std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
+std::cv_status s4u::ConditionVariable::wait_for(MutexPtr lock, double timeout)
 {
   // The simcall uses -1 for "any timeout" but we don't want this:
   if (timeout < 0)
     timeout = 0.0;
 
-  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, timeout);
 
   return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
 }
+std::cv_status s4u::ConditionVariable::wait_for(const std::unique_lock<Mutex>& lock, double timeout)
+{
+  return wait_for(lock.mutex(), timeout);
+}
 
-std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
+std::cv_status ConditionVariable::wait_until(s4u::MutexPtr lock, double timeout_time)
 {
   double now = Engine::get_clock();
   double timeout;
@@ -99,9 +103,13 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
   else
     timeout = timeout_time - now;
 
-  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock.mutex()->pimpl_, timeout);
+  bool timed_out = do_wait(kernel::actor::ActorImpl::self(), pimpl_, lock->pimpl_, timeout);
 
   return timed_out ? std::cv_status::timeout : std::cv_status::no_timeout;
+}
+std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock, double timeout_time)
+{
+  return wait_until(lock.mutex(), timeout_time);
 }
 
 /**
@@ -116,7 +124,9 @@ void ConditionVariable::notify_one()
 
 void ConditionVariable::notify_all()
 {
-  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->broadcast(); });
+  kernel::actor::ConditionVariableObserver observer{kernel::actor::ActorImpl::self(),
+                                                    mc::Transition::Type::CONDVAR_BROADCAST, pimpl_};
+  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->broadcast(); }, &observer);
 }
 
 void intrusive_ptr_add_ref(const ConditionVariable* cond)

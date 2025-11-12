@@ -1,4 +1,4 @@
-/* Copyright (c) 2023-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2023-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,8 +44,8 @@ class XBT_PUBLIC Mess : public Activity_T<Mess> {
   }
 
   /* These ensure that the on_completion signals are really thrown */
-  void fire_on_completion_for_real() const { Activity_T<Mess>::fire_on_completion(); }
-  void fire_on_this_completion_for_real() const { Activity_T<Mess>::fire_on_this_completion(); }
+  void fire_on_completion_for_real() const;
+  void fire_on_this_completion_for_real() const;
 
 public:
 #ifndef DOXYGEN

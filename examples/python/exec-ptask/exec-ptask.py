@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -99,5 +99,5 @@ if __name__ == "__main__":
     engine = Engine.instance
     Engine.set_config("host/model:ptask_L07")  # /!\ this is required for running ptasks
     engine.load_platform(platform)
-    Actor.create("foo", engine.host_by_name("MyHost1"), runner)
+    engine.host_by_name("MyHost1").add_actor("foo", runner)
     engine.run()

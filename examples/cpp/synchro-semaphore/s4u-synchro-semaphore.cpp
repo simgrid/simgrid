@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -49,8 +49,8 @@ int main(int argc, char **argv)
   auto sem_empty = sg4::Semaphore::create(1); /* indicates whether the buffer is empty */
   auto sem_full  = sg4::Semaphore::create(0); /* indicates whether the buffer is full */
 
-  sg4::Actor::create("producer", e.host_by_name("Tremblay"), producer, &buffer, sem_empty, sem_full, std::cref(args));
-  sg4::Actor::create("consumer", e.host_by_name("Jupiter"), consumer, &buffer, sem_empty, sem_full);
+  e.host_by_name("Tremblay")->add_actor("producer", producer, &buffer, sem_empty, sem_full, std::cref(args));
+  e.host_by_name("Jupiter")->add_actor("consumer", consumer, &buffer, sem_empty, sem_full);
   e.run();
 
   return 0;

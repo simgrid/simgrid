@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,13 +20,13 @@ static void computation_fun()
            clock_end - clock_sta);
 }
 
-static void launch_computation_worker(s4u_Host* host)
+static void launch_computation_worker(sg4::Host* host)
 {
-  sg4::Actor::create("compute", host, computation_fun);
+  host->add_actor("compute", computation_fun);
 }
 
 struct s_payload {
-  s4u_Host* tx_host;
+  sg4::Host* tx_host;
   const char* tx_actor_name;
   double clock_sta;
 };
@@ -55,22 +55,21 @@ static void communication_rx_fun(std::vector<std::string> args)
            clock_end - payload->clock_sta);
 }
 
-static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
+static void launch_communication_worker(sg4::Host* tx_host, sg4::Host* rx_host)
 {
   std::string mbox_name = "MBOX:" + tx_host->get_name() + "-" + rx_host->get_name();
   std::vector<std::string> args;
   args.push_back(mbox_name);
 
-  sg4::Actor::create("comm_tx", tx_host, communication_tx_fun, args);
-
-  sg4::Actor::create("comm_rx", rx_host, communication_rx_fun, args);
+  tx_host->add_actor("comm_tx", communication_tx_fun, args);
+  rx_host->add_actor("comm_rx", communication_rx_fun, args);
 }
 
 static void master_main()
 {
-  s4u_Host* pm0 = sg4::Host::by_name("Fafard");
-  s4u_Host* pm1 = sg4::Host::by_name("Tremblay");
-  s4u_Host* pm2 = sg4::Host::by_name("Bourassa");
+  sg4::Host* pm0 = sg4::Host::by_name("Fafard");
+  sg4::Host* pm1 = sg4::Host::by_name("Tremblay");
+  sg4::Host* pm2 = sg4::Host::by_name("Bourassa");
 
   XBT_INFO("## Test 1 (started): check computation on normal PMs");
 
@@ -121,6 +120,7 @@ static void master_main()
   vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
   auto* vm1 = pm0->create_vm("VM1", 1);
+  vm1->start();
   launch_computation_worker(vm0);
   launch_computation_worker(vm1);
   sg4::this_actor::sleep_for(2);
@@ -213,11 +213,11 @@ int main(int argc, char* argv[])
   sg_vm_live_migration_plugin_init();
   e.load_platform(argv[1]); /* - Load the platform description */
 
-  sg4::Actor::create("master_", e.host_by_name("Fafard"), master_main);
+  e.host_by_name("Fafard")->add_actor("master_", master_main);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

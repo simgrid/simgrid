@@ -1,9 +1,9 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include <simgrid/host.h>
@@ -13,7 +13,6 @@
 #include <boost/algorithm/string.hpp>
 #include <deque>
 #include <string>
-#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 

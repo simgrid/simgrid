@@ -9,19 +9,19 @@ $ mkdir temp_testdir-catch-signal
 
 $ cd temp_testdir-catch-signal
 
-< kill 'SEGV', $$;
-$ mkfile segfault.pl
+< kill -SEGV $$
+$ mkfile segfault.sh
 
 p Check that we notice when SEGV is raised
 ! expect signal SIGSEGV
-$ perl segfault.pl
+$ sh segfault.sh
 
 p Check that we return the expected return value on SEGV
 ! expect return 11
-< $ perl segfault.pl
+< $ sh segfault.sh
 $ ${bindir:=.}/tesh --no-auto-valgrind
 > Test suite from stdin
-> [(stdin):1] perl segfault.pl
+> [(stdin):1] sh segfault.sh
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)
 
 $ cd ..

@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,8 +32,9 @@ static void update_bw_comm_start(const s4u::Comm& comm)
   }
 }
 
-WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
-    : StandardLinkImpl(name)
+WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system,
+                           routing::NetZoneImpl* englobing_zone)
+    : StandardLinkImpl(name, s4u::Link::SharingPolicy::WIFI, englobing_zone)
 {
   this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
@@ -64,11 +65,6 @@ double WifiLinkImpl::get_host_rate(const s4u::Host* host) const
 
   Metric rate = bandwidths_[rate_id];
   return rate.peak * rate.scale;
-}
-
-s4u::Link::SharingPolicy WifiLinkImpl::get_sharing_policy() const
-{
-  return s4u::Link::SharingPolicy::WIFI;
 }
 
 size_t WifiLinkImpl::get_host_count() const

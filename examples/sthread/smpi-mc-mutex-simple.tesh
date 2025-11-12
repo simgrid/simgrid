@@ -1,0 +1,37 @@
+
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+# These lines are displayed more often in no-fork mode, so ignore all occurence of them
+! ignore .*Create thread 1
+! ignore sthread intercepts pthreads in your SMPI application.
+
+# Musl gives the output in another order compared to glibc
+! output sort
+! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
+! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+$ ${bindir:=.}/../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=sthread.thres:debug --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simple ${extraparam}
+> sthread intercepts pthreads in your SMPI application.
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 1
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 0 is terminating.
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 1 is terminating.
+> [Tremblay:0:(1) 0.000000] [sthread/DEBUG] sthread_mutex_destroy(0xdeadbeef)
+> Rank0 is terminating.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 1 is terminating.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 0 is terminating.
+> [Tremblay:0:(1) 0.000000] [sthread/DEBUG] sthread_mutex_destroy(0xdeadbeef)
+> Rank0 is terminating.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 24 unique states visited; 2 explored traces (2 transition replays, 25 states visited overall)
+> sthread intercepts pthreads in your SMPI application.

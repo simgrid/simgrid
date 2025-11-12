@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -45,6 +45,7 @@ for ex in $( (cd .. ; \
               find examples/cpp/   -name '*.cpp'; \
               find examples/c/     -name '*.c'; \
               find examples/python -name '*.py'; \
+              find examples/java   -name '*.java'; \
              ) | sort )
 do
     if grep -q "example-tab:: $ex" ../examples/README.rst ; then :

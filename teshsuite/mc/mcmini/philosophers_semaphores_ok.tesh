@@ -4,16 +4,10 @@
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_semaphores_ok 3 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 896 unique states visited; 48 explored traces (565 transition replays, 1461 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 2034 unique states visited; 96 explored traces (1423 transition replays, 3457 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:BeFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_semaphores_ok 3 0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 896 unique states visited; 48 explored traces (653 transition replays, 1549 states visited overall)
-
-# $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:parallel --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_semaphores_ok 3 0
-# > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
-# > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'parallel'
-# > [0.000000] [mc_parallel/INFO] Start a parallelized exploration. Reduction is: odpor.
-# > [0.000000] [mc_parallel/INFO] BeFS exploration ended. 896 unique states visited; 48 explored traces (653 transition replays, 1549 states visited overall)
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 2034 unique states visited; 96 explored traces (1423 transition replays, 3457 states visited overall)

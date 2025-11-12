@@ -1,0 +1,81 @@
+image: simgrid/build-deps
+
+stages:
+ - build
+ - deploy
+
+# On framagit, we only run the tests for merge requests, to get some coverage info
+coverage:
+  image: debian:testing
+  stage: build
+  only:
+  - merge-request
+  tags:
+    - large  # Inria infra
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y python3-coverage gcovr build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - mkdir build ; cd build
+  - cmake -GNinja  -Denable_python=ON -Denable_ns3=ON -Denable_java=ON  -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" 
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+  - ninja --verbose all tests
+  - export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
+  - ctest --no-compress-output -D ExperimentalTest --output-junit ../result.xml -j$(nproc) --output-on-failure || true
+  - ctest -D ExperimentalCoverage || true
+  # convert python coverage reports in xml ones
+  - find .. -size +1c -name ".coverage*" -exec mv {} . \;
+  - /usr/bin/python3-coverage combine
+  - /usr/bin/python3-coverage xml --ignore-errors -o ../python_coverage.xml
+  # convert all gcov reports to xml cobertura reports
+  - gcovr --root .. --xml-pretty -e ../teshsuite -e MBI -e ../examples/smpi/NAS -e ../examples/smpi/mc -u -o ../xml_coverage.xml  --gcov-ignore-parse-errors all --gcov-ignore-errors all
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  artifacts:
+    expire_in: 6 months
+    paths:
+    -  ./*_coverage.xml
+    - result.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        # Captures several files
+        path: ./*_coverage.xml
+      junit: result.xml
+
+# Build the doc and the webpage 
+pages:
+  stage: deploy
+  needs: [] # no dependency
+  script:
+  - echo "Building the python bindings (the doc needs them)"
+  - cmake -Denable_model-checking=OFF -Denable_documentation=OFF -Denable_coverage=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON .
+  - make -j$(nproc) VERBOSE=1 python-bindings
+
+  - echo "Building the doc"
+  - apt install -y python3-breathe python3-sphinx python3-sphinx-rtd-theme python3-sphinx-copybutton python3-sphinx-tabs
+  - cd docs
+  - LC_ALL=C.UTF-8 ./Build.sh
+  - mv build/html ../public
+  # - The CSS contains a reference to a font or something, not something we gonna fix on our side
+# not installed   - linkchecker --ignore-url='.*\.css$' ../public
+  # From time to time, we should check external links with the
+  # following, but it has a lot of false positive
+  # - linkchecker --ignore-url='.*\.css$' --check-extern ../public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+
+# Build a valid tar.gz
+release-tgz:
+  stage: build
+  only:
+  - stable
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y binutils wget unzip zip
+  - cmake -Denable_documentation=OFF -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
+  - make VERBOSE=1 -j$(nproc) dist
+  artifacts:
+    paths:
+    - simgrid-*.tar.gz

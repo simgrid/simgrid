@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -68,8 +68,8 @@ def main():
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
     receiver_mailbox: Mailbox = Mailbox.by_name("receiver")
-    Actor.create("sender", e.host_by_name("Tremblay"), sender, receiver_mailbox, 3, int(5e7))
-    Actor.create("receiver", e.host_by_name("Ruby"), receiver, receiver_mailbox)
+    e.host_by_name("Tremblay").add_actor("sender", sender, receiver_mailbox, 3, int(5e7))
+    e.host_by_name("Ruby").add_actor("receiver", receiver, receiver_mailbox)
     e.run()
 
 

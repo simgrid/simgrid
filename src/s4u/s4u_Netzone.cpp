@@ -1,9 +1,16 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
+#include "simgrid/kernel/routing/StarZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
@@ -11,6 +18,7 @@
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/simcall.hpp>
 #include <simgrid/zone.h>
+#include <xbt/asserts.hpp>
 #include <xbt/parse_units.hpp>
 
 #include "src/kernel/resource/NetworkModel.hpp"
@@ -19,10 +27,17 @@ namespace simgrid::s4u {
 
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
+xbt::signal<void(NetZone const&)> NetZone::on_unseal;
 
 const std::unordered_map<std::string, std::string>* NetZone::get_properties() const
 {
   return pimpl_->get_properties();
+}
+
+NetZone* NetZone::set_properties(const std::unordered_map<std::string, std::string>& properties)
+{
+  pimpl_->set_properties(properties);
+  return this;
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -111,14 +126,14 @@ void NetZone::add_route(const NetZone* src, const NetZone* dst, const std::vecto
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<LinkInRoute>& link_list, bool symmetrical) // XBT_ATTRIB_DEPRECATED_v339
+                        const std::vector<LinkInRoute>& link_list, bool symmetrical) // XBT_ATTRIB_DEPRECATED_v401
 {
   pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<const Link*>& links) // XBT_ATTRIB_DEPRECATED_v339
+                        const std::vector<const Link*>& links) // XBT_ATTRIB_DEPRECATED_v401
 {
   std::vector<LinkInRoute> links_direct;
   std::vector<LinkInRoute> links_reverse;
@@ -191,6 +206,11 @@ NetZone* NetZone::seal()
   kernel::actor::simcall_answered([this] { pimpl_->seal(); });
   return this;
 }
+NetZone* NetZone::unseal()
+{
+  kernel::actor::simcall_answered([this] { pimpl_->unseal(); });
+  return this;
+}
 void NetZone::set_latency_factor_cb(
     std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
                          const std::vector<s4u::Link*>& /*links*/,
@@ -206,61 +226,140 @@ void NetZone::set_bandwidth_factor_cb(
   kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_bw_factor_cb(cb); });
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, double speed)
+NetZone* NetZone::set_host_cb(const std::function<Host*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
 {
-  return create_host(name, std::vector<double>{speed});
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_host_cb(cb); });           
+  return this;
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+NetZone* NetZone::set_netzone_cb(const std::function<NetZone*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_netzone_cb(cb); });           
+  return this;
+}
+
+NetZone* NetZone::set_loopback_cb(const std::function<Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_loopback_cb(cb); });           
+  return this;
+}
+NetZone* NetZone::set_limiter_cb(const std::function<Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id)>& cb)
+{
+  xbt_assert(dynamic_cast<kernel::routing::ClusterBase*>(get_impl()) != nullptr, 
+             "set_loopback_cb can only be called for ClusterZones");
+  kernel::actor::simcall_answered([this, &cb]() { static_cast<kernel::routing::ClusterBase*>(pimpl_)->set_limiter_cb(cb); });           
+  return this;
+}
+  
+
+
+NetZone* NetZone::add_netzone_full(const std::string& name)
+{
+  auto* res = new kernel::routing::FullZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_star(const std::string& name)
+{
+  auto* res = new kernel::routing::StarZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_dijkstra(const std::string& name, bool cache)
+{
+  auto* res = new kernel::routing::DijkstraZone(name, cache);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_empty(const std::string& name)
+{
+  auto* res = new kernel::routing::EmptyZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_floyd(const std::string& name)
+{
+  auto* res = new kernel::routing::FloydZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_vivaldi(const std::string& name)
+{
+  auto* res = new kernel::routing::VivaldiZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+NetZone* NetZone::add_netzone_wifi(const std::string& name)
+{
+  auto* res = new kernel::routing::WifiZone(name);
+  return res->set_parent(get_impl())->get_iface();
+}
+
+s4u::Host* NetZone::add_host(const std::string& name, double speed)
+{
+  return add_host(name, std::vector<double>{speed});
+}
+
+s4u::Host* NetZone::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   return kernel::actor::simcall_answered(
-      [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
+      [this, &name, &speed_per_pstate] { return pimpl_->add_host(name, speed_per_pstate); });
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::string& speed)
+s4u::Host* NetZone::add_host(const std::string& name, const std::string& speed)
 {
-  return create_host(name, std::vector<std::string>{speed});
+  return add_host(name, std::vector<std::string>{speed});
 }
 
-s4u::Host* NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+s4u::Host* NetZone::add_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
 {
-  return create_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
+  return add_host(name, Host::convert_pstate_speed_vector(speed_per_pstate));
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)
+s4u::Link* NetZone::add_link(const std::string& name, double bandwidth)
 {
-  return create_link(name, std::vector<double>{bandwidth});
+  return add_link(name, std::vector<double>{bandwidth});
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
+s4u::Link* NetZone::add_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
+  return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->add_link(name, bandwidths); });
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::string& bandwidth)
+s4u::Link* NetZone::add_link(const std::string& name, const std::string& bandwidth)
 {
-  return create_link(name, std::vector<std::string>{bandwidth});
+  return add_link(name, std::vector<std::string>{bandwidth});
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
+s4u::SplitDuplexLink* NetZone::add_split_duplex_link(const std::string& name, const std::string& str_up,
+                                                        const std::string& str_down)
 {
-  double speed;
+  double bw_up, bw_down;
+
   try {
-    speed = xbt_parse_get_bandwidth("", 0, bandwidth, "");
+    bw_up = xbt_parse_get_bandwidth("", 0, str_up, "");
+  } catch (const simgrid::ParseError&) {
+    throw std::invalid_argument("Impossible to create split-duplex link: " + name + ". Invalid bandwidths: " + str_up);
+  }
+  try {
+    bw_down = str_down == "" ? bw_up : xbt_parse_get_bandwidth("", 0, str_down, "");
   } catch (const simgrid::ParseError&) {
     throw std::invalid_argument("Impossible to create split-duplex link: " + name +
-                                ". Invalid bandwidth: " + bandwidth);
+                                ". Invalid bandwidths: " + str_down);
   }
-  return create_split_duplex_link(name, speed);
+  return add_split_duplex_link(name, bw_up, bw_down);
 }
 
-s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+s4u::SplitDuplexLink* NetZone::add_split_duplex_link(const std::string& name, double bw_up, double bw_down)
 {
-  return kernel::actor::simcall_answered(
-      [this, &name, &bandwidth] { return pimpl_->create_split_duplex_link(name, std::vector<double>{bandwidth}); });
+  if (bw_down < 0)
+    bw_down = bw_up;
+  return kernel::actor::simcall_answered([this, &name, &bw_up, &bw_down] {
+    return pimpl_->add_split_duplex_link(name, std::vector<double>{bw_up}, std::vector<double>{bw_down});
+  });
 }
 
-s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)
+s4u::Link* NetZone::add_link(const std::string& name, const std::vector<std::string>& bandwidths)
 {
   std::vector<double> bw;
   bw.reserve(bandwidths.size());
@@ -272,12 +371,12 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
       throw std::invalid_argument("Impossible to create link: " + name + ". Invalid bandwidth: " + speed_str);
     }
   }
-  return create_link(name, bw);
+  return add_link(name, bw);
 }
 
-kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
+kernel::routing::NetPoint* NetZone::add_router(const std::string& name)
 {
-  return kernel::actor::simcall_answered([this, &name] { return pimpl_->create_router(name); });
+  return kernel::actor::simcall_answered([this, &name] { return pimpl_->add_router(name); });
 }
 
 kernel::routing::NetPoint* NetZone::get_netpoint() const
@@ -334,7 +433,34 @@ void sg_zone_get_sons(const_sg_netzone_t netzone, xbt_dict_t whereto)
     xbt_dict_set(whereto, elem->get_cname(), elem);
   }
 }
+sg_netzone_t* sg_zone_get_childs(const_sg_netzone_t netzone, int* size)
+{
+  auto children     = netzone->get_children();
+  if (size)
+    *size = children.size();
+  sg_netzone_t* res = (sg_netzone_t*)xbt_malloc(sizeof(char*) * (children.size() + 1));
+  int i             = 0;
+  for (auto child : children)
+    res[i++] = child;
+  res[i] = nullptr;
 
+  return res;
+}
+const char** sg_zone_get_property_names(const_sg_netzone_t zone)
+{
+  const std::unordered_map<std::string, std::string>* props = zone->get_properties();
+
+  if (props == nullptr)
+    return nullptr;
+
+  const char** res = (const char**)xbt_malloc(sizeof(char*) * (props->size() + 1));
+  int i            = 0;
+  for (auto const& [key, _] : *props)
+    res[i++] = key.c_str();
+  res[i] = nullptr;
+
+  return res;
+}
 const char* sg_zone_get_property_value(const_sg_netzone_t netzone, const char* name)
 {
   return netzone->get_property(name);
@@ -345,10 +471,24 @@ void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, const ch
   netzone->set_property(name, value);
 }
 
-void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto)
+void sg_zone_get_hosts(const_sg_netzone_t netzone, xbt_dynar_t whereto) // deprecate 3.39
 {
   /* converts vector to dynar */
   std::vector<simgrid::s4u::Host*> hosts = netzone->get_all_hosts();
   for (auto const& host : hosts)
     xbt_dynar_push(whereto, &host);
+}
+const_sg_host_t* sg_zone_get_all_hosts(const_sg_netzone_t zone, int* size)
+{
+  std::vector<simgrid::s4u::Host*> hosts = zone->get_all_hosts();
+
+  const_sg_host_t* res = (const_sg_host_t*)xbt_malloc(sizeof(const_sg_link_t) * (hosts.size() + 1));
+  if (size)
+    *size = hosts.size();
+  int i = 0;
+  for (auto host : hosts)
+    res[i++] = host;
+  res[i] = nullptr;
+
+  return res;
 }

@@ -22,7 +22,8 @@
 
 int main(int argc, char *argv[])
 {
-    int sendbuf, recvbuf;
+    int sendbuf = 42;
+    int recvbuf;
     int *sendcounts;
     int *recvcounts;
     int *sdispls;

@@ -1,4 +1,4 @@
-/* Copyright g(c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright g(c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -324,7 +324,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  sg4::Actor::create("dispatcher", engine.host_by_name("cpu0"), main_dispatcher);
+  engine.host_by_name("cpu0")->add_actor("dispatcher", main_dispatcher);
   engine.run();
 
   return 0;

@@ -1,3 +1,8 @@
+/* Copyright (c) 2023-2025. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "src/3rd-party/catch.hpp"
 #include "src/xbt/utils/iter/LazyKSubsets.hpp"
 #include "src/xbt/utils/iter/LazyPowerset.hpp"

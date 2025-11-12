@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -75,6 +74,6 @@ int main(int argc, char** argv)
     if (strcmp(argv[2], "PROP") == 0)
       XBT_INFO("SG_TEST_mem: %s", e.host_by_name("host1")->get_property("SG_TEST_mem"));
   }
-
+  e.run();
   return 0;
 }

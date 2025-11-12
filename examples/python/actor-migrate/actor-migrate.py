@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -44,7 +44,7 @@ def monitor():
     jacquelin = Host.by_name("Jacquelin")
     fafard = Host.by_name("Fafard")
 
-    actor = Actor.create("worker", fafard, worker, boivin, jacquelin)
+    actor = fafard.add_actor("worker",worker, boivin, jacquelin)
 
     this_actor.sleep_for(5)
 
@@ -66,5 +66,5 @@ if __name__ == '__main__':
             "Usage: actor-migration.py platform_file [other parameters]")
     e.load_platform(sys.argv[1])
 
-    Actor.create("monitor", Host.by_name("Boivin"), monitor)
+    Host.by_name("Boivin").add_actor("monitor", monitor)
     e.run()

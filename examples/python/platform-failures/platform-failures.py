@@ -1,4 +1,4 @@
-## Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.
+## Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -101,12 +101,12 @@ if __name__ == '__main__':
     e.load_deployment(sys.argv[2])
 
     # Add a new host programatically, and attach a state profile to it
-    lili = e.netzone_root.create_host("Lilibeth", 1e15)
+    lili = e.netzone_root.add_host("Lilibeth", 1e15)
     lili.set_state_profile("4 0\n5 1\n", 10)
     lili.seal()
 
     # Create an actor on that new host, to monitor its own state
-    actor = Actor.create("sleeper", lili, sleeper)
+    actor = lili.add_actor("sleeper", sleeper)
     actor.set_auto_restart(True)
 
     e.run()

@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -35,7 +35,7 @@ def lazy_guy():
 def dream_master():
     """The Dream master"""
     this_actor.info("Let's create a lazy guy.")  # Create a lazy_guy actor
-    lazy = Actor.create("Lazy", this_actor.get_host(), lazy_guy)
+    lazy = this_actor.get_host().add_actor("Lazy", lazy_guy)
     this_actor.info("Let's wait a little bit...")
     this_actor.sleep_for(10)  # Wait for 10 seconds
     this_actor.info("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!")
@@ -80,6 +80,6 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])  # Load the platform description
     hosts = e.all_hosts
-    Actor.create("dream_master", hosts[0], dream_master)
+    hosts[0].add_actor("dream_master", dream_master)
 
     e.run()  # Run the simulation

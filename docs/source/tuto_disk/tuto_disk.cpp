@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -121,7 +121,7 @@ static void create_disk(sg4::Host* host, std::mt19937& gen, const std::string& d
 {
   double read_bw                = pt.get_child("read_bw").begin()->second.get_value<double>() * 1e6;
   double write_bw               = pt.get_child("write_bw").begin()->second.get_value<double>() * 1e6;
-  auto* disk                    = host->create_disk(disk_name, read_bw, write_bw);
+  auto* disk                    = host->add_disk(disk_name, read_bw, write_bw);
   std::vector<double> read_deg  = get_list_from_json(pt, "degradation.read");
   std::vector<double> write_deg = get_list_from_json(pt, "degradation.write");
 
@@ -155,13 +155,13 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
   std::mt19937 gen(42);
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("bob_zone");
-  auto* bob  = zone->create_host("bob", 1e6);
+  auto* zone = e.get_netzone_root()->add_netzone_full("bob_zone");
+  auto* bob  = zone->add_host("bob", 1e6);
   std::ifstream jsonFile("IO_noise.json");
   boost::property_tree::ptree pt;
   boost::property_tree::read_json(jsonFile, pt);
   for (const auto& it : pt.get_child("")) {
-    create_disk(bob, gen, it.first, it.second);
+    add_disk(bob, gen, it.first, it.second);
   }
   zone->seal();
 

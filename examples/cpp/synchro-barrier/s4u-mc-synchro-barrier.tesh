@@ -17,10 +17,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Execution came to an end at 1;1;2;1;2
 > [Checker] (state: 6, depth: 6, 1 explored traces)
-> [Checker] Sleep set actually containing:
-> [Checker]   <1,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 2: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
-> [Checker] DFS exploration ended. 7 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)
+> [Checker] DFS exploration ended. 10 unique states visited; 1 explored traces (1 transition replays, 8 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
@@ -34,10 +32,8 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.
 > [Checker] Executed 3: BARRIER_WAIT(barrier: 0) (stack depth: 8, state: 8, 0 interleaves)
 > [Checker] Execution came to an end at 1;1;1;2;3;1;2;3
 > [Checker] (state: 9, depth: 9, 1 explored traces)
-> [Checker] Sleep set actually containing:
-> [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
-> [Checker] DFS exploration ended. 10 unique states visited; 1 explored traces (3 transition replays, 13 states visited overall)
+> [Checker] DFS exploration ended. 14 unique states visited; 1 explored traces (3 transition replays, 13 states visited overall)
 
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/exploration-algo:BeFS --log=mc_befs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-barrier 3 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
@@ -54,9 +50,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-c
 > [Checker] Execution came to an end at 1;1;1;2;3;1;2;3
 > [Checker] (state: 9, depth: 9, 1 explored traces)
 > [Checker] Backtracking from 1;1;1;2;3;1;2;3
-> [Checker] Sleep set actually containing:
-> [Checker]   <2,BARRIER_ASYNC_LOCK(barrier: 0)>
 > [Checker] Executed 3: BARRIER_ASYNC_LOCK(barrier: 0) (stack depth: 4, state: 4, 0 interleaves, 0 opened states)
 > [Checker] 3 actors remain, but none of them need to be interleaved (depth 6).
 > [Checker] Backtracking from 1;1;1;3
-> [Checker] BeFS exploration ended. 10 unique states visited; 1 explored traces (3 transition replays, 13 states visited overall)
+> [Checker] BeFS exploration ended. 14 unique states visited; 1 explored traces (3 transition replays, 13 states visited overall)

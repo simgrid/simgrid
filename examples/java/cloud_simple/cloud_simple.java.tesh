@@ -1,0 +1,57 @@
+#!/usr/bin/env tesh
+
+p Testing a vm with two successive activities
+
+$ ${javacmd} -cp ../../simgrid.jar:cloud_simple.jar cloud_simple ${platfdir:=.}/small_platform.xml --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [Fafard:main:(1) 0.000000] [java/INFO] ## Test 1 (started): check computation on normal PMs
+> [Fafard:main:(1) 0.000000] [java/INFO] ### Put an activity on a PM
+> [Fafard:compute:(2) 0.013107] [java/INFO] Fafard:compute executed 0.0131068
+> [Fafard:main:(1) 2.000000] [java/INFO] ### Put two activities on a PM
+> [Fafard:compute:(4) 2.026214] [java/INFO] Fafard:compute executed 0.0262137
+> [Fafard:compute:(3) 2.026214] [java/INFO] Fafard:compute executed 0.0262137
+> [Fafard:main:(1) 4.000000] [java/INFO] ### Put an activity on each PM
+> [Tremblay:compute:(6) 4.010194] [java/INFO] Tremblay:compute executed 0.0101942
+> [Fafard:compute:(5) 4.013107] [java/INFO] Fafard:compute executed 0.0131068
+> [Fafard:main:(1) 6.000000] [java/INFO] ## Test 1 (ended)
+> [Fafard:main:(1) 6.000000] [java/INFO] ## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)
+> [Fafard:main:(1) 6.000000] [java/INFO] ### Put a VM on a PM, and put an activity to the VM
+> [VM0:compute:(7) 6.013107] [java/INFO] VM0:compute executed 0.0131068
+> [Fafard:main:(1) 8.000000] [java/INFO] ## Test 2 (ended)
+> [Fafard:main:(1) 8.000000] [java/INFO] ## Test 3 (started): check impact of running an activity collocated with a VM (there is no VM noise for the moment)
+> [Fafard:main:(1) 8.000000] [java/INFO] ### Put a VM on a PM, and put an activity to the PM
+> [Fafard:compute:(8) 8.013107] [java/INFO] Fafard:compute executed 0.0131068
+> [Fafard:main:(1) 10.000000] [java/INFO] ## Test 3 (ended)
+> [Fafard:main:(1) 10.000000] [java/INFO] ## Test 4 (started): compare the cost of running two activities inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
+> [Fafard:main:(1) 10.000000] [java/INFO] ### Put two VMs on a PM, and put an activity to each VM
+> [VM0:compute:(9) 10.026214] [java/INFO] VM0:compute executed 0.0262137
+> [VM1:compute:(10) 10.026214] [java/INFO] VM1:compute executed 0.0262137
+> [Fafard:main:(1) 12.000000] [java/INFO] ### Put a VM on each PM, and put an activity to each VM
+> [VM1:compute:(12) 12.010194] [java/INFO] VM1:compute executed 0.0101942
+> [VM0:compute:(11) 12.013107] [java/INFO] VM0:compute executed 0.0131068
+> [Fafard:main:(1) 14.000000] [java/INFO] ## Test 4 (ended)
+> [Fafard:main:(1) 14.000000] [java/INFO] ## Test 5  (started): Analyse network impact
+> [Fafard:main:(1) 14.000000] [java/INFO] ### Make a connection between PM0 and PM1
+> [Tremblay:comm_rx:(14) 14.158397] [java/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.158397 sec
+> [Fafard:main:(1) 19.000000] [java/INFO] ### Make two connection between PM0 and PM1
+> [Tremblay:comm_rx:(18) 19.291085] [java/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [Tremblay:comm_rx:(16) 19.291085] [java/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [Fafard:main:(1) 24.000000] [java/INFO] ### Make a connection between PM0 and VM0@PM0
+> [VM0:comm_rx:(20) 24.002265] [java/INFO] Fafard:comm_tx to VM0:comm_rx => 0.00226529 sec
+> [Fafard:main:(1) 29.000000] [java/INFO] ### Make a connection between PM0 and VM0@PM1
+> [VM0:comm_rx:(22) 29.158397] [java/INFO] Fafard:comm_tx to VM0:comm_rx => 0.158397 sec
+> [Fafard:main:(1) 34.000000] [java/INFO] ### Make two connections between PM0 and VM0@PM1
+> [VM0:comm_rx:(26) 34.291085] [java/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [VM0:comm_rx:(24) 34.291085] [java/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [Fafard:main:(1) 39.000000] [java/INFO] ### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1
+> [Tremblay:comm_rx:(30) 39.291085] [java/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [VM0:comm_rx:(28) 39.291085] [java/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [Fafard:main:(1) 44.000000] [java/INFO] ### Make a connection between VM0@PM0 and PM1@PM1, and also make a connection between VM0@PM0 and VM1@PM1
+> [VM1:comm_rx:(34) 44.291085] [java/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
+> [VM1:comm_rx:(32) 44.291085] [java/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
+> [Fafard:main:(1) 49.000000] [java/INFO] ## Test 5 (ended)
+> [Fafard:main:(1) 49.000000] [java/INFO] ## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one)
+> [Fafard:main:(1) 49.000000] [java/INFO] ### Relocate VM0 between PM0 and PM1
+> [Bourassa:comm_rx:(36) 49.204993] [java/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
+> [Fafard:main:(1) 339.199251] [java/INFO] ## Test 6 (ended)
+> [339.199251] [java/INFO] Simulation ends.

@@ -217,16 +217,16 @@ The following code illustrates how to create this Star Zone and add the appropri
 
 .. code-block:: cpp
 
-    auto* zone = sg4::create_star_zone("star");
+    auto* zone = sg4::Engine::get_instance()->get_netzone_root()->add_netzone_star("star");
     /* create hosts */
-    const sg4::Host* hostA = zone->create_host("A", 1e9)->seal();
-    const sg4::Host* hostB = zone->create_host("B", 1e9)->seal();
+    const sg4::Host* hostA = zone->add_host("A", 1e9)->seal();
+    const sg4::Host* hostB = zone->add_host("B", 1e9)->seal();
 
     /* create links */
-    sg4::Link* link1      = zone->create_link("link1", 1e6)->seal();
-    sg4::Link* link3_up   = zone->create_link("link3_up", 1e6)->seal();
-    sg4::Link* link3_down = zone->create_link("link3_down", 1e6)->seal();
-    sg4::Link* backbone   = zone->create_link("backbone", 1e9)->seal();
+    sg4::Link* link1      = zone->add_link("link1", 1e6)->seal();
+    sg4::Link* link3_up   = zone->add_link("link3_up", 1e6)->seal();
+    sg4::Link* link3_down = zone->add_link("link3_down", 1e6)->seal();
+    sg4::Link* backbone   = zone->add_link("backbone", 1e9)->seal();
 
     /* symmetric route route: A->ALL and ALL->A, shared link1 */
     zone->add_route(hostA->get_netpoint(), nullptr, nullptr, nullptr,

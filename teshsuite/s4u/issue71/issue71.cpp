@@ -1,4 +1,4 @@
-/* Copyright (c) 2021-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2021-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
   try {
     e.load_platform(platform_file);
-    simgrid::s4u::Actor::create("actor", e.host_by_name("c1_0"), runner);
+    e.host_by_name("c1_0")->add_actor("actor", runner);
     e.run();
   } catch (const simgrid::AssertionError& e) {
     std::cout << e.what() << "\n";

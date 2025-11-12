@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,9 +21,7 @@
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Link>;
-#endif
 
 namespace s4u {
 /**
@@ -31,11 +29,7 @@ namespace s4u {
  * A Link represents the network facilities between :cpp:class:`hosts <simgrid::s4u::Host>`.
  * @endrst
  */
-#ifdef SWIG 
-class XBT_PUBLIC Link { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
-#endif
 
 #ifndef DOXYGEN
   friend kernel::resource::StandardLinkImpl;
@@ -43,7 +37,10 @@ class XBT_PUBLIC Link : public xbt::Extendable<Link> {
 
 protected:
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
-  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl)
+  {
+    s4u::Link::on_creation(*this); // notify the signal
+  }
   virtual ~Link() = default;
   // The implementation that never changes
   kernel::resource::LinkImpl* const pimpl_;
@@ -73,6 +70,9 @@ public:
   /** \static @brief Retrieve a link from its name */
   static Link* by_name(const std::string& name);
   static Link* by_name_or_null(const std::string& name);
+
+  /** @brief Returns the networking zone englobing that host */
+  NetZone* get_englobing_zone() const;
 
   /** @brief Retrieves the name of that link as a C++ string */
   const std::string& get_name() const;

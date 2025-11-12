@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,11 +41,12 @@ static void worker(sg4::Host* first, const sg4::Host* second)
 
 static void monitor()
 {
-  sg4::Host* boivin    = sg4::Host::by_name("Boivin");
-  sg4::Host* jacquelin = sg4::Host::by_name("Jacquelin");
-  sg4::Host* fafard    = sg4::Host::by_name("Fafard");
+  auto e               = simgrid::s4u::this_actor::get_engine();
+  sg4::Host* boivin    = e->host_by_name("Boivin");
+  sg4::Host* jacquelin = e->host_by_name("Jacquelin");
+  sg4::Host* fafard    = e->host_by_name("Fafard");
 
-  sg4::ActorPtr actor = sg4::Actor::create("worker", fafard, worker, boivin, jacquelin);
+  sg4::ActorPtr actor = fafard->add_actor("worker",worker, boivin, jacquelin);
 
   sg4::this_actor::sleep_for(5);
 
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("monitor", e.host_by_name("Boivin"), monitor);
+  e.host_by_name("Boivin")->add_actor("monitor", monitor);
   e.run();
 
   return 0;

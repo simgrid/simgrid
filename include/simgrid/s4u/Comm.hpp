@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,8 +53,8 @@ protected:
      */
   }
   /* These ensure that the on_completion signals are really thrown */
-  void fire_on_completion_for_real() const { Activity_T<Comm>::fire_on_completion(); }
-  void fire_on_this_completion_for_real() const { Activity_T<Comm>::fire_on_this_completion(); }
+  void fire_on_completion_for_real() const;
+  void fire_on_this_completion_for_real() const;
 
 public:
   /*! \static Add a callback fired when the send of any Comm is posted  */
@@ -145,7 +145,7 @@ public:
   /** Retrieve the size of the received data. Not to be mixed with @ref Activity::get_remaining()  */
   size_t get_dst_data_size() const { return dst_buff_size_; }
   /** Retrieve the payload associated to the communication. You can only do that once the comm is (gracefully)
-   * terminated, and it is only setup by the default copy_data callback (not the SMPI one) */
+   * terminated. */
   void* get_payload() const;
 
   /* Common functions */
@@ -167,19 +167,6 @@ public:
 
   /* Comm life cycle */
   Comm* wait_for(double timeout) override;
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any(const std::vector<CommPtr>& comms) { return deprecated_wait_any_for(comms, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout) { return deprecated_wait_any_for(comms, timeout); }
-
-  static ssize_t deprecated_wait_any_for(const std::vector<CommPtr>& comms,
-                                         double timeout); // XBT_ATTRIB_DEPRECATED_v339
-
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t test_any(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static void wait_all(const std::vector<CommPtr>& comms);
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static size_t
-      wait_all_for(const std::vector<CommPtr>& comms, double timeout);
-#endif
 };
 } // namespace simgrid::s4u
 

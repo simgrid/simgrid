@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,25 +22,29 @@ public:
   NoReduction()           = default;
   ~NoReduction() override = default;
 
-  std::shared_ptr<Reduction::RaceUpdate> races_computation(odpor::Execution& E, stack_t* S,
-                                                           std::vector<StatePtr>* opened_states) override
+  Reduction::RaceUpdate* races_computation(odpor::Execution& E, stack_t* S,
+                                           std::vector<StatePtr>* opened_states) override
   {
-    return std::make_shared<RaceUpdate>();
+    return new RaceUpdate();
   };
 
-  unsigned long apply_race_update(std::shared_ptr<RaceUpdate> updates,
+  Reduction::RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
+  void delete_race_update(RaceUpdate* race_update) override { delete (RaceUpdate*)race_update; }
+
+  unsigned long apply_race_update(RemoteApp&, RaceUpdate* updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override
   {
     return 0;
   }
 
-  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state) override
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
+                        std::shared_ptr<Transition> incoming_transition) override
   {
     StatePtr state;
     if (parent_state == nullptr)
       state = new State(remote_app);
     else
-      state = new State(remote_app, parent_state);
+      state = new State(remote_app, parent_state, incoming_transition);
 
     state->consider_all();
 

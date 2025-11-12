@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,6 +20,7 @@
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
@@ -37,32 +38,11 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   auto* engine = s4u::Engine::get_instance();
-  /* workaroud: first netzoneImpl will be the root netzone.
-   * Without globals and with current model description init functions (see module.hpp), we need
-   * the root netzone to exist when creating the models.
-   * This is usually done at sg_platf.cpp, during XML parsing */
-  if (not engine->get_netzone_root()) {
-    engine->set_netzone_root(&piface_);
-    /* root netzone set, initialize models */
-    simgrid::s4u::Engine::on_platform_creation();
-
-    /* Initialize the models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
-     *
-     * I'm not sure for <trace> and <trace_cb>, there may be a bug here
-     * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer come down to zone creations, so putting this verification here is correct.
-     */
-    simgrid_host_models().init_from_flag_value();
-    simgrid_vm_model_init_HL13();
-  }
 
   xbt_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),
-             "Refusing to create a second NetZone called '%s'.", get_cname());
+              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone);
   XBT_DEBUG("NetZone '%s' created with the id '%lu'", get_cname(), netpoint_->id());
-  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
-                            * any further config now that we created some real content */
   simgrid::s4u::NetZone::on_creation(piface_); // notify the signal
 }
 
@@ -169,11 +149,11 @@ size_t NetZoneImpl::get_link_count() const
   return total;
 }
 
-s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+s4u::Host* NetZoneImpl::add_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
   xbt_enforce(cpu_model_pm_,
-             "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
-             name.c_str(), get_cname());
+              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
+              name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* host   = (new resource::HostImpl(name))->set_englobing_zone(this);
   hosts_[name] = host;
@@ -186,22 +166,22 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
 
 resource::StandardLinkImpl* NetZoneImpl::do_create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return network_model_->create_link(name, bandwidths);
+  return network_model_->create_link(name, bandwidths, this);
 }
 
-s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
+s4u::Link* NetZoneImpl::add_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_enforce(
       network_model_,
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  links_[name] = do_create_link(name, bandwidths)->set_englobing_zone(this);
+  links_[name] = do_create_link(name, bandwidths);
   return links_[name]->get_iface();
 }
 
-s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
-                                                            const std::vector<double>& bandwidths)
+s4u::SplitDuplexLink* NetZoneImpl::add_split_duplex_link(const std::string& name, const std::vector<double>& bw_up,
+                                                            const std::vector<double>& bw_down)
 {
   xbt_enforce(
       network_model_,
@@ -209,27 +189,28 @@ s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& n
       name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
-  auto* link_up             = create_link(name + "_UP", bandwidths)->get_impl()->set_englobing_zone(this);
-  auto* link_down           = create_link(name + "_DOWN", bandwidths)->get_impl()->set_englobing_zone(this);
+  auto* link_up             = add_link(name + "_UP", bw_up)->get_impl();
+  auto* link_down           = add_link(name + "_DOWN", bw_down)->get_impl();
   split_duplex_links_[name] = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
   return split_duplex_links_[name]->get_iface();
 }
 
-s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+s4u::Disk* NetZoneImpl::add_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  xbt_enforce(disk_model_,
-             "Impossible to create disk: %s. Invalid disk model: nullptr. Have you set the parent of this NetZone: %s?",
-             name.c_str(), get_cname());
+  xbt_enforce(
+      disk_model_,
+      "Impossible to create disk: %s. Invalid disk model: nullptr. Have you set the parent of this NetZone: %s?",
+      name.c_str(), get_cname());
   xbt_enforce(not sealed_, "Impossible to create disk: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
 
   return l->get_iface();
 }
 
-NetPoint* NetZoneImpl::create_router(const std::string& name)
+NetPoint* NetZoneImpl::add_router(const std::string& name)
 {
   xbt_enforce(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
-             "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
+              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
   xbt_enforce(not sealed_, "Impossible to create router: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
   return (new NetPoint(name, NetPoint::Type::Router))->set_englobing_zone(this);
@@ -254,7 +235,7 @@ std::vector<resource::StandardLinkImpl*> NetZoneImpl::get_link_list_impl(const s
     // split-duplex links
     const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
     xbt_enforce(sd_link,
-               "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
+                "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
     resource::StandardLinkImpl* link_impl;
     switch (link.get_direction()) {
       case s4u::LinkInRoute::Direction::UP:
@@ -353,20 +334,20 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
     XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", src->get_cname(), gw_src->get_cname(), dst->get_cname(),
               gw_dst->get_cname());
     xbt_enforce(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->get_cname(),
-               gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
+                gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
     xbt_enforce(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
-               "The bypass route between %s@%s and %s@%s already exists.", src->get_cname(), gw_src->get_cname(),
-               dst->get_cname(), gw_dst->get_cname());
+                "The bypass route between %s@%s and %s@%s already exists.", src->get_cname(), gw_src->get_cname(),
+                dst->get_cname(), gw_dst->get_cname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", src->get_cname(), dst->get_cname());
     xbt_enforce(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->get_cname(),
-               dst->get_cname());
+                dst->get_cname());
     xbt_enforce(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
-               "The bypass route between %s and %s already exists.", src->get_cname(), dst->get_cname());
+                "The bypass route between %s and %s already exists.", src->get_cname(), dst->get_cname());
   }
 
   /* Build a copy that will be stored in the dict */
-  auto* newRoute = new BypassRoute(gw_src, gw_dst);
+  auto* newRoute      = new BypassRoute(gw_src, gw_dst);
   auto converted_list = get_link_list_impl(link_list, false);
   newRoute->links.insert(newRoute->links.end(), begin(converted_list), end(converted_list));
 
@@ -374,116 +355,6 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
   bypass_routes_.try_emplace({src, dst}, newRoute);
 }
 
-/** @brief Get the common ancestor and its first children in each line leading to src and dst
- *
- * In the recursive case, this sets common_ancestor, src_ancestor and dst_ancestor are set as follows.
- * @verbatim
- *         platform root
- *               |
- *              ...                <- possibly long path
- *               |
- *         common_ancestor
- *           /        \
- *          /          \
- *         /            \          <- direct links
- *        /              \
- *       /                \
- *  src_ancestor     dst_ancestor  <- must be different in the recursive case
- *      |                   |
- *     ...                 ...     <-- possibly long paths (one hop or more)
- *      |                   |
- *     src                 dst
- *  @endverbatim
- *
- *  In the base case (when src and dst are in the same netzone), things are as follows:
- *  @verbatim
- *                  platform root
- *                        |
- *                       ...                      <-- possibly long path
- *                        |
- * common_ancestor==src_ancestor==dst_ancestor    <-- all the same value
- *                   /        \
- *                  /          \                  <-- direct links (exactly one hop)
- *                 /            \
- *              src              dst
- *  @endverbatim
- *
- * A specific recursive case occurs when src is the ancestor of dst. In this case,
- * the base case routing should be used so the common_ancestor is specifically set
- * to src_ancestor==dst_ancestor.
- * Naturally, things are completely symmetrical if dst is the ancestor of src.
- * @verbatim
- *            platform root
- *                  |
- *                 ...                <-- possibly long path
- *                  |
- *  src == src_ancestor==dst_ancestor==common_ancestor <-- same value
- *                  |
- *                 ...                <-- possibly long path (one hop or more)
- *                  |
- *                 dst
- *  @endverbatim
- */
-static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
-                                  /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
-                                  NetZoneImpl** dst_ancestor)
-{
-  /* Deal with the easy base case */
-  if (src->get_englobing_zone() == dst->get_englobing_zone()) {
-    *common_ancestor = src->get_englobing_zone();
-    *src_ancestor    = *common_ancestor;
-    *dst_ancestor    = *common_ancestor;
-    return;
-  }
-
-  /* engage the full recursive search */
-
-  /* (1) find the path to root of src and dst*/
-  const NetZoneImpl* src_as = src->get_englobing_zone();
-  const NetZoneImpl* dst_as = dst->get_englobing_zone();
-
-  xbt_enforce(src_as, "Host %s must be in a netzone", src->get_cname());
-  xbt_enforce(dst_as, "Host %s must be in a netzone", dst->get_cname());
-
-  /* (2) find the path to the root routing component */
-  std::vector<NetZoneImpl*> path_src;
-  NetZoneImpl* current = src->get_englobing_zone();
-  while (current != nullptr) {
-    path_src.push_back(current);
-    current = current->get_parent();
-  }
-  std::vector<NetZoneImpl*> path_dst;
-  current = dst->get_englobing_zone();
-  while (current != nullptr) {
-    path_dst.push_back(current);
-    current = current->get_parent();
-  }
-
-  /* (3) find the common parent.
-   * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
-   * So we move them down simultaneously as long as they point to the same content.
-   *
-   * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
-   */
-  NetZoneImpl* parent = nullptr; // the netzone we dropped on the previous loop iteration
-  while (path_src.size() > 1 && path_dst.size() > 1 && path_src.back() == path_dst.back()) {
-    parent = path_src.back();
-    path_src.pop_back();
-    path_dst.pop_back();
-  }
-
-  /* (4) we found the difference at least. Finalize the returned values */
-  *src_ancestor = path_src.back();                  /* the first different parent of src */
-  *dst_ancestor = path_dst.back();                  /* the first different parent of dst */
-  if (*src_ancestor == *dst_ancestor) {             // src is the ancestor of dst, or the contrary
-    *common_ancestor = *src_ancestor;
-  } else {
-    xbt_enforce(parent != nullptr);
-    *common_ancestor = parent;
-  }
-}
-
-/* PRECONDITION: this is the common ancestor of src and dst */
 bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
                                    /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency,
                                    std::unordered_set<NetZoneImpl*>& netzones)
@@ -575,58 +446,206 @@ void NetZoneImpl::get_global_route(const NetPoint* src, const NetPoint* dst,
   get_global_route_with_netzones(src, dst, links, latency, netzones);
 }
 
+static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
+                                  /* OUT */ NetZoneImpl** common_ancestor, NetZoneImpl** src_ancestor,
+                                  NetZoneImpl** dst_ancestor, std::vector<NetZoneImpl*>* src_path,
+                                  std::vector<NetZoneImpl*>* dst_path)
+{
+  /* Deal with the easy base case */
+  if (src->get_englobing_zone() == dst->get_englobing_zone()) {
+    *common_ancestor = src->get_englobing_zone();
+    *src_ancestor    = *common_ancestor;
+    *dst_ancestor    = *common_ancestor;
+    return;
+  }
+
+  const NetZoneImpl* src_as = src->get_englobing_zone();
+  const NetZoneImpl* dst_as = dst->get_englobing_zone();
+
+  xbt_enforce(src_as, "Host %s must be in a netzone", src->get_cname());
+  xbt_enforce(dst_as, "Host %s must be in a netzone", dst->get_cname());
+
+  *src_ancestor    = nullptr;
+  *dst_ancestor    = nullptr;
+  *common_ancestor = nullptr;
+
+  size_t common_ancestor_index = 0;
+
+  size_t min_size = std::min(src_path->size(), dst_path->size());
+
+  xbt_assert(min_size > 0 && (src_path->at(0) == dst_path->at(0)),
+             "No common ancestor found for '%s' and '%s'. Please check your platform file.", src->get_cname(),
+             dst->get_cname());
+
+  /* (1) find the common ancestor.
+   * We iterate over the paths until we find the first difference. The last common element is the first common ancestor
+   * (starting from endpoints).
+   * This works because all SimGrid platforms have a unique root element (that is the first element of both paths).
+   */
+  for (size_t i = 0; i < min_size; i++) {
+    if (src_path->at(i) != dst_path->at(i))
+      break;
+    common_ancestor_index = i;
+  }
+
+  *common_ancestor = src_path->at(common_ancestor_index);
+
+  /* (2) remove the common part from the paths (including the common ancestor)
+   *  'erase' does not include the last position, so we add 1 to last position index
+   */
+  src_path->erase(src_path->begin(), src_path->begin() + common_ancestor_index + 1);
+  dst_path->erase(dst_path->begin(), dst_path->begin() + common_ancestor_index + 1);
+
+  /* (3) set the src and dst ancestors
+   * If xxx_path is empty, this means that the NetPoint of xxx is in the netzone of the ancestor.
+   * Otherwise, the NetPoint is in a sub-netzone of the ancestor (the first element of xxx_path).
+   */
+  if (!src_path->empty())
+    *src_ancestor = src_path->front();
+  else
+    *src_ancestor = *common_ancestor;
+
+  if (!dst_path->empty())
+    *dst_ancestor = dst_path->front();
+  else
+    *dst_ancestor = *common_ancestor;
+
+  xbt_enforce(*common_ancestor != nullptr, "No common ancestor found for '%s' and '%s'", src->get_cname(),
+              dst->get_cname());
+  xbt_enforce(*src_ancestor != nullptr, "No src ancestor found for '%s' and '%s'", src->get_cname(), dst->get_cname());
+  xbt_enforce(*dst_ancestor != nullptr, "No dst ancestor found for '%s' and '%s'", src->get_cname(), dst->get_cname());
+}
+
+/* Compute the route between a leaf NetPoint and an upper router */
+void NetZoneImpl::get_interzone_route(const NetPoint* netpoint, NetPoint* gateway, const bool gateway_to_netpoint,
+                                      std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
+                                      std::vector<NetZoneImpl*>* zones_path)
+{
+  XBT_DEBUG("get_interzone_route netpoint='%s' (in '%s') gw='%s' gateway_to_netpoint=%d", netpoint->get_cname(),
+            netpoint->get_englobing_zone()->get_cname(), gateway->get_cname(), gateway_to_netpoint);
+
+  Route route = Route();
+  NetPoint* current;
+  std::vector<simgrid::kernel::resource::StandardLinkImpl*>::iterator link_insert_pos;
+  auto it = zones_path->begin();
+
+  // Starting from the parent zone, we go down to the zone containing the NetPoint,
+  // adding the routes between the zones to links in the order specified by gateway_to_netpoint
+  while (netpoint->get_englobing_zone() != gateway->get_englobing_zone()) {
+    xbt_assert(it != zones_path->end(), "The NetPoint '%s' has no route to the gateway '%s'", netpoint->get_cname(),
+               gateway->get_cname());
+    current = (*it)->netpoint_;
+
+    if (gateway_to_netpoint) {
+      // get the route from the parent zone to the child zone, and insert it at the end of the list
+      gateway->get_englobing_zone()->get_local_route(gateway, current, &route, latency);
+      gateway = route.gw_dst_;
+      links.insert(links.end(), route.link_list_.begin(), route.link_list_.end());
+    } else {
+      // get the route from the child zone to the parent zone, and insert it at the beginning of the list
+      gateway->get_englobing_zone()->get_local_route(current, gateway, &route, latency);
+      gateway = route.gw_src_;
+      links.insert(links.begin(), route.link_list_.rbegin(), route.link_list_.rend());
+    }
+    route = Route();
+    it++;
+  };
+
+  xbt_enforce(netpoint->get_englobing_zone() == gateway->get_englobing_zone(),
+              "The final gateway '%s' and src '%s' are not in the same netzone, please report that bug.",
+              gateway->get_cname(), netpoint->get_cname());
+
+  // We want to avoid the case where the gateway is the NetPoint itself
+  if (netpoint != gateway) {
+    if (gateway_to_netpoint) {
+      gateway->get_englobing_zone()->get_local_route(gateway, netpoint, &route, latency);
+      link_insert_pos = links.end();
+    } else {
+      gateway->get_englobing_zone()->get_local_route(netpoint, gateway, &route, latency);
+      link_insert_pos = links.begin();
+    }
+    links.insert(link_insert_pos, route.link_list_.begin(), route.link_list_.end());
+  }
+}
+
+/* Compute the list of links that connect two NetPoints */
 void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
                                                  /* OUT */ std::vector<resource::StandardLinkImpl*>& links,
                                                  double* latency, std::unordered_set<NetZoneImpl*>& netzones)
 {
   Route route;
-
   XBT_DEBUG("Resolve route from '%s' to '%s'", src->get_cname(), dst->get_cname());
 
-  /* Find how src and dst are interconnected */
   NetZoneImpl* common_ancestor;
   NetZoneImpl* src_ancestor;
   NetZoneImpl* dst_ancestor;
-  find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
-  XBT_DEBUG("find_common_ancestors: common ancestor '%s' src ancestor '%s' dst ancestor '%s'",
+
+  /* For src and dst : get the path from the root-zone to the NetPoint */
+  std::vector<NetZoneImpl*> src_path = src->get_all_englobing_zones();
+  std::vector<NetZoneImpl*> dst_path = dst->get_all_englobing_zones();
+
+  XBT_DEBUG("\tfind_common_ancestors: src '%s' dst '%s' :", src->get_cname(), dst->get_cname());
+  find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor, &src_path, &dst_path);
+  XBT_DEBUG("\tfind_common_ancestors: common ancestor '%s' src ancestor '%s' dst ancestor '%s'",
             common_ancestor->get_cname(), src_ancestor->get_cname(), dst_ancestor->get_cname());
 
-  netzones.insert(src->get_englobing_zone());
-  netzones.insert(dst->get_englobing_zone());
+  netzones.insert(src_path.begin(), src_path.end());
   netzones.insert(common_ancestor);
+  netzones.insert(dst_path.begin(), dst_path.end());
+
   /* Check whether a direct bypass is defined. If so, use it and bail out */
   if (common_ancestor->get_bypass_route(src, dst, links, latency, netzones))
     return;
 
-  /* If src and dst are in the same netzone, life is good */
-  if (src_ancestor == dst_ancestor) { /* ROUTING_BASE */
+  if (src->get_englobing_zone() == dst->get_englobing_zone()) {
+    XBT_DEBUG("\tNo need to resolve global route since src and dst are in the same netzone '%s'", src->get_cname());
     route.link_list_ = std::move(links);
-
-    xbt_assert(src->get_englobing_zone() == common_ancestor,
-               "Source host %s is not part of the zone %s but of zone %s, please report that bug.", src->get_cname(),
-               common_ancestor->get_cname(), src->get_englobing_zone()->get_cname());
-    xbt_assert(dst->get_englobing_zone() == common_ancestor,
-               "Destination host %s is not part of the zone %s but of zone %s, please report that bug.",
-               dst->get_cname(), common_ancestor->get_cname(), dst->get_englobing_zone()->get_cname());
-
-    common_ancestor->get_local_route(src, dst, &route, latency);
+    src->get_englobing_zone()->get_local_route(src, dst, &route, latency);
     links = std::move(route.link_list_);
     return;
+  } else {
+    /* Get the route from the source ancestor and the destination ancestor */
+    common_ancestor->get_local_route((src_ancestor != common_ancestor) ? src_ancestor->netpoint_ : src,
+                                     (dst_ancestor != common_ancestor) ? dst_ancestor->netpoint_ : dst, &route,
+                                     latency);
+    /* Get the route from the source to the source ancestor, if the source ancestor is not the common ancestor */
+    if (src_ancestor != common_ancestor) {
+      XBT_DEBUG("\tsrc_ancestor '%s' is not the common ancestor '%s'", src_ancestor->get_cname(),
+                common_ancestor->get_cname());
+      std::vector<resource::StandardLinkImpl*> src_to_src_ancestor;
+      xbt_assert(route.gw_src_ != nullptr,
+                 "No Gateway (gw_src) for zone %s found in route, please check your platform. If this error remains, "
+                 "please report it.",
+                 src_ancestor->get_cname());
+
+      /* Since we got the source ancestor gateway, we have to remove the source ancestor from the path */
+      src_path.erase(src_path.begin());
+
+      /* Insert the route from the source to the source ancestor into the global route */
+      get_interzone_route(src, route.gw_src_, false, src_to_src_ancestor, latency, &src_path);
+      std::move(src_to_src_ancestor.begin(), src_to_src_ancestor.end(), std::back_inserter(links));
+    }
+    /* Insert the route from the source ancestor to the destination ancestor into the global route */
+    std::move(route.link_list_.begin(), route.link_list_.end(), std::back_inserter(links));
+    /* Get the route from the destination ancestor to the destination, if the destination ancestor is not the common
+     * ancestor */
+    if (dst_ancestor != common_ancestor) {
+      XBT_DEBUG("\tdst_ancestor '%s' is not the common ancestor '%s'", dst_ancestor->get_cname(),
+                common_ancestor->get_cname());
+      std::vector<resource::StandardLinkImpl*> dst_ancestor_to_dst;
+      xbt_assert(route.gw_dst_ != nullptr,
+                 "No Gateway (gw_dst) for zone %s found in route, please check your platform. If this error remains, "
+                 "please report it.",
+                 dst_ancestor->get_cname());
+
+      /* Since we got the destination ancestor gateway, we have to remove the destination ancestor from the path */
+      dst_path.erase(dst_path.begin());
+
+      /* Insert the route from the destination ancestor to the destination into the global route */
+      get_interzone_route(dst, route.gw_dst_, true, dst_ancestor_to_dst, latency, &dst_path);
+      std::move(begin(dst_ancestor_to_dst), end(dst_ancestor_to_dst), std::back_inserter(links));
+    }
   }
-
-  /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
-  common_ancestor->get_local_route(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
-  xbt_enforce((route.gw_src_ != nullptr) && (route.gw_dst_ != nullptr), "Bad gateways for route from '%s' to '%s'.",
-             src->get_cname(), dst->get_cname());
-
-  /* If source gateway is not our source, we have to recursively find our way up to this point */
-  if (src != route.gw_src_)
-    get_global_route_with_netzones(src, route.gw_src_, links, latency, netzones);
-  links.insert(links.end(), begin(route.link_list_), end(route.link_list_));
-
-  /* If dest gateway is not our destination, we have to recursively find our way from this point */
-  if (route.gw_dst_ != dst)
-    get_global_route_with_netzones(route.gw_dst_, dst, links, latency, netzones);
 }
 
 void NetZoneImpl::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
@@ -692,8 +711,10 @@ void NetZoneImpl::set_gateway(const std::string& name, NetPoint* router)
 
 NetPoint* NetZoneImpl::get_gateway() const
 {
-  xbt_enforce(not gateways_.empty(), "No default gateway has been defined for NetZone '%s'. Try to seal it first", get_cname());
-  xbt_enforce(gateways_.size() < 2, "NetZone '%s' has more than one gateway, please provide a gateway name", get_cname());
+  xbt_enforce(not gateways_.empty(), "No default gateway has been defined for NetZone '%s'. Try to seal it first",
+              get_cname());
+  xbt_enforce(gateways_.size() < 2, "NetZone '%s' has more than one gateway, please provide a unique gateway name",
+              get_cname());
   auto gateway_it = gateways_.find("default");
   xbt_enforce(gateway_it != gateways_.end(), "NetZone '%s' hasno default gateway, please define one", get_cname());
   return gateway_it->second;
@@ -725,8 +746,17 @@ void NetZoneImpl::seal()
   sealed_ = true;
   s4u::NetZone::on_seal(piface_);
 }
+void NetZoneImpl::unseal()
+{
+  /* already unsealed netzone */
+  if (not sealed_)
+    return;
 
-void NetZoneImpl::set_parent(NetZoneImpl* parent)
+  sealed_ = false;
+  s4u::NetZone::on_unseal(piface_);
+}
+
+NetZoneImpl* NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
   xbt_enforce(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
@@ -741,6 +771,7 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
     set_disk_model(parent->get_disk_model());
     set_host_model(parent->get_host_model());
   }
+  return this;
 }
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)
@@ -776,7 +807,7 @@ void NetZoneImpl::set_host_model(std::shared_ptr<resource::HostModel> host_model
 const NetZoneImpl* NetZoneImpl::get_netzone_recursive(const NetPoint* netpoint) const
 {
   xbt_enforce(netpoint && netpoint->is_netzone(), "Netpoint %s must be of the type NetZone",
-             netpoint ? netpoint->get_cname() : "nullptr");
+              netpoint ? netpoint->get_cname() : "nullptr");
 
   if (netpoint == netpoint_)
     return this;

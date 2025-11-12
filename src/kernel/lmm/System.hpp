@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,6 +9,7 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "xbt/asserts.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/mallocator.h"
 
 #include <boost/intrusive/list.hpp>
@@ -394,6 +395,8 @@ public:
   int rank_;         // Only used in debug messages to identify the variable
   unsigned visited_; /* used by System::update_modified_cnst_set() */
   double mu_;
+
+  xbt::Backtrace* backtrace_ = nullptr; // Used to debug leaking variables when cfg debug/lmm-leak:ON
 
 private:
   static int next_rank_; // To give a separate rank_ to each variable

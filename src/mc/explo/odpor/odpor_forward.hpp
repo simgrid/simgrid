@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,14 +18,13 @@
 
 namespace simgrid::mc::odpor {
 
-using PartialExecution = std::list<std::shared_ptr<Transition>>;
+using PartialExecution = std::vector<std::shared_ptr<Transition>>;
 
 class Event;
 class Execution;
 class ReversibleRaceCalculator;
 class WakeupTree;
 class WakeupTreeNode;
-class WakeupTreeIterator;
 
 } // namespace simgrid::mc::odpor
 

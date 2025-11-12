@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,7 +30,8 @@ SIMGRID_REGISTER_NETWORK_MODEL(
 
 namespace simgrid::kernel::resource {
 
-StandardLinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/)
+StandardLinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/,
+                                                    routing::NetZoneImpl*)
 {
   xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')",
@@ -38,9 +39,10 @@ StandardLinkImpl* NetworkConstantModel::create_link(const std::string& name, con
   return nullptr;
 }
 
-StandardLinkImpl* NetworkConstantModel::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkConstantModel::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                         routing::NetZoneImpl* englobing_zone)
 {
-  return create_link(name, bandwidths);
+  return create_link(name, bandwidths, englobing_zone);
 }
 
 double NetworkConstantModel::next_occurring_event(double /*now*/)

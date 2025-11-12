@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,17 +56,17 @@ public:
 };
 
 /*************************************************************************************************/
-static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id)
+static sg4::NetZone* create_zone(sg4::NetZone* root, const std::string& id)
 {
-  auto* zone = sg4::create_star_zone(id)->set_parent(root);
+  auto* zone           = root->add_netzone_star(id);
   constexpr int n_host = 2;
 
-  zone->set_gateway(zone->create_router("router" + id));
+  zone->set_gateway(zone->add_router("router" + id));
   for (int i = 0; i < n_host; i++) {
     std::string hostname = id + "-cpu-" + std::to_string(i);
-    auto* host           = zone->create_host(hostname, 1e9);
-    host->create_disk("disk-" + hostname, 1e9, 1e6);
-    const auto* link = zone->create_link("link-" + hostname, 1e9);
+    auto* host           = zone->add_host(hostname, 1e9);
+    host->add_disk("disk-" + hostname, 1e9, 1e6);
+    const auto* link = zone->add_link("link-" + hostname, 1e9);
     zone->add_route(host, nullptr, {link});
   }
   return zone;
@@ -79,18 +79,18 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   /* create platform: intentionally do not do the seal of objects */
-  auto* root  = sg4::create_full_zone("root");
+  auto* root       = e.get_netzone_root();
   auto* zoneA = create_zone(root, "A");
   auto* zoneB = create_zone(root, "B");
-  const auto* link = root->create_link("root-link", 1e10);
+  const auto* link = root->add_link("root-link", 1e10);
   root->add_route(zoneA, zoneB, {sg4::LinkInRoute(link)}, true);
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */
-  sg4::Actor::create("sender", host_list[0], Sender(host_list));
+  host_list[0]->add_actor("sender", Sender(host_list));
   /* create receiver in every host */
   for (auto* host : host_list) {
-    sg4::Actor::create("receiver-" + host->get_name(), host, Receiver());
+    host->add_actor("receiver-" + host->get_name(),Receiver());
   }
 
   /* runs the simulation */

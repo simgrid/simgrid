@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,10 +21,12 @@ static void trace_fun()
   // The functions will set/change the value of the variable for all links in the route between source and destination.
 
   // Set the Link_Capacity variable
+  simgrid::instr::declare_link_variable("Link_Capacity");
   simgrid::instr::set_link_variable("Tremblay", "Bourassa", "Link_Capacity", 12.34);
   simgrid::instr::set_link_variable("Fafard", "Ginette", "Link_Capacity", 56.78);
 
   // Set the Link_Utilization variable
+  simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
   simgrid::instr::set_link_variable("Tremblay", "Bourassa", "Link_Utilization", 1.2);
   simgrid::instr::set_link_variable("Fafard", "Ginette", "Link_Utilization", 3.4);
 
@@ -53,16 +55,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  // declaring link user variables (one without, another with an RGB color)
-  simgrid::instr::declare_link_variable("Link_Capacity");
-  simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
-
-  sg4::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Tremblay"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Jupiter"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Fafard"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Ginette"), trace_fun);
-  sg4::Actor::create("worker", e.host_by_name("Bourassa"), trace_fun);
+  e.host_by_name("Tremblay")->add_actor("master", trace_fun);
+  e.host_by_name("Tremblay")->add_actor("worker", trace_fun);
+  e.host_by_name("Jupiter")->add_actor("worker", trace_fun);
+  e.host_by_name("Fafard")->add_actor("worker", trace_fun);
+  e.host_by_name("Ginette")->add_actor("worker", trace_fun);
+  e.host_by_name("Bourassa")->add_actor("worker", trace_fun);
 
   e.run();
   return 0;

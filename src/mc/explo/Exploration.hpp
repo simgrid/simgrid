@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,10 +8,12 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_record.hpp"
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include <xbt/Extendable.hpp>
 
 #include <memory>
@@ -32,9 +34,9 @@ namespace simgrid::mc {
 // abstract
 class Exploration : public xbt::Extendable<Exploration> {
   std::unique_ptr<RemoteApp> remote_app_;
+  static std::unique_ptr<ExplorationStrategy> strategy_;
   static Exploration* instance_;
 
-  FILE* dot_output_ = nullptr;
   int errors_       = 0; // Amount of errors seen so far; tested against model-check/max-errors
 
   /** @brief Wether the current exploration is a CriticalTransitionExplorer */
@@ -46,12 +48,18 @@ protected:
 
   time_t starting_time_; // For timeouts
 
+  FILE* dot_output_ = nullptr;
+
+  bool one_way_disabled_ = false;
+
 public:
-  explicit Exploration(const std::vector<char*>& args);
+  explicit Exploration();
+  void initialize_remote_app(const std::vector<char*>& args) { remote_app_ = std::make_unique<RemoteApp>(args); }
   explicit Exploration(std::unique_ptr<RemoteApp> remote_app);
   virtual ~Exploration();
 
   static Exploration* get_instance() { return instance_; }
+  static ExplorationStrategy* get_strategy() { return strategy_.get(); }
   // No copy:
   Exploration(Exploration const&)            = delete;
   Exploration& operator=(Exploration const&) = delete;
@@ -62,6 +70,9 @@ public:
   /** Allows the exploration to report that it found a correct execution. This updates a bool informations
    *  in corresponding states, and eventually rise an exception if we were looking for the critical transition. */
   void report_correct_execution(State* last_state);
+
+  /** Produce an error message corresponding to a data race in the application */
+  void report_data_race(const McDataRace& e);
 
   /** Produce an error message indicating that the application crashed (status was produced by waitpid) */
   XBT_ATTRIB_NORETURN void report_crash(int status);
@@ -87,7 +98,12 @@ public:
    * @param finalize_app wether we should try to finalize the app before rollbacking. This should always be done,
    *                     except if you already know that the application is dead.
    */
-  void backtrack_to_state(State* target_state, bool finalize_app = true);
+  void backtrack_to_state(State* target_state, bool finalize_app = true)
+  {
+    backtrack_remote_app_to_state(*remote_app_.get(), target_state, finalize_app);
+  }
+
+  void backtrack_remote_app_to_state(RemoteApp& remote_app, State* target_state, bool finalize_app = true);
 
   /* These methods are callbacks called by the model-checking engine
    * to get and display information about the current state of the
@@ -163,6 +179,17 @@ public:
 
   void run_critical_exploration_on_need(ExitStatus error);
 
+  static bool need_actor_status_transitions()
+  {
+    return _sg_mc_debug or get_model_checking_reduction() == ReductionMode::udpor;
+  }
+
+  static bool can_go_one_way()
+  {
+    return _sg_mc_befs_threshold == 0 and _sg_mc_send_determinism == false and _sg_mc_comms_determinism == false and
+           not get_instance()->one_way_disabled_;
+  }
+
   /** Print something to the dot output file*/
   void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
 };
@@ -171,8 +198,6 @@ public:
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app,
-                                                               ReductionMode mode, stack_t* stack);
 
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);

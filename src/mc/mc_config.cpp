@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,11 +36,13 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
     [](std::string_view value) {
       if (value.empty()) // Ignore default value
         return;
-      xbt_assert(simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::NONE ||
-                     simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::REPLAY,
-                 "Specifying a MC replay path is not allowed when running the model-checker in mode %s. "
-                 "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
-                 to_c_str(simgrid::mc::get_model_checking_mode()));
+      if (simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::NONE &&
+          simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::REPLAY &&
+          /* simgrid-mc will execve the binary to remove itself when this parameter is set */
+          simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE)
+        xbt_die("ERROR: Specifying a MC replay path is not allowed when running the model-checker in mode %s. "
+                "Either remove the model-check/replay parameter, or execute your code out of simgrid-mc.",
+                to_c_str(simgrid::mc::get_model_checking_mode()));
       simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::REPLAY);
       MC_record_path() = value;
     }};
@@ -51,11 +53,11 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
     }};
 
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
-    "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
+    "model-check/reduction", "Specify the kind of exploration reduction (none, DPOR, ODPOR or UDPOR)", "dpor",
     [](std::string_view value) {
       if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
-                " 'none', 'dpor', 'sdpor', 'odpor', or 'udpor'");
+                " 'dpor', 'sdpor', 'odpor', or 'udpor'");
     }};
 
 simgrid::config::Flag<int> _sg_mc_cached_states_interval{
@@ -63,6 +65,12 @@ simgrid::config::Flag<int> _sg_mc_cached_states_interval{
     "Specify how often a state factory shall be created. This enables fast state restore at the cost of wasted memory.",
     1000,
     [](int val) { xbt_assert(val >= 0, "The value of model-check/cached-states-interval must be positive or null"); }};
+
+simgrid::config::Flag<int> _sg_mc_parallel_thread{
+    "model-check/parallel-thread",
+    "Specify how explorer should be launched in parallel. Each explorer will be a different separate thread spawned by "
+    "McSimGrid.",
+    1, [](int val) { xbt_assert(val >= 1, "The value of model-check/parallel-thread must be >= 1"); }};
 
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",
@@ -80,12 +88,10 @@ simgrid::config::Flag<std::string> _sg_mc_strategy{
     "model-check/strategy",
     "Specify the kind of heuristic to use for guided model-checking",
     "none",
-    {{"none", "No specific strategy: simply pick the first available transition and act as a DFS."},
-     {"max_match_comm", "Try to minimize the number of in-fly communication by appairing matching send and receive."},
-     {"min_match_comm",
-      "Try to maximize the number of in-fly communication by not appairing matching send and receive."},
-     {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."},
-     {"min_context_switch", "Explores in priority branches that make fewer context switches."}}};
+    {
+        {"none", "No specific strategy: simply pick the first available transition and act as a DFS."},
+        {"uniform", "No specific strategy: choices are made randomly based on a uniform sampling."},
+    }};
 
 simgrid::config::Flag<int> _sg_mc_random_seed{"model-check/rand-seed",
                                               "give a specific random seed to initialize the uniform distribution", 0,
@@ -105,6 +111,22 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
     false, [](bool) {
       _mc_cfg_cb_check("value to enable/disable the detection of send-determinism in the communications schemes");
     }};
+
+simgrid::config::Flag<bool> _sg_mc_debug{
+    "model-check/debug",
+    "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
+    false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
+
+simgrid::config::Flag<bool> _sg_mc_debug_optimality{
+    "model-check/debug-optimality",
+    "Whether to enable advance runtime verification. Those may be costly and therefore are desactivated by default.",
+    false, [](bool) { _mc_cfg_cb_check("value to enable/disable advance runtime verification"); }};
+
+simgrid::config::Flag<bool> _sg_mc_output_lts{"model-check/output-lts",
+                                              "Whether to print informations about the explored LTS.", false,
+                                              [](bool) { _mc_cfg_cb_check("value to enable/disable LTS printing"); }};
+// In a perfect world, We should use the already existing dot output system
+// TODO
 
 simgrid::config::Flag<std::string> _sg_mc_buffering{
     "smpi/buffering",

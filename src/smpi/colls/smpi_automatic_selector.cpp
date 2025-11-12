@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +8,7 @@
 
 #include "colls_private.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
 //attempt to do a quick autotuning version of the collective,

@@ -1,4 +1,4 @@
-/* Copyright (c) 2021-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2021-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -78,10 +78,10 @@ int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
 
-  auto* zone  = sg4::create_full_zone("world");
+  auto* zone = engine.get_netzone_root();
   std::vector<sg4::Host*> hosts;
   for (const auto* name : {"Host1", "Host2", "Host3"}) {
-    auto* host = zone->create_host(name, "1f");
+    auto* host = zone->add_host(name, "1f");
     hosts.push_back(host);
   }
   /* Attaching a state profile (ie a list of events changing the on/off state of the resource) to host3.
@@ -98,8 +98,8 @@ int main(int argc, char** argv)
 
   zone->seal();
 
-  sg4::Actor::create("Dispatcher", hosts[2], dispatcher, hosts);
-  sg4::Actor::create("HostKiller", hosts[2], host_killer, hosts[0]);
+  hosts[2]->add_actor("Dispatcher", dispatcher, hosts);
+  hosts[2]->add_actor("HostKiller", host_killer, hosts[0]);
 
   engine.run();
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -17,8 +17,10 @@ public:
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bws) override;
-  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bws,
+                                routing::NetZoneImpl* englobing_zone) override;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws,
+                                     routing::NetZoneImpl* englobing_zone) override;
 };
 
 class NetworkConstantAction final : public NetworkAction {

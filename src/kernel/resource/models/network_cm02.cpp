@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,6 +41,7 @@ SIMGRID_REGISTER_NETWORK_MODEL(raw,
                                  simgrid::config::set_default<std::string>("network/latency-factor", "1.0");
                                  simgrid::config::set_default<std::string>("network/bandwidth-factor", "1.0");
                                  simgrid::config::set_default<double>("network/weight-S", 0.0);
+                                 simgrid::config::set_default<double>("network/TCP-gamma", 0.0);
                                  simgrid::config::set_default<bool>("network/crosstraffic", false);
                                });
 
@@ -157,23 +158,26 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 
   set_maxmin_system(lmm::System::build(cfg_network_solver.get(), select));
 
-  loopback_.reset(create_link("__loopback__", {config::get_value<double>("network/loopback-bw")}));
+  loopback_.reset(create_link("__loopback__", {config::get_value<double>("network/loopback-bw")}, nullptr));
   loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
   loopback_->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->get_iface()->seal();
 }
 
-StandardLinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                routing::NetZoneImpl* englobing_zone)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  auto* link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
+  auto* link =
+      new NetworkCm02Link(name, bandwidths[0], get_maxmin_system(), s4u::Link::SharingPolicy::SHARED, englobing_zone);
   link->set_model(this);
   return link;
 }
 
-StandardLinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths,
+                                                     routing::NetZoneImpl* englobing_zone)
 {
-  auto* link = new WifiLinkImpl(name, bandwidths, get_maxmin_system());
+  auto* link = new WifiLinkImpl(name, bandwidths, get_maxmin_system(), englobing_zone);
   link->set_model(this);
   return link;
 }
@@ -483,8 +487,9 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kernel::lmm::System* system)
-    : StandardLinkImpl(name)
+NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kernel::lmm::System* system,
+                                 s4u::Link::SharingPolicy sharing_policy, routing::NetZoneImpl* englobing_zone)
+    : StandardLinkImpl(name, sharing_policy, englobing_zone)
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;

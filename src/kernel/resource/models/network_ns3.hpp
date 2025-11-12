@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,8 +18,10 @@ class NetworkNS3Model : public NetworkModel {
 public:
   explicit NetworkNS3Model(const std::string& name);
   ~NetworkNS3Model() override;
-  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth) override;
-  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth,
+                                routing::NetZoneImpl* englobing_zone) override;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth,
+                                     routing::NetZoneImpl* englobing_zone) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
   double next_occurring_event(double now) override;
   bool next_occurring_event_is_idempotent() override;
@@ -31,17 +33,15 @@ public:
  ************/
 class LinkNS3 : public StandardLinkImpl {
 public:
-  explicit LinkNS3(const std::string& name, double bandwidth);
+  explicit LinkNS3(const std::string& name, double bandwidth, s4u::Link::SharingPolicy sharing_policy,
+                   routing::NetZoneImpl* englobing_zone);
   ~LinkNS3() override;
-  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
 
   void apply_event(profile::Event* event, double value) override;
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override;
   void set_bandwidth_profile(profile::Profile* profile) override;
   void set_latency_profile(profile::Profile* profile) override;
-  void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 };
 
 /**********

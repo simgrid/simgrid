@@ -1,0 +1,22 @@
+$ ${javacmd} -cp ../../simgrid.jar:actor_join.jar actor_join ${platfdir}/small_platform.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:master:(1) 0.000000] [java/INFO] Start sleeper
+> [Tremblay:sleeper from master:(2) 0.000000] [java/INFO] Sleeper started
+> [Tremblay:master:(1) 0.000000] [java/INFO] Join the sleeper (timeout 2)
+> [Tremblay:master:(1) 2.000000] [java/INFO] Start sleeper
+> [Tremblay:sleeper from master:(3) 2.000000] [java/INFO] Sleeper started
+> [Tremblay:master:(1) 2.000000] [java/INFO] Join the sleeper (timeout 4)
+> [Tremblay:sleeper from master:(2) 3.000000] [java/INFO] I'm done. See you!
+> [Tremblay:sleeper from master:(3) 5.000000] [java/INFO] I'm done. See you!
+> [Tremblay:master:(1) 5.000000] [java/INFO] Start sleeper
+> [Tremblay:sleeper from master:(4) 5.000000] [java/INFO] Sleeper started
+> [Tremblay:master:(1) 5.000000] [java/INFO] Join the sleeper (timeout 2)
+> [Tremblay:master:(1) 7.000000] [java/INFO] Start sleeper
+> [Tremblay:sleeper from master:(5) 7.000000] [java/INFO] Sleeper started
+> [Tremblay:master:(1) 7.000000] [java/INFO] Waiting 4
+> [Tremblay:sleeper from master:(4) 8.000000] [java/INFO] I'm done. See you!
+> [Tremblay:sleeper from master:(5) 10.000000] [java/INFO] I'm done. See you!
+> [Tremblay:master:(1) 11.000000] [java/INFO] Join the sleeper after its end (timeout 1)
+> [Tremblay:master:(1) 11.000000] [java/INFO] Goodbye now!
+> [Tremblay:master:(1) 12.000000] [java/INFO] Goodbye now!
+> [12.000000] [java/INFO] Simulation ends.

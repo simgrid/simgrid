@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -86,7 +86,7 @@ static void david()
 static void bob()
 {
   /* this host also tests the properties of the AS*/
-  const sg4::NetZone* root = sg4::Engine::get_instance()->get_netzone_root();
+  const sg4::NetZone* root = sg4::Engine::get_instance()->netzone_by_name_or_null("AS0");
   XBT_INFO("== Print the properties of the root zone");
   XBT_INFO("   Zone property: filename -> %s", root->get_property("filename"));
   XBT_INFO("   Zone property: date -> %s", root->get_property("date"));
@@ -120,10 +120,10 @@ int main(int argc, char* argv[])
   for (sg4::Host const* host : hosts)
     XBT_INFO("Host '%s' runs at %.0f flops/s", host->get_cname(), host->get_speed());
 
-  sg4::Actor::create("alice", host1, alice);
-  sg4::Actor::create("bob", host1, bob)->set_property("SomeProp", "SomeValue");
-  sg4::Actor::create("carole", host2, carole);
-  sg4::Actor::create("david", host2, david);
+  host1->add_actor("alice", alice);
+  host1->add_actor("bob", bob)->set_property("SomeProp", "SomeValue");
+  host2->add_actor("carole", carole);
+  host2->add_actor("david", david);
 
   e.run();
 

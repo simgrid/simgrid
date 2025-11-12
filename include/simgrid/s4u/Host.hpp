@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,9 +16,7 @@
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Host>;
-#endif
 
 namespace s4u {
 /** @ingroup s4u_api
@@ -37,11 +35,7 @@ namespace s4u {
  * :cpp:func:`simgrid::s4u::this_actor::get_host()`
  * @endrst
  */
-#ifdef SWIG 
-class XBT_PUBLIC Host { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
-#endif
 
 #ifndef DOXYGEN
   friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
@@ -129,19 +123,12 @@ public:
   Host* set_cpu(kernel::resource::CpuImpl* cpu);
   kernel::resource::CpuImpl* get_cpu() const { return pimpl_cpu_; }
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
-  /**
-   * @brief Callback to set CPU factor
+
+  /** Configure the factor callback to the CPU associated to this host
    *
-   * This callback offers a flexible way to create variability in CPU executions
-   *
-   * @param flops Execution size in flops
-   * @return Multiply factor
+   * This callback takes the execution size in flops and returns the multiply factor
    */
-  using CpuFactorCb = double(double flops);
-  /**
-   * @brief Configure the factor callback to the CPU associated to this host
-   */
-  Host* set_factor_cb(const std::function<CpuFactorCb>& cb);
+  Host* set_cpu_factor_cb(const std::function<double(Host&, double)>& cb);
 
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;
@@ -252,24 +239,64 @@ public:
   Host* set_pstate(unsigned long pstate_index);
   Host* set_coordinates(const std::string& coords);
 
+  /** Create an actor from a @c std::function<void()>.
+   *  If the actor is restarted, it gets a fresh copy of the function.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  ActorPtr add_actor(const std::string& name, const std::function<void()>& code);
+
+  /** Add an actor taking a vector of strings as parameters.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  ActorPtr add_actor(const std::string& name, const std::string& function,
+                     std::vector<std::string> args);
+  /** Create an actor from a callable thing.
+   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F> ActorPtr add_actor(const std::string& name, F code)
+  {
+    return add_actor(name, std::function<void()>(std::move(code)));
+  }
+
+  /** Create an actor using a callable thing and its arguments.
+   *
+   * Note that the arguments will be copied, so move-only parameters are forbidden.
+   * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
+#ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
+            ,
+            typename = typename std::invoke_result_t<F, Args...>
+#endif
+            >
+  ActorPtr add_actor(const std::string& name, F code, Args... args)
+  {
+    return add_actor(name, std::bind(std::move(code), std::move(args)...));
+  }
+
   std::vector<Disk*> get_disks() const;
   Disk* get_disk_by_name(const std::string& name) const;
 
-  /**
-   * @brief Create and add disk in the host
+  #ifndef DOXYGEN
+   XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_disk")
+   Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+   { return add_disk(name, read_bandwidth, write_bandwidth); }
+   XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_disk")
+   Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+   { return add_disk(name, read_bandwidth, write_bandwidth); }
+  #endif 
+
+   /**
+   * @brief Add a disk to a host
    *
    * @param name Disk name
    * @param read_bandwidth Reading speed of the disk
    * @param write_bandwidth Writing speed of the disk
    */
-  Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  Disk* add_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /**
-   * @brief Human-friendly version of create_disk function.
+   * @brief Human-friendly version of add_disk function.
    *
    * @throw std::invalid_argument if read/write speeds are incorrect
    */
-  Disk* create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
-  void add_disk(const Disk* disk);
+  Disk* add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
+  void register_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
   VirtualMachine* create_vm(const std::string& name, int core_amount);

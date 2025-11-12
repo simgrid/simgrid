@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,8 +6,8 @@
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/api/states/SoftLockedState.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
@@ -86,7 +86,6 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   }
 
   XBT_DEBUG("Going to execute actor %ld", next_actor);
-  auto transition_to_be_executed = state->get_actors_list().at(next_actor).get_transition();
 
   std::shared_ptr<Transition> executed_transition;
   StatePtr next_state;
@@ -96,30 +95,35 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
              executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
-    next_state = reduction_algo_->state_create(get_remote_app(), state);
+    next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
 
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
       next_state->set_state_factory(get_remote_app().clone_checker_side());
     }
   } catch (McWarning& error) {
     // If an error is reached while executing the transition ...
-    XBT_VERB("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
-             transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
-             state->get_num(), state->count_todo());
+    if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
+      auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
+      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
+                transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
+                state->get_num(), state->count_todo());
+    }
 
     // ... reset the application to the step before dying
     // ... the normal backtrack style would be upset, because currently the application is dead
     backtrack_to_state(state.get(), false);
 
     // ... construct a fake state with no successors so the reduction think it is time to compute races
-    next_state = StatePtr(new SoftLockedState(get_remote_app(), state));
+    executed_transition = std::make_shared<Transition>(Transition::Type::UNKNOWN, next_actor, 0);
+    next_state          = StatePtr(new SoftLockedState(get_remote_app(), state, executed_transition));
 
     // ... Add that fake state and compute races
     state_stack.emplace_back(std::move(next_state));
     stack_ = &state_stack;
-    S.push_transition(transition_to_be_executed);
-    std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, stack_);
-    reduction_algo_->apply_race_update(std::move(todo_updates));
+    S.push_transition(executed_transition);
+    Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, stack_);
+    reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
+    reduction_algo_->delete_race_update(todo_updates);
 
     // ... If we are not already doing it, start critical exploration
     run_critical_exploration_on_need(error.value);
@@ -168,7 +172,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   XBT_DEBUG("Backtracking from the exploration by one step");
 
   reduction_algo_->on_backtrack(state_stack.back().get());
-
+  State::garbage_collect();
   is_execution_descending = false;
 
   state_stack.pop_back();
@@ -185,13 +189,16 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   aid_t next_to_explore;
 
-  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
+  while ((next_to_explore = s->next_transition()) != -1) {
+
+    // reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }
 
-  std::shared_ptr<Reduction::RaceUpdate> todo_updates = reduction_algo_->races_computation(S, &state_stack);
-  reduction_algo_->apply_race_update(std::move(todo_updates));
+  Reduction::RaceUpdate* todo_updates = reduction_algo_->races_computation(S, &state_stack);
+  reduction_algo_->apply_race_update(get_remote_app(), todo_updates);
+  reduction_algo_->delete_race_update(todo_updates);
 
   XBT_DEBUG("%lu actors remain, but none of them need to be interleaved (depth %zu).", s->get_actor_count(),
             state_stack.size() + 1);
@@ -203,7 +210,10 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
     report_correct_execution(s);
+    if (_sg_mc_debug_optimality)
+      odpor::MazurkiewiczTraces::record_new_execution(S);
   }
+  s->mark_to_delete();
 
   XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
 }
@@ -217,7 +227,7 @@ void DFSExplorer::run()
 
   XBT_DEBUG("**************************************************");
 
-  stack_t state_stack = std::deque<StatePtr>();
+  static stack_t state_stack = std::deque<StatePtr>();
   state_stack.emplace_back(std::move(initial_state));
 
   odpor::Execution empty_seq = odpor::Execution();
@@ -237,10 +247,8 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "DFS")
+  else if (reduction_mode_ == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor and _sg_mc_explore_algo == "BeFS")
-    reduction_algo_ = std::make_unique<BeFSODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
                to_c_str(reduction_mode_));
@@ -248,8 +256,9 @@ DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mo
   }
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(args), reduction_mode_(mode)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
 {
+  Exploration::initialize_remote_app(args);
 
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
@@ -258,8 +267,8 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : E
   else if (reduction_mode_ == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
-               to_c_str(reduction_mode_));
+    //  xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
+    //           to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 }

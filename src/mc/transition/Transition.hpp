@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,13 +7,17 @@
 #define SIMGRID_MC_TRANSITION_HPP
 
 #include "simgrid/forward.h" // aid_t
+#include "src/mc/api/MemOp.hpp"
 #include "xbt/ex.h"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 
 namespace simgrid::mc {
+
+using EventHandle = uint32_t;
 
 /** An element in the recorded path
  *
@@ -26,18 +30,21 @@ namespace simgrid::mc {
 class Transition {
   /* Global statistics */
   static unsigned long executed_transitions_;
-  static unsigned long replayed_transitions_;
+
+  std::vector<MemOp> memory_operations_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
 public:
+  static unsigned long replayed_transitions_;
+
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
   XBT_DECLARE_ENUM_CLASS(
       Type,
       /* First because indep with anybody including themselves */
       RANDOM, ACTOR_JOIN, ACTOR_SLEEP,
       /* high priority because indep with everybody but the local actions of the child */
-      ACTOR_CREATE,
+      ACTOR_CREATE, ACTOR_EXIT, /* EXIT must be after JOIN and CREATE */
       /* high priority because indep with almost everybody */
       OBJECT_ACCESS,
       /* high priority because they can rewrite themselves to *_WAIT */
@@ -60,6 +67,8 @@ public:
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::string call_location_ = "";
+
+  std::vector<MemOp> get_mem_op() { return memory_operations_; }
 
   /* Which transition was executed for this simcall
    *
@@ -109,8 +118,17 @@ public:
 
     @note: It is safe to assume that there is indeed a race between the two events in the execution;
      indeed, the question the method answers is only sensible in the context of a race
+
+     @note: Be carefull when implementing new transition, this method is NOT symmetrical (meaning that
+     this.reversible_race(other) may be different from other.reversible_race(this)). Be sure to implement
+     both way or the reduction might fail.
+
+     @note: parameters exec, this_handle and other_handle are only used for some semaphore and condvar for now.
+     In particular, there contains the sequence in which the transitions are found, as well as the id of the
+     transitions in that sequence.
   */
-  virtual bool reversible_race(const Transition* other) const
+  virtual bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                               EventHandle other_handle) const
   {
     xbt_die("%s unimplemented for %s", __func__, to_c_str(type_));
   }
@@ -119,10 +137,12 @@ public:
   static unsigned long get_executed_transitions() { return executed_transitions_; }
   /* Returns the total amount of transitions replayed so far while backtracing (for statistics) */
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
+
+  void deserialize_memory_operations(mc::Channel& channel);
 };
 
 /** Make a new transition from serialized description */
-Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
+Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel);
 
 } // namespace simgrid::mc
 

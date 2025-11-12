@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2002-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -12,6 +12,7 @@
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
+#include <cerrno>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -32,7 +33,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string_view>
-#include <thread>
+
+extern "C" {
+// These functions are mostly useful in sthread.c but they must be defined in libsimgrid for it to compile (although
+// they are not used in libsimgrid) We used to have 2 definitions of these functions, one useful in libsthread and one
+// placeholder in libsimgrid, but this proved to be fragile: it broke on several CI builders in 2025 when LTO and
+// optimizations were actived. That is why this code is now in this file, which is always in libsimgrid even if it's
+// mostly unused from here. Only sthread_is_initialized() is used here and there to detect that sthread is or is not
+// loaded in memory, to adapt the library initialization code.
+static thread_local int sthread_inside_simgrid = 1;
+void sthread_enable(void)
+{ // Start intercepting all pthread calls
+  sthread_inside_simgrid = 0;
+}
+void sthread_disable(void)
+{ // Stop intercepting all pthread calls
+  sthread_inside_simgrid = 1;
+}
+static int sthread_inited = 0;
+void sthread_do_initialize()
+{
+  sthread_inited = 1;
+}
+int sthread_is_initialized()
+{
+  return sthread_inited;
+}
+int sthread_is_enabled(void)
+{ // Returns whether sthread is currenctly active
+  return sthread_inside_simgrid == 0;
+}
+}
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
 namespace sg4 = simgrid::s4u;
@@ -48,27 +79,34 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     if (std::string_view(envp[i]).rfind("STHREAD_QUIET", 0) == 0)
       sthread_quiet = true;
 
-  /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
+  /* Do not initialize the simulation world when running from SMPI (but still intercepts pthread calls) */
   for (int i = 0; envp[i] != nullptr; i++)
     if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0) {
       if (not sthread_quiet)
-        printf(
-            "sthread refuses to intercept the SMPI application %s directly, as its interception is done otherwise.\n",
-            argv[0]);
+        printf("sthread intercepts pthreads in your SMPI application.\n");
       return raw_main(argc, argv, envp);
     }
 
   /* Do not intercept system binaries such as valgrind step 1 */
-  std::vector<std::string> binaries = {"/usr/bin/valgrind.bin",
+  std::vector<std::string> binaries = {"/usr/bin/env",
+                                       "/usr/bin/valgrind.bin",
+                                       "/usr/bin/python3",
                                        "/bin/sh",
                                        "/bin/bash",
                                        "addr2line",
                                        "cat",
                                        "dirname",
                                        "gdb",
+                                       "grep",
+                                       "ls",
+                                       "ltrace",
                                        "make",
                                        "md5sum",
+                                       "mktemp",
                                        "rm",
+                                       "sed",
+                                       "sh",
+                                       "strace",
                                        "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
@@ -82,12 +120,13 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   }
   auto binary_view = std::string_view(argv[0]);
   for (auto binary : binaries) {
-    if (binary_view.rfind(binary) != std::string_view::npos) {
+    // FIXME in C++20, we could use `binary_view.ends_with(binary)`
+    if (binary_view.size() >= binary.size() &&
+        binary_view.compare(binary_view.size() - binary.size(), binary.size(), binary) == 0) {
       return raw_main(argc, argv, envp);
     }
   }
 
-  /* If not in SMPI, the old main becomes an actor in a newly created simulation */
   if (not sthread_quiet) {
     fprintf(stderr,
             "sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
@@ -95,16 +134,15 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   }
 
   sg4::Engine e(&argc, argv);
-  auto* zone = sg4::create_full_zone("world");
-  lilibeth   = zone->create_host("Lilibeth", 1e15);
+  auto* zone = e.get_netzone_root();
+  lilibeth   = zone->add_host("Lilibeth", 1e15);
   zone->seal();
 
-  /* Launch the user's main() on an actor */
-  sthread_enable();
-  sg4::ActorPtr main_actor = sg4::Actor::create("main thread", lilibeth, raw_main, argc, argv, envp);
-
+  /* If not in SMPI, the old main becomes an actor in a newly created simulation. Do not activate sthread yet: creating
+   * contextes won't like it */
+  sg4::ActorPtr main_actor = lilibeth->add_actor("main thread", raw_main, argc, argv, envp);
   sg4::Engine::get_instance()->run();
-  sthread_disable();
+
   if (not sthread_quiet)
     XBT_INFO("All threads exited. Terminating the simulation.");
 
@@ -128,17 +166,29 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     name = simgrid::xbt::string_printf("%d:%d", rank, TID);
   }
+  if (lilibeth == nullptr) {
+    auto* zone = simgrid::s4u::Engine::get_instance()->get_netzone_root();
+    for (auto* h : zone->get_all_hosts())
+      if (h->get_name() == "Lilibeth")
+        lilibeth = h;
+    if (lilibeth == nullptr) { // Still not found. Let's create it
+      zone->unseal();
+      lilibeth = zone->add_host("Lilibeth", 1e15);
+      zone->seal();
+    }
+    xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in sthread initialization.");
+  }
 #endif
-  sg4::ActorPtr actor = sg4::Actor::create(
-      name, lilibeth,
-      [](auto* user_function, auto* param) {
+  sg4::ActorPtr actor = 
+    lilibeth->add_actor(name, [](auto* user_function, auto* param) {
 #if HAVE_SMPI
         if (SMPI_is_inited())
           SMPI_thread_create();
 #endif
         sthread_enable();
-        user_function(param);
+        auto* ret = user_function(param);
         sthread_disable();
+        sthread_exit(ret);
       },
       start_routine, arg);
 
@@ -146,13 +196,25 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
   *thread = reinterpret_cast<unsigned long>(actor.get());
   return 0;
 }
-int sthread_join(sthread_t thread, void** /*retval*/)
+int sthread_detach(sthread_t thread)
+{
+  return 0;
+}
+int sthread_join(sthread_t thread, void** retval)
 {
   sg4::ActorPtr actor(reinterpret_cast<sg4::Actor*>(thread));
   actor->join();
+  if (retval)
+    *retval = actor->get_data<void>();
   intrusive_ptr_release(actor.get());
 
   return 0;
+}
+void sthread_exit(void* retval)
+{
+  if (retval)
+    simgrid::s4u::Actor::self()->set_data(retval);
+  simgrid::s4u::this_actor::exit();
 }
 
 int sthread_mutexattr_init(sthread_mutexattr_t* attr)
@@ -174,7 +236,6 @@ int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
       break;
     case PTHREAD_MUTEX_ERRORCHECK:
       attr->errorcheck = 1;
-      THROW_UNIMPLEMENTED;
       break;
   }
   return 0;
@@ -208,6 +269,8 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
   intrusive_ptr_add_ref(m.get());
 
   mutex->mutex = m.get();
+  mutex->errorcheck = attr ? attr->errorcheck : false;
+
   return 0;
 }
 
@@ -217,7 +280,10 @@ int sthread_mutex_lock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __func__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, (xbt_log_no_loc ? (void*)0xDEADBEEF : mutex));
+  if (mutex->errorcheck && static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() != nullptr &&
+      static_cast<sg4::Mutex*>(mutex->mutex)->get_owner()->get_pid() == simgrid::s4u::this_actor::get_pid())
+    return EDEADLK;
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
@@ -240,7 +306,11 @@ int sthread_mutex_unlock(sthread_mutex_t* mutex)
   if (mutex->mutex == nullptr)
     sthread_mutex_init(mutex, nullptr);
 
-  XBT_DEBUG("%s(%p)", __func__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, (xbt_log_no_loc ? (void*)0xDEADBEEF : mutex));
+  if (mutex->errorcheck &&
+      (static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() == nullptr ||
+       static_cast<sg4::Mutex*>(mutex->mutex)->get_owner()->get_pid() != simgrid::s4u::this_actor::get_pid()))
+    return EPERM;
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
@@ -253,7 +323,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   xbt_assert(static_cast<sg4::Mutex*>(mutex->mutex)->get_owner() == nullptr,
              "Destroying a mutex that is still owned is UB. See https://cwe.mitre.org/data/definitions/667.html");
 
-  XBT_DEBUG("%s(%p)", __func__, mutex);
+  XBT_DEBUG("%s(%p)", __func__, (xbt_log_no_loc ? (void*)0xDEADBEEF : mutex));
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
@@ -360,7 +430,12 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
              "not work with such a dangerous code.",
              cond, cond->mutex, mutex->mutex);
 
-  THROW_UNIMPLEMENTED;
+  std::cv_status res = static_cast<sg4::ConditionVariable*>(cond->cond)
+                           ->wait_until(static_cast<sg4::Mutex*>(mutex->mutex),
+                                        abs_timeout->tv_sec + ((double)abs_timeout->tv_nsec) / 1000000);
+  if (res == std::cv_status::timeout)
+    return ETIMEDOUT;
+  return 0;
 }
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
@@ -422,6 +497,11 @@ int sthread_gettimeofday(struct timeval* tv)
     tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t
   }
   return 0;
+}
+
+time_t sthread_time(time_t*)
+{
+  return trunc(simgrid::s4u::Engine::get_clock());
 }
 
 unsigned int sthread_sleep(double seconds)

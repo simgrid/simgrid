@@ -4,7 +4,7 @@ Start your Own Project
 ======================
 
 It is not advised to modify the SimGrid source code directly, as it
-will make it difficult to upgrade to the next version of SimGrid.
+would make it difficult to upgrade to the next version of SimGrid.
 Instead, you should create your own working directory somewhere on
 your disk (say ``/home/joe/MyFirstSimulator/``), and write your code
 in there.
@@ -24,16 +24,17 @@ to the template itself.
 Building your project with CMake
 --------------------------------
 
-Here is a `CMakeLists.txt` that you can use as a starting point for your S4U
+Here follows a `CMakeLists.txt` file that you can use as a starting point for your S4U
 project (see below for MPI projects). It builds two simulators from a given set
 of source files.
 
 .. code-block:: cmake
 
-   cmake_minimum_required(VERSION 2.8.12)
+   cmake_minimum_required(VERSION 3.12)
    project(MyFirstSimulator)
 
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+   set(CMAKE_CXX_STANDARD 17)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -funroll-loops -fno-strict-aliasing -flto=auto")
 
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
    find_package(SimGrid REQUIRED)

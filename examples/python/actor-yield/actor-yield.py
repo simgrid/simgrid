@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])             # Load the platform description
 
-    Actor.create("yielder", Host.by_name("Tremblay"), yielder, 10)
-    Actor.create("yielder", Host.by_name("Ruby"), yielder, 15)
+    Host.by_name("Tremblay").add_actor("yielder", yielder, 10)
+    Host.by_name("Ruby").add_actor("yielder", yielder, 15)
 
     e.run()  # - Run the simulation

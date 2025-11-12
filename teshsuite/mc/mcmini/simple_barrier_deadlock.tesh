@@ -12,7 +12,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall BARRIER_WAIT(barrier_id:0)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1'
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 2 unique states visited; 0 explored traces (0 transition replays, 2 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -99,8 +99,9 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
           dst->get_cname(), gw_dst->get_cname(), src->get_cname(), gw_src->get_cname());
     else
       xbt_assert(nullptr == link_table_[dst->id()][src->id()],
-                 "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-                 dst->get_cname(), src->get_cname());
+                 "The route between %s and %s already exists in zone %s. You should not declare the reverse path as "
+                 "symmetrical.",
+                 dst->get_cname(), src->get_cname(), get_cname());
 
     if (gw_dst && gw_src) {
       NetPoint* gw_tmp = gw_src;

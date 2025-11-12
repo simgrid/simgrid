@@ -30,13 +30,13 @@ Describing Resources
 
 A platform in SimGrid is composed of several resources organized in different
 Netzones. The different resources, such as hosts, disks and links, follow the same
-idiom: create()->set()->set()->seal().
+idiom: add()->set()->set()->seal().
 
 .. code-block:: c++
 
-    NetZone* zone      = s4u::create_star_zone("zone0");
-    Link* l_up   = zone->create_link("link_up", "125MBps")->set_latency("24us")->seal();
-    Host* host   = zone->create_host("host0", "1Gf")->seal();
+    NetZone* zone = sg4::Engine::get_instance()->get_netzone_root()->add_netzone_star("zone0");
+    Link* l_up    = zone->add_link("link_up", "125MBps")->set_latency("24us")->seal();
+    Host* host    = zone->add_host("host0", "1Gf")->seal();
     zone->seal();
 
 The first NetZone created will be the root zone of your platform. You're allowed to modified
@@ -61,17 +61,17 @@ In the XML, you are allowed to do the following description:
 It is important to notice that this is a syntactic sugar provided by the XML to ease
 the link utilization. A split-duplex link means that upgoing communications do not
 share the bandwidth with downgoing communications. To emulate this behavior,
-under the hood, SimGrid creates 2 links in this case: the *1_UP*
+under the hood, SimGrid adds 2 links in this case: the *1_UP*
 link and the *1_DOWN* link. As you can see, the selection of link to use
 in the <route> tag is done by the ``direction=`` parameter.
 
-Using the C++ interface, you can use the specific function to create these 2 links. Note
+Using the C++ interface, you can use the specific function to add these 2 links. Note
 that you need to define the direction in the add_route function when adding a route containing
 a split-duplex link. Otherwise, SimGrid cannot know which link (UP/DOWN) to use.
 
 .. code-block:: cpp
 
-    auto* link = zone->create_split_duplex_link("1", "125MBps")->set_latency("24us")->seal();
+    auto* link = zone->add_split_duplex_link("1", "125MBps")->set_latency("24us")->seal();
 
     zone->add_route(S1, C1, nullptr, nullptr, {{link, LinkInRoute::Direction::UP}});
 
@@ -100,7 +100,7 @@ For more details, please refer to the cpp and CMakeLists.txt files in
 Example
 *******
 
-The best way to build your C++ platform is starting from some examples.
+The best way to build your C++ platform is to start from some examples.
 Give a look in the examples folder in `examples/ <https://framagit.org/simgrid/simgrid/tree/master/examples/>`_.
 For instance, the file `examples/cpp/clusters-multicpu/s4u-clusters-multicpu.cpp <https://framagit.org/simgrid/simgrid/-/blob/master/examples/cpp/clusters-multicpu/s4u-clusters-multicpu.cpp>`_ shows how to build complex platforms composed of
 clusters of clusters.
@@ -139,8 +139,11 @@ Consequently, you can describe the desired platform as follows:
 .. code-block:: c++
 
     sg4::Engine e(&argc, argv);
-    sg4::create_fatTree_zone("bob", e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, {create_hostzone, create_loopback, {}}, 125e6,
-                           50e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)->seal();
+    e.get_netzone_root()->add_netzone_fatTree("bob", e.get_netzone_root(), 2, {4, 4}, {1, 2}, {1, 2}, "100Mbps",
+                           "50us", sg4::Link::SharingPolicy::SPLITDUPLEX)
+                        ->set_netzone_cb(create_hostzone)
+                        ->set_loopback_cb(create_loopback)
+                        ->seal();
 
 Note that the leaves and loopback links are defined through callbacks, as follows:
 
@@ -150,27 +153,25 @@ Note that the leaves and loopback links are defined through callbacks, as follow
     static sg4::Link* create_loopback(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
     {
         // note that you could set different loopback links for each leaf
-        return zone->create_link("limiter-" + std::to_string(id), 1e6)->seal();
+        return zone->add_link("limiter-" + std::to_string(id), 1e6)->seal();
     }
 
     /* create each leaf in the Fat-Tree, return a pair composed of: <object (host, zone), gateway> */
     static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
     create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
     {
-      /* creating zone */
+      /* Adding zone */
       std::string hostname = "host" + std::to_string(id);
-      auto* host_zone = sg4::create_full_zone(hostname);
-      /* setting my parent zone */
-      host_zone->set_parent(zone);
-
-      /* creating CPU */
+      auto* host_zone = zone->add_netzone_full(hostname);
+      
+      /* Adding CPU */
       std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
-      const sg4::Host* cpu = host_zone->create_host(cpu_name, 1e9)->seal();
-      /* creating GPU */
+      const sg4::Host* cpu = host_zone->add_host(cpu_name, 1e9)->seal();
+      /* Adding GPU */
       std::string gpu_name  = hostname + "-gpu" + std::to_string(i);
-      const sg4::Host* gpu = host_zone->create_host(gpu_name, 1e12)->seal();
+      const sg4::Host* gpu = host_zone->add_host(gpu_name, 1e12)->seal();
       /* connecting them */
-      sg4::Link* link   = host_zone->create_link("link-" + cpu_name, 10e9)->set_latency(10e-9)->seal();
+      sg4::Link* link   = host_zone->add_link("link-" + cpu_name, 10e9)->set_latency(10e-9)->seal();
       host_zone->add_route(cpu->get_netpoint(), gpu->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(link)});
 
       host_zone->seal();

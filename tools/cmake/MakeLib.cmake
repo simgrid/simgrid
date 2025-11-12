@@ -3,7 +3,7 @@
 # On macOS, specify that rpath is useful to look for the dependencies
 # See https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling and Java.cmake
 set(CMAKE_MACOSX_RPATH TRUE)
-if(APPLE)
+if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # When installed, use system path
   set(CMAKE_SKIP_BUILD_RPATH FALSE)         # When executing from build tree, take the lib from the build path if exists
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) # When executing from build tree, take the lib from the system path if exists
@@ -16,6 +16,10 @@ endif()
 ###############################
 # Declare the library content #
 ###############################
+if (${SIMGRID_HAVE_JAVA} AND ${merge_java_in_libsimgrid})
+  message(STATUS "Java: merge all code within the libsimgrid library.")
+  set(simgrid_sources ${simgrid_sources} ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h ${SIMGRID_JAVA_C_SOURCES})
+endif()
 
 # Declare the simgrid library
 add_library(simgrid SHARED ${simgrid_sources})
@@ -26,7 +30,7 @@ set_property(TARGET simgrid
 
 add_dependencies(simgrid maintainer_files)
 
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
+if(${enable_sthread})
   add_library(sthread SHARED ${STHREAD_SRC})
   set_target_properties(sthread PROPERTIES VERSION ${libsimgrid_version})
   set_property(TARGET sthread
@@ -47,7 +51,7 @@ if(SIMGRID_HAVE_MC)
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   add_dependencies(tests-mc simgrid-mc)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  if(${enable_sthread})
     add_dependencies(tests-mc sthread)
   endif()
 endif()
@@ -67,6 +71,12 @@ endif()
 if (HAVE_BOOST_STACKTRACE_BACKTRACE)
   target_link_libraries(simgrid ${Boost_STACKTRACE_BACKTRACE_LIBRARY})
 endif()
+
+if (HAVE_STD_STACKTRACE)
+  # Listing specifically stdc++ is needed at least on MUSL when compiling C code against libsimgrid, as GCC does not provide stdc++ by default
+  target_link_libraries(simgrid stdc++exp stdc++)
+endif()
+
 
 if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
   target_link_libraries(simgrid ${Boost_STACKTRACE_ADDR2LINE_LIBRARY})

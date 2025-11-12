@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
   sg4::Host* fafard = e.host_by_name("Fafard");
 
   sg4::ExecPtr activity = sg4::this_actor::exec_init(fafard->get_speed() * 10.)->set_host(fafard);
-  sg4::Actor::create("runner", fafard, runner, activity);
+  fafard->add_actor("runner", runner, activity);
 
   while (activity->get_remaining() > 0) {
     XBT_INFO("Remaining amount of flops: %g (%.0f%%)", activity->get_remaining(),
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     e.run_until(sg4::Engine::get_clock() + 1);
   }
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

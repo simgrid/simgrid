@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,9 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_events.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_private.hpp"
 #include "xbt/config.hpp"
 #include "xbt/xbt_os_time.h"
@@ -351,7 +354,7 @@ static void on_link_type_creation(const Type& type, const Type& source, const Ty
   tracing_file << stream.str() << '\n';
 }
 
-static void on_simulation_start()
+static void on_platform_creation()
 {
   if (trace_active || not TRACE_is_enabled())
     return;
@@ -455,7 +458,7 @@ void init()
                             6);
 
   /* Connect Engine callbacks */
-  s4u::Engine::on_platform_creation_cb(on_simulation_start);
+  s4u::Engine::on_platform_creation_cb(on_platform_creation);
   s4u::Engine::on_time_advance_cb([](double /*time_delta*/) { dump_buffer(false); });
   s4u::Engine::on_deadlock_cb(on_simulation_end);
   s4u::Engine::on_simulation_end_cb(on_simulation_end);

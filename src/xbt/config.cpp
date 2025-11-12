@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.     */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -38,10 +38,10 @@ namespace {
 bool parse_bool(const char* value)
 {
   for (const char* true_value : {"yes", "on", "true", "1"})
-    if (std::strcmp(true_value, value) == 0)
+    if (strcasecmp(true_value, value) == 0)
       return true;
   for (const char* false_value : {"no", "off", "false", "0"})
-    if (std::strcmp(false_value, value) == 0)
+    if (strcasecmp(false_value, value) == 0)
       return false;
   throw std::range_error("not a boolean");
 }

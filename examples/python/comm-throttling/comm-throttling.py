@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -57,8 +57,8 @@ def main():
 
     mailbox = e.mailbox_by_name_or_create("Mailbox")
 
-    Actor.create("sender", e.host_by_name("node-0.simgrid.org"), sender, mailbox)
-    Actor.create("receiver", e.host_by_name("node-1.simgrid.org"), receiver, mailbox)
+    e.host_by_name("node-0.simgrid.org").add_actor("sender", sender, mailbox)
+    e.host_by_name("node-1.simgrid.org").add_actor("receiver", receiver, mailbox)
 
     e.run()
 

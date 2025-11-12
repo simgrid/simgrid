@@ -1,11 +1,11 @@
-/* Copyright (c) 2007-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include <cmath>
 
@@ -32,7 +32,7 @@ static void computation_fun(double size)
 
 static void run_test_process(const std::string& name, simgrid::s4u::Host* location, double size)
 {
-  simgrid::s4u::Actor::create(name, location, computation_fun, floor(size));
+  location->add_actor(name, computation_fun, floor(size));
 }
 
 static void test_energy_consumption(const std::string& name, int nb_cores)
@@ -582,7 +582,7 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Host* pm0 = e.host_by_name("node-0.1core.org");
   xbt_assert(pm0, "Host 'node-0.1core.org' not found");
-  simgrid::s4u::Actor::create("master", pm0, master_main);
+  pm0->add_actor("master", master_main);
 
   e.run();
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("server", e.host_by_name("HostA"), server);
-  sg4::Actor::create("client", e.host_by_name("HostB"), client, 1);
-  sg4::Actor::create("client", e.host_by_name("HostC"), client, 2);
+  e.host_by_name("HostA")->add_actor("server", server);
+  e.host_by_name("HostB")->add_actor("client", client, 1);
+  e.host_by_name("HostC")->add_actor("client", client, 2);
 
   e.run();
   return 0;

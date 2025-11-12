@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,24 +16,24 @@ namespace sg4 = simgrid::s4u;
  * @param host List of hostname inside the cluster
  * @param single_link_host Hostname of "special" node
  */
-static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string& cluster_suffix,
-                           const std::vector<std::string>& hosts, const std::string& single_link_host)
+static sg4::NetZone* create_cluster(sg4::NetZone* root, const std::string& cluster_suffix,
+                                    const std::vector<std::string>& hosts, const std::string& single_link_host)
 {
-  auto* cluster = sg4::create_star_zone("cluster" + cluster_suffix)->set_parent(root);
+  auto* cluster = root->add_netzone_star("cluster" + cluster_suffix);
 
   /* create the backbone link */
-  const sg4::Link* l_bb = cluster->create_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
+  const sg4::Link* l_bb = cluster->add_link("backbone" + cluster_suffix, "20Gbps")->set_latency("500us");
 
   /* create all hosts and connect them to outside world */
   for (const auto& hostname : hosts) {
     /* create host */
-    const sg4::Host* host = cluster->create_host(hostname, "1Gf");
+    const sg4::Host* host = cluster->add_host(hostname, "1Gf");
     /* create UP link */
-    const sg4::Link* l_up = cluster->create_link(hostname + "_up", "1Gbps")->set_latency("100us");
+    const sg4::Link* l_up = cluster->add_link(hostname + "_up", "1Gbps")->set_latency("100us");
     /* create DOWN link, if needed */
     const sg4::Link* l_down = l_up;
     if (hostname != single_link_host) {
-      l_down = cluster->create_link(hostname + "_down", "1Gbps")->set_latency("100us");
+      l_down = cluster->add_link(hostname + "_down", "1Gbps")->set_latency("100us");
     }
     sg4::LinkInRoute backbone{l_bb};
     sg4::LinkInRoute link_up{l_up};
@@ -46,15 +46,15 @@ static sg4::NetZone* create_cluster(const sg4::NetZone* root, const std::string&
   }
 
   /* create gateway*/
-  cluster->set_gateway(cluster->create_router("router" + cluster_suffix));
+  cluster->set_gateway(cluster->add_router("router" + cluster_suffix));
 
   cluster->seal();
   return cluster;
 }
 
 /** @brief Programmatic version of routing_cluster.xml */
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine&)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
   /**
    *
@@ -73,7 +73,7 @@ void load_platform(const sg4::Engine&)
    *   host1         host3         host2           host4         host6          host5
    */
 
-  auto* root = sg4::create_full_zone("AS0");
+  auto* root = e.get_netzone_root();
 
   /* create left cluster */
   const auto* left_cluster = create_cluster(root, "1", {"host1", "host2", "host3"}, "host3");
@@ -81,7 +81,7 @@ void load_platform(const sg4::Engine&)
   const auto* right_cluster = create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
 
   /* connect both clusters */
-  const sg4::Link* l = root->create_link("link1-2", "20Gbps")->set_latency("500us");
+  const sg4::Link* l = root->add_link("link1-2", "20Gbps")->set_latency("500us");
   sg4::LinkInRoute link{l};
   root->add_route(left_cluster, right_cluster, {link});
 

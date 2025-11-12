@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -56,12 +55,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), worker);
+  e.host_by_name("Tremblay")->add_actor("master", master);
+  e.host_by_name("Jupiter")->add_actor("worker", worker);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

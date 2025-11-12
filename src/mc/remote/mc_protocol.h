@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,10 +10,7 @@
 
 #ifdef __cplusplus
 
-#include "src/kernel/actor/SimcallObserver.hpp"
-
 #include "simgrid/forward.h" // aid_t
-#include "src/mc/datatypes.h"
 #include <xbt/utility.hpp>
 
 #include <array>
@@ -26,10 +23,11 @@ namespace simgrid::mc {
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, FORK, FORK_REPLY, WAIT_CHILD, WAIT_CHILD_REPLY, CONTINUE, DEADLOCK_CHECK,
                        DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE, SIMCALL_EXECUTE_REPLY, ASSERTION_FAILED,
                        ACTORS_STATUS, ACTORS_STATUS_REPLY_COUNT, ACTORS_STATUS_REPLY_SIMCALL,
-                       ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY);
+                       ACTORS_STATUS_REPLY_TRANSITION, ACTORS_MAXPID, ACTORS_MAXPID_REPLY, FINALIZE, FINALIZE_REPLY,
+                       REPLAY, GO_ONE_WAY);
 } // namespace simgrid::mc
 
-constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
+constexpr unsigned MC_MESSAGE_LENGTH                 = 48 * 1024 * 1024;
 constexpr unsigned MC_SOCKET_NAME_LEN                = sizeof(sockaddr_un::sun_path);
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
 
@@ -65,34 +63,36 @@ struct s_mc_message_simcall_execute_t {
   simgrid::mc::MessageType type;
   aid_t aid_;
   int times_considered_;
+  bool want_transition;
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
+  aid_t aid;
 };
 
-struct s_mc_message_restore_t {
+struct s_mc_message_actors_status_t {
   simgrid::mc::MessageType type;
-  int index;
+  bool want_transitions_;
 };
 
 struct s_mc_message_actors_status_answer_t {
   simgrid::mc::MessageType type;
   int count;
 };
+
+struct s_mc_message_one_way_t {
+  simgrid::mc::MessageType type;
+  bool want_transitions;
+  bool is_random;
+  int random_seed;
+};
+
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
                                           // after a `s_mc_message_actors_status_answer_t`
   simgrid::mc::MessageType type;
   aid_t aid;
   bool enabled;
   int max_considered;
-};
-
-// Answer from an actor to the question "what are you about to run?"
-struct s_mc_message_simcall_probe_one_t { // a series of `s_mc_message_simcall_probe_one_t`
-                                          // is sent right after `s_mc_message_actors_status_one_t[]`
-  simgrid::mc::MessageType type;
-  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 #endif // __cplusplus

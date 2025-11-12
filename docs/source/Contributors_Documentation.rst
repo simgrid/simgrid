@@ -60,6 +60,10 @@ Interacting with the tests
 Breaking tests once in a while is completely OK in SimGrid. We accept temporarily breakages because we want things to evolve, but if you break something, it is
 your duty to fix it within 24 hours to not hinder the work of others.
 
+Note that need to build the tests with ``make examples`` or ``ninja examples`` before running the tests with ``ctest``. Calling
+``make all`` is not enough for that. We never managed to explain CMake that it should build the binaries before running the
+tests: any hint is welcome.
+
 Understanding the existing tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -196,6 +200,23 @@ Unsorted hints
 
 * If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging
   mechanism, switching to printfs instead. SimGrid then becomes incredibly verbose, but it you let you fixing things.
+
+* To run the JVM within the address sanitizer, you have to compile simgrid with ASan as usual with the
+  ``enable_address_sanitizer`` parameter of cmake, and then you have to LD_PRELOAD asan within the JVM (the other approach would
+  be to recompile the JVM with ASan, but it would also show the many bugs of the JVM). This only works if you also PRELOAD the
+  stdc++ library (see https://github.com/google/sanitizers/issues/934 for the details I didn't read).
+
+  .. code-block:: console
+
+   $ LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libasan.so.8:/usr/lib/x86_64-linux-gnu/libstdc++.so.6 LD_LIBRARY_PATH=../../lib/ /usr/bin/java -cp ../../simgrid.jar:actor_kill.jar actor_kill ../platforms/small_platform.xml
+
+* https://github.com/firecow/gitlab-ci-local is very helpful to test a gitlab-ci pipeline locally, before pushing your commits.
+  You need to have docker configured properly on your machine, and then you simply start the build as follows.
+  
+  .. code-block:: console
+
+   $ gitlab-ci-local --file .gitlab-ci-inria.yml --list    # to retrieve the existing jobs
+   $ gitlab-ci-local --file .gitlab-ci-inria.yml <jobname> # to build a given job
 
 .. |br| raw:: html
 

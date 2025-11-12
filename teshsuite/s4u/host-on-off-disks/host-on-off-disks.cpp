@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,23 +35,23 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  auto* root  = sg4::create_full_zone("root");
-  auto* host1 = root->create_host("host1", 1e9);
-  host1->create_disk("disk-1", 1e9, 1e6);
-  host1->create_disk("disk-2", 1e9, 1e6);
+  auto* root  = e.get_netzone_root();
+  auto* host1 = root->add_host("host1", 1e9);
+  host1->add_disk("disk-1", 1e9, 1e6);
+  host1->add_disk("disk-2", 1e9, 1e6);
 
-  auto* host2 = root->create_host("host2", 1e9);
+  auto* host2 = root->add_host("host2", 1e9);
 
-  const auto* link = root->create_link("link", 1e9);
+  const auto* link = root->add_link("link", 1e9);
   root->add_route(host1, host2, {link});
   root->seal();
 
-  sg4::Actor::create("I/O manager", host1, io_manager)->set_auto_restart();
-  sg4::Actor::create("host_killer", host2, host_killer);
+  host1->add_actor("I/O manager", io_manager)->set_auto_restart();
+  host2->add_actor("host_killer", host_killer);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

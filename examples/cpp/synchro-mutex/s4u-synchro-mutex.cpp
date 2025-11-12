@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -54,8 +54,8 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < cfg_actor_count; i++) {
     sg4::MutexPtr mutex = sg4::Mutex::create();
-    sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), workerScopedLock, mutex, std::ref(result[i]));
-    sg4::Actor::create("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result[i]));
+    e.host_by_name("Jupiter")->add_actor("worker", workerScopedLock, mutex, std::ref(result[i]));
+    e.host_by_name("Tremblay")->add_actor("worker", worker, mutex, std::ref(result[i]));
   }
 
   e.run();

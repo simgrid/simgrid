@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -84,7 +84,7 @@ void CriticalTransitionExplorer::run()
   if (stack_->back()->get_transition_out() == nullptr) {
     reduction_algo_->on_backtrack(stack_->back().get());
     stack_->pop_back();
-    execution_seq_ = execution_seq_.get_prefix_before(execution_seq_.size() - 1);
+    execution_seq_.remove_last_event();
   }
   while (stack_->size() > 1 and not stack_->back()->has_correct_execution()) {
     auto current_candidate = stack_->back()->get_transition_out();
@@ -110,7 +110,7 @@ void CriticalTransitionExplorer::run()
     }
     reduction_algo_->on_backtrack(stack_->back().get());
     stack_->pop_back();
-    execution_seq_ = execution_seq_.get_prefix_before(execution_seq_.size() - 1);
+    execution_seq_.remove_last_event();
   }
 
   log_end_exploration();
@@ -131,12 +131,6 @@ CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp
   for (auto const& state : get_stack())
     initial_bugged_stack.emplace_back(state, state->get_transition_out());
   run();
-}
-
-Exploration* create_critical_transition_exploration(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode,
-                                                    stack_t* stack)
-{
-  return new CriticalTransitionExplorer(std::move(remote_app), mode, stack);
 }
 
 } // namespace simgrid::mc

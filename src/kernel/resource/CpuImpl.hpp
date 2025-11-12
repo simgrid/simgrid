@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +8,6 @@
 
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/Resource.hpp"
 #include "xbt/ex.h"
 
@@ -126,7 +125,7 @@ public:
    * @brief Sets factor callback
    * Implemented only for cas01
    */
-  virtual void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) { THROW_UNIMPLEMENTED; }
+  virtual void set_cpu_factor_cb(const std::function<double(s4u::Host&, double)>& cb) { THROW_UNIMPLEMENTED; }
 
   /**
    * @brief Execute some quantity of computation
@@ -184,6 +183,7 @@ public:
 
   void update_remains_lazy(double now) override;
   std::list<CpuImpl*> cpus() const;
+  CpuImpl* cpu0() const;
 };
 } // namespace simgrid::kernel::resource
 

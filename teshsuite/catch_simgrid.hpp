@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,11 +26,12 @@ extern void assert_cleanup();
 /* We need an extra actor here, so that it can sleep until the end of each test */
 #define BEGIN_SECTION(descr)                                                                                           \
   SECTION(descr)                                                                                                       \
-  { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
+  { all_hosts[0]->add_actor(descr,  []()
 #define END_SECTION                                                                                                    \
   })
 
-#define RUN_SECTION(descr, ...) SECTION(descr) simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__)
+#define RUN_SECTION(descr, ...)                                                                                        \
+  SECTION(descr) all_hosts[0]->add_actor(descr, __VA_ARGS__)
 
 // Normally, we should be able use Catch2's REQUIRE_THROWS_AS(...), but it generates errors with Address Sanitizer.
 // They're certainly false positive. Nevermind and use this simpler replacement.

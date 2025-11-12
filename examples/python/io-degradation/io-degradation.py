@@ -1,4 +1,4 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -86,7 +86,7 @@ def sata_dynamic_sharing(disk: Disk, capacity: float, n: int) -> float:
 
 def create_ssd_disk(host: Host, disk_name: str):
     """ Creates an SSD disk, setting the appropriate callback for non-linear resource sharing """
-    disk = host.create_disk(disk_name, "240MBps", "170MBps")
+    disk = host.add_disk(disk_name, "240MBps", "170MBps")
     disk.set_sharing_policy(Disk.Operation.READ, Disk.SharingPolicy.NONLINEAR,
                             functools.partial(ssd_dynamic_sharing, disk, "read"))
     disk.set_sharing_policy(Disk.Operation.WRITE, Disk.SharingPolicy.NONLINEAR,
@@ -97,7 +97,7 @@ def create_ssd_disk(host: Host, disk_name: str):
 
 def create_sata_disk(host: Host, disk_name: str):
     """ Same for a SATA disk, only read operation follows a non-linear resource sharing """
-    disk = host.create_disk(disk_name, "68MBps", "50MBps")
+    disk = host.add_disk(disk_name, "68MBps", "50MBps")
     disk.set_sharing_policy(Disk.Operation.READ, Disk.SharingPolicy.NONLINEAR,
                             functools.partial(sata_dynamic_sharing, disk))
     # this is the default behavior, expliciting only to make it clearer
@@ -109,13 +109,13 @@ def create_sata_disk(host: Host, disk_name: str):
 if __name__ == '__main__':
     e = Engine(sys.argv)
     # simple platform containing 1 host and 2 disk
-    zone = NetZone.create_full_zone("bob_zone")
-    bob = zone.create_host("bob", 1e6)
+    zone = e.netzone_root.add_netzone_full("bob_zone")
+    bob = zone.add_host("bob", 1e6)
     create_ssd_disk(bob, "Edel (SSD)")
     create_sata_disk(bob, "Griffon (SATA II)")
     zone.seal()
 
-    Actor.create("runner", bob, host_runner)
+    bob.add_actor("runner", host_runner)
 
     e.run()
     this_actor.info("Simulated time: %g" % e.clock)

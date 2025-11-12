@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +8,8 @@
 #include "simgrid/Exception.hpp"
 #include "src/internal_config.h" /* loads context system definitions */
 #include "src/kernel/EngineImpl.hpp"
+#include "src/sthread/sthread.h"
+#include "xbt/asserts.h"
 #include "xbt/function_types.h"
 
 #include <boost/core/demangle.hpp>
@@ -59,6 +61,8 @@ ThreadContext::ThreadContext(std::function<void()>&& code, actor::ActorImpl* act
 {
   /* If the user provided a function for the actor then use it */
   if (has_code()) {
+    sthread_pause_guard guard; // Put sthread on pause during this call on need
+
     /* create and start the actor */
     this->thread_ = new std::thread(ThreadContext::wrapper, this);
     /* wait the start of the newly created actor */
@@ -90,7 +94,9 @@ void ThreadContext::wrapper(ThreadContext* context)
   context->initialized();
 
   try {
+    sthread_enable();
     (*context)();
+    sthread_disable();
     if (not context->is_maestro()) // Just in case somebody detached maestro
       context->stop();
   } catch (ForcefulKillException const&) {
@@ -139,6 +145,7 @@ void ThreadContext::suspend()
 
 void ThreadContext::attach_start()
 {
+  xbt_assert(not sthread_is_enabled(), "Mixing sthread and maestro_attach is not supported yet");
   // We're breaking the layers here by depending on the upper layer:
   auto* maestro = static_cast<ThreadContext*>(EngineImpl::get_instance()->get_maestro()->context_.get());
   maestro->begin_.release();
@@ -161,6 +168,7 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
+  sthread_pause_guard guard; // Put sthread on pause during this call on need
   for (auto const* actor : actors_list) {
     XBT_DEBUG("Handling %p", actor);
     auto* context = static_cast<ThreadContext*>(actor->context_.get());

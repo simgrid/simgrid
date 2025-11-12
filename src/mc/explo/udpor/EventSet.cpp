@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -152,17 +152,17 @@ bool EventSet::is_valid_configuration() const
 
 bool EventSet::contains(const History& history) const
 {
-  return std::all_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+  return std::all_of(history.begin(), history.end(), [this](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
 bool EventSet::intersects(const History& history) const
 {
-  return std::any_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+  return std::any_of(history.begin(), history.end(), [this](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
 bool EventSet::intersects(const EventSet& other) const
 {
-  return std::any_of(other.begin(), other.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
+  return std::any_of(other.begin(), other.end(), [this](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
 EventSet EventSet::get_largest_maximal_subset() const

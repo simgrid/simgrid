@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -58,8 +58,8 @@ def main():
     settings = create_parser().parse_known_args()[0]
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    Actor.create("sender", e.host_by_name("Tremblay"), sender)
-    Actor.create("receiver", e.host_by_name("Jupiter"), receiver)
+    e.host_by_name("Tremblay").add_actor("sender", sender)
+    e.host_by_name("Jupiter").add_actor("receiver", receiver)
     e.run()
 
 

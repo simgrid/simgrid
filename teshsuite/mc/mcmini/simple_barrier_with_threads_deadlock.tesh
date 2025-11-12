@@ -12,30 +12,40 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:4)
 > [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall BARRIER_WAIT(barrier_id:0)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall BARRIER_WAIT(barrier: 0)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall ActorExit()
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorJoin(target 2, no timeout)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall ActorExit()
 > [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorJoin(target 3, no timeout)
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall BARRIER_ASYNC_LOCK(barrier: 0)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;3;1;2;1;3;1;4'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 10 unique states visited; 0 explored traces (0 transition replays, 10 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;2;3;1;2;2;1;3;3;1;4'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 24 unique states visited; 0 explored traces (0 transition replays, 15 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: BARRIER_WAIT(barrier: 0)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in  ==> simcall: ActorExit()
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorJoin(target 2, no timeout)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: BARRIER_WAIT(barrier: 0)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: ActorExit()
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in  ==> simcall: ActorJoin(target 3, no timeout)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: BARRIER_ASYNC_LOCK(barrier: 0)
 > [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
-> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: BARRIER_ASYNC_LOCK(barrier: 0)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: ActorCreate(child 2)

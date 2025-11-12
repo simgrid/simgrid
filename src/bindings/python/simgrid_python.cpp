@@ -1,12 +1,13 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #include <pybind11/pybind11.h> // Must come before our own stuff
 
 #include <pybind11/functional.h>
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
@@ -32,6 +33,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -66,6 +68,10 @@ using simgrid::s4u::Task;
 using simgrid::s4u::TaskPtr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
+
+#ifdef SIMGRID_HAVE_PYTHON_SMPI
+void SMPI_bindings(py::module& m);
+#endif
 
 namespace {
 
@@ -129,6 +135,8 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
                              const std::vector<double>&>(&simgrid::s4u::this_actor::exec_init),
            py::call_guard<py::gil_scoped_release>(), "Initiate a parallel task (requires the 'ptask_L07' model)")
+      .def("get_engine", &simgrid::s4u::this_actor::get_engine,
+           "The engine on which this actor is running (read-only property).")
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
       .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))
@@ -183,13 +191,17 @@ PYBIND11_MODULE(simgrid, m)
            "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
-      .def_property_readonly("all_netpoints", &Engine::get_all_netpoints, "Returns the list of all netpoints found in the platform")
-      .def_property_readonly("all_actors", &Engine::get_all_actors, "Returns the list of all actors found in the platform")
+      .def_property_readonly("all_netpoints", &Engine::get_all_netpoints,
+                             "Returns the list of all netpoints found in the platform")
+      .def_property_readonly("all_netzones", &Engine::get_all_netzones,
+                             "Returns the list of all netzones found in the platform")
+      .def_property_readonly("all_actors", &Engine::get_all_actors,
+                             "Returns the list of all actors found in the platform")
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
       .def("netzone_by_name", &Engine::netzone_by_name_or_null)
-      .def("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
+      .def_static("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
            "Change one of SimGrid's configurations")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
@@ -226,22 +238,187 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          "Registers the main function of an actor")
+          "Registers the main function of an actor (used for the deployment file)")
+      .def(
+          "add_actor", // XBT_ATTRIB_DEPRECATED_v403
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "add_actor) is deprecated, use Host.add_actor().", 2);
+            throw std::logic_error("Please call Host.add_actor() instead");
+          },
+          "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def("set_log_control", [](Engine*, const std::string& settings) { xbt_log_control_set(settings.c_str()); });
 
   /* Class Netzone */
   py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(
       m, "NetZone", "Networking Zones. See the C++ documentation for details.");
-  netzone.def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a zone of type FullZone")
-      .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
-      .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
-      .def_static("create_dragonfly_zone", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
-      .def_static("create_star_zone", &simgrid::s4u::create_star_zone, "Creates a zone of type Star")
-      .def_static("create_floyd_zone", &simgrid::s4u::create_floyd_zone, "Creates a zone of type Floyd")
-      .def_static("create_dijkstra_zone", &simgrid::s4u::create_floyd_zone, "Creates a zone of type Dijkstra")
-      .def_static("create_vivaldi_zone", &simgrid::s4u::create_vivaldi_zone, "Creates a zone of type Vivaldi")
-      .def_static("create_empty_zone", &simgrid::s4u::create_empty_zone, "Creates a zone of type Empty")
-      .def_static("create_wifi_zone", &simgrid::s4u::create_wifi_zone, "Creates a zone of type Wi-Fi")
+  netzone
+      .def_static(
+          "create_full_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_full_zone() is deprecated, use Netzone.add_netzone_full().",
+                         2);
+            throw std::logic_error("Please call Netzone.add_netzone_full() instead");
+          },
+          "Creates a zone of type FullZone") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static("create_torus_zone", [](std::string const& name) {
+          PyErr_WarnEx(PyExc_DeprecationWarning, "create_torus_zone() is deprecated, use Netzone.add_netzone_fatTree().",
+                       2);
+          throw std::logic_error("Please call Netzone.add_netzone_torus() instead");
+        },
+        "Creates a cluster of type Torus") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static("create_fatTree_zone", [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_fatTree_zone() is deprecated, use Netzone.add_netzone_fatTree().",
+                         2);
+            throw std::logic_error("Please call Netzone.add_netzone_fatTree() instead");
+          },
+          "Creates a cluster of type Fat-Tree") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static("create_dragonfly_zone", [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_dragonfly_zone() is deprecated, use Netzone.add_netzone_dragonfly().",
+                         2);
+            throw std::logic_error("Please call Netzone.add_netzone_dragonfly() instead");
+          }, 
+          "Creates a cluster of type Dragonfly")
+      .def_static(
+          "create_star_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_star_zone() is deprecated, use Netzone.add_netzone_star().",
+                         2);
+            throw std::logic_error("Please call Netzone.add_netzone_star() instead");
+          },
+          "Creates a zone of type Star") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static(
+          "create_floyd_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_floyd_zone() is deprecated, use Netzone.add_netzone_floyd().", 2);
+            throw std::logic_error("Please call Netzone.add_netzone_floyd() instead");
+          },
+          "Creates a zone of type Floyd") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static(
+          "create_dijkstra_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_dijkstra_zone() is deprecated, use Netzone.add_netzone_dijkstra().", 2);
+            throw std::logic_error("Please call Netzone.add_netzone_dijkstra() instead");
+          },
+          "Creates a zone of type Dijkstra") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static(
+          "create_vivaldi_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_vivaldi_zone() is deprecated, use Netzone.add_netzone_vivaldi().", 2);
+            throw std::logic_error("Please call Netzone.add_netzone_vivaldi() instead");
+          },
+          "Creates a zone of type Vivaldi") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static(
+          "create_empty_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning,
+                         "create_empty_zone() is deprecated, use Netzone.add_netzone_empty().", 2);
+            throw std::logic_error("Please call Netzone.add_netzone_empty() instead");
+          },
+          "Creates a zone of type Empty") // XBT_ATTRIB_DEPRECATED_v401
+      .def_static(
+          "create_wifi_zone",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_wifi_zone() is deprecated, use Netzone.add_netzone_wifi().",
+                         2);
+            throw std::logic_error("Please call Netzone.add_netzone_wifi() instead");
+          },
+          "Creates a zone of type Wi-Fi") // XBT_ATTRIB_DEPRECATED_v401
+      .def("set_host_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_host_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Host* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Host*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_host_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a host callback to a cluster zone")
+      .def("set_netzone_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_netzone_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::NetZone* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::NetZone*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_netzone_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a netzone callback to a cluster zone")
+      .def("set_loopback_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_loopback_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Link* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_loopback_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a loopback callback to a cluster zone")
+      .def("set_limiter_cb", [](simgrid::s4u::NetZone* zone, py::object cb) -> simgrid::s4u::NetZone* {
+          cb.inc_ref(); // keep alive after return
+          const py::gil_scoped_release gil_release;
+          return zone->set_limiter_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& coord,
+               unsigned long id) ->simgrid::s4u::Link* {
+            const py::gil_scoped_acquire py_context; // need a new context for callback
+            try {
+              const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+              return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
+            } catch (const py::error_already_set& e) {
+              xbt_die("Error while executing the set_limiter_cb lambda : %s", e.what());
+            }
+          });
+        }, "Set a limiter callback to a cluster zone")
+      .def("add_netzone_torus", 
+               py::overload_cast<const std::string&, const std::vector<unsigned long>&,
+               const std::string&, const std::string&, 
+               simgrid::s4u::Link::SharingPolicy>(&simgrid::s4u::NetZone::add_netzone_torus), 
+               "Creates a cluster of type Torus")
+      .def("add_netzone_torus", 
+               py::overload_cast<const std::string&, const std::vector<unsigned long>&,
+               double, double, simgrid::s4u::Link::SharingPolicy>(&simgrid::s4u::NetZone::add_netzone_torus),
+               "Creates a cluster of type Torus")
+      .def("add_netzone_fatTree", 
+               py::overload_cast<const std::string&, unsigned int, const std::vector<unsigned int>&,
+               const std::vector<unsigned int>&, const std::vector<unsigned int>&,
+               const std::string&, const std::string&, simgrid::s4u::Link::SharingPolicy>
+               (&simgrid::s4u::NetZone::add_netzone_fatTree), 
+               "Creates a cluster of type Fat-Tree")
+      .def("add_netzone_fatTree", 
+               py::overload_cast<const std::string&, unsigned int, const std::vector<unsigned int>&,
+               const std::vector<unsigned int>&, const std::vector<unsigned int>&,
+               double, double, simgrid::s4u::Link::SharingPolicy>(&simgrid::s4u::NetZone::add_netzone_fatTree),
+               "Creates a cluster of type Fat-Tree")
+      .def("add_netzone_dragonfly", 
+               py::overload_cast<const std::string&,const std::pair<unsigned int, unsigned int>&,
+               const std::pair<unsigned int, unsigned int>&, const std::pair<unsigned int, unsigned int>&,
+               unsigned int, double, double, simgrid::s4u::Link::SharingPolicy>
+               (&simgrid::s4u::NetZone::add_netzone_dragonfly), "Creates a cluster of type Dragonfly")
+      .def("add_netzone_dragonfly", 
+               py::overload_cast<const std::string&,const std::pair<unsigned int, unsigned int>&,
+               const std::pair<unsigned int, unsigned int>&, const std::pair<unsigned int, unsigned int>&,
+               unsigned int, const std::string&, const std::string&, simgrid::s4u::Link::SharingPolicy>
+               (&simgrid::s4u::NetZone::add_netzone_dragonfly), "Creates a cluster of type Dragonfly")
+      .def("add_netzone_full", &simgrid::s4u::NetZone::add_netzone_full, "Creates a zone of type FullZone")
+      .def("add_netzone_star", &simgrid::s4u::NetZone::add_netzone_star, "Creates a zone of type Star")
+      .def("add_netzone_floyd", &simgrid::s4u::NetZone::add_netzone_floyd, "Creates a zone of type Floyd")
+      .def("add_netzone_dijkstra", &simgrid::s4u::NetZone::add_netzone_dijkstra, "Creates a zone of type Dijkstra")
+      .def("add_netzone_vivaldi", &simgrid::s4u::NetZone::add_netzone_vivaldi, "Creates a zone of type Vivaldi")
+      .def("add_netzone_empty", &simgrid::s4u::NetZone::add_netzone_empty, "Creates a zone of type Empty")
+      .def("add_netzone_wifi", &simgrid::s4u::NetZone::add_netzone_wifi, "Creates a zone of type Wi-Fi")
       .def("add_component", &simgrid::s4u::NetZone::add_component, "Add NetPoint component to NetZone")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
@@ -260,38 +437,69 @@ PYBIND11_MODULE(simgrid, m)
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
            "Add a route between 2 netzones. The gateway of each zone gets used.")
       .def("add_bypass_route", &simgrid::s4u::NetZone::add_bypass_route, "Add bypass route to NetZone.")
-      .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_host",
-           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_host),
-           "Creates a host")
-      .def("create_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_link",
-           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_link),
-           "Creates a network link")
-      .def("create_split_duplex_link",
-           py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
-           "Creates a split-duplex link")
-      .def("create_split_duplex_link",
-           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_split_duplex_link),
-           "Creates a split-duplex link")
-      .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
-      .def_property("parent", &simgrid::s4u::NetZone::get_parent, &simgrid::s4u::NetZone::set_parent, "NetZone parent (r/w property).")
+      .def("add_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("add_host", py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_host),
+           "Adds a host")
+      .def("create_host", [](std::string const& name) {
+               PyErr_WarnEx(PyExc_DeprecationWarning,
+                            "create_host() is deprecated, use Netzone.add_host().", 2);
+               throw std::logic_error("Please call Netzone.add_host() instead");
+            },
+            "Creates a host") // XBT_ATTRIB_DEPRECATED_v401 
+      .def("add_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_link),
+           "Addss a network link")
+      .def("add_link",
+           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_link),
+           "Adds a network link")
+      .def("create_link", [](std::string const& name) {
+               PyErr_WarnEx(PyExc_DeprecationWarning,
+                            "create_link() is deprecated, use Netzone.add_link().", 2);
+               throw std::logic_error("Please call Netzone.add_link() instead");
+            },
+            "Creates a link") // XBT_ATTRIB_DEPRECATED_v401 
+      .def("add_split_duplex_link",
+           py::overload_cast<const std::string&, double, double>(&simgrid::s4u::NetZone::add_split_duplex_link),
+           "Adds a split-duplex link")
+      .def("add_split_duplex_link",
+           py::overload_cast<const std::string&, const std::string&, const std::string&>(
+               &simgrid::s4u::NetZone::add_split_duplex_link),
+           "Adds a split-duplex link")
+      .def("add_split_duplex_link",
+          [](simgrid::s4u::NetZone& net, const std::string& name, double bw) {
+            return net.add_split_duplex_link(name, bw);
+          },
+          "Adds a split-duplex link")
+      .def("add_split_duplex_link",
+          [](simgrid::s4u::NetZone& net, const std::string& name, const std::string& bw) {
+            return net.add_split_duplex_link(name, bw);
+          },
+          "Adds a split-duplex link")
+      .def("create_split_duplex_link", [](std::string const& name) {
+             PyErr_WarnEx(PyExc_DeprecationWarning,
+                          "create_split_duplex_link() is deprecated, use Netzone.add_split_duplex_link().", 2);
+             throw std::logic_error("Please call Netzone.add_split_duplex_link() instead");
+          },
+          "Creates a split-duplex link") // XBT_ATTRIB_DEPRECATED_v401 
+      .def("add_router", &simgrid::s4u::NetZone::add_router, "Adds a router")
+      .def("create_router", [](std::string const& name) {
+          PyErr_WarnEx(PyExc_DeprecationWarning,
+                       "create_router() is deprecated, use Netzone.add_router().", 2);
+          throw std::logic_error("Please call Netzone.add_router() instead");
+          },
+          "Creates a router") // XBT_ATTRIB_DEPRECATED_v401 
+      .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent, "NetZone parent (read-only property).")
       // Keep `set_parent` method for backward compatibility.
-      .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone.")
       .def("get_children", &simgrid::s4u::NetZone::get_children, "Get all children of this zone.")
       .def("get_property", &simgrid::s4u::NetZone::get_property, "Retrieve NetZone property.")
       .def("get_properties", &simgrid::s4u::NetZone::get_properties, "Retrieve NetZone all properties.")
@@ -302,27 +510,29 @@ PYBIND11_MODULE(simgrid, m)
            "Specify the gateway of this zone, to be used for inter-zone routes")
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
-      .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
+      .def("seal", &simgrid::s4u::NetZone::seal, py::call_guard<py::gil_scoped_release>(), "Seal this NetZone")
       .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
                              "The name of this network zone (read-only property).")
-      .def_property_readonly("all_hosts", &simgrid::s4u::NetZone::get_all_hosts, "Retrieve all NetZone hosts (read-only property).")
-      .def_property_readonly("host_count", &simgrid::s4u::NetZone::get_host_count, "Get NetZone host count (read-only property).")
+      .def_property_readonly("all_hosts", &simgrid::s4u::NetZone::get_all_hosts,
+                             "Retrieve all NetZone hosts (read-only property).")
+      .def_property_readonly("host_count", &simgrid::s4u::NetZone::get_host_count,
+                             "Get NetZone host count (read-only property).")
       .def(
           "__repr__", [](const simgrid::s4u::NetZone net) { return "NetZone(" + net.get_name() + ")"; },
           "Textual representation of the NetZone");
 
-  /* Class ClusterCallbacks */
+  /* Class ClusterCallbacks */ // XBT_ATTRIB_DEPRECATED_v401 
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
       .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetZoneCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&,
                     const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&>());
 
-  /* Class FatTreeParams */
+  /* Class FatTreeParams */ // XBT_ATTRIB_DEPRECATED_v401 
   py::class_<simgrid::s4u::FatTreeParams>(m, "FatTreeParams", "Parameters to create a Fat-Tree zone")
       .def(py::init<unsigned int, const std::vector<unsigned int>&, const std::vector<unsigned int>&,
                     const std::vector<unsigned int>&>());
 
-  /* Class DragonflyParams */
+  /* Class DragonflyParams */ // XBT_ATTRIB_DEPRECATED_v401
   py::class_<simgrid::s4u::DragonflyParams>(m, "DragonflyParams", "Parameters to create a Dragonfly zone")
       .def(py::init<const std::pair<unsigned int, unsigned int>&, const std::pair<unsigned int, unsigned int>&,
                     const std::pair<unsigned int, unsigned int>&, unsigned int>());
@@ -392,11 +602,38 @@ PYBIND11_MODULE(simgrid, m)
            "Set the coordinates of this host")
       .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Describe how the CPU is shared", py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
-      .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk),
-           py::call_guard<py::gil_scoped_release>(), "Create a disk")
-      .def("create_disk",
-           py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
-           py::call_guard<py::gil_scoped_release>(), "Create a disk")
+      .def("add_actor",
+          [](Host* host, const std::string& name, py::object fun, py::args args) {
+            fun.inc_ref();  // keep alive after return
+            args.inc_ref(); // keep alive after return
+            const py::gil_scoped_release gil_release;
+            return host->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+              const py::gil_scoped_acquire py_context;
+              try {
+                const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
+                const auto args = py::reinterpret_borrow<py::args>(args_p);
+                fun(*args);
+              } catch (const py::error_already_set& ex) {
+                if (ex.matches(pyForcefulKillEx)) {
+                  XBT_VERB("Actor killed");
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
+                }
+                throw;
+              }
+            });
+          },
+          "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
+      .def("add_disk", py::overload_cast<const std::string&, double, double>(&Host::add_disk),
+           py::call_guard<py::gil_scoped_release>(), "Add a disk")
+      .def("add_disk", py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::add_disk),
+           py::call_guard<py::gil_scoped_release>(), "Add a disk")
+      .def(
+          "create_disk",
+          [](std::string const& name) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "create_disk) is deprecated, use Host.add_disk().", 2);
+            throw std::logic_error("Please call Host.add_disk() instead");
+          },
+          "Creates a disk") // XBT_ATTRIB_DEPRECATED_v401
       .def("get_property", &Host::get_property, "Get Host property")
       .def("get_properties", &Host::get_properties, "Get all Host properties")
       .def("set_property", &Host::set_property, "Set Host property")
@@ -404,7 +641,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property("concurrency_limit", &Host::get_concurrency_limit,
                     py::cpp_function(&Host::set_concurrency_limit, py::call_guard<py::gil_scoped_release>()),
                     "Concurrency limit (read/write property).")
-      .def("seal", &Host::seal, py::call_guard<py::gil_scoped_release>(), "Seal this host")
+      .def("seal", &Host::seal, "Seal this host")
       .def("turn_off", &Host::turn_off, py::call_guard<py::gil_scoped_release>(), "Turn off this host")
       .def("turn_on", &Host::turn_on, py::call_guard<py::gil_scoped_release>(), "Turn on this host")
       .def_property("pstate", &Host::get_pstate,
@@ -412,8 +649,10 @@ PYBIND11_MODULE(simgrid, m)
                     "The current pstate (read/write property).")
       .def_static("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
                   "Retrieves the host on which the running actor is located.")
-      .def_property_readonly("is_on", &Host::is_on, "Returns if that host is currently up and running (read-only property).")
-      .def_property_readonly("actor_count", &Host::get_actor_count, "Returns actor count placed on this Host (read-only property).")
+      .def_property_readonly("is_on", &Host::is_on,
+                             "Returns if that host is currently up and running (read-only property).")
+      .def_property_readonly("actor_count", &Host::get_actor_count,
+                             "Returns actor count placed on this Host (read-only property).")
       .def_property_readonly("name", &Host::get_name, "The name of this host (read-only property).")
       .def_property_readonly("load", &Host::get_load,
                              "Returns the current computation load (in flops per second), NOT taking the external load "
@@ -472,7 +711,7 @@ PYBIND11_MODULE(simgrid, m)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
 
   /* Class Disk */
-  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
+  py::class_<Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
       m, "Disk", "Simulated disk. See the C++ documentation for details.");
   disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Read data from disk", py::arg("size"), py::arg("priority") = 1)
@@ -496,7 +735,10 @@ PYBIND11_MODULE(simgrid, m)
            "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
+      .def("turn_on", &Disk::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the disk on.")
+      .def("turn_off", &Disk::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the disk off.")
       .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
+      .def_property_readonly("host", &simgrid::s4u::Disk::get_host, "The Host to which this disk is attached (read-only property)")
       .def(
           "__repr__", [](const Disk* d) { return "Disk(" + d->get_name() + ")"; },
           "Textual representation of the Disk");
@@ -596,14 +838,15 @@ PYBIND11_MODULE(simgrid, m)
            "Set level of communication speed of given host on this Wi-Fi link")
       .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
       .def_static("by_name_or_null", &Link::by_name_or_null,
-                 "Retrieve a Link by its name, or None if it does not exist in the platform.")
+                  "Retrieve a Link by its name, or None if it does not exist in the platform.")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly("name", &Link::get_name, "The name of this link")
       .def_property("bandwidth", &Link::get_bandwidth,
                     py::cpp_function(&Link::set_bandwidth, py::call_guard<py::gil_scoped_release>()),
                     "The bandwidth (in bytes per second) (r/w property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
-      .def_property_readonly("load", &Link::get_load, "Returns the current load (in bytes per second) (read-only property).")
+      .def_property_readonly("load", &Link::get_load,
+                             "Returns the current load (in bytes per second) (read-only property).")
       .def("get_property", &Link::get_property, "Retrieve link property.")
       .def("get_properties", &Link::get_properties, "Retrieve link all properties.")
       .def("set_property", &Link::set_property, "Set link property.")
@@ -712,8 +955,8 @@ PYBIND11_MODULE(simgrid, m)
                              "Time at which this Comm finished")
       .def_property_readonly("is_suspended", &Comm::is_suspended, py::call_guard<py::gil_scoped_release>(),
                              "Whether this Comm is suspended")
-      .def("set_tracing_category", &Comm::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
-           "Set a user-defined tracing category.")
+      .def("set_tracing_category", &Comm::set_tracing_category, py::call_guard<py::gil_scoped_release>(),
+           py::arg("category"), "Set a user-defined tracing category.")
       .def("set_payload_size", &Comm::set_payload_size, py::call_guard<py::gil_scoped_release>(), py::arg("bytes"),
            "Specify the amount of bytes which exchange should be simulated.")
       .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(), py::arg("rate"),
@@ -757,8 +1000,8 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(m, "Io",
                                                               "I/O activities. See the C++ documentation for details.")
-      .def("set_tracing_category", &simgrid::s4u::Io::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
-           "Set a user-defined tracing category.")
+      .def("set_tracing_category", &simgrid::s4u::Io::set_tracing_category, py::call_guard<py::gil_scoped_release>(),
+           py::arg("category"), "Set a user-defined tracing category.")
       .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
@@ -778,8 +1021,8 @@ PYBIND11_MODULE(simgrid, m)
                     "Changing this value migrates the execution.")
       .def_property_readonly("is_suspended", &simgrid::s4u::Exec::is_suspended,
                              py::call_guard<py::gil_scoped_release>(), "Whether this Exec is suspended")
-      .def("set_tracing_category", &simgrid::s4u::Exec::set_tracing_category, py::call_guard<py::gil_scoped_release>(), py::arg("category"),
-           "Set a user-defined tracing category.")
+      .def("set_tracing_category", &simgrid::s4u::Exec::set_tracing_category, py::call_guard<py::gil_scoped_release>(),
+           py::arg("category"), "Set a user-defined tracing category.")
       .def("test", &simgrid::s4u::Exec::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")
@@ -841,13 +1084,15 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
                                             "application. See the C++ documentation for details.")
-      .def(
+      .def( // XBT_ATTRIB_DEPRECATED_v401
           "create",
           [](const std::string& name, Host* h, py::object fun, py::args args) {
+            PyErr_WarnEx(PyExc_DeprecationWarning, "Actor.create() is deprecated, use Engine.add_actor().", 2);
+
             fun.inc_ref();  // keep alive after return
             args.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            return simgrid::s4u::Actor::create(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
+            return h->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
               const py::gil_scoped_acquire py_context;
               try {
                 const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
@@ -1031,4 +1276,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__repr__", [](const ActivitySetPtr) { return "ActivitySet([...])"; },
           "Textual representation of the ActivitySet");
+#ifdef SIMGRID_HAVE_PYTHON_SMPI
+  SMPI_bindings(m);
+#endif
 }

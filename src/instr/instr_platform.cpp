@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,10 +13,11 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/graph.h>
 
-#include "src/instr/instr_private.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "xbt/log.h"
 
 #include <fstream>
 
@@ -278,19 +279,24 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
     auto* root = new NetZoneContainer(id, 0, nullptr);
     xbt_assert(Container::get_root() == root);
 
-    if (TRACE_smpi_is_enabled()) {
-      auto* mpi = root->get_type()->by_name_or_create<ContainerType>("MPI");
-      if (not TRACE_smpi_is_grouped())
-        mpi->by_name_or_create<StateType>("MPI_STATE");
-      root->get_type()->by_name_or_create("MPI_LINK", mpi, mpi);
-      root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
-      mpi->by_name_or_create<StateType>("MIGRATE_STATE");
-    }
-
-    if (TRACE_needs_platform()) {
+    if (TRACE_needs_platform())
       currentContainer.push_back(root);
-    }
+
     return;
+  }
+
+  // This static is ugly, but I fail to make it work otherwise
+  static bool inited = false;
+  if (TRACE_smpi_is_enabled() && not inited) {
+    inited = true;
+
+    auto root = Container::get_root();
+    auto* mpi = root->get_type()->by_name_or_create<ContainerType>("MPI");
+    if (not TRACE_smpi_is_grouped())
+      mpi->by_name_or_create<StateType>("MPI_STATE");
+    root->get_type()->by_name_or_create("MPI_LINK", mpi, mpi);
+    root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+    mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
 
   if (TRACE_needs_platform()) {
@@ -302,18 +308,16 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
 
 static void on_link_creation(s4u::Link const& link)
 {
-  if (currentContainer.empty()) // No ongoing parsing. Are you creating the loopback?
+  if (link.get_name() == "__loopback__") // Don't trace the loopback
     return;
 
-  auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
+  auto* container = new Container(link.get_name(), "LINK", Container::by_name(link.get_englobing_zone()->get_name()));
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
     VariableType* bandwidth = container->get_type()->by_name_or_create("bandwidth", "");
     bandwidth->set_calling_container(container);
-    bandwidth->set_event(0, link.get_bandwidth());
     VariableType* latency = container->get_type()->by_name_or_create("latency", "");
     latency->set_calling_container(container);
-    latency->set_event(0, link.get_latency());
   }
 
   if (TRACE_uncategorized()) {
@@ -326,7 +330,7 @@ static void on_host_creation(s4u::Host const& host)
   if (Container::by_name_or_null(host.get_name())) // This host already exists, do nothing
     return;
 
-  Container* container  = new HostContainer(host, currentContainer.back());
+  Container* container  = new HostContainer(host);
   const Container* root = Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
@@ -383,13 +387,22 @@ static void on_activity_suspend_resume(s4u::Activity const& activity)
   on_action_state_change(*activity.get_impl()->model_action_, /*ignored*/ kernel::resource::Action::State::STARTED);
 }
 
-static void on_platform_created()
+static void on_simulation_start()
 {
-  currentContainer.clear();
   std::set<std::string, std::less<>> filter;
   XBT_DEBUG("Starting graph extraction.");
   recursiveGraphExtraction(s4u::Engine::get_instance()->get_netzone_root(), Container::get_root(), &filter);
   XBT_DEBUG("Graph extraction finished.");
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
+   auto links = simgrid::s4u::Engine::get_instance()->get_all_links();
+   for (const auto& link : links) {
+     if (link->get_name() == "__loopback__")
+      continue; 
+     auto container = Container::by_name(link->get_name());
+     container->get_type()->by_name_or_create("bandwidth", "")->set_event(0, link->get_bandwidth());
+     container->get_type()->by_name_or_create("latency", "")->set_event(0, link->get_latency());
+    }
+  }
   dump_buffer(true);
 }
 
@@ -435,7 +448,7 @@ static void on_actor_host_change(s4u::Actor const& actor, s4u::Host const& /*pre
 
 static void on_vm_creation(s4u::Host const& host)
 {
-  const Container* container = new HostContainer(host, currentContainer.back());
+  const Container* container = new HostContainer(host);
   const Container* root      = Container::get_root();
   auto* vm                   = container->get_type()->by_name_or_create<ContainerType>("VM");
   auto* state                = vm->by_name_or_create<StateType>("VM_STATE");
@@ -453,7 +466,7 @@ void define_callbacks()
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
-    s4u::Engine::on_platform_created_cb(on_platform_created);
+    s4u::Engine::on_simulation_start_cb(on_simulation_start);
     s4u::Host::on_creation_cb(on_host_creation);
     s4u::Host::on_speed_change_cb([](s4u::Host const& host) {
       Container::by_name(host.get_name())
@@ -471,11 +484,14 @@ void define_callbacks()
     });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
       if (netpoint.is_router())
-        new RouterContainer(netpoint.get_name(), currentContainer.back());
+        new RouterContainer(netpoint);
     });
   }
 
   s4u::NetZone::on_creation_cb(on_netzone_creation);
+  // The root netzone is created earlier when we are parsing an XML file, so handle it now
+  for (auto nz : s4u::Engine::get_instance()->get_all_netzones())
+    on_netzone_creation(*nz);
 
   s4u::Host::on_exec_state_change_cb(on_action_state_change);
   s4u::Link::on_communication_state_change_cb(on_action_state_change);

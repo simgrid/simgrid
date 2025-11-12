@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -180,6 +180,8 @@ namespace activity {
   using ExecImplPtr = boost::intrusive_ptr<ExecImpl>;
   class IoImpl;
   using IoImplPtr = boost::intrusive_ptr<IoImpl>;
+  class MemoryAccessImpl;
+  using MemoryAccessImplPtr = boost::intrusive_ptr<MemoryAccessImpl>;
   class MessImpl;
   using MessImplPtr = boost::intrusive_ptr<MessImpl>;
   class MutexImpl;
@@ -246,8 +248,12 @@ class Profile;
 } // namespace profile
 } // namespace kernel
 namespace mc {
+class Channel;
 class State;
 class RemoteApp;
+namespace odpor {
+class Execution;
+}
 }
 } // namespace simgrid
 

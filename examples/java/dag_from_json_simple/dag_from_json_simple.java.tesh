@@ -1,0 +1,8 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dag_from_json_simple.jar dag_from_json_simple ${platfdir}/small_platform.xml ${srcdir:=.}/dag_from_json_simple/dag.json --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [10.194200] [java/INFO] Exec 'c1' is complete (start time: 0.000000, finish time: 10.194200)
+> [65.534235] [java/INFO] Exec 'c2' is complete (start time: 0.000000, finish time: 65.534235)
+> [85.283378] [java/INFO] Comm 't1' is complete (start time: 10.194200, finish time: 85.283378)
+> [111.497072] [java/INFO] Exec 'c3' is complete (start time: 85.283378, finish time: 111.497072)

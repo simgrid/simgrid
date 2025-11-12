@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,6 +36,7 @@ static void policeman()
   // I tell it where it must emigrate to.
   auto destinations = {"Tremblay", "Jupiter", "Fafard", "Ginette", "Bourassa", "Fafard", "Tremblay", "Ginette", ""};
   auto* mailbox     = sg4::Mailbox::by_name("master_mailbox");
+  simgrid::instr::declare_tracing_category("migration_order");
 
   for (auto const& destination : destinations) {
     mailbox->put_init(new std::string(destination), 0)->set_tracing_category("migration_order")->wait();
@@ -49,10 +50,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::instr::declare_tracing_category("migration_order");
-
-  sg4::Actor::create("emigrant", e.host_by_name("Fafard"), emigrant);
-  sg4::Actor::create("policeman", e.host_by_name("Tremblay"), policeman);
+  e.host_by_name("Fafard")->add_actor("emigrant", emigrant);
+  e.host_by_name("Tremblay")->add_actor("policeman", policeman);
 
   e.run();
   return 0;

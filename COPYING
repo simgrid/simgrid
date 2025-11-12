@@ -3,7 +3,7 @@ Upstream-Name: SimGrid
 Source: https://simgrid.org/
 
 Files: *
-Copyright: 2003-2024. The SimGrid team. All rights reserved.
+Copyright: 2003-2025. The SimGrid team. All rights reserved.
 License: LGPL-2.1-only
 
 Files: src/xbt/snprintf.c
@@ -65,7 +65,7 @@ Files:
 Copyright:
  FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  FleXML is Copyright (C) 2003-2013 Martin Quinson.  All rights reserved.
- Copyright (C) 2003-2024. The SimGrid team.
+ Copyright (C) 2003-2025. The SimGrid team.
 License: GPL-2+ and LGPL-2.1-only
 Comment: Generated with the FleXML XML processor generator (which is GPL-2+) using SimGrid configuration files (that are LGPL-2.1-only)
 
@@ -176,6 +176,12 @@ Copyright:
   Copyright (C) 2021-2022, The MBI project.
 Comment: The MBI.py script was written for SimGrid while the other files are kept in sync with the MBI source tree.
 License: GPL-3
+
+Files: teshsuite/mc/mcmini/*
+Copyright:
+  Copyright (C) 2022, Maxwell Pirtle, Luka Jovanovic, Gene Cooperman
+  (pirtle.m@northeastern.edu, jovanovic.l@northeastern.edu, gene@ccs.neu.edu)
+License: GPL-3+
 
 License: BSL-1.0
  Permission is hereby granted, free of charge, to any person or organization

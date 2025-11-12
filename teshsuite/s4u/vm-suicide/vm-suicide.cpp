@@ -1,4 +1,4 @@
-/* Copyright (c) 2021-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2021-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -68,7 +68,7 @@ static void master(const std::vector<simgrid::s4u::Host*>& hosts)
   for (int i = 1; i <= 2; i++) {
     auto* vm = hosts.at(i)->create_vm("test_vm", 4);
     vm->start();
-    simgrid::s4u::Actor::create("life_cycle_manager-" + std::to_string(i), vm, life_cycle_manager);
+    vm->add_actor("life_cycle_manager-" + std::to_string(i), life_cycle_manager);
 
     simgrid::s4u::this_actor::sleep_for(10);
     print_status(hosts);
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
   xbt_assert(hosts.size() > 3);
   hosts.resize(3);
-  simgrid::s4u::Actor::create("test_master", hosts[0], master, hosts);
+  hosts[0]->add_actor("test_master", master, hosts);
 
   e.run();
   return 0;

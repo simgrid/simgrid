@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +11,6 @@
 #include "src/mc/transition/Transition.hpp"
 
 #include <cstdint>
-#include <sstream>
 #include <string>
 
 namespace simgrid::mc {
@@ -33,11 +32,13 @@ class CommWaitTransition : public Transition {
 public:
   CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_, aid_t receiver_,
                      unsigned mbox_);
-  CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  CommWaitTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
+  bool is_enabled() const { return sender_ != -1 and receiver_ != -1; }
   bool get_timeout() const { return timeout_; }
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -59,10 +60,11 @@ class CommTestTransition : public Transition {
 public:
   CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_, aid_t receiver_,
                      unsigned mbox_);
-  CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  CommTestTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -81,10 +83,11 @@ class CommRecvTransition : public Transition {
 
 public:
   CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
-  CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  CommRecvTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application (or 0 if unknown)*/
   unsigned get_comm() const { return comm_; }
@@ -101,10 +104,11 @@ class CommSendTransition : public Transition {
 
 public:
   CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
-  CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  CommSendTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
 
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
@@ -121,10 +125,11 @@ class CommIprobeTransition : public Transition {
 
 public:
   CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag);
-  CommIprobeTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  CommIprobeTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
-  bool reversible_race(const Transition* other) const override;
+  bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                       EventHandle other_handle) const override;
   bool can_be_co_enabled(const Transition* o) const override;
 
   bool is_sender_side() const { return is_sender_; }
@@ -135,7 +140,7 @@ public:
 };
 
 /** Make a new transition from serialized description */
-Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
+Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel);
 
 } // namespace simgrid::mc
 

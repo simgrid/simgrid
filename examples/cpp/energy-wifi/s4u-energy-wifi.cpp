@@ -1,4 +1,4 @@
-/* Copyright (c) 2020-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2020-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   l->set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
   // create the two actors for the test
-  sg4::Actor::create("act0", engine.host_by_name("Station 1"), sender);
-  sg4::Actor::create("act1", engine.host_by_name("Station 2"), receiver);
+  engine.host_by_name("Station 1")->add_actor("act0", sender);
+  engine.host_by_name("Station 2")->add_actor("act1", receiver);
 
   engine.run();
 

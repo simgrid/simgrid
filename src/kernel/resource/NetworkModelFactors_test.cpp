@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,7 +28,7 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Factors invalid callbacks: exc
     _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
     simgrid::s4u::Engine e("test");
     simgrid::s4u::Engine::set_config("network/model:" + model);
-    simgrid::s4u::create_full_zone("root");
+    e.get_netzone_root();
 
     SECTION("Model: " + model)
     {
@@ -55,7 +55,6 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Invalid network/latency-factor
     simgrid::s4u::Engine::set_config("network/model:" + model);
     simgrid::s4u::Engine::set_config("network/latency-factor:10");
     simgrid::s4u::Engine::set_config("network/bandwidth-factor:0.3");
-    simgrid::s4u::create_full_zone("root");
 
     SECTION("Model: " + model)
     {

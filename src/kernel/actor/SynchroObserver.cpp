@@ -1,23 +1,18 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/actor/SynchroObserver.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/BarrierImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/mc_config.hpp"
+#include "src/mc/remote/Channel.hpp"
 #include "src/mc/transition/Transition.hpp"
-#include "xbt/backtrace.hpp"
 #include "xbt/ex.h"
 #include "xbt/log.h"
-
-#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_mutex, mc_observer, "Logging specific to mutex simcalls observation");
 
@@ -29,10 +24,12 @@ MutexObserver::MutexObserver(ActorImpl* actor, mc::Transition::Type type, activi
   xbt_assert(mutex_);
 }
 
-void MutexObserver::serialize(std::stringstream& stream) const
+void MutexObserver::serialize(mc::Channel& channel) const
 {
   const auto* owner = get_mutex()->get_owner();
-  stream << (short)type_ << ' ' << get_mutex()->get_id() << ' ' << (owner != nullptr ? owner->get_pid() : -1);
+  channel.pack(type_);
+  channel.pack<unsigned>(get_mutex()->get_id());
+  channel.pack<aid_t>((owner != nullptr ? owner->get_pid() : -1));
 }
 std::string MutexObserver::to_string() const
 {
@@ -53,10 +50,12 @@ SemaphoreObserver::SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type
   xbt_assert(sem_);
 }
 
-void SemaphoreObserver::serialize(std::stringstream& stream) const
+void SemaphoreObserver::serialize(mc::Channel& channel) const
 {
-  stream << (short)type_ << ' ' << get_sem()->get_id() << ' ' << false /* Granted is ignored for LOCK/UNLOCK */ << ' '
-         << get_sem()->get_capacity();
+  channel.pack(type_);
+  channel.pack<unsigned>(get_sem()->get_id());
+  channel.pack<bool>(false); /* Granted is ignored for LOCK/UNLOCK */
+  channel.pack<int>(get_sem()->get_capacity() - get_sem()->ongoing_acquisitions_.size());
 }
 std::string SemaphoreObserver::to_string() const
 {
@@ -83,11 +82,12 @@ std::string MutexAcquisitionObserver::to_string() const
     return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id:null)";
   }
 }
-void MutexAcquisitionObserver::serialize(std::stringstream& stream) const
+void MutexAcquisitionObserver::serialize(mc::Channel& channel) const
 {
   const auto* owner = acquisition_->get_mutex()->get_owner();
-  stream << (short)type_ << ' ' << acquisition_->get_mutex()->get_id() << ' '
-         << (owner != nullptr ? owner->get_pid() : -1);
+  channel.pack(type_);
+  channel.pack(acquisition_->get_mutex()->get_id());
+  channel.pack<aid_t>((owner != nullptr ? owner->get_pid() : -1));
 }
 SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
                                                            activity::SemAcquisitionImpl* acqui, double timeout)
@@ -98,10 +98,12 @@ bool SemaphoreAcquisitionObserver::is_enabled()
 {
   return acquisition_->granted_;
 }
-void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
+void SemaphoreAcquisitionObserver::serialize(mc::Channel& channel) const
 {
-  stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_ << ' '
-         << acquisition_->semaphore_->get_capacity();
+  channel.pack(type_);
+  channel.pack(acquisition_->semaphore_->get_id());
+  channel.pack<bool>(acquisition_->granted_);
+  channel.pack(acquisition_->semaphore_->get_capacity());
 }
 std::string SemaphoreAcquisitionObserver::to_string() const
 {
@@ -124,10 +126,11 @@ BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, ac
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_WAIT);
 }
-void BarrierObserver::serialize(std::stringstream& stream) const
+void BarrierObserver::serialize(mc::Channel& channel) const
 {
   xbt_assert(barrier_ != nullptr || (acquisition_ != nullptr && acquisition_->barrier_ != nullptr));
-  stream << (short)type_ << ' ' << (barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id());
+  channel.pack(type_);
+  channel.pack<unsigned>((barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()));
 }
 std::string BarrierObserver::to_string() const
 {
@@ -144,21 +147,25 @@ bool BarrierObserver::is_enabled()
 
 bool ConditionVariableObserver::is_enabled()
 {
-  return type_ != mc::Transition::Type::CONDVAR_WAIT || acquisition_->is_granted();
+  return type_ != mc::Transition::Type::CONDVAR_WAIT || timeout_ > 0 || acquisition_->is_granted();
 }
-void ConditionVariableObserver::serialize(std::stringstream& stream) const
+void ConditionVariableObserver::serialize(mc::Channel& channel) const
 {
+  channel.pack(type_);
   switch (type_) {
     case mc::Transition::Type::CONDVAR_WAIT:
-      stream << (short)type_ << ' ' << acquisition_->get_cond()->get_id() << ' ' << acquisition_->get_mutex()->get_id()
-             << ' ' << acquisition_->is_granted();
+      channel.pack<unsigned>(acquisition_->get_cond()->get_id());
+      channel.pack<unsigned>(acquisition_->get_mutex()->get_id());
+      channel.pack<bool>(acquisition_->is_granted());
+      channel.pack<bool>((timeout_ > 0));
       break;
     case mc::Transition::Type::CONDVAR_ASYNC_LOCK:
-      stream << (short)type_ << ' ' << cond_->get_id() << ' ' << mutex_;
+      channel.pack<unsigned>(cond_->get_id());
+      channel.pack<unsigned>(mutex_->get_id());
       break;
     case mc::Transition::Type::CONDVAR_SIGNAL:
     case mc::Transition::Type::CONDVAR_BROADCAST:
-      stream << (short)type_ << ' ' << cond_->get_id();
+      channel.pack<unsigned>(cond_->get_id());
       break;
     default:
       THROW_UNIMPLEMENTED;

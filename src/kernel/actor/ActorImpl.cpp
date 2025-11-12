@@ -1,8 +1,10 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/forward.h"
+#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -43,6 +45,7 @@ ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
 {
   simcall_.issuer_ = this;
   stacksize_       = context::Context::stack_size;
+  recorded_memory_accesses_ = activity::MemoryAccessImplPtr(new activity::MemoryAccessImpl(this));
 }
 
 ActorImpl::~ActorImpl()
@@ -225,9 +228,9 @@ void ActorImpl::kill(ActorImpl* actor) const
 
   actor->exit();
 
-  if (actor == this) {
-    XBT_DEBUG("Go on, this is a suicide,");
-  } else
+  if (actor == this)
+    XBT_DEBUG("Damn, this is a suicide :(");
+  else
     EngineImpl::get_instance()->add_actor_to_run_list(actor);
 }
 
@@ -439,7 +442,8 @@ ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 
 ActorImpl* ActorImpl::start(const ActorCode& code)
 {
-  xbt_assert(code && host_ != nullptr, "Invalid parameters");
+  xbt_assert(code, "Cannot start an actor that does not have any code");
+  xbt_assert(host_ != nullptr, "Cannot start an actor that is not located on an host");
   auto* engine = EngineImpl::get_instance();
 
   if (not host_->is_on()) {

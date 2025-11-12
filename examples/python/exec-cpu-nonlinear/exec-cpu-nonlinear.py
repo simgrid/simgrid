@@ -1,4 +1,4 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -38,24 +38,24 @@ def cpu_nonlinear(host: Host, capacity: float, n: int) -> float:
     return capacity
 
 
-def load_platform():
+def load_platform(e:Engine):
     """ Create a simple 1-host platform """
-    zone = NetZone.create_empty_zone("Zone1")
-    runner_host = zone.create_host("runner", 1e6)
+    zone = e.netzone_root
+    runner_host = zone.add_host("runner", 1e6)
     runner_host.set_sharing_policy(
         Host.SharingPolicy.NONLINEAR, functools.partial(cpu_nonlinear, runner_host))
     runner_host.seal()
     zone.seal()
 
     # create actor runner
-    Actor.create("runner", runner_host, runner)
+    runner_host.add_actor("runner", runner)
 
 
 if __name__ == '__main__':
     e = Engine(sys.argv)
 
     # create platform
-    load_platform()
+    load_platform(e)
 
     # runs the simulation
     e.run()

@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -69,12 +69,12 @@ int main(int argc, char* argv[])
 #endif
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("receiver", e.host_by_name("Jupiter"), receiver, "box");
-  simgrid::s4u::Actor::create("sender", e.host_by_name("Boivin"), sender, "box", mutex, 1);
-  simgrid::s4u::Actor::create("sender", e.host_by_name("Fafard"), sender, "box", mutex, 2);
+  e.host_by_name("Jupiter")->add_actor("receiver", receiver, "box");
+  e.host_by_name("Boivin")->add_actor("sender", sender, "box", mutex, 1);
+  e.host_by_name("Fafard")->add_actor("sender", sender, "box", mutex, 2);
 
   e.run();
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

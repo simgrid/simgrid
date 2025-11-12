@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -68,13 +68,10 @@ int main(int argc, char* argv[])
 
   for (size_t i = 0; i < host_count; i++) {
     XBT_INFO("*** %s properties ****", sg_host_get_name(hosts[i]));
-    xbt_dict_t props         = sg_host_get_properties(hosts[i]);
-    xbt_dict_cursor_t cursor = NULL;
-    char* key;
-    void* data;
-    xbt_dict_foreach (props, cursor, key, data)
-      XBT_INFO("  %s -> %s", key, (char*)data);
-    xbt_dict_free(&props);
+    const char** propnames = sg_host_get_property_names(hosts[i], NULL);
+    for (int cpt = 0; propnames[cpt] != NULL; cpt++)
+      XBT_INFO("  %s -> %s", propnames[cpt], (char*)sg_host_get_property_value(hosts[i], propnames[cpt]));
+    free(propnames);
   }
 
   free(hosts);

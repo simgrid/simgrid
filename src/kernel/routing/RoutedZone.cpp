@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -70,7 +70,7 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
   const char* dstName = dst->get_cname();
 
   if (not gw_dst || not gw_src) {
-    XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
+    XBT_DEBUG("Check params for a route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_enforce(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_enforce(not src->is_netzone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
@@ -80,7 +80,8 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                dstName);
     NetZoneImpl::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   } else {
-    XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
+    XBT_DEBUG("Check params for a NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName,
+              gw_dst->get_cname());
     xbt_enforce(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
     xbt_enforce(dst->is_netzone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,6 +15,51 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_io, s4u_activity, "S4U asynchronous I/Os");
 
 namespace simgrid::s4u {
+template <> xbt::signal<void(Io&)> Activity_T<Io>::on_veto             = xbt::signal<void(Io&)>();
+template <> xbt::signal<void(Io const&)> Activity_T<Io>::on_start      = xbt::signal<void(Io const&)>();
+template <> xbt::signal<void(Io const&)> Activity_T<Io>::on_completion = xbt::signal<void(Io const&)>();
+template <> xbt::signal<void(Io const&)> Activity_T<Io>::on_suspend    = xbt::signal<void(Io const&)>();
+template <> xbt::signal<void(Io const&)> Activity_T<Io>::on_resume     = xbt::signal<void(Io const&)>();
+template <> void Activity_T<Io>::fire_on_start() const
+{
+  on_start(static_cast<const Io&>(*this));
+}
+template <> void Activity_T<Io>::fire_on_completion() const
+{
+  on_completion(static_cast<const Io&>(*this));
+}
+template <> void Activity_T<Io>::fire_on_suspend() const
+{
+  on_suspend(static_cast<const Io&>(*this));
+}
+template <> void Activity_T<Io>::fire_on_resume() const
+{
+  on_resume(static_cast<const Io&>(*this));
+}
+template <> void Activity_T<Io>::fire_on_veto()
+{
+  on_veto(static_cast<Io&>(*this));
+}
+template <> void Activity_T<Io>::on_start_cb(const std::function<void(Io const&)>& cb)
+{
+  on_start.connect(cb);
+}
+template <> void Activity_T<Io>::on_completion_cb(const std::function<void(Io const&)>& cb)
+{
+  on_completion.connect(cb);
+}
+template <> void Activity_T<Io>::on_suspend_cb(const std::function<void(Io const&)>& cb)
+{
+  on_suspend.connect(cb);
+}
+template <> void Activity_T<Io>::on_resume_cb(const std::function<void(Io const&)>& cb)
+{
+  on_resume.connect(cb);
+}
+template <> void Activity_T<Io>::on_veto_cb(const std::function<void(Io&)>& cb)
+{
+  on_veto.connect(cb);
+}
 
 Io::Io(kernel::activity::IoImplPtr pimpl)
 {
@@ -103,7 +148,7 @@ Io* Io::do_start()
   return this;
 }
 
-ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout) // XBT_ATTRIB_DEPRECATED_v339
+ssize_t Io::deprecated_wait_any_for(const std::vector<IoPtr>& ios, double timeout) // XBT_ATTRIB_DEPRECATED_v401
 {
   ActivitySet set;
   for (const auto& io : ios)

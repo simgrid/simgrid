@@ -1,0 +1,137 @@
+
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+# Ignore the line reporting the command-line when the process fails
+! ignore .*cfg=contexts/factory:.*
+
+#$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
+
+# These lines are displayed more often in no-fork mode, so ignore all occurence of them
+! ignore .*Create thread 1
+! ignore sthread intercepts pthreads in your SMPI application.
+
+# Musl gives the output in another order compared to glibc
+! output sort
+# This test raises a deadlock, thus the return code of 2
+! expect return 2
+! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
+! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+$ ${bindir:=.}/../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=sthread.thres:debug --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simpledeadlock ${extraparam}
+> sthread intercepts pthreads in your SMPI application.
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 1
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 0 is terminating.
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_unlock(0xdeadbeef)
+> The thread 1 is terminating.
+> [Tremblay:0:(1) 0.000000] [sthread/DEBUG] sthread_mutex_destroy(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/DEBUG] sthread_mutex_destroy(0xdeadbeef)
+> Rank0 is terminating.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 3 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (0@Tremblay) simcall ActorJoin(pid:6)
+> [0.000000] [ker_engine/INFO]  - pid 6 (0:1@Lilibeth) simcall MUTEX_WAIT(mutex_id:6 owner:7)
+> [0.000000] [ker_engine/INFO]  - pid 7 (0:2@Lilibeth) simcall MUTEX_WAIT(mutex_id:5 owner:6)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 6)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 7)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 5, owner: 6)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 5, owner: 6)
+> [0.000000] [mc_global/INFO]   Actor 7 in simcall MUTEX_ASYNC_LOCK(mutex: 6, owner: 7)
+> [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 6, owner: 7)
+> [0.000000] [mc_global/INFO]   Actor 7 in simcall MUTEX_WAIT(mutex: 6, owner: 7)
+> [0.000000] [mc_global/INFO]   Actor 7 in simcall MUTEX_ASYNC_LOCK(mutex: 5, owner: 6)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;6;6;7;6;7;7'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 25 unique states visited; 1 explored traces (4 transition replays, 27 states visited overall)
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 2
+> [Lilibeth:0:2:(7) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> All threads are started.
+> [Lilibeth:0:1:(6) 0.000000] [sthread/DEBUG] sthread_mutex_lock(0xdeadbeef)
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 6)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 7)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 6 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 5, owner: 6)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 6 in  ==> simcall: MUTEX_WAIT(mutex: 5, owner: 6)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 7 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 6, owner: 7)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 6 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 6, owner: 7)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 7 in  ==> simcall: MUTEX_WAIT(mutex: 6, owner: 7)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 7 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 5, owner: 6)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 7 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 6, owner: 7)
+> sthread intercepts pthreads in your SMPI application.
+> Execution failed with code 2.
+
+# The return code of a replay is not modified
+! expect return 0
+! timeout 500
+! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
+! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+$ ${bindir:=.}/../../smpi_script/bin/smpirun --cfg=model-check/replay:'1;1;6;6;7;6;7;7' --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simpledeadlock
+> sthread intercepts pthreads in your SMPI application.
+> [0.000000] [mc_record/INFO] path=1;1;6;6;7;6;7;7
+> [0.000000] [mc_record/INFO] The backtrace of each transition will not be shown because of --log=no_loc
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #1 '1/0' Actor 0(pid:1): ActorCreate(-1)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #2 '1/0' Actor 0(pid:1): ActorCreate(-1)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> All threads are started.
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #3 '6/0' Actor 0:1(pid:6): MUTEX_ASYNC_LOCK(mutex_id:5 owner:none)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #4 '6/0' Actor 0:1(pid:6): MUTEX_WAIT(mutex_id:5 owner:6)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #5 '7/0' Actor 0:2(pid:7): MUTEX_ASYNC_LOCK(mutex_id:6 owner:none)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #6 '6/0' Actor 0:1(pid:6): MUTEX_ASYNC_LOCK(mutex_id:6 owner:7)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #7 '7/0' Actor 0:2(pid:7): MUTEX_WAIT(mutex_id:6 owner:7)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] * Path chunk #8 '7/0' Actor 0:2(pid:7): MUTEX_ASYNC_LOCK(mutex_id:5 owner:6)
+> [0.000000] [mc_record/INFO] ***********************************************************************************
+> [0.000000] [mc_record/INFO] The replay of the trace is complete. DEADLOCK detected.
+> [0.000000] [ker_engine/INFO] 3 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (0@Tremblay) simcall ActorJoin(pid:6)
+> [0.000000] [ker_engine/INFO]  - pid 6 (0:1@Lilibeth) simcall MUTEX_WAIT(mutex_id:6 owner:7)
+> [0.000000] [ker_engine/INFO]  - pid 7 (0:2@Lilibeth) simcall MUTEX_WAIT(mutex_id:5 owner:6)
+> [0.000000] [smpi/INFO] Stalling SMPI instance: smpirun. Do all your MPI ranks call MPI_Finalize()?
+> Process called exit when leaving - Skipping cleanups
+> Process called exit when leaving - Skipping cleanups

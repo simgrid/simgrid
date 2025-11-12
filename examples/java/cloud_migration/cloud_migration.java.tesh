@@ -1,0 +1,13 @@
+$ ${javacmd} -cp ../../simgrid.jar:cloud_migration.jar cloud_migration ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:Main@Fafard) Test: Migrate a VM with 1000 Mbytes RAM
+> [132.765801] (2:MigMgr@Fafard) VM0 migrated: Fafard->Tremblay in 132.766 s
+> [132.765801] (1:Main@Fafard) Test: Migrate a VM with 100 Mbytes RAM
+> [146.111793] (5:MigMgr@Fafard) VM0 migrated: Fafard->Tremblay in 13.3460 s
+> [146.111793] (1:Main@Fafard) Test: Migrate two VMs at once from PM0 to PM1
+> [411.566271] (9:MigMgr@Fafard) VM1 migrated: Fafard->Tremblay in 265.454 s
+> [411.566271] (8:MigMgr@Fafard) VM0 migrated: Fafard->Tremblay in 265.454 s
+> [10146.111793] (1:Main@Fafard) Test: Migrate two VMs at once to different PMs
+> [10362.620589] (15:MigMgr@Fafard) VM1 migrated: Fafard->Bourassa in 216.509 s
+> [10411.547334] (14:MigMgr@Fafard) VM0 migrated: Fafard->Tremblay in 265.436 s
+> [20146.111793] (0:maestro@) Simulation ends.

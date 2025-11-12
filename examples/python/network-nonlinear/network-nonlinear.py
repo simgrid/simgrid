@@ -1,4 +1,4 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -78,7 +78,7 @@ def link_nonlinear(link: Link, capacity: float, n: int) -> float:
     this_actor.info("Link %s, %d active communications, new capacity %f" % (link.name, n, capacity))
     return capacity
 
-def load_platform():
+def load_platform(e: Engine):
     """
     Create a simple 2-hosts platform
      ________                 __________
@@ -86,11 +86,11 @@ def load_platform():
     |________|    Link1      |__________|
 
     """
-    zone = NetZone.create_full_zone("Zone1")
-    sender = zone.create_host("sender", 1).seal()
-    receiver = zone.create_host("receiver", 1).seal()
+    zone:NetZone = e.netzone_root
+    sender:Host = zone.add_host("sender", 1).seal()
+    receiver:Host = zone.add_host("receiver", 1).seal()
 
-    link = zone.create_split_duplex_link("link1", 1e6)
+    link:Link = zone.add_split_duplex_link("link1", 1e6)
     # setting same callbacks (could be different) for link UP/DOWN in split-duplex link
     link.link_up.set_sharing_policy(Link.SharingPolicy.NONLINEAR,
                                     functools.partial(link_nonlinear, link.link_up))
@@ -103,8 +103,8 @@ def load_platform():
     zone.seal()
 
     # create actors Sender/Receiver
-    Actor.create("receiver", receiver, Receiver(9))
-    Actor.create("sender", sender, Sender(9))
+    receiver.add_actor("receiver", Receiver(9))
+    sender.add_actor("sender", Sender(9))
 
 ###################################################################################################
 
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
 
     # create platform
-    load_platform()
+    load_platform(e)
 
     # runs the simulation
     e.run()

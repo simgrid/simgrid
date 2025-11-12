@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 
   sg4::Mailbox* mbox = e.mailbox_by_name_or_create("Mailbox");
 
-  sg4::Actor::create("sender", e.host_by_name("node-0.simgrid.org"), sender, mbox);
-  sg4::Actor::create("receiver", e.host_by_name("node-1.simgrid.org"), receiver, mbox);
+  e.host_by_name("node-0.simgrid.org")->add_actor("sender", sender, mbox);
+  e.host_by_name("node-1.simgrid.org")->add_actor("receiver", receiver, mbox);
 
   e.run();
 

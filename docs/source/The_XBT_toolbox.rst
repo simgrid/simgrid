@@ -11,7 +11,7 @@ of the existing interfaces, and it's used in all of them.
 Logging API
 ***********
 
-As introduced in :ref:`outcome_logs`, the SimGrid logging mechanism allows to configure at runtime the messages that should be displayed and those that should be omitted. Each
+As introduced in :ref:`outcome_logs`, the SimGrid logging mechanism allows users to configure at runtime the messages that should be displayed and those that should be omitted. Each
 message produced in the code is given a category (denoting its topic) and a priority. Then at runtime, each category is given a threshold (only messages of priority higher than
 that threshold are displayed), a layout (deciding how the messages in this category are formatted), and an appender (deciding what to do with the message: either print on stderr or
 to a file).
@@ -45,7 +45,7 @@ Refer to the :ref:`logging_categories` section for a list of all existing catego
 .. c:macro:: XBT_LOG_EXTERNAL_CATEGORY(category)
 
    Make an external category (i.e., a category declared in another source file) visible from this source file.
-   In each source file, at most one one category can be the default one.
+   In each source file, at most one category can be the default one.
 
 .. c:macro:: XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(category)
 

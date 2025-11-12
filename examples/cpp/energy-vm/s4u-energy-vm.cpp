@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,16 +30,16 @@ static void dvfs()
   vm_host2->start();
 
   XBT_INFO("Create two activities on Host1: both inside a VM");
-  sg4::Actor::create("p11", vm_host1, executor);
-  sg4::Actor::create("p12", vm_host1, executor);
+  vm_host1->add_actor("p11", executor);
+  vm_host1->add_actor("p12", executor);
 
   XBT_INFO("Create two activities on Host2: one inside a VM, the other directly on the host");
-  sg4::Actor::create("p21", vm_host2, executor);
-  sg4::Actor::create("p22", host2, executor);
+  vm_host2->add_actor("p21",executor);
+  host2->add_actor("p22", executor);
 
   XBT_INFO("Create two activities on Host3: both directly on the host");
-  sg4::Actor::create("p31", host3, executor);
-  sg4::Actor::create("p32", host3, executor);
+  host3->add_actor("p31", executor);
+  host3->add_actor("p32", executor);
 
   XBT_INFO("Wait 5 seconds. The activities are still running (they run for 3 seconds, but 2 activities are co-located, "
            "so they run for 6 seconds)");
@@ -60,13 +60,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("dvfs", e.host_by_name("MyHost1"), dvfs);
+  e.host_by_name("MyHost1")->add_actor("dvfs", dvfs);
 
   e.run();
 
   XBT_INFO("Total simulation time: %.2f; Host2 and Host3 must have the exact same energy consumption; Host1 is "
-           "multi-core and will differ.",
-           sg4::Engine::get_clock());
+           "multi-core and will differ.", e.get_clock());
 
   return 0;
 }

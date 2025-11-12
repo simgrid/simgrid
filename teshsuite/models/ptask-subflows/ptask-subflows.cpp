@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -44,14 +44,14 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  auto* rootzone = sg4::create_full_zone("root");
-  auto* hostA    = rootzone->create_host("hostA", 1e9);
-  auto* hostB    = rootzone->create_host("hostB", 1e9);
-  auto* backb    = rootzone->create_link("backbone", "1")->set_latency("1s")->seal();
+  auto* rootzone = e.get_netzone_root();
+  auto* hostA    = rootzone->add_host("hostA", 1e9);
+  auto* hostB    = rootzone->add_host("hostB", 1e9);
+  auto* backb    = rootzone->add_link("backbone", "1")->set_latency("1s")->seal();
   rootzone->add_route(hostA, hostB, {backb});
   rootzone->seal();
 
-  sg4::Actor::create("ptask", hostA, ptask, hostA, hostB);
+  hostA->add_actor("ptask", ptask, hostA, hostB);
 
   e.run();
 

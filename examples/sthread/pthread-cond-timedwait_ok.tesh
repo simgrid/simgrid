@@ -1,0 +1,12 @@
+
+# MUSL changes the output order
+! output sort
+
+$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./pthread-cond-timedwait_ok
+> [1.000000] [sthread/INFO] All threads exited. Terminating the simulation.
+> Thread: Wait for 1s
+> main: sleep 5ms
+> main: signal the condition
+> Thread: got signaled!
+> Thread: Wait for 1s
+> Thread: waiting the signal timeouted!

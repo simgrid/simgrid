@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,7 +15,10 @@ namespace simgrid::kernel::resource {
 
 SplitDuplexLinkImpl::SplitDuplexLinkImpl(const std::string& name, StandardLinkImpl* link_up,
                                          StandardLinkImpl* link_down)
-    : LinkImpl(name), piface_(this), link_up_(link_up), link_down_(link_down)
+    : LinkImpl(name, s4u::Link::SharingPolicy::SPLITDUPLEX, link_up->get_englobing_zone())
+    , piface_(this)
+    , link_up_(link_up)
+    , link_down_(link_down)
 {
 }
 

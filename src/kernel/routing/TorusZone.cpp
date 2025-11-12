@@ -1,4 +1,4 @@
-/* Copyright (c) 2014-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2014-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,9 +7,8 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "xbt/parse_units.hpp"
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <numeric>
 #include <string>
 #include <vector>
@@ -37,11 +36,11 @@ void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long pos
     const s4u::Link* linkup;
     const s4u::Link* linkdown;
     if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      linkup   = create_link(link_id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
-      linkdown = create_link(link_id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+      linkup   = add_link(link_id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+      linkdown = add_link(link_id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
 
     } else {
-      linkup   = create_link(link_id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+      linkup   = add_link(link_id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
       linkdown = linkup;
     }
     /*
@@ -54,26 +53,12 @@ void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long pos
   }
 }
 
-std::vector<unsigned long> TorusZone::parse_topo_parameters(const std::string& topo_parameters)
-{
-  std::vector<std::string> dimensions_str;
-  boost::split(dimensions_str, topo_parameters, boost::is_any_of(","));
-  std::vector<unsigned long> dimensions;
-
-  /* We are in a torus cluster
-   * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
-   * Additionally, we need to know how many ranks we have in total
-   */
-  std::transform(begin(dimensions_str), end(dimensions_str), std::back_inserter(dimensions),
-                 [](const std::string& s) { return std::stoi(s); });
-
-  return dimensions;
-}
-
 void TorusZone::set_topology(const std::vector<unsigned long>& dimensions)
 {
   xbt_assert(not dimensions.empty(), "Torus dimensions cannot be empty");
   dimensions_ = dimensions;
+  set_tot_elements(std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>()));
+  set_cluster_dimensions(dimensions);
   set_num_links_per_node(dimensions_.size());
 }
 
@@ -179,13 +164,45 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   route->gw_dst_ = get_gateway(dst->id());
 }
 
+void TorusZone::do_seal()
+{
+  for (int i = 0; i < get_tot_elements(); i++) {
+    auto [netpoint, loopback, limiter] = fill_leaf_from_cb(i);
+    create_torus_links(netpoint->id(), i, node_pos_with_loopback_limiter(netpoint->id()));
+  }
+}
+
 } // namespace kernel::routing
 
 namespace s4u {
 
-NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned long>& dimensions,
-                           const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
-                           Link::SharingPolicy sharing_policy)
+NetZone* create_torus_zone(const std::string& name, NetZone* parent, const std::vector<unsigned long>& dimensions,
+    const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
+    Link::SharingPolicy sharing_policy) // XBT_ATTRIB_DEPRECATED_v401
+{
+  auto* zone = parent->add_netzone_torus(name, dimensions, bandwidth, latency, sharing_policy);
+
+  if (set_callbacks.is_by_netzone())
+    zone->set_netzone_cb(set_callbacks.netzone);
+  else
+    zone->set_host_cb(set_callbacks.host);
+  zone->set_loopback_cb(set_callbacks.loopback);
+  zone->set_limiter_cb(set_callbacks.limiter);
+
+  return zone;
+}
+
+NetZone* NetZone::add_netzone_torus(const std::string& name, const std::vector<unsigned long>& dimensions,
+                                    const std::string& bandwidth, const std::string& latency, 
+                                    Link::SharingPolicy sharing_policy)
+{
+
+  return add_netzone_torus(name, dimensions, xbt_parse_get_bandwidth("", 0, bandwidth, ""), 
+                           xbt_parse_get_time("", 0, latency, ""), sharing_policy);
+}
+
+NetZone* NetZone::add_netzone_torus(const std::string& name, const std::vector<unsigned long>& dimensions,
+                                      double bandwidth, double latency, Link::SharingPolicy sharing_policy)
 {
   int tot_elements = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
   if (dimensions.empty() || tot_elements <= 0)
@@ -199,19 +216,9 @@ NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const
 
   auto* zone = new kernel::routing::TorusZone(name);
   zone->set_topology(dimensions);
-  if (parent)
-    zone->set_parent(parent->get_impl());
+  zone->set_parent(get_impl());
 
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
-
-  for (int i = 0; i < tot_elements; i++) {
-    kernel::routing::NetPoint* netpoint;
-    Link* limiter;
-    Link* loopback;
-    zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
-
-    zone->create_torus_links(netpoint->id(), i, zone->node_pos_with_loopback_limiter(netpoint->id()));
-  }
 
   return zone->get_iface();
 }

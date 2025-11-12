@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTOR_HPP
 
 #include <simgrid/forward.h>
+#include <simgrid/s4u/Engine.hpp>
 
 #include <simgrid/chrono.hpp>
 #include <xbt/Extendable.hpp>
@@ -17,9 +18,7 @@
 
 namespace simgrid {
 
-#ifndef SWIG
 extern template class XBT_PUBLIC xbt::Extendable<s4u::Actor>;
-#endif
 
 namespace s4u {
 
@@ -115,6 +114,15 @@ XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std
 /** Block the current actor until the built multi-thread execution completes. */
 XBT_PUBLIC void thread_execute(s4u::Host* host, double flop_amounts, int thread_count);
 
+/** Block the current actor until the built multi-thread execution completes on the current host. */
+XBT_PUBLIC void thread_execute(double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on 'host' */
+XBT_PUBLIC ExecPtr thread_execute_async(s4u::Host* host, double flop_amounts, int thread_count);
+
+/** Initialize and start a multi-thread execution on the current host */
+XBT_PUBLIC ExecPtr thread_execute_async(double flop_amounts, int thread_count);
+
 /** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 /** Initialize a parallel execution that must then be started manually */
@@ -130,6 +138,9 @@ XBT_PUBLIC aid_t get_pid();
 /** @brief Returns the ancestor's actor ID of the current actor. */
 XBT_PUBLIC aid_t get_ppid();
 
+/** Returns the engine instance we're running in */
+XBT_PUBLIC Engine* get_engine();
+
 /** @brief Returns the name of the current actor. */
 XBT_PUBLIC std::string get_name();
 /** @brief Returns the name of the current actor as a C string. */
@@ -140,16 +151,17 @@ XBT_PUBLIC s4u::Host* get_host();
 /** Migrate the current actor to a new host. */
 XBT_PUBLIC void set_host(s4u::Host* new_host);
 
-/** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
+/** Suspend the current actor, that is blocked until resume()ed by another actor. */
 XBT_PUBLIC void suspend();
 
-/** @brief Yield the current actor. */
+/** Yield the current actor, give the control to the other actors. It will be executed again in the next scheduling
+ * round */
 XBT_PUBLIC void yield();
 
-/** @brief kill the current actor. */
+/** kill the current actor. */
 XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
 
-/** @brief Add a function to the list of "on_exit" functions of the current actor.
+/** Add a function to the list of "on_exit" functions of the current actor.
  *
  * The on_exit functions are the functions executed when your actor is killed. You should use them to free the data used
  * by your actor.
@@ -184,11 +196,7 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
  *
  * @endrst
  */
-#ifdef SWIG 
-class XBT_PUBLIC Actor { // Swig cannot cope with our extension mechanism, and don't need it anyway
-#else
 class XBT_PUBLIC Actor : public simgrid::xbt::Extendable<s4u::Actor> {
-#endif
 
 #ifndef DOXYGEN
   friend Exec;
@@ -290,11 +298,8 @@ public:
   /** Add a callback fired when this specific actor is about to disappear (its destructor was called). */
   void on_this_destruction_cb(const std::function<void(Actor const&)>& cb) { on_this_destruction.connect(cb); }
 
-  /** \static
-   *  Create an actor from a @c std::function<void()>.
-   *  If the actor is restarted, it gets a fresh copy of the function.
-   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
-  static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
+      create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** \static
    *  Create an actor, but don't start it yet.
    *
@@ -320,36 +325,26 @@ public:
 
   ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
 
-  /** \static
-   * Create an actor from a callable thing.
-   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
-  template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
+  template <class F>
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
+      create(const std::string& name, s4u::Host* host, F code)
   {
-    return create(name, host, std::function<void()>(std::move(code)));
+    return host->add_actor(name, std::function<void()>(std::move(code)));
   }
-
-  /** \static
-   * Create an actor using a callable thing and its arguments.
-   *
-   * Note that the arguments will be copied, so move-only parameters are forbidden.
-   * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
-
   template <class F, class... Args // This constructor is enabled only if calling code(args...) is valid
 #ifndef DOXYGEN /* breathe seem to choke on function signatures in template parameter, see breathe#611 */
             ,
             typename = typename std::invoke_result_t<F, Args...>
 #endif
             >
-  static ActorPtr create(const std::string& name, s4u::Host* host, F code, Args... args)
+  XBT_ATTRIB_DEPRECATED_v403("Please use Host::add_actor() instead") static ActorPtr
+      create(const std::string& name, s4u::Host* host, F code, Args... args)
   {
     return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
-  /** \static
-   *  Create actor from function name and a vector of strings as arguments.
-   *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
-  static ActorPtr create(const std::string& name, s4u::Host* host, const std::string& function,
-                         std::vector<std::string> args);
+  XBT_ATTRIB_DEPRECATED_v403("Please use Engine::add_actor() instead") static ActorPtr
+      create(const std::string& name, s4u::Host* host, const std::string& function, std::vector<std::string> args);
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes.

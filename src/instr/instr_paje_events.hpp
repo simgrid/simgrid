@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,6 +6,7 @@
 #ifndef INSTR_PAJE_EVENTS_HPP
 #define INSTR_PAJE_EVENTS_HPP
 
+#include "src/instr/instr_paje_containers.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include <memory>
@@ -14,7 +15,6 @@
 
 namespace simgrid::instr {
 class EntityValue;
-class TIData;
 
 enum class PajeEventType : unsigned int {
   DefineContainerType,
@@ -67,7 +67,7 @@ public:
 };
 
 class VariableEvent : public PajeEvent {
-  double value_;
+  double value_ = 0;
 
 public:
   VariableEvent(double timestamp, Container* container, Type* type, PajeEventType event_type, double value)
@@ -83,13 +83,14 @@ class StateEvent : public PajeEvent {
   std::string filename = "(null)";
   int linenumber       = -1;
 #endif
-  std::unique_ptr<TIData> extra_;
+  std::unique_ptr<simgrid::instr::TIData> extra_;
 
   static xbt::signal<void(StateEvent const&)> on_destruction;
 
 public:
   static void on_destruction_cb(const std::function<void(StateEvent const&)>& cb) { on_destruction.connect(cb); }
-  StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value, TIData* extra);
+  StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value,
+             simgrid::instr::TIData* extra);
   ~StateEvent() override { on_destruction(*this); }
   bool has_extra() const { return extra_ != nullptr; }
   void print() override;

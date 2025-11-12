@@ -1,8 +1,9 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include <mutex>           /* std::mutex and std::scoped_lock */
 #include <simgrid/s4u.hpp> /* All of S4U */
 
@@ -42,8 +43,8 @@ static void main_actor()
 
   auto* host = sg4::this_actor::get_host();
   for (int i = 0; i < 10; ++i)
-    sg4::Actor::create("competitor", host, competitor, i, cv, mtx, ready);
-  sg4::Actor::create("go", host, go, cv, mtx, ready);
+    host->add_actor("competitor", competitor, i, cv, mtx, ready);
+  host->add_actor("go", go, cv, mtx, ready);
 }
 
 int main(int argc, char* argv[])
@@ -51,7 +52,7 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/small_platform.xml");
 
-  sg4::Actor::create("main", e.host_by_name("Tremblay"), main_actor);
+  e.host_by_name("Tremblay")->add_actor("main", main_actor);
 
   e.run();
   return 0;

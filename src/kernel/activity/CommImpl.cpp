@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,7 +14,6 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/asserts.h"
 
@@ -29,7 +28,6 @@ std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = []
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
   if (comm->dst_buff_ != nullptr) // get_async provided a buffer
     *(void**)(comm->dst_buff_) = buff;
-  comm->payload_ = buff; // Setup what will be retrieved by s4u::Comm::get_payload()
 };
 
 void CommImpl::set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback)
@@ -130,8 +128,8 @@ CommImpl* CommImpl::start()
     set_start_time(model_action_->get_start_time());
     set_state(State::RUNNING);
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (model action: %p; state: %s)", this, from_->get_cname(),
-              to_->get_cname(), model_action_, get_state_str());
+    XBT_DEBUG("Starting communication %p (s4u:%p) from '%s' to '%s' (model action: %p; state: %s)", this, piface_,
+              from_->get_cname(), to_->get_cname(), model_action_, get_state_str());
 
     /* If a link is failed, detect it immediately */
     if (model_action_->get_state() == resource::Action::State::FAILED) {
@@ -189,6 +187,8 @@ void CommImpl::copy_data()
     /* Update the receiver's buffer size to the copied amount */
     *dst_buff_size_ = buff_size;
   }
+
+  payload_ = src_buff_; // Setup what will be retrieved by s4u::Comm::get_payload()
 
   if (buff_size > 0) {
     if (copy_data_fun)

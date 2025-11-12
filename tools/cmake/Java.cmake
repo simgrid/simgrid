@@ -1,67 +1,33 @@
 ##
 ## The Cmake definitions for the use of Java
-##   This file is loaded only if the Java option is activated
+##
+## This file is loaded only if the Java option is activated, and Java+JNI are found
 ##
 
-find_package(Java 1.8 COMPONENTS Runtime Development)
-if (NOT ${Java_FOUND})
-  message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
-endif()
-message(STATUS "[Java] Compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}; Version: ${Java_VERSION_STRING}")
-
-find_package(SWIG)
-if (NOT ${SWIG_FOUND})
-  message(FATAL_ERROR "SWIG not found. Please install it, or disable the 'enable_java' option.")
-endif()
-cmake_policy(SET CMP0078 NEW)
-cmake_policy(SET CMP0086 NEW)
-include(UseSWIG)
-
-find_package(JNI)
-if (NOT ${JNI_FOUND})
-  message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
-endif()
-message(STATUS "[Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
-
-set(Java_FOUND 1)
-#include(${CMAKE_SOURCE_DIR}/tools/cmake/UseJava-patched.cmake)
 include(UseJava)
 
-# Generate the bindings with SWIG
-#################################
-SET_SOURCE_FILES_PROPERTIES(src/bindings/swig/simgrid-java.i PROPERTIES CPLUSPLUS 1)
-SET_SOURCE_FILES_PROPERTIES(src/bindings/swig/simgrid-java.i PROPERTIES SWIG_FLAGS "-package;org.simgrid.s4u")
-swig_add_library(simgrid-java
-                 TYPE SHARED
-                 LANGUAGE java
-                 OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u
-                 SOURCES src/bindings/swig/simgrid-java.i ${SIMGRID_JAVA_C_SOURCES})
-set(SWIG_USE_SWIG_DEPENDENCIES TRUE)
-set_property(TARGET simgrid-java
-             APPEND PROPERTY INCLUDE_DIRECTORIES ${JNI_INCLUDE_DIRS})
-ADD_CUSTOM_COMMAND(OUTPUT ./src/org/simgrid/s4u/simgrid-javaJAVA_wrap.cxx 
-              POST_BUILD
-              COMMAND echo prout)
-# Rules to build libsimgrid-java
-################################
+# Generate the native part of the bindings
+##########################################
+if(NOT ${merge_java_in_libsimgrid})
+  message(STATUS "Java: build a split libsimgrid-java library.") 
+  add_library(simgrid-java SHARED
+              ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h
+              ${SIMGRID_JAVA_C_SOURCES})
+  set_property(TARGET simgrid-java
+               APPEND PROPERTY INCLUDE_DIRECTORIES ${JNI_INCLUDE_DIRS} "${INTERNAL_INCLUDES}")
+  set_target_properties(simgrid-java PROPERTIES VERSION ${libsimgrid-java_version})
+  set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
+  target_link_libraries(simgrid-java PUBLIC simgrid)
+  add_dependencies(tests simgrid-java)
 
-set_target_properties(simgrid-java PROPERTIES VERSION ${libsimgrid-java_version})
-set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
-set_property(TARGET simgrid-java
-             APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")             
-
-target_link_libraries(simgrid-java simgrid)
-add_dependencies(tests simgrid-java)
-
-get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
-if (COMMON_INCLUDES)
-  set_target_properties(simgrid-java PROPERTIES  INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
-else()
-  set_target_properties(simgrid-java PROPERTIES  INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
+  get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
+  message(STATUS "[Java] simgrid-java includes: ${CHECK_INCLUDES}")
 endif()
 
-get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
-message(STATUS "[Java] simgrid-java includes: ${CHECK_INCLUDES}")
+# Generate the header file ensuring that the C++ and Java versions of the JNI bindings match
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/include/org_simgrid_s4u_simgridJNI.h
+                  COMMAND javac -cp ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ -h ${CMAKE_CURRENT_BINARY_DIR}/include/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/s4u/simgridJNI.java
+                  DEPENDS ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/s4u/simgridJNI.java)
 
 # Rules to build simgrid.jar
 ############################
@@ -72,8 +38,13 @@ set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
 set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
-set(LIBSIMGRID_SO       libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(LIBSIMGRID_JAVA_SO  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
+if(${merge_java_in_libsimgrid})
+  set(LIBSIMGRID_SO  ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}simgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
+else()
+  set(LIBSIMGRID_SO  ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}simgrid${CMAKE_SHARED_LIBRARY_SUFFIX} 
+                     ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
+endif()
+set(LIBSIMGRID_JAVA_SO  )
 
 set(SG_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
 if(${SG_SYSTEM_NAME} MATCHES "kFreeBSD")
@@ -95,33 +66,25 @@ if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "armv7l")
 endif()
 
 
-## Build simgrid.jar. We cannot use add_jar to compile most of our sources as they are generated. They are added later
+## Build simgrid.jar. 
 ##
 add_jar(simgrid_jar
         SOURCES ${SIMGRID_JAVA_JAVA_SOURCES}
         OUTPUT_NAME simgrid)
 
+if (enable_lib_in_jar)
 # Add the classes of the generated sources later, as they do not exist at configure time when add_jar computes its arguments
 ADD_CUSTOM_COMMAND(TARGET simgrid_jar 
-        COMMENT "Compile the code generated by SWIG, and pack it into simgrid.jar."
+        COMMENT "Pack the native code into simgrid.jar if asked to (not doing so speedups builds when hacking on Java)."
         POST_BUILD
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND set -e
-        COMMAND mkdir -p org/simgrid/s4u
-        COMMAND mkdir -p src/org/simgrid/s4u
-        COMMAND echo "Rerun SWIG just to be sure"
-        COMMAND rm -f src/org/simgrid/s4u/*java && swig -java -Wall -Wextra -package org.simgrid.s4u -outdir ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u -c++ -I${CMAKE_CURRENT_BINARY_DIR}/include -I${CMAKE_HOME_DIRECTORY}/include -o ${CMAKE_CURRENT_BINARY_DIR}/src/org/simgrid/s4u/simgrid-javaJAVA_wrap.cxx ${CMAKE_HOME_DIRECTORY}/src/bindings/swig/simgrid-java.i
-        COMMAND ${Java_JAVAC_EXECUTABLE} -cp simgrid.jar:. src/org/simgrid/s4u/*java -s org/simgrid/s4u 
-        COMMAND mv src/org/simgrid/s4u/*class org/simgrid/s4u
-        COMMAND echo "Add the SWIG-generated classes to the jar."
-        COMMAND ${JAVA_ARCHIVE} -uf ${SIMGRID_JAR} org
         COMMAND ${CMAKE_MAKE_PROGRAM} NATIVE
-        COMMAND echo "Add NATIVE/ to the jar. It may contain the native libs or be empty, depending on enable_lib_in_jar."
-        COMMAND echo "Not packing the native libs in simgrid.jar speedups builds when hacking on Java."
         COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} NATIVE
         COMMAND ${CMAKE_COMMAND} -E echo "-- CMake puts the native code in ${JAVA_NATIVE_PATH}"
         COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.s4u.NativeLib
-    ) # -debug-tmused -debug-tmsearch 
+    )
+endif()
 
 if (enable_documentation)
   add_custom_command(
@@ -137,7 +100,7 @@ if (enable_documentation)
     COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
     COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
 
-    COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.trace
+    COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.s4u
 
     COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc
     COMMAND ${JAVA_ARCHIVE} -uvf  ${SIMGRID_JAR} -C ${CMAKE_HOME_DIRECTORY} COPYING -C ${CMAKE_HOME_DIRECTORY} ChangeLog -C ${CMAKE_HOME_DIRECTORY} LICENSE-LGPL-2.1 -C ${CMAKE_HOME_DIRECTORY} NEWS
@@ -149,49 +112,35 @@ endif()
 ###
 
 if(enable_lib_in_jar)
-  add_dependencies(simgrid_jar simgrid-java)
-  add_dependencies(simgrid_jar simgrid)
+  if(${merge_java_in_libsimgrid})
+    add_dependencies(simgrid_jar simgrid)
+    set(JAVALIBS simgrid)
+  else()
+    add_dependencies(simgrid_jar simgrid-java)
+    add_dependencies(simgrid_jar simgrid)
+    set(JAVALIBS simgrid simgrid-java)
+  endif()
 
   add_custom_target(NATIVE
     COMMENT "Add the native libs into simgrid.jar..."
-    DEPENDS simgrid simgrid-java ${JAVALIBS}
+    DEPENDS ${JAVALIBS}
 
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
-
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_STRIP} -x ${JAVA_NATIVE_PATH}/* # MacOSX does not accept long names such as --discard-all and does not have the same semantic for the -s parameter
     )
+endif()
 
-  if(APPLE)
-    add_custom_command(
-      TARGET simgrid_jar POST_BUILD
-      COMMENT "Add the apple-specific native libs into simgrid.jar..."
-      DEPENDS simgrid simgrid-java ${JAVALIBS}
+add_custom_target(java-bindings COMMENT "Recompiling the Java files: jarfile and libraries (use 'tests-java' to get the Java tests in addition).")
 
-    # We need to fix the rpath of the simgrid-java library so that it
-    #    searches the simgrid library in the right location
-    #
-    # Since we don't officially install the lib before copying it in
-    # the jarfile, the lib is searched for where it was built. Given
-    # how we unpack it, we need to instruct simgrid-java to forget
-    # about the build path, and search in its current directory
-    # instead.
-    #
-    # This has to be done with the classical Apple tools, as follows:
+add_custom_target(tests-java COMMENT "Building all Java examples...")
+add_dependencies(tests tests-java)
+add_dependencies(tests-java java-bindings)
 
-      COMMAND install_name_tool -change ${CMAKE_BINARY_DIR}/lib/libsimgrid.${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX} @loader_path/libsimgrid.dylib ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    )
-  endif(APPLE)
-
-else()
-  add_custom_target(NATIVE
-    COMMENT "Faking the addition of native libraries in the jar, as requested by enable_lib_in_jar"
-    COMMAND rm -rf NATIVE
-    COMMAND mkdir NATIVE
-  )
-
-endif(enable_lib_in_jar)
-
-add_dependencies(tests simgrid_jar)
+add_dependencies(java-bindings simgrid_jar)
+add_dependencies(java-bindings simgrid)      # useful when the libs are not included in the jar
+if(NOT ${merge_java_in_libsimgrid})
+  add_dependencies(java-bindings simgrid-java) # useful when the libs are not included in the jar
+endif()
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})

@@ -1,0 +1,58 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dag_scheduling.jar dag_scheduling ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/dag_scheduling/Montage_25.xml --log=dag_parsing.thresh:critical --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [0.000000] [java/INFO] Task root completes
+> [0.000435] [java/INFO] Schedule ID00002@mProjectPP on Host 27
+> [14.509412] [java/INFO] Task ID00002@mProjectPP completes
+> [14.509412] [java/INFO] Schedule ID00000@mProjectPP on Host 26
+> [14.509840] [java/INFO] Schedule ID00010@mDiffFit on Host 30
+> [31.550504] [java/INFO] Task ID00000@mProjectPP completes
+> [31.550504] [java/INFO] Schedule ID00003@mProjectPP on Host 27
+> [31.550934] [java/INFO] Schedule ID00008@mDiffFit on Host 32
+> [32.295830] [java/INFO] Task ID00010@mDiffFit completes
+> [32.295830] [java/INFO] Schedule ID00004@mProjectPP on Host 31
+> [32.295830] [java/INFO] Schedule ID00001@mProjectPP on Host 26
+> [46.320121] [java/INFO] Task ID00003@mProjectPP completes
+> [49.896899] [java/INFO] Task ID00001@mProjectPP completes
+> [49.897329] [java/INFO] Schedule ID00009@mDiffFit on Host 28
+> [56.995338] [java/INFO] Task ID00008@mDiffFit completes
+> [56.995338] [java/INFO] Schedule ID00011@mDiffFit on Host 30
+> [56.995338] [java/INFO] Schedule ID00005@mDiffFit on Host 27
+> [56.995380] [java/INFO] Schedule ID00006@mDiffFit on Host 29
+> [64.922807] [java/INFO] Task ID00004@mProjectPP completes
+> [64.922807] [java/INFO] Schedule ID00007@mDiffFit on Host 26
+> [64.923235] [java/INFO] Schedule ID00013@mDiffFit on Host 32
+> [68.496091] [java/INFO] Task ID00005@mDiffFit completes
+> [68.496091] [java/INFO] Schedule ID00012@mDiffFit on Host 27
+> [74.781328] [java/INFO] Task ID00011@mDiffFit completes
+> [76.562518] [java/INFO] Task ID00009@mDiffFit completes
+> [78.769490] [java/INFO] Task ID00007@mDiffFit completes
+> [80.029424] [java/INFO] Task ID00012@mDiffFit completes
+> [89.331974] [java/INFO] Task ID00013@mDiffFit completes
+> [98.334206] [java/INFO] Task ID00006@mDiffFit completes
+> [98.334248] [java/INFO] Schedule ID00014@mConcatFit on Host 28
+> [100.164461] [java/INFO] Task ID00014@mConcatFit completes
+> [100.164461] [java/INFO] Schedule ID00015@mBgModel on Host 28
+> [103.774048] [java/INFO] Task ID00015@mBgModel completes
+> [103.774048] [java/INFO] Schedule ID00016@mBackground on Host 30
+> [121.356963] [java/INFO] Task ID00016@mBackground completes
+> [121.356963] [java/INFO] Schedule ID00017@mBackground on Host 31
+> [121.357392] [java/INFO] Schedule ID00020@mBackground on Host 28
+> [146.549345] [java/INFO] Task ID00017@mBackground completes
+> [146.549345] [java/INFO] Schedule ID00018@mBackground on Host 26
+> [146.549774] [java/INFO] Schedule ID00019@mBackground on Host 27
+> [148.708911] [java/INFO] Task ID00020@mBackground completes
+> [158.419768] [java/INFO] Task ID00019@mBackground completes
+> [160.332395] [java/INFO] Task ID00018@mBackground completes
+> [160.332826] [java/INFO] Schedule ID00021@mImgTbl on Host 29
+> [165.758791] [java/INFO] Task ID00021@mImgTbl completes
+> [165.758791] [java/INFO] Schedule ID00022@mAdd on Host 32
+> [172.890756] [java/INFO] Task ID00022@mAdd completes
+> [172.895551] [java/INFO] Schedule ID00023@mShrink on Host 30
+> [179.427799] [java/INFO] Task ID00023@mShrink completes
+> [179.427990] [java/INFO] Schedule ID00024@mJPEG on Host 29
+> [181.184598] [java/INFO] Task ID00024@mJPEG completes
+> [181.184619] [java/INFO] Schedule end on Host 29
+> [181.184619] [java/INFO] Task end completes
+> [181.184619] [java/INFO] Simulation ends.

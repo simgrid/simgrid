@@ -1,11 +1,36 @@
-                    _               _____  __________
-__   _____ _ __ ___(_) ___  _ __   |___ / |___ /___  |
-\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \  / /
- \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |/ /
-  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____//_/
+                    _               _  _    ____
+__   _____ _ __ ___(_) ___  _ __   | || |  |___ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_   __) |
+ \ V /  __/ |  \__ \ | (_) | | | | |__   _| / __/
+  \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)_____|
                (unreleased)
 
+                     _               _  _    _
+ __   _____ _ __ ___(_) ___  _ __   | || |  / |
+ \ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_ | |
+  \ V /  __/ |  \__ \ | (_) | | | | |__   _|| |
+   \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)_|
+                November 11. 2025
 
+Breaking the seal: v4.0 was not the final release.
+
+ * Allow one to unseal netzones to modify the platform even after the simulation start.
+ * The model-checker can now report memory race conditions (see tutorial).
+ * Pip builds should now work out of the box.
+ * (+ the usual bug fixes overall, and improvements to the Java/Python bindings).
+                    _               _  _    ___
+__   _____ _ __ ___(_) ___  _ __   | || |  / _ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_| | | |
+ \ V /  __/ |  \__ \ | (_) | | | | |__   _| |_| |
+  \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)___/
+               March 12. 2025
+
+At last, the "this one is 4 you" release.
+
+ * https://hal.science/hal-04909441 summarizes 10 years of development leading to this release.
+ * New: Java bindings for the S4U interface (see the examples; the doc is still TBD).
+ * The platform API was cleaned up and simplified; XBT dict and dynars were phased out.
+ * MC: performance improvement and bug fixes.
                     _               _____  _____  __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / /_
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| '_ \

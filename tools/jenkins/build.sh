@@ -20,6 +20,7 @@ rm -f /tmp/cc*
 rm -f /tmp/simgrid-mc-*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
+rm -rf /tmp/simgrid-java-*
 ls /tmp
 df -h
 echo "XXXX Let's go"
@@ -111,6 +112,11 @@ case "$build_mode" in
       INSTALL="$HOME/mc_simgrid_install"
   ;;
 
+  "Release")
+      INSTALL="$HOME/simgrid_install_release"
+      rm -rf "$HOME/mc_simgrid_install" # FIXME we can remove it once it ran once after the move from MC build to release builds
+  ;;
+
   "DynamicAnalysis")
       INSTALL=""
   ;;
@@ -161,20 +167,6 @@ if [ "$os" = "nixos" ] ; then
 fi
 echo "XX have_NS3: ${have_NS3}"
 
-have_Java="yes"
-echo "Search for Java"
-if javac --version ; then : else
-  have_Java="no"
-fi
-if swig -version ; then : else
-  have_Java="no"
-fi
-#if [ "$os" = "Debian" ] && dpkg -l openjdk-*-jdk 2>/dev/null | grep ^ii && dpkg -l swig 2>/dev/null | grep ^ii ; then
-#  have_Java="yes"
-#elif [ "$os" = "opensuse" ] ; then
-#  have_Java="yes" # Let's assume it's correctly configured, as I'm too lazy to learn how to check this with rpm
-#fi
-
 SIMGRID_PYTHON_LIBDIR=""
 if [ "$os" = "nixos" ] ; then
   SIMGRID_PYTHON_LIBDIR="/home/ci/simgrid_install/lib64"
@@ -217,25 +209,26 @@ if [ "$os" = "CentOS" ]; then
     fi
 fi
 
+MAYBE_MCMINI=-Denable_testsuite_McMini=ON
 if [ $NODE_NAME = "armv8" ]; then
     echo "disable LTO, believed to be too heavy for this particular system"
     MAY_DISABLE_LTO=-Denable_lto=OFF
+    MAYBE_MCMINI=-Denable_testsuite_McMini=OFF
 fi
 
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
-  -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
-  -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis") \
-  -Denable_testsuite_smpi_MPICH3=$(onoff test "$build_mode" = "Debug") \
+  -Denable_model-checking=ON \
+  -Denable_testsuite_smpi_MBI=OFF ${MAYBE_MCMINI} -Denable_testsuite_smpi_MPICH3=ON \
+  -Denable_compile_optimizations=$(onoff test "$build_mode" != "DynamicAnalysis" -a "$build_mode" != "Debug") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
-  -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
-  -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
-  -Denable_java=$(onoff test "$have_Java" = "yes") \
+  -Denable_compile_warnings=ON -Denable_smpi=ON \
+  -Denable_lib_in_jar=OFF \
+  -Denable_ns3=$(onoff test "$have_NS3" = "yes") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
-  -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} \
-  -DLTO_EXTRA_FLAG="auto" \
+  ${MAY_DISABLE_LTO} -DLTO_EXTRA_FLAG="auto" \
+  -DCMAKE_DISABLE_SOURCE_CHANGES=ON \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 

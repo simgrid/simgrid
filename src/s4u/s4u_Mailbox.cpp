@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -94,6 +94,8 @@ CommPtr Mailbox::put_init()
 
 CommPtr Mailbox::put_init(void* payload, uint64_t simulated_size_in_bytes)
 {
+  xbt_assert(payload != nullptr, "You cannot send nullptr");
+
   return put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->set_src_data_size(sizeof(void*));
 }
 

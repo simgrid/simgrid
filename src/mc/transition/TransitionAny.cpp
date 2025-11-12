@@ -1,10 +1,11 @@
-/* Copyright (c) 2015-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2015-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionAny.hpp"
 #include "simgrid/config.h"
+#include "src/mc/transition/TransitionComm.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
@@ -14,16 +15,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_any, mc_transition, "Logging specific t
 
 namespace simgrid::mc {
 
-TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::TESTANY, issuer, times_considered)
 {
-  int size;
-  xbt_assert(stream >> size);
-  for (int i = 0; i < size; i++) {
-    Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_DEBUG("TestAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
+  unsigned size = channel.unpack<unsigned>();
+  for (unsigned i = 0; i < size; i++) {
+    Transition* t = deserialize_transition(issuer, 0, channel);
+    XBT_DEBUG("TestAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
+  call_location_ = channel.unpack<std::string>();
 }
 std::string TestAnyTransition::to_string(bool verbose) const
 {
@@ -40,28 +41,26 @@ bool TestAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-  for (auto const& transition : transitions_)
-    if (transition->depends(other))
-      return true;
-  return false;
+  return this->get_current_transition()->depends(other);
 }
-bool TestAnyTransition::reversible_race(const Transition* other) const
+bool TestAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::TESTANY, "Unexpected transition type %s", to_c_str(type_));
 
   return true; // TestAny is always enabled
 }
 
-WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::WAITANY, issuer, times_considered)
 {
-  int size;
-  xbt_assert(stream >> size);
-  for (int i = 0; i < size; i++) {
-    Transition* t = deserialize_transition(issuer, 0, stream);
-    XBT_DEBUG("WaitAny received transition %d/%d %s", (i + 1), size, t->to_string(true).c_str());
+  unsigned size = channel.unpack<unsigned>();
+  for (unsigned i = 0; i < size; i++) {
+    Transition* t = deserialize_transition(issuer, 0, channel);
+    XBT_DEBUG("WaitAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
+  call_location_ = channel.unpack<std::string>();
 }
 std::string WaitAnyTransition::to_string(bool verbose) const
 {
@@ -76,17 +75,33 @@ bool WaitAnyTransition::depends(const Transition* other) const
   // Actions executed by the same actor are always dependent
   if (other->aid_ == aid_)
     return true;
-  for (auto const& transition : transitions_)
-    if (transition->depends(other))
-      return true;
-  return false;
+  return this->get_current_transition()->depends(other);
 }
-bool WaitAnyTransition::reversible_race(const Transition* other) const
+
+Transition* WaitAnyTransition::get_current_transition() const
+{
+  int times_considered = times_considered_;
+  for (auto* t : transitions_) {
+    auto const* wait = static_cast<const CommWaitTransition*>(t);
+
+    if (not wait->is_enabled())
+      continue;
+
+    if (times_considered == 0)
+      return t;
+    else
+      times_considered--;
+  }
+
+  xbt_die("There is no enabled corresponding transition. Fix me!");
+}
+
+bool WaitAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
+                                        EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::WAITANY, "Unexpected transition type %s", to_c_str(type_));
 
-  // TODO: We need to check if any of the transitions waited on occurred before `e1`
-  return true; // Let's overapproximate to not miss branches
+  return this->reversible_race(other, exec, this_handle, other_handle);
 }
 
 } // namespace simgrid::mc

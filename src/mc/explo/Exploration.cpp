@@ -1,21 +1,27 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/Exploration.hpp"
 #include "simgrid/forward.h"
+#include "src/mc/api/Strategy.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 #include "xbt/string.hpp"
 
 #include <algorithm>
+#include <memory>
+#include <signal.h>
 #include <sys/wait.h>
 #include <utility>
 
@@ -26,7 +32,8 @@ namespace simgrid::mc {
 static simgrid::config::Flag<std::string> cfg_dot_output_file{
     "model-check/dot-output", "Name of dot output file corresponding to graph state", ""};
 
-Exploration* Exploration::instance_ = nullptr; // singleton instance
+Exploration* Exploration::instance_                         = nullptr; // singleton instance
+std::unique_ptr<ExplorationStrategy> Exploration::strategy_ = std::make_unique<ExplorationStrategy>();
 
 xbt::signal<void(State&, RemoteApp&)> Exploration::on_restore_state_signal;
 xbt::signal<void(Transition*, RemoteApp&)> Exploration::on_transition_replay_signal;
@@ -46,7 +53,7 @@ Exploration::Exploration(std::unique_ptr<RemoteApp> remote_app) : remote_app_(st
   is_looking_for_critical = true;
 }
 
-Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
+Exploration::Exploration()
 {
   xbt_assert(instance_ == nullptr, "Cannot have more than one exploration instance");
   instance_ = this;
@@ -93,6 +100,8 @@ void Exploration::log_state()
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
+  if (_sg_mc_debug_optimality)
+    odpor::MazurkiewiczTraces::log_data();
 }
 // Make our tests fully reproducible despite the subtle differences of strsignal() across archs
 static const char* signal_name(int status)
@@ -129,7 +138,7 @@ void Exploration::run_critical_exploration_on_need(ExitStatus error)
   if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
     is_looking_for_critical = true;
     stack_t stack           = get_stack();
-    create_critical_transition_exploration(std::move(remote_app_), get_model_checking_reduction(), &stack);
+    CriticalTransitionExplorer explorer(std::move(remote_app_), get_model_checking_reduction(), &stack);
 
     // This will be executed after the first (and only) critical exploration:
     // we raise the same error, so the checker can return the correct failure code in the end
@@ -238,12 +247,25 @@ void Exploration::report_correct_execution(State* last_state)
     throw McError(ExitStatus::SUCCESS);
 }
 
+void Exploration::report_data_race(const McDataRace& e)
+{
+  XBT_INFO("Found a datarace at location %p between actor %ld and %ld after the follwing execution:", e.location_,
+           e.first_mem_op_.first, e.second_mem_op_.first);
+  for (auto const& frame : Exploration::get_instance()->get_textual_trace())
+    XBT_INFO("  %s", frame.c_str());
+  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+           "--cfg=model-check/replay:'%s'",
+           Exploration::get_instance()->get_record_trace().to_string().c_str());
+  Exploration::get_instance()->log_state();
+  get_remote_app().finalize_app(true);
+}
+
 bool Exploration::empty()
 {
-  std::map<aid_t, simgrid::mc::ActorState> actors;
+  std::vector<std::optional<simgrid::mc::ActorState>> actors;
   get_remote_app().get_actors_status(actors);
   return std::none_of(actors.begin(), actors.end(),
-                      [](std::pair<aid_t, simgrid::mc::ActorState> kv) { return kv.second.is_enabled(); });
+                      [](std::optional<simgrid::mc::ActorState> kv) { return kv.has_value() && kv->is_enabled(); });
 }
 
 bool Exploration::soft_timouted() const
@@ -254,35 +276,84 @@ bool Exploration::soft_timouted() const
   return time(nullptr) - starting_time_ > _sg_mc_soft_timeout;
 }
 
-void Exploration::backtrack_to_state(State* target_state, bool finalize_app)
+void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* target_state, bool finalize_app)
 {
-  on_backtracking_signal(get_remote_app());
+  on_backtracking_signal(remote_app);
+  XBT_DEBUG("Backtracking to state #%ld", target_state->get_num());
 
-  std::deque<Transition*> replay_recipe;
+  std::deque<Transition*> replayed_transitions;
+  std::deque<std::pair<aid_t, int>> recipe;
+  std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
+  std::deque<StatePtr> state_needing_actor_status;
   auto* state       = target_state;
   State* root_state = nullptr;
   for (; state != nullptr && not state->has_state_factory(); state = state->get_parent_state()) {
-    if (state->get_transition_in() != nullptr) // The root has no transition_in
-      replay_recipe.push_front(state->get_transition_in().get());
-    else
+    if (state->get_transition_in() != nullptr) { // The root has no transition_in
+      if (not state->has_been_initialized()) {
+        recipe_needing_actor_status.push_front(
+            {state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+        state_needing_actor_status.push_front(state);
+      } else {
+        replayed_transitions.push_front(state->get_transition_in().get());
+        recipe.push_front({state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+      }
+    } else
       root_state = state;
   }
 
   if (state == nullptr) { /* restart from the root */
-    get_remote_app().restore_checker_side(nullptr, finalize_app);
-    on_restore_state_signal(*root_state, get_remote_app());
+    remote_app.restore_checker_side(nullptr, finalize_app);
+    on_restore_state_signal(*root_state, remote_app);
   } else { /* Found an intermediate restart point */
-    get_remote_app().restore_checker_side(state->get_state_factory(), finalize_app);
-    on_restore_state_signal(*state, get_remote_app());
+    remote_app.restore_checker_side(state->get_state_factory(), finalize_app);
+    on_restore_state_signal(*state, remote_app);
   }
 
-  for (auto& transition : replay_recipe) {
-    transition->replay(get_remote_app());
-    on_transition_replay_signal(transition, get_remote_app());
-    visited_states_count_++;
-  }
+  XBT_DEBUG("Sending sequence for a replay (without actor_status): %s",
+            std::accumulate(recipe.begin(), recipe.end(), std::string(), [](std::string a, auto b) {
+              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
+            }).c_str());
+  XBT_DEBUG("... (with actor_status): %s",
+            std::accumulate(recipe_needing_actor_status.begin(), recipe_needing_actor_status.end(), std::string(),
+                            [](std::string a, auto b) {
+                              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' +
+                                     std::to_string(b.second) + '>';
+                            })
+                .c_str());
 
+  remote_app.replay_sequence(recipe, recipe_needing_actor_status);
+
+  XBT_DEBUG("Need to initialize %lu states (%lu in the replay actor_status side)", state_needing_actor_status.size(),
+            recipe_needing_actor_status.size());
+
+  // The semantic of the set_one_way is:
+  //  Please model checker, just listen to the app for now, we already sent the request for you
+
+  // Indeed, the Application is sending informations to update:
+  //  - the incoming transition for all the state not yet visited
+  //  - the actor status of the same states
+
+  remote_app.set_one_way(true);
+  for (auto& state : state_needing_actor_status) {
+    state->update_incoming_transition_with_remote_app(remote_app, state->get_transition_in()->aid_,
+                                                      state->get_transition_in()->times_considered_);
+    state->initialize(remote_app);
+  }
+  remote_app.set_one_way(false);
+
+  // not thread-safe counts
+  visited_states_count_ += recipe.size();
   backtrack_count_++;
+  Transition::replayed_transitions_ += recipe.size();
+
+  for (auto& transition : replayed_transitions)
+    on_transition_replay_signal(transition, remote_app);
+
+  // If we initialized something and it has not yet been given a possible thing to explore, go one way
+  if (state_needing_actor_status.size() != 0 and target_state->next_transition() == -1)
+    static_cast<SleepSetState*>(target_state)->add_arbitrary_transition(remote_app);
+
+  return;
 }
 
 }; // namespace simgrid::mc

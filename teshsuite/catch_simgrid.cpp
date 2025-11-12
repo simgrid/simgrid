@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -64,8 +64,7 @@ int main(int argc, char* argv[])
 
   int status = 42;
   all_hosts  = e.get_all_hosts();
-  simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0],
-                              [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
+  all_hosts[0]->add_actor("main_dispatcher", [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
 
   e.run();
   XBT_INFO("Simulation done");

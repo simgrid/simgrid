@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,6 +13,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/lmm/System.hpp" // sg_precision_timing
 #include "src/mc/mc_replay.hpp"
+#include "src/sthread/sthread.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 #include <getopt.h>
@@ -90,6 +91,8 @@ void smpi_bench_begin()
   }
 #endif
   xbt_os_threadtimer_start(smpi_process()->timer());
+
+  sthread_enable();
 }
 
 double smpi_adjust_comp_speed(){
@@ -107,6 +110,8 @@ double smpi_adjust_comp_speed(){
 
 void smpi_bench_end()
 {
+  sthread_disable();
+
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
@@ -513,7 +518,8 @@ double smpi_autobench()
     sum += C[i];
 
   double elapsed     = xbt_os_timer_elapsed(timer);
-  double number_flop = (3.0 * SIZE * SIZE * SIZE + SIZE * SIZE);
+  // flop count is one add and one mul per element, the final reduction is left out of the bench
+  double number_flop = (2.0 * SIZE * SIZE * SIZE);
 
   free(A);
   free(B);

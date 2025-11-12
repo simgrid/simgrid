@@ -1,6 +1,6 @@
 /* A few crash tests for the maxmin library                                 */
 
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -136,7 +136,8 @@ int main(int argc, char** argv)
 
   if (mode == 1)
     xbt_log_control_set("ker_lmm.threshold:DEBUG ker_lmm.fmt:'[%r]: [%c/%p] %m%n' "
-                        "kernel.threshold:DEBUG kernel.fmt:'[%r]: [%c/%p] %m%n' ");
+                        "kernel.threshold:DEBUG kernel.fmt:'[%r]: [%c/%p] %m%n'  "
+                        "ker_activity.threshold:INFO");
 
   if (mode == 2)
     xbt_log_control_set("ker_lmm.threshold:DEBUG kernel.threshold:DEBUG");

@@ -1,6 +1,6 @@
 /* Various pieces of code which don't fit in any module                     */
 
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,11 +13,13 @@
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
+#include "xbt/thread.hpp"
 
 #include <cmath>
-#if HAVE_UNISTD_H
+#include <sstream>
+#include <string>
+#include <thread>
 #include <unistd.h>
-#endif
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this
                                                       is used in xbt_log_file_appender to detect whether SMPI is used
@@ -25,15 +27,6 @@ XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's 
 
 const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
-
-XBT_ATTRIB_NOINLINE void sthread_enable()
-{ // These symbols are used from ContextSwapped in any case, but they are only useful
-  asm("");
-}
-XBT_ATTRIB_NOINLINE void sthread_disable()
-{ //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
-  asm("");
-}
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like xbt_free, but you can be sure that it is a function  */
@@ -62,3 +55,17 @@ int SMPI_is_inited()
   return false;
 }
 #endif
+
+namespace simgrid::xbt {
+std::string& gettid()
+{
+  static thread_local std::ostringstream id;
+  static thread_local std::string sid = id.str();
+
+  if (sid.empty()) {
+    id << std::this_thread::get_id();
+    sid = id.str();
+  }
+  return sid;
+}
+}; // namespace simgrid::xbt

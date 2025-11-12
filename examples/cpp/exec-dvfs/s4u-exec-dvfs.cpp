@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,12 +55,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost1"), dvfs);
-  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost2"), dvfs);
+  e.host_by_name("MyHost1")->add_actor("dvfs_test", dvfs);
+  e.host_by_name("MyHost2")->add_actor("dvfs_test", dvfs);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %e", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %e", e.get_clock());
 
   return 0;
 }

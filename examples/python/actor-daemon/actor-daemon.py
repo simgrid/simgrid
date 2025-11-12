@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -38,7 +38,7 @@ if __name__ == '__main__':
             "Usage: actor-daemon.py platform_file [other parameters]")
 
     e.load_platform(sys.argv[1])
-    Actor.create("worker", Host.by_name("Boivin"), worker)
-    Actor.create("daemon", Host.by_name("Tremblay"), my_daemon)
+    Host.by_name("Boivin").add_actor("worker", worker)
+    Host.by_name("Tremblay").add_actor("daemon", my_daemon)
 
     e.run()

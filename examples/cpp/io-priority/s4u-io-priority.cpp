@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -67,8 +67,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("writer", e.host_by_name("bob"), writer);
-  sg4::Actor::create("privileged_writer", e.host_by_name("bob"), privileged_writer);
+  e.host_by_name("bob")->add_actor("writer", writer);
+  e.host_by_name("bob")->add_actor("privileged_writer", privileged_writer);
 
   e.run();
 

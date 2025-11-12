@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -104,6 +104,7 @@ public:
   std::exception_ptr exception_;
   bool suspended_ = false;
 
+  activity::MemoryAccessImplPtr recorded_memory_accesses_;
   /* the activities on which the actor is currently blocked with a wait(). There is more than one e.g. in a wait_any() */
   std::vector<activity::ActivityImplPtr> waiting_synchros_; 
   /* the activities linked to that actor. They are canceled when it dies, suspend/resumed when it is */
@@ -143,6 +144,8 @@ public:
       delete actor;
     }
   }
+
+  simgrid::kernel::activity::MemoryAccessImpl* get_memory_access() { return recorded_memory_accesses_.get(); }
 
   /* S4U/implem interfaces */
 private:

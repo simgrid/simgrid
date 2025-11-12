@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -63,8 +63,8 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 
   std::string link_up        = "link_" + netpoint->get_name() + "_UP";
   std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
-  const auto* linkUp         = create_link(link_up, {bw_out})->seal();
-  const auto* linkDown       = create_link(link_down, {bw_in})->seal();
+  const auto* linkUp         = add_link(link_up, {bw_out})->seal();
+  const auto* linkDown       = add_link(link_down, {bw_in})->seal();
   add_route(netpoint, nullptr, nullptr, nullptr, {s4u::LinkInRoute(linkUp)}, false);
   add_route(nullptr, netpoint, nullptr, nullptr, {s4u::LinkInRoute(linkDown)}, false);
 }

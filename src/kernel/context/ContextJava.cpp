@@ -1,6 +1,6 @@
 /* Context switching within the JVM.                                        */
 
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,6 +21,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(java, "SimGrid for Java(TM)");
 
 namespace simgrid::kernel::context {
 
+JavaContextFactory::~JavaContextFactory()
+{
+  simgrid_cached_jvm->DetachCurrentThread(); // Maestro needs to be detached
+}
+
 Context* JavaContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   return this->new_context<JavaContext>(std::move(code), actor);
@@ -36,6 +41,10 @@ JavaContext::JavaContext(std::function<void()>&& code, actor::ActorImpl* actor)
 {
   /* ThreadContext already does all we need */
 }
+JavaContext::~JavaContext()
+{
+  XBT_DEBUG("dtor JavaContextFactory on '%s'", get_actor()->get_cname());
+}
 
 void JavaContext::initialized()
 {
@@ -45,27 +54,32 @@ void JavaContext::initialized()
   JNIEnv* env;
   xbt_assert(simgrid_cached_jvm->AttachCurrentThread((void**)&env, NULL) == JNI_OK,
              "The thread could not be attached to the JVM");
-  XBT_DEBUG("Attach thread %p (%s)", this, get_actor()->get_cname());
+  XBT_DEBUG("Attach thread %p (%s)", this, get_actor()->get_cname()); // Maestro does not take this execution path
   this->jenv_ = env;
 }
 
 void JavaContext::stop()
 {
-  XBT_DEBUG("Stopping %s", get_actor()->get_cname());
+  XBT_DEBUG("Stopping thread %s", get_actor()->get_cname());
   this->get_actor()->cleanup_from_self();
  // sthread_disable();
 
   /* Unregister the thread from the JVM */
   jint error = simgrid_cached_jvm->DetachCurrentThread();
   if (error != JNI_OK) {
-    /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
-     * but from Java with something like new Process().start().
-     *
-     * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
-     * until run_jprocess(), IIUC.
-     */
-    XBT_WARN("Cannot detach the current thread");
-    //TODO: jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+    XBT_DEBUG("Thread %s cannot be detached. Raise a Java exception to stop it", get_actor()->get_cname());
+    /* The corresponding actor is probably still ongoing but killed forcefully. Raising a ForcefulKillException will
+     * terminate it */
+    // Cache the exception class
+    static jclass klass = 0;
+    if (klass == 0) {
+      klass = (jclass)jenv_->NewGlobalRef(jenv_->FindClass("org/simgrid/s4u/ForcefulKillException"));
+      xbt_assert(klass, "Class not found");
+    }
+
+    jenv_->ThrowNew(klass, "Actor killed");
+  } else {
+    XBT_DEBUG("Successfully detached thread %s", get_actor()->get_cname());
   }
 
   simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -57,7 +57,6 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                          const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
-
   check_routing_table();
 
   /* Check that the route does not already exist */

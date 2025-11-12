@@ -4,7 +4,7 @@ foreach(x sleep exec io comm comm_direct test-wait)
   set(activity-lifecycle_sources ${activity-lifecycle_sources} activity-lifecycle/testing_${x}.cpp)
 endforeach()
 
-foreach(x actor actor-autorestart actor-suspend
+foreach(x actor actor-autorestart actor-suspend actor-destroyed-with-mutex
         activity-lifecycle
         comm-get-sender comm-pt2pt comm-fault-scenarios
         cloud-interrupt-migration cloud-two-execs
@@ -39,7 +39,7 @@ set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${IN
 
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
-foreach(x actor actor-autorestart actor-suspend activity-lifecycle comm-get-sender
+foreach(x actor actor-autorestart actor-suspend activity-lifecycle actor-destroyed-with-mutex comm-get-sender
         cloud-interrupt-migration cloud-two-execs concurrent_rw dag-incomplete-simulation dependencies io-set-bw io-stream
 	      vm-live-migration vm-suicide)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

@@ -1,7 +1,7 @@
 p Test the replay with multiple instances
 
 p first generate the deployment file
-$ ${srcdir:=.}/generate_multiple_deployment.sh -platform ${srcdir:=.}/../../platforms/small_platform_with_routers.xml -hostfile ${srcdir:=.}/../hostfile  ${srcdir:=.}/description_file ${bindir:=.}/deployment.xml
+$ ${srcdir:=.}/generate_multiple_deployment.py -platform ${srcdir:=.}/../../platforms/small_platform_with_routers.xml -hostfile ${srcdir:=.}/../hostfile  ${srcdir:=.}/description_file ${bindir:=.}/deployment.xml
 
 p This test needs maxmin/concurrency-limit=100 because it starts 64 hosts on 5 machines.
 ! timeout 120

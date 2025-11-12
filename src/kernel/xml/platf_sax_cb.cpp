@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -280,7 +280,7 @@ static void add_remote_disks()
       }
 
     xbt_assert(disk, "You're trying to mount a disk that does not exist. Please check your platform file");
-    host->add_disk(disk);
+    host->register_disk(disk);
 
     XBT_DEBUG("Host '%s' wants to access a remote disk: %s of %s", host->get_cname(), disk->get_cname(),
               remote_host->get_cname());

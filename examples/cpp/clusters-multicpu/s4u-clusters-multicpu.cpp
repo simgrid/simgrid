@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,6 +11,7 @@
  */
 
 #include "simgrid/s4u.hpp"
+#include "simgrid/s4u/NetZone.hpp"
 namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_torus_multicpu, "Messages specific for this s4u example");
@@ -87,7 +88,7 @@ public:
  * @param id Internal identifier in the torus (for information)
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
-static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
+static sg4::NetZone* create_hostzone(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -96,19 +97,17 @@ static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector
 
   std::string hostname = "host" + std::to_string(id);
   /* create the StarZone */
-  auto* host_zone = sg4::create_star_zone(hostname);
-  /* setting my Torus parent zone */
-  host_zone->set_parent(zone);
+  auto* host_zone = zone->add_netzone_star(hostname);
 
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
     std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
-    const sg4::Host* host = host_zone->create_host(cpu_name, speed);
+    const sg4::Host* host = host_zone->add_host(cpu_name, speed);
     /* the first CPU is the gateway */
     if (i == 0)
       host_zone->set_gateway(host->get_netpoint());
     /* create split-duplex link */
-    auto* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
+    auto* link = host_zone->add_split_duplex_link("link-" + cpu_name, link_bw)->set_latency(link_lat);
     /* connecting CPU to outer world */
     host_zone->add_route(host, nullptr, {{link, sg4::LinkInRoute::Direction::UP}}, true);
   }
@@ -136,7 +135,7 @@ static sg4::NetZone* create_hostzone(const sg4::NetZone* zone, const std::vector
  */
 static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
-  return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
+  return zone->add_link("limiter-" + std::to_string(id), 1e9)->seal();
 }
 
 /**
@@ -173,11 +172,13 @@ static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned 
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
  * Cluster</a>
  */
-static void create_torus_cluster()
+static void create_torus_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the torus cluster, 10Gbs link between elements in the cluster */
-  sg4::create_torus_zone("cluster", nullptr, {2, 2, 2}, {create_hostzone, {}, create_limiter}, 10e9, 10e-6,
-                         sg4::Link::SharingPolicy::SPLITDUPLEX)
+  parent
+      ->add_netzone_torus("cluster", {2, 2, 2}, "10Gbps", "10us", sg4::Link::SharingPolicy::SPLITDUPLEX)
+      ->set_netzone_cb(create_hostzone)
+      ->set_limiter_cb(create_limiter)
       ->seal();
 }
 
@@ -229,11 +230,14 @@ static void create_torus_cluster()
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat-Tree
  * Cluster</a>
  */
-static void create_fatTree_cluster()
+static void create_fatTree_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the fat tree cluster, 10Gbs link between elements in the cluster */
-  sg4::create_fatTree_zone("cluster", nullptr, {2, {2, 3}, {1, 2}, {1, 1}}, {create_hostzone, {}, create_limiter}, 10e9,
-                           10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
+  parent
+      ->add_netzone_fatTree("cluster", 2, {2, 3}, {1, 2}, {1, 1}, "10Gbps", "10us",
+                            sg4::Link::SharingPolicy::SPLITDUPLEX)
+      ->set_netzone_cb(create_hostzone)
+      ->set_limiter_cb(create_limiter)
       ->seal();
 }
 
@@ -275,12 +279,14 @@ static void create_fatTree_cluster()
  * More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly
  * Cluster</a>
  */
-static void create_dragonfly_cluster()
+static void create_dragonfly_cluster(simgrid::s4u::NetZone* parent)
 {
   /* create the dragonfly cluster, 10Gbs link between elements in the cluster */
-  sg4::create_dragonfly_zone("cluster", nullptr, {{2, 2}, {2, 1}, {2, 2}, 2}, {create_hostzone, {}, create_limiter},
-                             10e9, 10e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)
-      ->seal();
+  parent->add_netzone_dragonfly("cluster", {2, 2}, {2, 1}, {2, 2}, 2, "10Gbps", "10us", 
+                                sg4::Link::SharingPolicy::SPLITDUPLEX)
+        ->set_netzone_cb(create_hostzone)
+        ->set_limiter_cb(create_limiter)
+        ->seal();
 }
 
 /*************************************************************************************************/
@@ -291,18 +297,18 @@ int main(int argc, char* argv[])
 
   /* create platform */
   if (std::string platform(argv[1]); platform == "torus")
-    create_torus_cluster();
+    create_torus_cluster(e.get_netzone_root());
   else if (platform == "fatTree")
-    create_fatTree_cluster();
+    create_fatTree_cluster(e.get_netzone_root());
   else if (platform == "dragonfly")
-    create_dragonfly_cluster();
+    create_dragonfly_cluster(e.get_netzone_root());
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */
-  sg4::Actor::create("sender", host_list[0], Sender(host_list));
+  host_list[0]->add_actor("sender", Sender(host_list));
   /* create receiver in every host */
   for (auto* host : host_list) {
-    sg4::Actor::create("receiver-" + host->get_name(), host, Receiver());
+    host->add_actor("receiver-" + host->get_name(), Receiver());
   }
 
   /* runs the simulation */

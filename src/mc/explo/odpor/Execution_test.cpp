@@ -1,9 +1,10 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/3rd-party/catch.hpp"
+#include "src/mc/api/ClockVector.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_tests_private.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
@@ -11,6 +12,16 @@
 using namespace simgrid::mc;
 using namespace simgrid::mc::odpor;
 using namespace simgrid::mc::udpor;
+
+static void compare_cv(const ClockVector& cv, std::vector<long> content)
+{
+  // REQUIRE(cv.size() == content.size());
+  auto cv_it = cv.begin();
+  for (auto v : content) {
+    REQUIRE(v == *cv_it);
+    cv_it++;
+  }
+}
 
 TEST_CASE("simgrid::mc::odpor::Execution: Constructing Executions")
 {
@@ -36,6 +47,22 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     execution.push_transition(a2);
     execution.push_transition(a3);
     execution.push_transition(a4);
+
+    SECTION("Check the vector clocks")
+    {
+      SECTION("compare after a1")
+      compare_cv(execution.get_event_with_handle(0).get_clock_vector(), {-1, 0});
+
+      SECTION("compare after a2")
+
+      compare_cv(execution.get_event_with_handle(1).get_clock_vector(), {-1, -1, 1});
+      SECTION("compare after a3")
+
+      compare_cv(execution.get_event_with_handle(2).get_clock_vector(), {-1, -1, -1, 2});
+      SECTION("compare after a4")
+
+      compare_cv(execution.get_event_with_handle(3).get_clock_vector(), {-1, 0, -1, -1, 3});
+    }
 
     SECTION("Happens-before is irreflexive")
     {

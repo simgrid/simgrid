@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dag_from_dot_simple.jar dag_from_dot_simple ${platfdir}/small_platform.xml ${srcdir:=.}/dag_from_dot_simple/dag.dot --log=no_loc
+> [0.000000] [java/INFO] Using regular java threads.
+> [0.000000] [java/INFO] Exec 'root' on Fafard is complete (start time: 0.000000, finish time: 0.000000)
+> [33.394394] [java/INFO] Comm 'root->c2' from Fafard to Jupiter is complete (start time: 0.000000, finish time: 33.394394)
+> [39.832311] [java/INFO] Comm 'root->c1' from Fafard to Tremblay is complete (start time: 0.000000, finish time: 39.832311)
+> [50.026511] [java/INFO] Exec 'c1' on Tremblay is complete (start time: 39.832311, finish time: 50.026511)
+> [98.928629] [java/INFO] Exec 'c2' on Jupiter is complete (start time: 33.394394, finish time: 98.928629)
+> [125.115689] [java/INFO] Comm 'c1->c3' from Tremblay to Jupiter is complete (start time: 50.026511, finish time: 125.115689)
+> [151.329383] [java/INFO] Exec 'c3' on Jupiter is complete (start time: 125.115689, finish time: 151.329383)
+> [151.743605] [java/INFO] Comm 'c3->end' from Jupiter to Jupiter is complete (start time: 151.329383, finish time: 151.743605)
+> [151.743605] [java/INFO] Exec 'end' on Jupiter is complete (start time: 151.743605, finish time: 151.743605)

@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:io_priority.jar io_priority ${platfdir}/hosts_with_disks.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [bob:privileged_writer:(2) 0.150000] [java/INFO] First write done.
+> [bob:writer:(1) 0.200000] [java/INFO] First write done.
+> [bob:privileged_writer:(2) 0.300000] [java/INFO] Increase priority for the priviledged writer (2000000 bytes remaining to write)
+> [bob:privileged_writer:(2) 0.375000] [java/INFO] Second write done.
+> [bob:writer:(1) 0.400000] [java/INFO] Second write done.

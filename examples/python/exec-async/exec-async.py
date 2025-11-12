@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -66,8 +66,8 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    Actor.create("wait", Host.by_name("Fafard"), Waiter())
-    Actor.create("monitor", Host.by_name("Ginette"), Monitor())
-    Actor.create("cancel", Host.by_name("Boivin"), Canceller())
+    e.host_by_name("Fafard").add_actor("wait", Waiter())
+    e.host_by_name("Ginette").add_actor("monitor", Monitor())
+    e.host_by_name("Boivin").add_actor("cancel", Canceller())
 
     e.run()

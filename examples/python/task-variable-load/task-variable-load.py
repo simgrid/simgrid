@@ -1,4 +1,4 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     Task.on_completion_cb(callback)
 
     # Create the actor that will inject load during the simulation
-    Actor.create("input", tremblay, variable_load, comm)
+    tremblay.add_actor("input", variable_load, comm)
 
     # runs the simulation
     e.run()

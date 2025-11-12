@@ -1,6 +1,6 @@
 # CMake find module to search for the SimGrid library.
 
-# Copyright (c) 2016-2024. The SimGrid Team.
+# Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -61,7 +61,7 @@
 #    https://cmake.org/Wiki/CMake/Tutorials/How_to_create_a_ProjectConfig.cmake_file
 #    https://github.com/boostcon/cppnow_presentations_2017/blob/master/05-19-2017_friday/effective_cmake__daniel_pfeifer__cppnow_05-19-2017.pdf
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -117,8 +117,19 @@ find_package_handle_standard_args(SimGrid
 
 if (SimGrid_FOUND)
 
+  find_program(SMPICC smpicc
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  find_program(SMPICXX smpicxx
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  find_program(SMPIF90 smpif90
+               HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  set(MPI_C_COMPILER       ${SMPICC})
+  set(MPI_CXX_COMPILER     ${SMPICXX})
+  set(MPI_Fortran_COMPILER ${SMPIF90})
+
   find_program(SMPIRUN smpirun
                HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
+  #set(MPIEXEC_EXECUTABLE ${SMPIRUN} -platform /home/mquinson/Code/simgrid/examples/platforms/cluster_backbone.xml)
 
   MACRO(smpi_c_target NAME)
     target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")

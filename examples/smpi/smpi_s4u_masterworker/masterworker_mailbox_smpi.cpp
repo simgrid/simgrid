@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
                            e.host_by_name_or_null("Jupiter"), e.host_by_name_or_null("Fafard")});
 
   // Start a third MPI application, from a S4U actor after a delay of 10 sec
-  simgrid::s4u::Actor::create("launcher", e.host_by_name_or_null("Ginette"), [&e]() {
+  e.host_by_name_or_null("Ginette")->add_actor("launcher", [&e]() {
     simgrid::s4u::this_actor::sleep_for(10);
     XBT_INFO("Start another alltoall_mpi instance");
     SMPI_app_instance_start("alltoall_mpi", alltoall_mpi,
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   SMPI_finalize();
   return 0;

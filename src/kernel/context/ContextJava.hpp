@@ -1,6 +1,6 @@
 /* Context switching within the JVM.                                        */
 
-/* Copyright (c) 2009-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,6 +27,7 @@ public:
 
   friend class JavaContextFactory;
   JavaContext(std::function<void()>&& code, actor::ActorImpl* actor);
+  ~JavaContext() override;
 
   void initialized() override;
   // void finalizing() override;
@@ -36,6 +37,7 @@ public:
 class JavaContextFactory : public ContextFactory {
 public:
   JavaContextFactory() = default;
+  ~JavaContextFactory();
   Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
   void run_all(std::vector<actor::ActorImpl*> const& actors) override;
   const char* get_name() const override { return "Java"; }

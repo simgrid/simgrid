@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     e = Engine(sys.argv)
     e.load_platform(sys.argv[1])
 
-    Actor.create("executor", Host.by_name("Tremblay"), executor)
-    Actor.create("privileged", Host.by_name("Tremblay"), privileged)
+    e.host_by_name("Tremblay").add_actor("executor", executor)
+    e.host_by_name("Tremblay").add_actor("privileged", privileged)
 
     e.run()

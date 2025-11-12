@@ -1,30 +1,35 @@
-/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil ; -*- */
 /*
- *
- *  (C) 2003 by Argonne National Laboratory.
- *      See COPYRIGHT in top-level directory.
+ * Copyright (C) by Argonne National Laboratory
+ *     See COPYRIGHT in top-level directory
  */
+
 #include "mpi.h"
 #include "mpitest.h"
-#include <stdio.h>
-#include <stdlib.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #include <time.h>
 #include <math.h>
 #include <assert.h>
+
+#ifdef MULTI_TESTS
+#define run coll_allgatherv4
+int run(const char *arg);
+#endif
+
 /* FIXME: What is this test supposed to accomplish? */
+
 #define START_BUF (1)
 #define LARGE_BUF (256 * 1024)
+
 /* FIXME: MAX_BUF is too large */
 #define MAX_BUF   (32 * 1024 * 1024)
 #define LOOPS 10
-char *sbuf, *rbuf;
-int *recvcounts, *displs;
-int errs = 0;
-/* #define dprintf printf */
-#define dprintf(...)
+
+static char *sbuf, *rbuf;
+static int *recvcounts, *displs;
+static int errs = 0;
+
 typedef enum {
     REGULAR,
     BCAST,
@@ -33,8 +38,9 @@ typedef enum {
     LINEAR_DECREASE,
     BELL_CURVE
 } test_t;
-void comm_tests(MPI_Comm comm);
-double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max_time);
+
+static void comm_tests(MPI_Comm comm);
+static double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max_time);
 int main(int argc, char **argv)
 {
     int comm_size, comm_rank;
@@ -42,15 +48,20 @@ int main(int argc, char **argv)
     MTest_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &comm_rank);
+
     if (comm_size < 3) {
         fprintf(stderr, "At least 3 processes required\n");
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
+
     if (LARGE_BUF * comm_size > MAX_BUF)
         goto fn_exit;
+
     sbuf = (void *) calloc(MAX_BUF, 1);
     rbuf = (void *) calloc(MAX_BUF, 1);
+
     srand(time(NULL));
+
     recvcounts = (void *) malloc(comm_size * sizeof(int));
     displs = (void *) malloc(comm_size * sizeof(int));
     if (!recvcounts || !displs || !sbuf || !rbuf) {
@@ -60,105 +71,116 @@ int main(int argc, char **argv)
         if (!rbuf)
             fprintf(stderr, "\trbuf of %d bytes\n", MAX_BUF);
         if (!recvcounts)
-          fprintf(stderr, "\trecvcounts of %zu bytes\n", comm_size * sizeof(int));
+            fprintf(stderr, "\trecvcounts of %zu bytes\n", comm_size * sizeof(int));
         if (!displs)
-          fprintf(stderr, "\tdispls of %zu bytes\n", comm_size * sizeof(int));
+            fprintf(stderr, "\tdispls of %zu bytes\n", comm_size * sizeof(int));
         fflush(stderr);
         MPI_Abort(MPI_COMM_WORLD, -1);
     }
+
     if (!comm_rank) {
-        dprintf("Message Range: (%d, %d); System size: %d\n", START_BUF, LARGE_BUF, comm_size);
-        fflush(stdout);
+        MTestPrintfMsg(1, "Message Range: (%d, %d); System size: %d\n", START_BUF, LARGE_BUF,
+                       comm_size);
     }
+
+
     /* COMM_WORLD tests */
     if (!comm_rank) {
-        dprintf("\n\n==========================================================\n");
-        dprintf("                         MPI_COMM_WORLD\n");
-        dprintf("==========================================================\n");
+        MTestPrintfMsg(1, "\n\n==========================================================\n");
+        MTestPrintfMsg(1, "                         MPI_COMM_WORLD\n");
+        MTestPrintfMsg(1, "==========================================================\n");
     }
     comm_tests(MPI_COMM_WORLD);
+
     /* non-COMM_WORLD tests */
     if (!comm_rank) {
-        dprintf("\n\n==========================================================\n");
-        dprintf("                         non-COMM_WORLD\n");
-        dprintf("==========================================================\n");
+        MTestPrintfMsg(1, "\n\n==========================================================\n");
+        MTestPrintfMsg(1, "                         non-COMM_WORLD\n");
+        MTestPrintfMsg(1, "==========================================================\n");
     }
     MPI_Comm_split(MPI_COMM_WORLD, (comm_rank == comm_size - 1) ? 0 : 1, 0, &comm);
     if (comm_rank < comm_size - 1)
         comm_tests(comm);
     MPI_Comm_free(&comm);
+
     /* Randomized communicator tests */
     if (!comm_rank) {
-        dprintf("\n\n==========================================================\n");
-        dprintf("                         Randomized Communicator\n");
-        dprintf("==========================================================\n");
+        MTestPrintfMsg(1, "\n\n==========================================================\n");
+        MTestPrintfMsg(1, "                         Randomized Communicator\n");
+        MTestPrintfMsg(1, "==========================================================\n");
     }
     MPI_Comm_split(MPI_COMM_WORLD, 0, rand(), &comm);
     comm_tests(comm);
     MPI_Comm_free(&comm);
+
     free(sbuf);
     free(rbuf);
     free(recvcounts);
     free(displs);
+
   fn_exit:
     MTest_Finalize(errs);
     MPI_Finalize();
-    return 0;
+    return errs;
 }
-void comm_tests(MPI_Comm comm)
+
+static void comm_tests(MPI_Comm comm)
 {
     int comm_size, comm_rank;
-    double rtime = rtime;       /* stop warning about unused variable */
-    double max_time;
+    double rtime, max_time;
     long long msg_size;
+
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
+
     for (msg_size = START_BUF; msg_size <= LARGE_BUF; msg_size *= 2) {
         if (!comm_rank) {
-            dprintf("\n====> MSG_SIZE: %d\n", (int) msg_size);
-            fflush(stdout);
+            MTestPrintfMsg(1, "\n====> MSG_SIZE: %d\n", (int) msg_size);
         }
+
         rtime = run_test(msg_size, comm, REGULAR, &max_time);
         if (!comm_rank) {
-            dprintf("REGULAR:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "REGULAR:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
+
         rtime = run_test(msg_size, comm, BCAST, &max_time);
         if (!comm_rank) {
-            dprintf("BCAST:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "BCAST:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
+
         rtime = run_test(msg_size, comm, SPIKE, &max_time);
         if (!comm_rank) {
-            dprintf("SPIKE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "SPIKE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
+
         rtime = run_test(msg_size, comm, HALF_FULL, &max_time);
         if (!comm_rank) {
-            dprintf("HALF_FULL:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "HALF_FULL:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
+
         rtime = run_test(msg_size, comm, LINEAR_DECREASE, &max_time);
         if (!comm_rank) {
-            dprintf("LINEAR_DECREASE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "LINEAR_DECREASE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
+
         rtime = run_test(msg_size, comm, BELL_CURVE, &max_time);
         if (!comm_rank) {
-            dprintf("BELL_CURVE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
-            fflush(stdout);
+            MTestPrintfMsg(1, "BELL_CURVE:\tAVG: %.3f\tMAX: %.3f\n", rtime, max_time);
         }
     }
 }
-double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max_time)
+
+static double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max_time)
 {
     int i, j;
     int comm_size, comm_rank;
     double start, end;
     double total_time, avg_time;
     MPI_Aint tmp;
+
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
+
     displs[0] = 0;
     for (i = 0; i < comm_size; i++) {
         if (test_type == REGULAR)
@@ -176,29 +198,32 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max
                 MPI_Abort(MPI_COMM_WORLD, 1);
             }
             recvcounts[i] = (int) tmp;
+
             /* If the maximum message size is too large, don't run */
             if (tmp > MAX_BUF)
-                return 0;
-        }
-        else if (test_type == BELL_CURVE) {
+                return MTestReturnValue(errs);
+        } else if (test_type == BELL_CURVE) {
             for (j = 0; j < i; j++) {
                 if (i - 1 + j >= comm_size)
                     continue;
                 tmp = msg_size * comm_size / (log(comm_size) * i);
                 recvcounts[i - 1 + j] = (int) tmp;
                 displs[i - 1 + j] = 0;
+
                 /* If the maximum message size is too large, don't run */
                 if (tmp > MAX_BUF)
-                    return 0;
+                    return MTestReturnValue(errs);
             }
         }
+
         if (i < comm_size - 1)
             displs[i + 1] = displs[i] + recvcounts[i];
     }
+
     /* Test that:
      * 1: sbuf is large enough
      * 2: rbuf is large enough
-     * 3: There were no failures (e.g., tmp nowhere > rbuf size
+     * 3: There were no failures (e.g., tmp nowhere > rbuf size)
      */
     MPI_Barrier(comm);
     start = MPI_Wtime();
@@ -208,9 +233,11 @@ double run_test(long long msg_size, MPI_Comm comm, test_t test_type, double *max
     }
     end = MPI_Wtime();
     MPI_Barrier(comm);
+
     /* Convert to microseconds (why?) */
     total_time = 1.0e6 * (end - start);
     MPI_Reduce(&total_time, &avg_time, 1, MPI_DOUBLE, MPI_SUM, 0, comm);
     MPI_Reduce(&total_time, max_time, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+
     return (avg_time / (LOOPS * comm_size));
 }

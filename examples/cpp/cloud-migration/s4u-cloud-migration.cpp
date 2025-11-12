@@ -1,10 +1,11 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
 #include "simgrid/plugins/live_migration.h"
+#include "simgrid/s4u.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_cloud_migration, "Messages specific for this example");
@@ -22,7 +23,7 @@ static void vm_migrate(sg4::VirtualMachine* vm, sg4::Host* dst_pm)
 
 static void vm_migrate_async(sg4::VirtualMachine* vm, sg4::Host* dst_pm)
 {
-  sg4::Actor::create("mig_wrk", sg4::Host::current(), vm_migrate, vm, dst_pm);
+  sg4::Host::current()->add_actor("mig_wrk", vm_migrate, vm, dst_pm);
 }
 
 static void master_main()
@@ -91,11 +92,11 @@ int main(int argc, char* argv[])
   /* load the platform file */
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("master_", sg4::Host::by_name("Fafard"), master_main);
+  sg4::Host::by_name("Fafard")->add_actor("master_", master_main);
 
   e.run();
 
-  XBT_INFO("Bye (simulation time %g)", sg4::Engine::get_clock());
+  XBT_INFO("Bye (simulation time %g)", e.get_clock());
 
   return 0;
 }

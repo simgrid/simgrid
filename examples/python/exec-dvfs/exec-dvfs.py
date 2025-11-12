@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                              .format(len(sys.argv)))
 
     e.load_platform(sys.argv[1])
-    Actor.create("dvfs_test", Host.by_name("MyHost1"), Dvfs())
-    Actor.create("dvfs_test", Host.by_name("MyHost2"), Dvfs())
+    e.host_by_name("MyHost1").add_actor("dvfs_test", Dvfs())
+    e.host_by_name("MyHost2").add_actor("dvfs_test", Dvfs())
 
     e.run()

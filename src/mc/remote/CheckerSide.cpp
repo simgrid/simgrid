@@ -1,23 +1,35 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/CheckerSide.hpp"
+#include "simgrid/Exception.hpp"
+#include "src/mc/api/Strategy.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
+#include "src/mc/remote/Channel.hpp"
+#include "src/mc/remote/mc_protocol.h"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
+#include "xbt/log.h"
 #include "xbt/system_error.hpp"
 #include <cerrno>
+#include <unistd.h>
+#include <utility>
 
 #ifdef __linux__
 #include <sys/prctl.h>
+#include <sys/sysinfo.h>
 #endif
 
 #include <boost/tokenizer.hpp>
 #include <csignal>
 #include <fcntl.h>
 #include <sys/ptrace.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 
 #ifdef __linux__
@@ -37,9 +49,11 @@ static simgrid::config::Flag<std::string> _sg_mc_setenv{
 
 namespace simgrid::mc {
 
+unsigned CheckerSide::count_ = 0;
+
 XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
 {
-  /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
+  /* On startup, EngineImpl::initialize() calls simgrid::mc::AppSide::get(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
    */
 
@@ -114,82 +128,25 @@ static void wait_application_process(pid_t pid)
   XBT_DEBUG("%d ptrace correctly setup.", getpid());
 }
 
-void CheckerSide::setup_events()
-{
-  auto* base = event_base_new();
-  base_.reset(base);
-
-  socket_event_ = event_new(
-      base, get_channel().get_socket(), EV_READ | EV_PERSIST,
-      [](evutil_socket_t, short events, void* arg) {
-        auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-        if (events == EV_READ) {
-          do {
-            std::array<char, MC_MESSAGE_LENGTH> buffer;
-            ssize_t size = checker->get_channel().receive(buffer.data(), buffer.size(), MSG_DONTWAIT);
-            if (size == -1) {
-              XBT_ERROR("Channel::receive failure: %s", strerror(errno));
-              if (errno != EAGAIN)
-                throw simgrid::xbt::errno_error();
-            }
-
-            if (size == 0) // The app closed the socket. It must be dead by now.
-              checker->handle_waitpid();
-            else if (not checker->handle_message(buffer.data(), size)) {
-              checker->break_loop();
-              break;
-            }
-          } while (checker->get_channel().has_pending_data());
-        } else {
-          xbt_die("Unexpected event");
-        }
-      },
-      this);
-  event_add(socket_event_, nullptr);
-
-  static bool first_time = true;
-  if (first_time) {
-    first_time    = false;
-    signal_event_ = event_new(
-        base, SIGCHLD, EV_SIGNAL | EV_PERSIST,
-        [](evutil_socket_t sig, short events, void* arg) {
-          auto* checker = static_cast<simgrid::mc::CheckerSide*>(arg);
-          if (events == EV_SIGNAL) {
-            if (sig == SIGCHLD)
-              checker->handle_waitpid();
-            else
-              xbt_die("Unexpected signal: %d", sig);
-          } else {
-            xbt_die("Unexpected event");
-          }
-        },
-        this);
-    event_add(signal_event_, nullptr);
-  }
-}
-
 /* When this constructor is called, no other checkerside exists */
-CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
+CheckerSide::CheckerSide(const std::vector<char*>& args)
 {
+  count_++;
   XBT_DEBUG("Create a CheckerSide.");
 
   // Create an AF_UNIX socketpair used for exchanging messages between the model-checker process (ancestor)
   // and the application process (child)
   int sockets[2];
-  xbt_assert(socketpair(AF_UNIX,
-#ifdef __APPLE__
-                        SOCK_STREAM, /* Mac OSX does not have AF_UNIX + SOCK_SEQPACKET, even if that's faster */
-#else
-                        SOCK_SEQPACKET,
-#endif
-                        0, sockets) != -1,
-             "Could not create socketpair: %s", strerror(errno));
+  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1,
+             "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
+             strerror(errno));
 
   pid_ = fork();
   xbt_assert(pid_ >= 0, "Could not fork application process");
 
   if (pid_ == 0) { // Child
     ::close(sockets[1]);
+
     run_child_process(sockets[0], args);
     DIE_IMPOSSIBLE;
   }
@@ -198,136 +155,239 @@ CheckerSide::CheckerSide(const std::vector<char*>& args) : running_(true)
   ::close(sockets[0]);
   channel_.reset_socket(sockets[1]);
 
-  setup_events();
-  wait_for_requests();
+  try {
+    wait_for_requests();
+  } catch (const AssertionError& ae) {
+    XBT_CRITICAL("Failed to get an answer from the child. The error was '%s'\n%s", ae.what(),
+                 ae.resolve_backtrace().c_str());
+    XBT_CRITICAL("Use valgrind to check whether your child process is segfaulting on start (instead of verifying your "
+                 "code with simgrid-mc, verify valgrind that runs your code).");
+    xbt_abort();
+  }
 }
 
 CheckerSide::~CheckerSide()
 {
-  event_del(socket_event_);
-  event_free(socket_event_);
-  if (signal_event_ != nullptr) {
-    event_del(signal_event_);
-    event_free(signal_event_);
-  }
+  count_--;
 }
 
 /* This constructor is called when cloning a checkerside to get its application to fork away */
 CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
-    : channel_(socket, child_checker->channel_), running_(true), child_checker_(child_checker)
+    : channel_(socket, child_checker->channel_), child_checker_(child_checker)
 {
-  setup_events();
+  count_++;
 
-  s_mc_message_int_t answer;
-  ssize_t s = get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FORK_REPLY");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FORK_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FORK_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FORK_REPLY);
-  xbt_assert(answer.value != 0, "Error while forking the application.");
-  pid_ = answer.value;
+  auto* answer = (s_mc_message_int_t*)(get_channel().expect_message(sizeof(s_mc_message_int_t), MessageType::FORK_REPLY,
+                                                                    "Could not receive answer to FORK_REPLY"));
+
+  xbt_assert(answer->value != 0, "Error while forking the application.");
+  pid_ = answer->value;
 
   wait_for_requests();
 }
 
+static void handle_sigalarm(int)
+{
+  xbt_die("The child process failed to connect within the 5 seconds time limit. The model-checker is bailing out now.");
+}
+
 std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::string& master_socket_name)
 {
+  if (is_one_way)
+    return nullptr;
+
   s_mc_message_fork_t m = {};
   m.type                = MessageType::FORK;
   xbt_assert(master_socket_name.size() == MC_SOCKET_NAME_LEN);
   std::copy_n(begin(master_socket_name), MC_SOCKET_NAME_LEN, begin(m.socket_name));
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to fork on need.");
 
+  /* Accept an incomming socket under a 5 seconds time limit*/
+  struct sigaction action;
+  action.sa_handler = handle_sigalarm;
+  sigaction(SIGALRM, &action, nullptr); /* Override the default behaviour which would be to end the process */
+  alarm(5);
   int sock = accept(master_socket, nullptr /* I know who's connecting*/, nullptr);
+  int real_errno = errno;
+  alarm(0);
+  errno = real_errno;
+
   if (sock <= 0) {
     switch (errno) {
       case EMFILE:
         xbt_die("Cannot accept the incomming connection of the forked app: the per-process limit on the number of open "
                 "file has been reached (errno: EMFILE).\n"
-                "You may want to increase the limit using for example `ulimit -n 10000`");
+                "You may want to increase the limit using for example `ulimit -n 10000` to improve the overall "
+                "performance.");
       case ENFILE:
         xbt_die("Cannot accept the incomming connection of the forked app: the system-wide limit on the number of open "
                 "file has been reached (errno: ENFILE).\n"
                 "If you want to push the limit, try increasing the value in /proc/sys/fs/file-max (at your own risk).");
       default:
-        perror("Cannot accept the incomming connection of the forked app");
+        perror("Cannot accept the incomming connection of the forked app.");
+        xbt_die("Bailing out now.");
     }
   }
 
   return std::make_unique<CheckerSide>(sock, this);
 }
 
+void CheckerSide::peek_assertion_failure()
+{
+  /* Handle an ASSERTION message if any */
+  auto [more_data, type] = get_channel().peek_message_type();
+  if (not more_data) // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+  if (type == MessageType::ASSERTION_FAILED)
+    Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+}
+
+Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
+{
+  if (not is_one_way) {
+    s_mc_message_simcall_execute_t execute = {};
+    execute.type                           = MessageType::SIMCALL_EXECUTE;
+    execute.aid_                           = aid;
+    execute.times_considered_              = times_considered;
+    execute.want_transition                = new_transition;
+    get_channel().send(execute);
+
+    sync_with_app(); // The app may send messages while processing the transition
+  } else {
+    XBT_DEBUG("Not sending EXECUTE as we're one way");
+  }
+
+  peek_assertion_failure();
+
+  auto* answer = (s_mc_message_simcall_execute_answer_t*)(get_channel().expect_message(
+      sizeof(s_mc_message_simcall_execute_answer_t), MessageType::SIMCALL_EXECUTE_REPLY,
+      "Could not receive answer to SIMCALL_EXECUTE"));
+  xbt_assert(answer->aid == aid, "The application did not execute the expected actor (expected %ld, ran %ld)", aid,
+             answer->aid);
+
+  if (new_transition) {
+    auto* t = deserialize_transition(aid, times_considered, channel_);
+    XBT_DEBUG("Got a transtion: %s", t->to_string(true).c_str());
+    t->deserialize_memory_operations(channel_);
+    return t;
+  }
+  XBT_DEBUG("No need for transitions today");
+  return nullptr;
+}
+
+void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
+                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status)
+{
+  long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
+
+  s_mc_message_int_t replay_msg = {};
+  replay_msg.type  = MessageType::REPLAY;
+  replay_msg.value              = msg_length;
+
+  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
+  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
+
+  XBT_DEBUG("send a replay of size %lu", msg_length);
+  int i = 0;
+  for (auto const& [aid, time] : to_replay) {
+    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
+    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    aids[i]  = aid;
+    times[i] = time;
+    i++;
+  }
+  // Signal the end of the first part
+  aids[i]  = -1;
+  times[i] = -1;
+  i++;
+
+  for (auto const& [aid, time] : to_replay_and_actor_status) {
+    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
+    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
+    aids[i]  = aid;
+    times[i] = time;
+    i++;
+  }
+
+  get_channel().pack(&replay_msg, sizeof(replay_msg));
+  get_channel().pack(aids, sizeof(unsigned char) * msg_length);
+  get_channel().pack(times, sizeof(unsigned char) * msg_length);
+
+  xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
+
+  // Wait for the application to signal that it is waiting
+  if (to_replay_and_actor_status.size() == 0)
+    sync_with_app();
+}
+
 void CheckerSide::finalize(bool terminate_asap)
 {
+  if (is_one_way) {
+    this->killed_by_us_ = true;
+    kill(pid_, SIGTERM);
+    return;
+  }
   s_mc_message_int_t m = {};
   m.type               = MessageType::FINALIZE;
   m.value              = terminate_asap;
   xbt_assert(get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
-  s_mc_message_t answer;
-  ssize_t s = get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
-  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
-  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
-             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
-             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::FINALIZE_REPLY,
+                               "Could not receive answer to FINALIZE");
 }
 
-void CheckerSide::dispatch_events() const
+aid_t CheckerSide::get_aid_of_next_transition()
 {
-  event_base_dispatch(base_.get());
-}
+  auto [more_data, type] = get_channel().peek_message_type();
 
-void CheckerSide::break_loop() const
-{
-  event_base_loopbreak(base_.get());
-}
-
-bool CheckerSide::handle_message(const char* buffer, ssize_t size)
-{
-  s_mc_message_t base_message;
-  ssize_t consumed;
-  xbt_assert(size >= (ssize_t)sizeof(base_message), "Broken message. Got only %ld bytes.", size);
-  memcpy(&base_message, buffer, sizeof(base_message));
-
-  switch (base_message.type) {
-
-    case MessageType::WAITING:
-      consumed = sizeof(s_mc_message_t);
-      if (size > consumed) {
-        XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed),
-                  to_c_str(base_message.type));
-        channel_.reinject(&buffer[consumed], size - consumed);
-      }
-
-      return false;
-
-    case MessageType::ASSERTION_FAILED:
-      // report_assertion_failure() is NORETURN, but it may change when we report more than one error per run,
-      // so please keep the consumed computation even if clang-static detects it as a dead affectation.
-      consumed = sizeof(s_mc_message_t);
-      Exploration::get_instance()->report_assertion_failure();
-      break;
-
-    default:
-      xbt_die("Unexpected message from the application");
+  if (not more_data) { // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+    return -1;
   }
-  if (size > consumed) {
-    XBT_DEBUG("%d reinject %d bytes after a %s message", getpid(), (int)(size - consumed), to_c_str(base_message.type));
-    channel_.reinject(&buffer[consumed], size - consumed);
+
+  if (type == MessageType::WAITING) {
+    get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING,
+                                 "Could not receive MessageType::WAITING");
+    is_one_way = false;
+    return -1;
+  } else {
+    auto [more_data2, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
+    xbt_assert(more_data2);
+    auto* msg = static_cast<struct s_mc_message_simcall_execute_answer_t*>(got);
+    xbt_assert(msg->type == MessageType::SIMCALL_EXECUTE_REPLY,
+               "The next message on the wire is not a SIMCALL_EXECUTE as expected but a %s",
+               is_valid_MessageType((int)msg->type) ? to_c_str(msg->type) : "invalid message");
+
+    return msg->aid;
   }
-  return true;
+}
+
+void CheckerSide::sync_with_app()
+{
+  /* Handle an ASSERTION message if any */
+  auto [more_data, type] = get_channel().peek_message_type();
+  if (not more_data) // The app closed the socket. It must be dead by now.
+    handle_waitpid();
+
+  if (type == MessageType::ASSERTION_FAILED)
+    Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
+
+  if (is_one_way)
+    return;
+
+  /* Stop waiting for eventual ASSERTION message when we get something else, that must be WAITING */
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING, "Could not receive MessageType::WAITING");
 }
 
 void CheckerSide::wait_for_requests()
 {
+  if (is_one_way)
+    return;
   XBT_DEBUG("Resume the application");
   if (get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
 
-  if (running())
-    dispatch_events();
+  sync_with_app();
 }
 
 void CheckerSide::handle_dead_child(int status)
@@ -339,7 +399,6 @@ void CheckerSide::handle_dead_child(int status)
     xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_, 0, &eventmsg) != -1, "Could not get exit status");
     status = static_cast<int>(eventmsg);
     if (WIFSIGNALED(status)) {
-      this->terminate();
       Exploration::get_instance()->report_crash(status);
     }
   }
@@ -358,11 +417,10 @@ void CheckerSide::handle_dead_child(int status)
   }
 
   else if (WIFSIGNALED(status)) {
-    this->terminate();
-    Exploration::get_instance()->report_crash(status);
+    if (not killed_by_us_) // We did not send the kill signal ourselves, so report it
+      Exploration::get_instance()->report_crash(status);
   } else if (WIFEXITED(status)) {
     XBT_DEBUG("Child process is over");
-    this->terminate();
   }
 }
 
@@ -376,16 +434,14 @@ void CheckerSide::handle_waitpid()
     pid_t pid;
     while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
       if (pid == -1) {
-        if (errno == ECHILD) { // No more children:
-          xbt_assert(not this->running(), "Inconsistent state");
-          break;
-        } else {
-          xbt_die("Could not wait for pid: %s", strerror(errno));
-        }
+        xbt_assert(errno == ECHILD, "Could not wait for pid: %s", strerror(errno));
+        break; // Having no more children to wait for is OK
       }
 
       if (pid == get_pid())
         handle_dead_child(status);
+      else
+        THROW_IMPOSSIBLE;
     }
 
   } else { // Ask our proxy to wait for us
@@ -395,14 +451,41 @@ void CheckerSide::handle_waitpid()
     xbt_assert(child_checker_->get_channel().send(request) == 0,
                "Could not ask my child to waitpid its child for me: %s", strerror(errno));
 
-    s_mc_message_int_t answer;
-    ssize_t answer_size = child_checker_->get_channel().receive(answer);
-    xbt_assert(answer_size != -1, "Could not receive message");
-    xbt_assert(answer.type == MessageType::WAIT_CHILD_REPLY,
-               "The received message is not the WAIT_CHILD_REPLY I was expecting but of type %s",
-               to_c_str(answer.type));
-    xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
-    handle_dead_child(answer.value);
+    auto answer = (s_mc_message_int_t*)child_checker_->get_channel().expect_message(
+        sizeof(s_mc_message_int_t), MessageType::WAIT_CHILD_REPLY, "Could not receive MessageType::WAIT_CHILD_REPLY");
+
+    handle_dead_child(answer->value);
   }
 }
+
+void CheckerSide::go_one_way()
+{
+
+  if (!is_one_way) {
+    is_one_way = true;
+    s_mc_message_one_way_t msg{};
+    msg.type = MessageType::GO_ONE_WAY;
+    msg.want_transitions = Exploration::need_actor_status_transitions();
+    msg.is_random        = (_sg_mc_strategy == "uniform");
+    msg.random_seed      = _sg_mc_random_seed;
+    xbt_assert(get_channel().send(msg) == 0, "Could not ask the application to go one way: %s", strerror(errno));
+  }
+}
+
+void CheckerSide::terminate_one_way()
+{
+  xbt_assert(is_one_way);
+
+  auto [more_data, type] = get_channel().peek_message_type();
+  while (more_data && type != MessageType::WAITING) {
+    get_channel().expect_message(sizeof(type), type, "Could not receive the Message");
+    auto [first, second] = get_channel().peek_message_type();
+    more_data            = first;
+    type                 = second;
+  }
+
+  get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING, "Could not receive MessageType::WAITING");
+  is_one_way = false;
+}
+
 } // namespace simgrid::mc

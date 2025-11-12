@@ -1,4 +1,4 @@
-/* Copyright (c) 2020-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2020-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -58,8 +58,8 @@ int main(int argc, char** argv)
   simgrid::s4u::Host* host = engine.host_by_name("Tremblay");
 
   simgrid::s4u::ActorPtr receiver;
-  simgrid::s4u::Actor::create("Suspender", host, Suspender(receiver));
-  receiver = simgrid::s4u::Actor::create("Receiver", host, Receiver());
+  host->add_actor("Suspender", Suspender(receiver));
+  receiver = host->add_actor("Receiver",Receiver());
 
   engine.run();
 

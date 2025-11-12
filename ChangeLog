@@ -1,21 +1,138 @@
-SimGrid (3.36.1) Release target: spring 25
+SimGrid (4.2) not released yet (target: spring 2026)
+
+----------------------------------------------------------------------------
+
+SimGrid (4.1) November 11. 2025
+
+Breaking the seal: v4.0 was not the final release.
+
+S4U:
+ - Allow to unseal() netzones to add more content to them at any point. Don't forget to reuse seal() afterward
+ - Deprecate Engine::add_actor in favor of Host::add_actor to avoid always passing the host 
+   on which to create the new actor as parameter. 
+ - Add s4u::Link::get_englobing_zone()
+ - Add VM load plugin (similar to host load). Thanks to Igor Fontana de Nardin for this nice contribution.
+ - Add Engine::display_all_actors_status() for debug
+ - Add this_actor::thread_execute_async() for asynchronous threaded execution.
+
+Java:
+ - Add plugin host_load and link_load (see the relevant examples)
+ - Add Host.get_core_count()
+ - Add signal Actor.on_creation_cb()
+ - Kill Actor.on_termination_cb() that was not working anyway
+ - Fix a bunch of memleaks around actors that were not cleaned properly once terminating.
+
+Python:
+ - Fix the declaration of Engine.set_config as the C++ function is a static one
+ - Added a few missing functions related to Disk (host, turn_on, turn_off)
+ - Fix the pip builds
+
+Model-checking:
+ - The 'none' reduction method is gone. It was useless and complexified the code base.
+ - Enable the joint use of SMPI and sthread.
+ - Implement a 'parallel' stategy to leverage multicores during the exploration. Its robustness shall improve very soon.
+ - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
+ - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will correctly execve() the binary to reduce
+   the burden on the user.
+ - Add some support to observe the race conditions in memory read/writes, based on the FastTrack algorithm by Flanagan et Al.
+   See the tutorial on how to activate it.
+ - New docker image simgrid/mc-slim. It's smaller but you cannot log into it as usual. See the tutorial on how to use it.
+
+sthread:
+ - Allow the sthread interception of SMPI runs, to study MPI+pthread executions. See examples/sthread/smpi-*.c
+ - Now also work with the 'thread' context factory of SimGrid. Mostly useful for internal debugging.
+ - Add a compile option to disable sthread. Mostly useful on exotic CI runners like the one using GLIBC debug features.
+
+Platforms:
+ - Allow to unseal netzones to add more content, even after the simulation start.
+ - Remove Engine::on_platform_sealed that was semi-private (not documented). Use Engine::on_simulation_start instead
+ - Routing overhaul to fix issues when using 3+ nested level nested zones [Jérémie Rodez]
+ - Add debug/lmm-leaks runtime option to debug LMM bugs, and advice the users about it on need.
+
+SMPI:
+ - Improve a bit the support of FindSimGrid.cmake for MPI projects.
+
+Maintenance and Software quality assurance:
+ - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
+   than our raw contexts. Raw contexts are limited to amd64 processors, but boost contexts should work on exotic architectures.
+ - Perl is no longer a build dependency. Some scripts still use it, but they are not mandatory.
+ - Bump the C++ standard to C++23 when we find a usable std::stacktrace implementation. Stick to C++17 when not.
+ - https://gitlab.inria.fr/simgrid/simgrid/ is now our main CI platform. It hosts most of SimGrid's jobs and other heavy CI jobs
+   such as the proxy-apps. Some tests (valgrind to detect memory leaks) were not ported from our jenkins infrastructure yet.
+   - MacOSX/amd64, MacOSX/Arm and Linux/Arm are now tested in github actions, as it's our only access to such resources.
+   - Only light jobs such as the webpages and our sister projects (Wrench, BatSim, SimGrid-FMI, the images of tutorials) are
+     still built on framasoft, to save their resources.
+   - Sonarqube is our main tool for code analysis.  https://sonarcloud.io/organizations/simgrid/
+   - CircleCI was redundent and thus phased out.
+   - Every failed builds are reported live in https://framateam.org/simgrid/channels/bot-office
+ 
+----------------------------------------------------------------------------
+
+SimGrid (4.0) March 12. 2025
+
+The "This one is 4 you" release. At last, this is the 4.0 release of SimGrid.
+
+This is an important milestone for the SimGrid project, the culmination of
+almost ten years of efforts, as described in this article: https://hal.science/hal-04909441
+
+At the same time, this is also an incremental improvement over 3.36 as shown in the following changelog. We still have many
+improvement ideas for the future and plan to keep the same release pace and plan: about 2 releases per year, and upgrade paths
+that ensure your code will still compile, with warnings, for at least 3 releases. Please refer to the Release Notes in the
+documentation for some of the envisioned future improvements.
 
 SMPI:
  - Allow automatic benchmarking with --cfg=smpi/host-speed:auto
 
 S4U:
- - Allow to turn disks on and off (was limited to the kernel side until now). Tested in the activity livecycle tests.
+ - Reduce the amount of static functions: deprecate Actor::create() functions in favor of Engine::add_actor()
+ - Introduce Actor::get_instance() so that you don't have to call the static Engine::get_instance() method
+ - Allow to turn disks on and off (it was limited to the kernel side until now). Tested in the activity livecycle tests.
  - Turning off a host now turns off the disks attached to this host. Conversely, turning the host back on brings back
    the disks online. Tested in teshsuite/src/host-on-off-disks.
+ - Deprecate Host::set_factor_cb for Host::set_cpu_factor_cb to give the concerned host as a callback parameter.
+
+sthread:
+ - Implement pthread_exit() and pthread_cond_timedwait()
+ - Further restrict portability: Linux only, and now also GLIBC only.
+
+Model-checker:
+ - Dependency on libevent was removed.
+ - Greatly improve the performances, and fix some bugs.
+
+Platform API:
+ - The root netzone of every platform uses the full routing. It's created by default.
+   The ability to change the root zone does not increase the expressivity in any way, but it greatly complicates our code.
+ - Deprecate the create_*_zone() functions, add NetZone::add_netzone_*()
+   Methods are better than functions.
+ - Deprecate NetZone::set_parent(): it's now useless with the new API.
+ - Revamp the creation of Cluster NetZones (Fat-Tree, Torus, and Dragonfly) to explicitely pass all the parameters defining a network topology as arguments and to define leafs, loopbacks, and limiter links with callbacks.
 
 Python:
  - Add many missing bindings [Sergey Teryoshkin].
+ - Add MPI bindings [Jean-Noël Quintin].
 
-Chaos Monkey plugin:
- - Allow to restart the actors by pid at a given time.
+Java:
+ - Reintroduce the bindings, on top of S4U.
+
+Plugins:
+ - Chaos Monkey: Allow to restart the actors by pid at a given time.
+ - Chaos Monkey: Allow to restart disks.
+
+C API:
+ - Deprecate some functions (we want to kill xbt_dict and xbt_dynar in the
+ future)
+   - sg_actor_get_properties() -> sg_actor_get_property_names()
+   - sg_host_get_properties() -> sg_host_get_property_names()
+   - sg_zone_get_properties() -> sg_zone_get_property_names()
+   - sg_zone_get_sons() -> sg_zone_get_childs()
+   - sg_zone_get_hosts() -> sg_zone_get_all_hosts()
+   - sg_actor_attach() now takes only 2 parameters (the props are removed)
+ - Introduce sg_zone_get_property_names()
+
+Dependencies:
+ - If the compiler supports C++23, use the standard stacktraces instead of boost ones.
 
 ----------------------------------------------------------------------------
-
 
 SimGrid (3.36) September 9. 2024
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -77,9 +77,9 @@ def main():
     settings = create_parser().parse_known_args()[0]
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    Actor.create("peer", e.host_by_name("Tremblay"), peer, 0, 2, int(5e7), 3)
-    Actor.create("peer", e.host_by_name("Ruby"), peer, 1, 6, int(2.5e5), 3)
-    Actor.create("peer", e.host_by_name("Perl"), peer, 2, 0, int(5e7), 3)
+    e.host_by_name("Tremblay").add_actor("peer", peer, 0, 2, int(5e7), 3)
+    e.host_by_name("Ruby").add_actor("peer", peer, 1, 6, int(2.5e5), 3)
+    e.host_by_name("Perl").add_actor("peer", peer, 2, 0, int(5e7), 3)
     e.run()
 
 

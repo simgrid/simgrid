@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,71 +33,76 @@
 
 import org.simgrid.s4u.*;
 
-class ActorA extends ActorMain 
-{
-  public void run() {
+class ActorA extends Actor {
+  public void run()
+  {
 
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() { public void run(boolean failed) { Engine.info("I stop now"); }});
-  
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
+      {
+        Engine.info("I stop now");
+      }
+    });
+
     sleep_for(1);
   }
 }
 
-class ActorB extends ActorMain
-{
-  public void run() {
-    sleep_for(2);
-  }
+class ActorB extends Actor {
+  public void run() { sleep_for(2); }
 }
-class ActorC extends ActorMain
-{
-  public void run() {
+class ActorC extends Actor {
+  public void run() throws SimgridException
+  {
     // Register a lambda function to be executed once it stops
-    on_exit(new BooleanCallback() { public void run(boolean failed) {
-      if (failed) {
-        Engine.info("I was killed!");
-      } else
-        Engine.info("Exiting gracefully.");
-    }});
-  
+    on_exit(new CallbackBoolean() {
+      @Override public void run(boolean failed)
+      {
+        if (failed) {
+          Engine.info("I was killed!");
+        } else
+          Engine.info("Exiting gracefully.");
+      }
+    });
+
     sleep_for(3);
     Engine.info("And now, induce a deadlock by waiting for a message that will never come\n\n");
-    Mailbox.by_name("nobody").get();
+    this.get_engine().mailbox_by_name("nobody").get();
     Engine.die("Receiving is not supposed to succeed when nobody is sending");
-    }
+  }
 }
 
 class actor_exiting {
-  public static void main(String[] args) {
-    var e = Engine.get_instance(args);
-    e.load_platform(args[0]);  /* - Load the platform description */
-    
-    /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
-//    ActorMain.on_termination_cb(new ActorCallback() {@Override public void run(Actor a) {
-//      Engine.info("Actor "+a.get_name()+" terminates now.");
-//    }});
+  public static void main(String[] args)
+  {
+    Engine e = new Engine(args);
+    e.load_platform(args[0]); /* - Load the platform description */
 
-    /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors */
-//    ActorMain.on_destruction_cb(new ActorCallback() {public void run(Actor a) {
-//          Engine.info("Actor "+a.get_name()+" gets destroyed now."); 
-//    }});
+    /* Register a callback in the Actor::on_creation signal. It will be called for every started actors */
+    Actor.on_creation_cb(new CallbackActor() {
+      @Override public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " starts now.");
+      }
+    });
+    /* Register a callback in the Actor::on_termination signal. It will be called when the actor interrupts its
+     * execution (either by reaching its end or being killed) */
+    Actor.on_termination_cb(new CallbackActor() {
+      @Override public void run(Actor a)
+      {
+        Engine.info("Actor " + a.get_name() + " terminates now.");
+      }
+    });
 
-    
     /* Create some actors */
-    Actor.create("A", e.host_by_name("Tremblay"), new ActorA());
-    Actor.create("B", e.host_by_name("Fafard"), new ActorB());
-    Actor.create("C", e.host_by_name("Ginette"), new ActorC());
-  
+    e.host_by_name("Tremblay").add_actor("A", new ActorA());
+    e.host_by_name("Fafard").add_actor("B", new ActorB());
+    e.host_by_name("Ginette").add_actor("C", new ActorC());
+
     e.run(); /* Run the simulation */
+
+    // The following call is useless in your code, but our continuous integration uses it to track memleaks
+    e.force_garbage_collection();
   }
 }
-
-/*
-
-int main(int argc, char* argv[])
-{
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
-
-//}
-*/

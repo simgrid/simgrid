@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,7 +26,7 @@ class MutexObserver final : public DelayedSimcallObserver<void> {
 public:
   MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -41,7 +41,7 @@ class SemaphoreObserver final : public SimcallObserver {
 public:
   SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemaphoreImpl* sem);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 
   activity::SemaphoreImpl* get_sem() const { return sem_; }
@@ -57,7 +57,7 @@ public:
   MutexAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexAcquisitionImpl* acqui,
                            double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -74,7 +74,7 @@ public:
   SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemAcquisitionImpl* acqui,
                                double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -93,7 +93,7 @@ public:
   BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                   double timeout = -1.0);
 
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
 
@@ -113,7 +113,8 @@ public:
                             activity::MutexImpl* mutex, double timeout = -1.0)
       : DelayedSimcallObserver(actor, false), type_(type), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
-    xbt_assert(type == mc::Transition::Type::CONDVAR_ASYNC_LOCK || type == mc::Transition::Type::CONDVAR_NOMC);
+    xbt_assert(type == mc::Transition::Type::CONDVAR_ASYNC_LOCK || type == mc::Transition::Type::CONDVAR_NOMC,
+               "With no acquisition, that must be a lock or a noMC");
   }
   ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type,
                             activity::ConditionVariableAcquisitionImpl* acqui, double timeout = -1.0)
@@ -124,14 +125,14 @@ public:
       , acquisition_(acqui)
       , timeout_(timeout)
   {
-    xbt_assert(type == mc::Transition::Type::CONDVAR_WAIT);
+    xbt_assert(type == mc::Transition::Type::CONDVAR_WAIT, "If you provide an acquisition, that must be a wait");
   }
   ConditionVariableObserver(ActorImpl* actor, mc::Transition::Type type, activity::ConditionVariableImpl* cond)
       : DelayedSimcallObserver(actor, false), type_(type), cond_(cond)
   {
     xbt_assert(type == mc::Transition::Type::CONDVAR_SIGNAL || type == mc::Transition::Type::CONDVAR_BROADCAST);
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
   activity::ConditionVariableImpl* get_cond() const { return cond_.get(); }

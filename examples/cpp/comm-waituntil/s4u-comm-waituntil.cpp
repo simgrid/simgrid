@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -73,8 +73,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, 3, 5e7);
-  sg4::Actor::create("receiver", e.host_by_name("Ruby"), receiver);
+  e.host_by_name("Tremblay")->add_actor("sender", sender, 3, 5e7);
+  e.host_by_name("Ruby")->add_actor("receiver", receiver);
 
   e.run();
 

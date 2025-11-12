@@ -1,0 +1,14 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:actor_create.jar actor_create ${platfdir}/small_platform.xml ${srcdir}/actor_create/actor_create_d.xml
+> [0.000000] [java/INFO] Using regular java threads.
+> [Tremblay:sender1:(2) 0.000000] [java/INFO] Hello s4u, I have something to send
+> [Jupiter:sender2:(3) 0.000000] [java/INFO] Hello s4u, I have something to send
+> [Fafard:receiver:(1) 0.000000] [java/INFO] Hello s4u, I'm ready to get any message you'd want on mb42
+> [Fafard:Sender:(6) 0.000000] [java/INFO] Hello s4u, I have something to send
+> [Fafard:Sender:(6) 0.016392] [java/INFO] I'm done. See you.
+> [Ginette:Forwarder:(7) 0.016392] [java/INFO] Forward 'PopPop!'.
+> [Tremblay:sender1:(2) 0.025709] [java/INFO] I'm done. See you.
+> [Jupiter:sender2:(3) 0.070434] [java/INFO] I'm done. See you.
+> [Fafard:receiver:(1) 0.086825] [java/INFO] I received 'GaBuZoMeu', 'GloubiBoulga' and 'PopPop!'
+> [Fafard:receiver:(1) 0.086825] [java/INFO] I'm done. See you.

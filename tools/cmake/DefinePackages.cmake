@@ -3,6 +3,8 @@
 set(EXTRA_DIST
   src/3rd-party/catch.hpp
   src/bindings/python/simgrid_python.cpp
+  src/bindings/python/smpi_python.cpp
+  src/bindings/java/MANIFEST.in
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
@@ -25,7 +27,6 @@ set(EXTRA_DIST
   src/kernel/resource/models/ns3/ns3_simulator.hpp
   src/kernel/resource/models/ptask_L07.hpp
 
-  src/mc/datatypes.h
   src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
@@ -229,7 +230,6 @@ set(SMPI_SRC
   src/kernel/resource/models/network_ib.cpp
   )
 set(STHREAD_SRC
-  src/sthread/sthread_impl.cpp
   src/sthread/sthread.c
   src/sthread/sthread.h
   src/sthread/ObjectAccess.cpp
@@ -294,6 +294,8 @@ set(KERNEL_SRC
   src/kernel/activity/IoImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MemoryImpl.cpp
+  src/kernel/activity/MemoryImpl.hpp
   src/kernel/activity/MessImpl.cpp
   src/kernel/activity/MessImpl.hpp
   src/kernel/activity/MessageQueueImpl.cpp
@@ -421,6 +423,7 @@ set(PLUGINS_SRC
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/host_load.cpp
+  src/plugins/vm_load.cpp
   src/plugins/host_carbon_footprint.cpp
   src/plugins/jbod.cpp
   src/plugins/link_energy.cpp
@@ -465,6 +468,11 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
+
+  src/sthread/sthread_impl.cpp
+
+  src/smo/memory_observer.cpp
+  src/smo/memory_observer.h
   )
 
 set(DAG_SRC
@@ -482,7 +490,6 @@ set(TRACING_SRC
   src/instr/instr_paje_trace.cpp
   src/instr/instr_paje_types.cpp
   src/instr/instr_paje_types.hpp
-  src/instr/instr_paje_values.hpp
   src/instr/instr_platform.cpp
   src/instr/instr_private.hpp
   src/instr/instr_resource_utilization.cpp
@@ -499,16 +506,24 @@ set(MC_SRC_BASE
   src/mc/mc_record.cpp
   src/mc/mc_record.hpp
   src/mc/mc_replay.hpp
+
   src/mc/transition/Transition.cpp
+  src/mc/remote/Channel.cpp
+  src/mc/remote/Channel.hpp
+
+  src/mc/xbt_intrusiveptr.hpp
   )
 
 set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
+  src/mc/api/MemOp.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
- 
+  src/mc/api/Strategy.cpp
+  src/mc/api/Strategy.hpp
+  
   src/mc/explo/CriticalTransitionExplorer.cpp
   src/mc/explo/CriticalTransitionExplorer.hpp
   src/mc/explo/DFSExplorer.cpp
@@ -546,21 +561,15 @@ set(MC_SRC_STATELESS
   src/mc/explo/odpor/Execution.hpp
   src/mc/explo/odpor/WakeupTree.cpp
   src/mc/explo/odpor/WakeupTree.hpp
-  src/mc/explo/odpor/WakeupTreeIterator.cpp
-  src/mc/explo/odpor/WakeupTreeIterator.hpp
   src/mc/explo/odpor/odpor_forward.hpp
   src/mc/explo/odpor/odpor_tests_private.hpp
 
   src/mc/remote/AppSide.cpp
   src/mc/remote/AppSide.hpp
-  src/mc/remote/Channel.cpp
-  src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
   src/mc/remote/mc_protocol.h
 
-  src/mc/api/states/BeFSWutState.cpp
-  src/mc/api/states/BeFSWutState.hpp
   src/mc/api/states/SleepSetState.cpp
   src/mc/api/states/SleepSetState.hpp
   src/mc/api/states/SoftLockedState.hpp
@@ -589,20 +598,6 @@ set(MC_SRC_STATELESS
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
-  src/mc/api/strategy/BasicStrategy.cpp
-  src/mc/api/strategy/BasicStrategy.hpp
-  src/mc/api/strategy/MaxMatchComm.cpp
-  src/mc/api/strategy/MaxMatchComm.hpp
-  src/mc/api/strategy/MinContextSwitch.cpp
-  src/mc/api/strategy/MinContextSwitch.hpp
-  src/mc/api/strategy/MinMatchComm.cpp
-  src/mc/api/strategy/MinMatchComm.hpp
-  src/mc/api/strategy/StratLocalInfo.hpp
-  src/mc/api/strategy/UniformStrategy.cpp
-  src/mc/api/strategy/UniformStrategy.hpp
-
-  src/mc/explo/reduction/BeFSODPOR.cpp
-  src/mc/explo/reduction/BeFSODPOR.hpp
   src/mc/explo/reduction/Reduction.cpp
   src/mc/explo/reduction/Reduction.hpp
   src/mc/explo/reduction/NoReduction.hpp
@@ -730,6 +725,7 @@ set(headers_to_install
   include/xbt/string.hpp
   include/xbt/sysdep.h
   include/xbt/system_error.hpp
+  include/xbt/thread.hpp
   include/xbt/utility.hpp
   include/xbt/virtu.h
   include/xbt/xbt_os_time.h
@@ -739,15 +735,6 @@ set(source_of_generated_headers
   include/simgrid/version.h.in
   src/internal_config.h.in
   include/smpi/mpif.h.in)
-
-### depend of some variables set upper
-if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(KERNEL_SRC  ${KERNEL_SRC} src/kernel/context/ContextUnix.hpp
-                                src/kernel/context/ContextUnix.cpp)
-else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
-                                src/kernel/context/ContextUnix.cpp)
-endif()
 
 ### SimGrid Lib sources
 set(simgrid_sources
@@ -781,18 +768,53 @@ endif()
 set(SIMGRID_JAVA_C_SOURCES
     src/kernel/context/ContextJava.cpp
     src/kernel/context/ContextJava.hpp
+    src/bindings/java/simgrid-java.cpp
     )
 set(SIMGRID_JAVA_JAVA_SOURCES
-    src/bindings/swig/org/simgrid/s4u/NativeLib.java)
-set(SIMGRID_JAVA_SWIG_SOURCES
-    src/bindings/swig/defs/pargc_argv.i
-    src/bindings/swig/defs/std_function.i
-    src/bindings/swig/simgrid-java.i)
-if(NOT Java_FOUND)
-  set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES})
-endif()
-# Not sure that our Java rules add these files to the target, so let's play safe and add them anyway
-set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_JAVA_SOURCES} ${SIMGRID_JAVA_SWIG_SOURCES})
+    src/bindings/java/org/simgrid/s4u/NativeLib.java
+    src/bindings/java/org/simgrid/s4u/Activity.java
+    src/bindings/java/org/simgrid/s4u/ActivitySet.java
+    src/bindings/java/org/simgrid/s4u/Actor.java
+    src/bindings/java/org/simgrid/s4u/AssertionError.java
+    src/bindings/java/org/simgrid/s4u/Barrier.java
+    src/bindings/java/org/simgrid/s4u/CallbackActor.java
+    src/bindings/java/org/simgrid/s4u/CallbackActorHost.java
+    src/bindings/java/org/simgrid/s4u/CallbackBoolean.java
+    src/bindings/java/org/simgrid/s4u/CallbackComm.java
+    src/bindings/java/org/simgrid/s4u/CallbackDisk.java
+    src/bindings/java/org/simgrid/s4u/CallbackDouble.java
+    src/bindings/java/org/simgrid/s4u/CallbackExec.java
+    src/bindings/java/org/simgrid/s4u/CallbackDHostDouble.java
+    src/bindings/java/org/simgrid/s4u/CallbackIo.java
+    src/bindings/java/org/simgrid/s4u/CallbackLink.java
+    src/bindings/java/org/simgrid/s4u/CallbackNetzone.java
+    src/bindings/java/org/simgrid/s4u/CallbackVirtualMachine.java
+    src/bindings/java/org/simgrid/s4u/CallbackVoid.java
+    src/bindings/java/org/simgrid/s4u/Comm.java
+    src/bindings/java/org/simgrid/s4u/ConditionVariable.java
+    src/bindings/java/org/simgrid/s4u/Disk.java
+    src/bindings/java/org/simgrid/s4u/Engine.java
+    src/bindings/java/org/simgrid/s4u/Exec.java
+    src/bindings/java/org/simgrid/s4u/ForcefulKillException.java
+    src/bindings/java/org/simgrid/s4u/Host.java
+    src/bindings/java/org/simgrid/s4u/HostFailureException.java
+    src/bindings/java/org/simgrid/s4u/Io.java
+    src/bindings/java/org/simgrid/s4u/LinkInRoute.java
+    src/bindings/java/org/simgrid/s4u/Link.java
+    src/bindings/java/org/simgrid/s4u/Mailbox.java
+    src/bindings/java/org/simgrid/s4u/Mess.java
+    src/bindings/java/org/simgrid/s4u/MessageQueue.java
+    src/bindings/java/org/simgrid/s4u/Mutex.java
+    src/bindings/java/org/simgrid/s4u/NativeLib.java
+    src/bindings/java/org/simgrid/s4u/NetZone.java
+    src/bindings/java/org/simgrid/s4u/NetworkFailureException.java
+    src/bindings/java/org/simgrid/s4u/Semaphore.java
+    src/bindings/java/org/simgrid/s4u/SimgridException.java
+    src/bindings/java/org/simgrid/s4u/simgridJNI.java
+    src/bindings/java/org/simgrid/s4u/TimeoutException.java
+    src/bindings/java/org/simgrid/s4u/VirtualMachine.java
+)
+set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURCES})
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
@@ -1060,7 +1082,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/Modules/FindGraphviz.cmake
-  tools/cmake/Modules/FindLibevent.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindValgrind.cmake
@@ -1072,11 +1093,9 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/test_prog/prog_asan.cpp
-  tools/cmake/test_prog/prog_makecontext.c
   tools/cmake/test_prog/prog_musl.c
-  tools/cmake/test_prog/prog_ns3.cpp
   tools/cmake/test_prog/prog_stackgrowth.c
-  tools/cmake/test_prog/prog_stacksetup.c
+  tools/cmake/test_prog/prog_stdstacktrace.cpp
   tools/cmake/test_prog/prog_tsan.cpp
   tools/simgrid-monkey
   tools/smpi/generate_smpi_defines.pl

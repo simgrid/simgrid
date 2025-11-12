@@ -1,4 +1,4 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -78,8 +78,8 @@ if __name__ == '__main__':
   e = Engine(sys.argv)
   e.load_platform(args.platform)
 
-  Actor.create('load_test', e.host_by_name('MyHost1'), execute_load_test)
-  Actor.create('change_speed', e.host_by_name('MyHost1'), change_speed)
+  e.host_by_name('MyHost1').add_actor('load_test', execute_load_test)
+  e.host_by_name('MyHost1').add_actor('change_speed', change_speed)
 
   e.run()
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
       [](const sg4::Task* t) { XBT_INFO("Task %s finished (%d)", t->get_name().c_str(), t->get_count()); });
 
   // Create the actor that will inject load during the simulation
-  sg4::Actor::create("input", tremblay, variable_load, comm);
+  tremblay->add_actor("input", variable_load, comm);
 
   // Start the simulation
   e.run();

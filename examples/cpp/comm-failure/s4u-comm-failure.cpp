@@ -1,4 +1,4 @@
-/* Copyright (c) 2021-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2021-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,29 +76,29 @@ public:
 
 int main(int argc, char** argv)
 {
-  sg4::Engine engine(&argc, argv);
-  auto* zone  = sg4::create_full_zone("AS0");
-  auto* host1 = zone->create_host("Host1", "1f");
-  auto* host2 = zone->create_host("Host2", "1f");
-  auto* host3 = zone->create_host("Host3", "1f");
-  const auto* link2 = zone->create_link("linkto2", "1bps")->seal();
-  const auto* link3 = zone->create_link("linkto3", "1bps")->seal();
+  sg4::Engine e(&argc, argv);
+  auto* zone        = e.get_netzone_root();
+  auto* host1 = zone->add_host("Host1", "1f");
+  auto* host2 = zone->add_host("Host2", "1f");
+  auto* host3 = zone->add_host("Host3", "1f");
+  const auto* link2 = zone->add_link("linkto2", "1bps")->seal();
+  const auto* link3 = zone->add_link("linkto3", "1bps")->seal();
 
   zone->add_route(host1, host2, {link2});
   zone->add_route(host1, host3, {link3});
   zone->seal();
 
-  sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));
-  sg4::Actor::create("Receiver", host2, Receiver("mailbox2"));
-  sg4::Actor::create("Receiver", host3, Receiver("mailbox3"));
+  host1->add_actor("Sender", Sender("mailbox2", "mailbox3"));
+  host2->add_actor("Receiver", Receiver("mailbox2"));
+  host3->add_actor("Receiver", Receiver("mailbox3"));
 
-  sg4::Actor::create("LinkKiller", host1, [](){
+  host1->add_actor("LinkKiller", []() {
     sg4::this_actor::sleep_for(10.0);
     XBT_INFO("Turning off link 'linkto2'");
     sg4::Link::by_name("linkto2")->turn_off();
   });
 
-  engine.run();
+  e.run();
 
   return 0;
 }

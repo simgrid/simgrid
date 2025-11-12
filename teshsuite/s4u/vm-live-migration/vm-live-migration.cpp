@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,9 +38,9 @@ int main(int argc, char* argv[])
   auto* pm = e.host_by_name("host1");
   auto* vm = pm->create_vm("VM0", 1 /*nCores*/);
   vm->set_ramsize(1250000000)->start();
-  simgrid::s4u::Actor::create("executor", vm, task_executor);
+  vm->add_actor("executor", task_executor);
 
-  simgrid::s4u::Actor::create("migration", pm, [vm]() {
+  pm->add_actor("migration", [vm]() {
     XBT_INFO("%s migration started", vm->get_cname());
     const auto* old = vm->get_pm();
 

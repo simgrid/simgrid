@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
-  sg4::Actor::create("worker", e.host_by_name("Boivin"), worker);
-  sg4::Actor::create("daemon", e.host_by_name("Tremblay"), my_daemon);
+  e.host_by_name("Boivin")->add_actor("worker", worker);
+  e.host_by_name("Tremblay")->add_actor("daemon", my_daemon);
 
   e.run();
   return 0;

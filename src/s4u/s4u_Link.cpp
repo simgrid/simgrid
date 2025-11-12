@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,6 +10,7 @@
 #include <xbt/config.hpp>
 #include <xbt/parse_units.hpp>
 
+#include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/WifiLinkImpl.hpp"
@@ -54,6 +55,11 @@ const std::string& Link::get_name() const
 const char* Link::get_cname() const
 {
   return this->pimpl_->get_cname();
+}
+/** @brief Returns the networking zone englobing that host */
+NetZone* Link::get_englobing_zone() const
+{
+  return pimpl_->get_englobing_zone()->get_iface();
 }
 bool Link::is_used() const
 {
@@ -146,7 +152,6 @@ void Link::turn_off()
 Link* Link::seal()
 {
   kernel::actor::simcall_answered([this]() { this->pimpl_->seal(); });
-  s4u::Link::on_creation(*this); // notify the signal
   return this;
 }
 

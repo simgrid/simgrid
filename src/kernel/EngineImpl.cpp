@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -10,6 +10,7 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/BarrierImpl.hpp"
@@ -50,9 +51,6 @@ config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor sta
 constexpr std::initializer_list<std::pair<const char*, context::ContextFactory* (*)()>> context_factories = {
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-    {"ucontext", &context::sysv_factory},
 #endif
 #if HAVE_BOOST_CONTEXTS
     {"boost", &context::boost_factory},
@@ -258,11 +256,6 @@ void EngineImpl::context_mod_init() const
 #else
     XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
 #endif
-#if HAVE_UCONTEXT_CONTEXTS
-    XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
-#else
-    XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
-#endif
 #if HAVE_BOOST_CONTEXTS
     XBT_ERROR("  boost: this uses the boost libraries context implementation");
 #else
@@ -278,13 +271,14 @@ void EngineImpl::shutdown()
 {
   if (EngineImpl::instance_ == nullptr)
     return;
+  s4u::Engine::shutdown_ongoing_ = true;
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
 #if HAVE_SMPI
   if (not instance_->actor_list_.empty()) {
     if (smpi_process() && smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
     } else {
-      XBT_WARN("Process called exit when leaving - Skipping cleanups");
+      fprintf(stderr, "Process called exit when leaving - Skipping cleanups\n");
       return;
     }
   }

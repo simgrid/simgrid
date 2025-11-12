@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -44,7 +44,7 @@ def master(actor_count: int):
     workers_count = actor_count - 1
     this_actor.info(f"Spawning {workers_count} workers")
     for i in range(workers_count):
-        Actor.create(f"worker-{i}", Host.by_name("Jupiter"), worker, barrier)
+        Host.by_name("Jupiter").add_actor(f"worker-{i}", worker, barrier)
     this_actor.info("Waiting on the barrier")
     barrier.wait()
     this_actor.info("Bye")
@@ -56,7 +56,7 @@ def main():
         raise ValueError("--actors must be greater than 0")
     e = Engine(sys.argv)
     e.load_platform(settings.platform)
-    Actor.create("master", Host.by_name("Tremblay"), master, settings.actors)
+    e.host_by_name("Tremblay").add_actor("master", master, settings.actors)
     e.run()
 
 

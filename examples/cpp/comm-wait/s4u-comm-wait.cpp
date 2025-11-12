@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,7 +53,7 @@ static void sender(int messages_count, size_t payload_size)
   mbox->put(new std::string("finalize"), 0);
 }
 
-/* Receiver actor expects 1 argument: its ID */
+/* Receiver actor expects no argument */
 static void receiver()
 {
   double sleep_start_time = 1.0;
@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, 3, 482117300);
-  sg4::Actor::create("receiver", e.host_by_name("Ruby"), receiver);
+  e.host_by_name("Tremblay")->add_actor("sender", sender, 3, 482117300);
+  e.host_by_name("Ruby")->add_actor("receiver", receiver);
 
   e.run();
 

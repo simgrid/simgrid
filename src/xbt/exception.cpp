@@ -1,9 +1,10 @@
-/* Copyright (c) 2005-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2005-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "xbt/asserts.h"
 #include <xbt/config.hpp>
 #include <xbt/log.hpp>
 
@@ -104,6 +105,7 @@ XBT_ATTRIB_NORETURN static void handler()
 
   catch (const simgrid::ForcefulKillException&) {
     XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Please help fix this bug.");
+    xbt_backtrace_display_current();
   }
 
   // We don't know how to manage other exceptions

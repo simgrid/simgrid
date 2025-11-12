@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -21,7 +21,7 @@ public:
   {
   }
   activity::ActivityImpl* get_activity() const { return activity_; }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
 };
 
@@ -35,7 +35,7 @@ public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
                          std::string_view fun_call);
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
@@ -53,7 +53,7 @@ public:
       : DelayedSimcallObserver(actor, false), activity_(activity), timeout_(timeout), fun_call_(fun_call)
   {
   }
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   bool is_enabled() override;
   activity::ActivityImpl* get_activity() const { return activity_; }
@@ -72,7 +72,7 @@ public:
   ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout,
                          std::string_view fun_call);
   bool is_enabled() override;
-  void serialize(std::stringstream& stream) const override;
+  void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
   void prepare(int times_considered) override;
   int get_max_consider() const override;

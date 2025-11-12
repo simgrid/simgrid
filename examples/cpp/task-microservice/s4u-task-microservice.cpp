@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     t->set_parallelism_degree(10);
 
   // Create the actor that will inject requests during the simulation
-  sg4::Actor::create("request_sender", pm0, request_sender, nginx_web_server, 500);
+  pm0->add_actor("request_sender", request_sender, nginx_web_server, 500);
 
   // Add a function to be called when tasks end for log purpose
   int requests_processed = 0;

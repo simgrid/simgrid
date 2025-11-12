@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -36,16 +36,16 @@ static double smpi_cost_cb(SmpiOperation op, size_t /*size*/, const sg4::Host* s
  *
  * Sets specific cost for MPI_Send and MPI_Recv operations
  */
-extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& /*e*/)
+extern "C" void load_platform(sg4::Engine& e);
+void load_platform(sg4::Engine& e)
 {
   /* create a simple 2 host platform inspired from small_platform.xml */
-  auto* root = sg4::create_full_zone("zone0");
+  auto* root = e.get_netzone_root();
 
-  const sg4::Host* tremblay = root->create_host("Tremblay", "98.095Mf")->seal();
-  const sg4::Host* jupiter  = root->create_host("Jupiter", "76.296Mf")->seal();
+  const sg4::Host* tremblay = root->add_host("Tremblay", "98.095Mf")->seal();
+  const sg4::Host* jupiter  = root->add_host("Jupiter", "76.296Mf")->seal();
 
-  const sg4::Link* link9 = root->create_split_duplex_link("9", "7.20975MBps")->set_latency("1.461517ms")->seal();
+  const sg4::Link* link9 = root->add_split_duplex_link("9", "7.20975MBps")->set_latency("1.461517ms")->seal();
 
   root->add_route(tremblay, jupiter, {link9});
   root->seal();

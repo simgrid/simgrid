@@ -43,8 +43,11 @@ add_custom_target(simgrid_convert_TI_traces ALL
 
 # libraries
 install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
-if("${CMAKE_SYSTEM}" MATCHES "Linux")
+if(${enable_sthread})
   install(TARGETS sthread DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
+endif()
+if(SIMGRID_HAVE_JAVA AND (NOT merge_java_in_libsimgrid))
+  install(TARGETS simgrid-java DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 endif()
 
 # pkg-config files
@@ -142,12 +145,14 @@ foreach(file ${source_to_pack})
     set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
     add_custom_command(
       TARGET dist-dir
+      POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/)
   endif()
 
   # Actually copy the file
   add_custom_command(
     TARGET dist-dir
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location})
 endforeach(file ${source_to_pack})
 configure_file("${CMAKE_HOME_DIRECTORY}/MANIFEST.in.in" "${CMAKE_BINARY_DIR}/MANIFEST.in" @ONLY IMMEDIATE)
@@ -156,6 +161,7 @@ unset(PYTHON_SOURCES)
 
 add_custom_command(
   TARGET dist-dir
+  POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion)
 
 ##########################################################
@@ -177,12 +183,14 @@ if (NOT ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
       set(dirs_in_tarball "${dirs_in_bindir};${file_location};")
       add_custom_command(
         TARGET hardlinks
+	POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${file_location}/)
     endif()
 
     # Actually copy the file
     add_custom_command(
       TARGET hardlinks
+      POST_BUILD
       COMMAND if test -f ${CMAKE_HOME_DIRECTORY}/${file} \; then rm -f ${CMAKE_BINARY_DIR}/${file}\; ln ${CMAKE_HOME_DIRECTORY}/${file} ${CMAKE_BINARY_DIR}/${file_location}\; fi
     )
   endforeach(file ${source_to_pack})
@@ -236,7 +244,7 @@ add_custom_target(distcheck-configure
           ${CMAKE_COMMAND} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst -Denable_lto=OFF ..
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Check generated files -- please copy new version if they are different"
-  COMMAND ${CMAKE_COMMAND} -E diff -u ${CMAKE_HOME_DIRECTORY}/MANIFEST.in ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build/MANIFEST.in
+  COMMAND diff -u ${CMAKE_HOME_DIRECTORY}/MANIFEST.in ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build/MANIFEST.in
   )
 add_dependencies(distcheck-configure distcheck-archive)
 

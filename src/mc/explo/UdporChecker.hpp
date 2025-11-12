@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,7 +52,6 @@ private:
   void log_state() override;
 
   Configuration current_configuration_;
-  unsigned long backtrack_count_ = 0; // for statistics
 
   /**
    * @brief Explores the unfolding of the concurrent system

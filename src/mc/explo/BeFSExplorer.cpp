@@ -1,19 +1,21 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/BeFSExplorer.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
-#include "src/mc/explo/reduction/BeFSODPOR.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/explo/reduction/NoReduction.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
@@ -21,16 +23,20 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
 #include <cassert>
+#include <climits>
 #include <cstdio>
 
 #include <algorithm>
+#include <filesystem>
 #include <limits>
 #include <memory>
 #include <string>
+#include <unistd.h>
 #include <unordered_set>
 #include <vector>
 
@@ -56,7 +62,7 @@ void BeFSExplorer::restore_stack(StatePtr state)
   XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
   stack_.clear();
   execution_seq_     = odpor::Execution();
-  auto current_state = state;
+  State* current_state = state.get();
   stack_.emplace_front(current_state);
   // condition corresponds to reaching initial state
   while (current_state->get_parent_state() != nullptr) {
@@ -68,7 +74,9 @@ void BeFSExplorer::restore_stack(StatePtr state)
   // as part of the last trace explored by the algorithm. Thus, only the sequence of transitions leading up to,
   // but not including, the last state must be included when reconstructing the Exploration for SDPOR.
   for (auto iter = std::next(stack_.begin()); iter != stack_.end(); ++iter) {
-    execution_seq_.push_transition((*iter)->get_transition_in());
+    // if we are exploring in a branch BeFS manner (and not a step manner), it is safe to assume that the
+    // races for the state we restore have already been computed once
+    execution_seq_.push_transition((*iter)->get_transition_in(), _sg_mc_befs_threshold == 0);
   }
 }
 
@@ -85,14 +93,28 @@ void BeFSExplorer::log_state() // override
 
 void BeFSExplorer::run()
 {
+  XBT_INFO("Start a BeFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
   on_exploration_start_signal(get_remote_app());
+
+  auto initial_state = reduction_algo_->state_create(get_remote_app());
+
+  XBT_DEBUG("**************************************************");
+
+  stack_.emplace_back(std::move(initial_state));
+  visited_states_count_++;
+
+  /* Get an enabled actor and insert it in the interleave set of the initial state */
+  XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
+
+  opened_states_.emplace_back(stack_.back());
+
   /* This function runs the Best First Search algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
 
   while (not stack_.empty()) {
     /* Get current state */
-    auto state = stack_.back();
+    State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
@@ -104,6 +126,8 @@ void BeFSExplorer::run()
       XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
       XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
       XBT_WARN("/!\\ Asumming you know what you are doing, the programm will now backtrack /!\\");
+
+      state->mark_to_delete(); // We won't explore further this state, even if it's not fully explored. Suppress it.
       this->backtrack();
       continue;
     }
@@ -123,16 +147,23 @@ void BeFSExplorer::run()
 
       if (state->get_actor_count() == 0) {
         // Compute the race when reaching a leaf, and apply them immediately
-        std::shared_ptr<Reduction::RaceUpdate> todo_updates =
+        Reduction::RaceUpdate* todo_updates =
             reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-        reduction_algo_->apply_race_update(std::move(todo_updates), &opened_states_);
+        reduction_algo_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
+        reduction_algo_->delete_race_update(todo_updates);
 
         explored_traces_++;
+        // Costly verification used to check against algorithm optimality
+        if (_sg_mc_debug_optimality)
+          odpor::MazurkiewiczTraces::record_new_execution(execution_seq_);
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
-        report_correct_execution(state.get());
+        report_correct_execution(state);
       }
+      state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
+
+      Exploration::check_deadlock();
 
       this->backtrack();
       continue;
@@ -141,7 +172,7 @@ void BeFSExplorer::run()
     xbt_assert(state->is_actor_enabled(next));
 
     if (_sg_mc_befs_threshold != 0) {
-      auto dist = state->get_actor_strategy_valuation(next);
+      auto dist = Exploration::get_strategy()->get_actor_valuation_in(state, next);
       auto best = best_opened_state();
       if (best != nullptr) {
         int best_dist = best->next_transition_guided().second;
@@ -157,7 +188,7 @@ void BeFSExplorer::run()
 
     // If we use a state containing a sleep state, display it during debug
     if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
-      auto sleep_state = static_cast<SleepSetState*>(state.get());
+      auto sleep_state = static_cast<SleepSetState*>(state);
       if (not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
 
@@ -166,29 +197,39 @@ void BeFSExplorer::run()
       }
     }
 
-    auto todo = state->get_actors_list().at(next).get_transition();
-    XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
+    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_debug)) {
+      auto todo = state->get_actor_at(next).get_transition();
+      XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
+    }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
-    // If there are processes to interleave and the maximum depth has not been
-    // reached then perform one step of the exploration algorithm.
     XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
              state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = reduction_algo_->state_create(get_remote_app(), state);
+    auto next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
+
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
-      next_state->set_state_factory(get_remote_app().clone_checker_side());
+      static unsigned max_files = sysconf(_SC_OPEN_MAX);
+
+      // Save 100 FDs for when we want to restart an old fork: we need a new socket for it
+      if (CheckerSide::get_count() > max_files - 100) {
+        // For now, each CheckerSide takes 4 FDs, and we have about 12 FDs before creating the first CheckerSide
+        int cur_files =
+            std::distance(std::filesystem::directory_iterator("/proc/self/fd"), std::filesystem::directory_iterator{});
+        XBT_CRITICAL("Skipping a cached state because the amount of open files is too high: %d open files out of %u. "
+                     "Please increase the max with `ulimit -n <value>` to improve the performances.",
+                     (int)cur_files, max_files);
+      } else
+        next_state->set_state_factory(get_remote_app().clone_checker_side());
     }
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     visited_states_count_++;
-
-    reduction_algo_->on_backtrack(state.get());
 
     // Before leaving that state, if the transition we just took can be taken multiple times, we
     // need to give it to the opened states
@@ -198,47 +239,48 @@ void BeFSExplorer::run()
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
 
-    dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
-               state->get_transition_out()->dot_string().c_str());
+    if (dot_output_ != nullptr)
+      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
+                 state->get_transition_out()->dot_string().c_str());
   }
   log_state();
 }
 
 StatePtr BeFSExplorer::best_opened_state()
 {
-  int best_prio = 0; // cache the value for the best priority found so far (initialized to silence gcc)
-  auto best     = end(opened_states_);   // iterator to the state to explore having the best priority
-  auto valid    = begin(opened_states_); // iterator marking the limit between states still to explore, and already
-                                         // explored ones
-
-  // Keep only still non-explored states (aid != -1), and record the one with the best (greater) priority.
-  for (auto current = begin(opened_states_); current != end(opened_states_); ++current) {
-    xbt_assert(current->get() != nullptr);
-    auto [aid, prio] = (*current)->next_transition_guided();
-    if (aid == -1)
-      continue;
-    if (valid != current) {
-      *valid = std::move(*current);
+  // If we work in a DFS like manner, just forget about the opened_states
+  if (_sg_mc_strategy == "none") {
+    opened_states_.clear();
+    State* candidate = stack_.back().get();
+    while (candidate->next_transition_guided().first == -1) {
+      if (candidate->get_parent_state() != nullptr)
+        candidate = candidate->get_parent_state();
+      else
+        return nullptr; // There is no one with something to do left
     }
-    if (best == end(opened_states_) || prio <= best_prio) {
-      best_prio = prio;
-      best      = valid;
+    return candidate;
+
+    // Else we are picking uniformly among opened_states
+  } else {
+    if (opened_states_.size() == 0) {
+      XBT_DEBUG("No more opened state");
+      return nullptr;
     }
-    ++valid;
+    int guess          = xbt::random::uniform_int(0, opened_states_.size() - 1);
+    StatePtr candidate = std::move(opened_states_[guess]);
+    opened_states_.erase(opened_states_.begin() + guess);
+    while (candidate->next_transition_guided().first == -1) {
+      XBT_DEBUG("Candidate state #%ld discarded because the next transition guided is -1", candidate->get_num());
+      if (opened_states_.size() == 0) {
+        XBT_DEBUG("No more opened state");
+        return nullptr;
+      }
+      guess     = xbt::random::uniform_int(0, opened_states_.size() - 1);
+      candidate = std::move(opened_states_[guess]);
+      opened_states_.erase(opened_states_.begin() + guess);
+    }
+    return candidate;
   }
-
-  StatePtr best_state;
-  if (best < valid) {
-    // There are non-explored states, and one of them has the best priority.  Remove it from opened_states_ before
-    // returning.
-    best_state = std::move(*best);
-    --valid;
-    if (best != valid)
-      *best = std::move(*valid);
-  }
-  opened_states_.erase(valid, end(opened_states_));
-
-  return best_state;
 }
 
 void BeFSExplorer::backtrack()
@@ -246,7 +288,7 @@ void BeFSExplorer::backtrack()
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   XBT_DEBUG("%lu alternatives are yet to be explored:", opened_states_.size());
 
-  Exploration::check_deadlock();
+  auto last_explored_state = stack_.back();
 
   // Take the point with smallest distance
   auto backtracking_point = best_opened_state();
@@ -255,42 +297,34 @@ void BeFSExplorer::backtrack()
   if (not backtracking_point) {
     XBT_DEBUG("No more opened point of exploration, the search will end");
     stack_.clear();
+    last_explored_state->mark_to_delete();
+    State::garbage_collect();
     return;
   }
+
+  XBT_DEBUG("Backtracking to state #%ld at depth %lu", backtracking_point->get_num(), backtracking_point->get_depth());
+
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());
   this->restore_stack(backtracking_point);
+  State::garbage_collect();
 }
 
-BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode)
-    : Exploration(args), reduction_mode_(mode)
+BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
 {
+  Exploration::initialize_remote_app(args);
 
   if (reduction_mode_ == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
   else if (reduction_mode_ == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
   else if (reduction_mode_ == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<BeFSODPOR>();
+    reduction_algo_ = std::make_unique<ODPOR>();
   else {
     xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
                to_c_str(reduction_mode_));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
-
-  XBT_INFO("Start a BeFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
-
-  auto initial_state = reduction_algo_->state_create(get_remote_app());
-
-  XBT_DEBUG("**************************************************");
-
-  stack_.emplace_back(std::move(initial_state));
-  visited_states_count_++;
-
-  /* Get an enabled actor and insert it in the interleave set of the initial state */
-  XBT_DEBUG("Initial state. %lu actors to consider", stack_.back()->get_actor_count());
-
-  opened_states_.emplace_back(stack_.back());
 }
 
 Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode)

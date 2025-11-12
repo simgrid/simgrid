@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -96,7 +96,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder, public xbt::Extendabl
 
 protected:
   explicit NetZoneImpl(const std::string& name);
-  NetZoneImpl(const NetZoneImpl&) = delete;
+  NetZoneImpl(const NetZoneImpl&)            = delete;
   NetZoneImpl& operator=(const NetZoneImpl&) = delete;
   virtual ~NetZoneImpl();
 
@@ -227,28 +227,31 @@ public:
    */
   std::vector<s4u::Host*> get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const;
 
-  /** @brief Make a host within that NetZone */
-  s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
-  /** @brief Create a disk with the disk model from this NetZone */
-  s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  /** @brief Add a host within that NetZone */
+  s4u::Host* add_host(const std::string& name, const std::vector<double>& speed_per_pstate);
+  /** @brief Add a disk with the disk model from this NetZone */
+  s4u::Disk* add_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
-  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
-  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::Link* add_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::SplitDuplexLink* add_split_duplex_link(const std::string& name, const std::vector<double>& bw_up,
+                                                 const std::vector<double>& bw_down);
   /** @brief Make a router within that NetZone */
-  NetPoint* create_router(const std::string& name);
+  NetPoint* add_router(const std::string& name);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                 const std::vector<s4u::LinkInRoute>& link_list);
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   void seal();
+  /** @brief Unseal your netzone if you want to add more stuff, and do not forget to re-seal once you're done */
+  void unseal();
   /** @brief Check if netpoint is a member of this NetZone or some of the childrens */
   bool is_component_recursive(const NetPoint* netpoint) const;
   virtual unsigned long add_component(NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                          const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
-  void set_parent(NetZoneImpl* parent);
+  NetZoneImpl* set_parent(NetZoneImpl* parent);
   /** @brief Set network model for this Netzone */
   void set_network_model(std::shared_ptr<resource::NetworkModel> netmodel);
   void set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model);
@@ -265,6 +268,10 @@ public:
    */
   static void get_global_route(const NetPoint* src, const NetPoint* dst,
                                /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency);
+
+  static void get_interzone_route(const NetPoint* netpoint, NetPoint* gw, const bool gateway_to_netpoint,
+                                  std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency,
+                                  std::vector<NetZoneImpl*>* zones_path);
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
   static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
@@ -288,9 +295,7 @@ private:
   std::shared_ptr<resource::DiskModel> disk_model_;
   std::shared_ptr<resource::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
-  virtual void do_seal()
-  { /* obviously nothing to do by default */
-  }
+  virtual void do_seal() { /* obviously nothing to do by default */ }
   /** @brief Allows subclasses (wi-fi) to have their own create link method, but keep links_ updated */
   virtual resource::StandardLinkImpl* do_create_link(const std::string& name, const std::vector<double>& bandwidths);
   void add_child(NetZoneImpl* new_zone);

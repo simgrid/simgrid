@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -57,8 +57,8 @@ def main():
     mb1: Mailbox = e.mailbox_by_name_or_create("Mailbox 1")
     mb2: Mailbox = e.mailbox_by_name_or_create("Mailbox 2")
 
-    Actor.create("pinger", e.host_by_name("Tremblay"), pinger, mb1, mb2)
-    Actor.create("ponger", e.host_by_name("Jupiter"), ponger, mb2, mb1)
+    e.host_by_name("Tremblay").add_actor("pinger", pinger, mb1, mb2)
+    e.host_by_name("Jupiter").add_actor("ponger", ponger, mb2, mb1)
 
     e.run()
 

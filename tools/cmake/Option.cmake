@@ -23,11 +23,12 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
-option(enable_java           "Whether the Java bindings are activated." off)
-option(enable_msg            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
+option(enable_msg            "MSG was removed from SimGrid v3.33. Please do not enable it here." off)
+# Python and Java are not here because they are auto-sensed unless -Denable_<lang>=OFF is provided
+# The option() macro takes a boolean and does not allow for an "unset" or "auto" value
 mark_as_advanced(enable_msg)
 if (enable_msg)
-  message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need Java.")
+  message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need MSG.")
 endif()
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 
@@ -44,6 +45,14 @@ if(enable-model-checking)
   SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker")
   SET(enable-model-checking 0)
 endif()
+
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  set(default_enable_sthread ON)
+else()
+  message(STATUS "SimGrid sthread model cannot be built on this system as it is Linux-only for now.")
+  set(default_enable_sthread OFF)
+endif()
+option(enable_sthread "Whether the sthread module is built" ${default_enable_sthread})
 
 option(enable_smpi "Whether SMPI is included in the library." on)
 option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)

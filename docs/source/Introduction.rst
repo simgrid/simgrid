@@ -39,14 +39,14 @@ Anatomy of a project that uses SimGrid
 
 Any project that uses SimGrid as its simulation framework comprises the following components:
 
- - An **application**. An application consists of one or more process that can either implement distributed algorithms described using a simple API (either in C++, Python or
+ - An **application**. An application consists of one or more processes that can either implement distributed algorithms described using a simple API (either in C++, Python or
    C) or be part of a full-featured real  parallel application implemented with, for example, the MPI standard :ref:`(more info) <application>`.
 
- - A **simulated platform**. This is a description (in either XML or C++) of a distributed system's hardware (machines, links,
+ - A **simulated platform**. This is a description (in either XML or C++) of a distributed system's hardware (compute nodes, network links,
    disks, clusters, etc). SimGrid makes it straightforward to augment the simulated platform with dynamic behaviors where, for example, the
    links are slowed down (because of external usage) or the machines fail :ref:`(more info) <platform>`.
 
- - An application's **deployment description**. To simulate the execution of the application on the platform, they way in which the application is
+ - An application's **deployment description**. To simulate the execution of the application on the platform, the way the application is
    deployed on the platform must be described.  This is done by specifying which process is mapped onto which machine :ref:`(more
    info) <scenario>`.
 
@@ -60,7 +60,7 @@ Any project that uses SimGrid as its simulation framework comprises the followin
 
 The above components are put together to run a **simulation experiment**
 that produces **outcomes** (logs, visualization, statistics) that help
-answer the user's research and development **question**. The outcomes
+users answer their research and development **question**. These outcomes
 typically include a timeline of the application execution and information
 about its energy consumption.  
 
@@ -88,7 +88,7 @@ SimGrid Success Stories
 
 SimGrid was cited in over 3,000 scientific papers (according to Google
 Scholar). Among them,
-`over 500 publications <https://simgrid.org/usages.html>`_
+`over 675 publications <https://simgrid.org/usages.html>`_
 (written by hundreds of individuals) use SimGrid as a scientific
 instrument to conduct experimental evaluations. These
 numbers do not include those articles that directly contribute to SimGrid itself.

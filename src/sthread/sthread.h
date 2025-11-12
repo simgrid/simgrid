@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2002-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -26,10 +26,15 @@ extern "C" {
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**));
 XBT_PUBLIC void sthread_enable(void);  // Start intercepting all pthread calls
 XBT_PUBLIC void sthread_disable(void); // Stop intercepting all pthread calls
+XBT_PUBLIC int sthread_is_enabled(void); // Returns whether sthread is currenctly active
+XBT_PUBLIC void sthread_do_initialize(); // Specify that sthread is initialized in memory
+XBT_PUBLIC int sthread_is_initialized(void); // Returns whether sthread was inithalized (probably through LD_PRELOADED)
 
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);
+int sthread_detach(sthread_t thread);
 int sthread_join(sthread_t thread, void** retval);
+XBT_ATTRIB_NORETURN void sthread_exit(void* retval);
 
 typedef struct {
   unsigned recursive : 1;
@@ -45,6 +50,7 @@ int sthread_mutexattr_setrobust(sthread_mutexattr_t* attr, int robustness);
 
 typedef struct {
   void* mutex;
+  unsigned errorcheck : 1;
 } sthread_mutex_t;
 int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr);
 int sthread_mutex_lock(sthread_mutex_t* mutex);
@@ -89,6 +95,7 @@ int sthread_sem_trywait(sthread_sem_t* sem);
 int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout);
 
 int sthread_gettimeofday(struct timeval* tv);
+time_t sthread_time(time_t* time);
 unsigned int sthread_sleep(double seconds);
 int sthread_usleep(double seconds);
 
@@ -97,6 +104,19 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
 
 #if defined(__cplusplus)
 }
+
+/* Puts sthread on a pause as long as this object is alive */
+class sthread_pause_guard {
+  int previous_state_;
+
+public:
+  sthread_pause_guard() : previous_state_(sthread_is_enabled()) { sthread_disable(); }
+  ~sthread_pause_guard()
+  {
+    if (previous_state_)
+      sthread_enable();
+  }
+};
 #endif
 
 #endif

@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL-2.1-only) which comes with this package.
@@ -12,14 +12,20 @@
 # twine upload dist/simgrid-*.tar.gz
 
 import os
-import re
-import sys
 import platform
+import re
 import subprocess
-
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
+import sys
 from distutils.version import LooseVersion
+
+from setuptools import Extension, setup
+from setuptools.command.build_ext import build_ext
+
+ENABLE_SMPI = False
+
+if "--enable-smpi" in sys.argv:
+    ENABLE_SMPI = True
+    sys.argv.remove("--enable-smpi")
 
 
 class CMakeExtension(Extension):
@@ -47,9 +53,10 @@ class CMakeBuild(build_ext):
         from pybind11 import get_cmake_dir
         extdir = os.path.abspath(os.path.dirname(
             self.get_ext_fullpath(ext.name)))
+        enable_smpi = 'ON' if ENABLE_SMPI else 'OFF'
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      '-Denable_smpi=OFF',
+                      '-Denable_smpi=' + enable_smpi,
                       '-Denable_java=OFF',
                       '-Denable_python=ON',
                       '-Dminimal-bindings=ON',
@@ -60,22 +67,26 @@ class CMakeBuild(build_ext):
         build_args = ['--config', cfg]
 
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-        build_args += ['--', '-j4']
+        build_args += ['--'] # no extra argument to make
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
                                                               self.distribution.get_version())
+        env['LDFLAGS'] = '{} -L{}'.format(env.get('LDFLAGS', ''), extdir)
+        env['MAKEFLAGS'] = '-j'+str(os.cpu_count())
+        # env['VERBOSE'] = "1" # Please, make, be verbose about the commands you run
+
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
         subprocess.check_call(['cmake', ext.sourcedir] +
                               cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] +
-                              build_args, cwd=self.build_temp)
+                              build_args, cwd=self.build_temp, env=env)
 
 
 setup(
     name='simgrid',
-    version='3.36.1',
+    version='4.1.1',
     author='Da SimGrid Team',
     author_email='simgrid-community@inria.fr',
     description='Toolkit for scalable simulation of distributed applications',

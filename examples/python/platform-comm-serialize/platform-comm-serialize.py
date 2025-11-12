@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -60,12 +60,12 @@ def main():
     # | Sender |===============| Receiver |
     # |________|    Link1      |__________|
     #
-    zone: NetZone = NetZone.create_full_zone("Zone1")
-    sender_host: Host = zone.create_host("sender", 1).seal()
-    receiver_host: Host = zone.create_host("receiver", 1).seal()
+    zone: NetZone = e.netzone_root
+    sender_host: Host = zone.add_host("sender", 1).seal()
+    receiver_host: Host = zone.add_host("receiver", 1).seal()
 
     # create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2
-    link = zone.create_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2).seal()
+    link = zone.add_split_duplex_link("link1", 10e9).set_latency(10e-6).set_concurrency_limit(2).seal()
 
     # create routes between nodes
     zone.add_route(sender_host, receiver_host, [link])
@@ -73,8 +73,8 @@ def main():
 
     # create actors Sender/Receiver
     messages_count = 10
-    Actor.create("receiver", receiver_host, Receiver(messages_count=messages_count))
-    Actor.create("sender", sender_host, Sender(messages_count=messages_count, message_size=int(1e6)))
+    receiver_host.add_actor("receiver", Receiver(messages_count=messages_count))
+    sender_host.add_actor("sender", Sender(messages_count=messages_count, message_size=int(1e6)))
 
     e.run()
 

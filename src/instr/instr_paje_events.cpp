@@ -1,9 +1,10 @@
-/* Copyright (c) 2012-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.hpp"
+#include "src/instr/instr_paje_events.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
 #include "xbt/ex.h"

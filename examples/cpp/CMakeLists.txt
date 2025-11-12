@@ -115,7 +115,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  task-dispatch task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load
                  solar-panel-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
-                 plugin-host-load plugin-jbod plugin-link-load plugin-prodcons
+                 plugin-host-load plugin-vm-load plugin-jbod plugin-link-load plugin-prodcons
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-condition-variable-waituntil synchro-mutex synchro-semaphore
@@ -194,20 +194,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
                                                ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
   endforeach()
 endif()
-
-# Test non-DPOR reductions on a given MC test
-foreach(example mc-failing-assert)
-
-  if(SIMGRID_HAVE_MC)
-    ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
-                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
-  endif()
-  set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
-endforeach()
 
 # Examples not accepting factories
 ##################################

@@ -1,7 +1,7 @@
 # Build the version number
 
-set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "36")
+set(SIMGRID_VERSION_MAJOR "4")
+set(SIMGRID_VERSION_MINOR "1")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
@@ -29,6 +29,10 @@ cmake_minimum_required(VERSION 3.12)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 project(simgrid C CXX)
 
 # customizable installation directories
@@ -43,14 +47,6 @@ include(CheckCXXCompilerFlag)
 ## Request full debugging flags
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-
-if (CMAKE_COMPILER_IS_GNUCC)
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0")
-    message(FATAL_ERROR
-            "SimGrid needs at least g++ version 7.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-            "You need a sufficient support of c++17 to compile SimGrid.")
-  endif()
-endif()
 
 ## We need a decent support of the C++17 and C11 standards
 set(CMAKE_CXX_STANDARD 17)
@@ -108,24 +104,18 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
     set(SMPI_FORTRAN ON)
   endif(CMAKE_Fortran_COMPILER)
 
-endif()
+  # Borrowed from FindSimGrid with modification because we are in tree
+  macro(smpi_c_target NAME)
+    target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC")
+    target_link_options(${NAME} PUBLIC "-fPIC;-shared")
+    target_link_libraries(${NAME} PUBLIC simgrid)
+    target_include_directories(${NAME} PUBLIC "${CMAKE_SOURCE_DIR}/include;${CMAKE_SOURCE_DIR}/include/smpi")
+  endmacro()
 
-### SET THE LIBRARY EXTENSION
-if(APPLE)
-  set(LIB_EXE "dylib")
-else()
-  set(LIB_EXE "so")
 endif()
 
 execute_process(COMMAND ${CMAKE_LINKER} -v OUTPUT_VARIABLE LINKER_VERSION ERROR_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
-
-### Find programs and paths
-FIND_PROGRAM(GCOV_PATH gcov)
-include(FindPerl)
-if(NOT PERL_FOUND)
-  message(FATAL_ERROR "Please install Perl to compile SimGrid.")
-endif()
 
 # tesh.py needs python 3
 find_package(Python3 COMPONENTS Interpreter)
@@ -188,20 +178,31 @@ ELSE()
 ENDIF()
 
 ### Determine wether we use the MUSL libc, as some advanced privatization features fail with it
-set(HAVE_MUSL OFF)
+set(SIMGRID_HAVE_MUSL OFF)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   try_run(run_musl compile_musl ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_musl.c
     COMPILE_OUTPUT_VARIABLE compile_musl_output)
 
   #If can have both context
   if(NOT compile_musl)
-    message(FATAL "Error: Failed to detect whether we use the MUSL libc.\n${compile_musl_output}")
+    message(FATAL_ERROR "Error: Failed to detect whether we use the MUSL libc.\n${compile_musl_output}")
   elseif(run_musl)
     message(STATUS "MUSL libc detected.")
-    set(HAVE_MUSL ON)
+    set(SIMGRID_HAVE_MUSL ON)
   else()
     message(STATUS "GNU libc detected.")
   endif()
+endif()
+
+if(SIMGRID_HAVE_MUSL)
+  # std::to_string fails as in https://github.com/aws/aws-sdk-cpp/issues/3299 with FORTIFY_SOURCE=2 on MUSL
+  # TEMP_HACK Please remove this hack at some point
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE")
+elseif(enable_compile_optimizations AND (NOT (CMAKE_C_COMPILER_ID STREQUAL "Intel")))
+  # But when not using MUSL, let's fortify our code if we plan to compile with -O
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
 endif()
 
 include(CheckFunctionExists)
@@ -288,6 +289,24 @@ if(enable_smpi_papi)
 endif()
 mark_as_advanced(PAPI_PREFIX)
 
+if(CMAKE_VERSION VERSION_LESS 3.20)
+  message(STATUS "cmake is too old to test for C++23 stacks (v${CMAKE_VERSION})")
+  set(HAVE_STD_STACKTRACE 0) # CMake does not know about C++23, we cannot test it on the compiler
+else()
+  try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
+    SOURCES ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stdstacktrace.cpp
+    CXX_STANDARD 23
+    CXX_STANDARD_REQUIRED 23
+    LINK_LIBRARIES stdc++exp
+    OUTPUT_VARIABLE compile_stacktrace_output)
+  if(HAVE_STD_STACKTRACE)
+    message(STATUS "C++23 stacks: found. Switching to C++23.")
+    set(CMAKE_CXX_STANDARD 23)
+  else()
+    message(STATUS "C++23 stacks: NOT FOUND. Sticking to C++17.\n${compile_stacktrace_output}")
+  endif()
+endif()
+
 # But we do need the core of Boost
 # cmake before 3.13.1 does not know about stacktrace components. Fix it.
 # Usable components: https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/configuration_and_build.html
@@ -298,17 +317,20 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
   if(minimal-bindings) # When we want a minimal python or Java library, don't even search for boost optional components
     message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
     find_package(Boost 1.48)
+  elseif(HAVE_STD_STACKTRACE)
+    find_package(Boost 1.59 OPTIONAL_COMPONENTS context)
   else()
     find_package(Boost 1.59 OPTIONAL_COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
   endif()
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    message(STATUS "Mandatory components found. SimGrid is compilable.")
+    message(STATUS "Mandatory Boost components found. SimGrid is compilable.")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
-      CHECK_INCLUDE_FILE("backtrace.h" HAVE_BACKTRACE_H) # check that backtrace is actually possible
-      if (Boost_STACKTRACE_BACKTRACE_FOUND AND HAVE_BACKTRACE_H)
+      if (HAVE_STD_STACKTRACE)
+        message (STATUS "  stacktrace: found the std implementation from C++23. Activating human-readable stack traces.")
+      elseif(Boost_STACKTRACE_BACKTRACE_FOUND)
         message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
         set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
       else()
@@ -348,6 +370,53 @@ mark_as_advanced(Boost_INCLUDE_DIR)
 mark_as_advanced(Boost_STACKTRACE_ADDR2LINE_LIB)
 mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 
+## Can we build the Java bindings?
+set(SIMGRID_HAVE_JAVA 0) # by default, nope
+set(merge_java_in_libsimgrid 0) # by default, nope
+if((NOT DEFINED enable_java) OR enable_java)
+  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
+  # https://stackoverflow.com/a/51764145/1756334
+  set(JAVA_AWT_LIBRARY NotNeeded)
+  set(JAVA_JVM_LIBRARY NotNeeded)
+  set(JAVA_AWT_INCLUDE_PATH "/usr/include")
+
+  find_package(JNI)
+  if (NOT ${JNI_FOUND})
+    if(enable_java)
+      message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
+    else()
+      message(STATUS "JNI not found, thus disabling Java.")
+    endif()
+
+  else()
+   find_package(Java 1.8 COMPONENTS Runtime Development)
+   if (NOT ${Java_FOUND})
+     if(enable_java)
+       message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
+     else()
+       message(status "Java not found (need at least Java 8) thus disabled.")
+     endif()
+    else() # We have both Java and JNI
+      message(STATUS "Java version: ${Java_VERSION_STRING}")
+      message(STATUS "Java compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}")
+      message(STATUS "Java: JNI include dirs: ${JNI_INCLUDE_DIRS}")
+      set(SIMGRID_HAVE_JAVA 1)
+      
+      # Determines whether the C++ code of the java library shall be merged in libsimgrid or not.
+      # This must be the case on FreeBSD as we often miss exceptions thrown from another library.
+      # Doing so on Apple alleviate some RPATH madness, in particular when the lib is included in the jar.
+      if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
+        set(merge_java_in_libsimgrid 1)
+      else()
+        set(merge_java_in_libsimgrid 0)
+      endif()
+
+    endif()
+  endif()
+else()
+  message(STATUS "Java disabled by user request (remove -Denable_java=${enable_java} if it's not what you want).")
+endif()
+
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
@@ -360,18 +429,10 @@ else()
 endif()
 
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_H)
-CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
-CHECK_FUNCTION_EXISTS(dlfunc HAVE_DLFUNC)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
-CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-if(NOT HAVE_SYSCONF)
-  message(FATAL_ERROR "Cannot build without sysconf.")
-endif()
-CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
-CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
@@ -392,17 +453,12 @@ endif()
 SET(SIMGRID_HAVE_MC OFF)
 
 if(enable_model-checking)
-  find_package(Libevent)
-  if(Libevent_FOUND)
-    message(STATUS "Found libevent. The stateless model-checking can be enabled.")
-    include_directories(${LIBEVENT_INCLUDE_DIR})
-    set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBEVENT_LIBRARIES}")
-    set(SIMGRID_HAVE_MC ON)
-  else()
-    message(STATUS "libevent not found. Please install libevent-dev to enable the SimGrid model checker.")
-  endif()
-  mark_as_advanced(LIBEVENT_LIBRARY)
-  mark_as_advanced(LIBEVENT_THREADS_LIBRARY)
+  message(STATUS "Enabling the stateless model-checking as requested.")
+  SET(SIMGRID_HAVE_MC ON)
+endif()
+
+if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
+  message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option.")
 endif()
 
 if(enable_smpi)
@@ -415,43 +471,7 @@ endif()
 #--------------------------------------------------------------------------------------------------
 ### Check what context backends are available
 
-set(HAVE_UCONTEXT_CONTEXTS 0)
-CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
-if(NOT HAVE_UCONTEXT_H)
-  message(STATUS "No ucontext factory: <ucontext.h> not found.")
-elseif(APPLE)
-  message(STATUS "No ucontext factory: Apple don't want us to use them.")
-  set(HAVE_UCONTEXT_H 0)
-else()
-  try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
-    OUTPUT_VARIABLE compile_makecontext_output)
-
-  #If can have both context
-  if(NOT compile_makecontext)
-    message(STATUS "Error: <ucontext.h> exists, but makecontext is not compilable. Compilation output:\n ${compile_makecontext_output}")
-    message(STATUS "No ucontext factory: makecontext() is not compilable.")
-  else()
-    message(STATUS "Support for ucontext factory ok.")
-    set(HAVE_UCONTEXT_CONTEXTS 1)
-
-    # Stack setup (size and address)
-    try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-      ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
-      RUN_OUTPUT_VARIABLE stack_setup)
-
-    LIST(LENGTH stack_setup stack_setup_len)
-    if("${stack_setup_len}" STREQUAL "2")
-      LIST(GET stack_setup 0 makecontext_addr)
-      LIST(GET stack_setup 1 makecontext_size)
-      set(sg_makecontext_stack_addr "#define sg_makecontext_stack_addr(skaddr) (${makecontext_addr})")
-      set(sg_makecontext_stack_size "#define sg_makecontext_stack_size(sksize) (${makecontext_size})")
-    else()
-      message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
-    endif()
-  endif()
-endif()
-
-# Stack growth direction (upward or downward). Used for the following contexts: SysV, raw, Boost
+# Stack growth direction (upward or downward). Used for the following contexts: raw, Boost
 try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
   ${CMAKE_BINARY_DIR}
   ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
@@ -501,9 +521,7 @@ message(STATUS "Git version: ${GIT_VERSION}")
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 
 ### Setup gcc & clang flags (include after DefinePackage.cmake, and before generating header files)
-if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
 
 ### Generate the required scripts
 #################################
@@ -752,10 +770,8 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 ### Make Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)
 
-if(enable_java)
+if (SIMGRID_HAVE_JAVA)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
-else()
-  message(STATUS "Java disabled by user request. Use -Denable_java=ON to activate it.")
 endif()
 
 # Python binding (with pybind11)
@@ -795,11 +811,28 @@ if(enable_python)
     message(FATAL_ERROR "Please install the development components of Python (python3-dev on Debian) to build the Python bindings (or disable that option).")
   endif()
   if(pybind11_FOUND)
-    message(STATUS "Found pybind11.")
+    message(STATUS "Python bindings will be built.")
     if(NOT enable_lto)
       set(pybind11_options NO_EXTRAS)
     endif()
-    pybind11_add_module(python-bindings src/bindings/python/simgrid_python.cpp ${pybind11_options})
+    set(python_files ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp)
+
+    find_package(Python3 COMPONENTS NumPy)
+
+    if (((NOT DEFINED enable_smpi) OR enable_smpi) AND Python3_NumPy_FOUND)
+      set(python_files ${python_files} ${CMAKE_SOURCE_DIR}/src/bindings/python/smpi_python.cpp)
+      add_compile_definitions(SIMGRID_HAVE_PYTHON_SMPI)
+      set(SIMGRID_HAVE_PYTHON_SMPI 1)
+      message(STATUS "SMPI Python bindings will be built.")
+    else()
+      message(STATUS "SMPI Python bindings are not built. They may be disabled, or NumPy is missing.")
+    endif()
+
+    message(STATUS "Files to compile: ${python_files}")
+    pybind11_add_module(python-bindings
+                        ${python_files}
+                        ${pybind11_options})
+
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
     set_target_properties(python-bindings PROPERTIES
@@ -821,7 +854,7 @@ if(enable_python)
       if("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
         set(SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
       else("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
-        string(REGEX REPLACE "^/usr/" "${CMAKE_INSTALL_PREFIX}/" SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
+        string(REGEX REPLACE "^/usr/local/" "${CMAKE_INSTALL_PREFIX}/" SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
       endif("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
     endif()
     install(TARGETS python-bindings
@@ -905,7 +938,7 @@ message("                version .............: ${CMAKE_C_COMPILER_VERSION}")
 message("                is gnu ..............: ${CMAKE_COMPILER_IS_GNUCC}")
 message("        Compiler: C++ ...............: ${CMAKE_CXX_COMPILER} (id: ${CMAKE_CXX_COMPILER_ID})")
 message("                version .............: ${CMAKE_CXX_COMPILER_VERSION}")
-if(${Java_FOUND})
+if(${SIMGRID_HAVE_JAVA})
   message("        Compiler: Javac .............: ${Java_JAVAC_EXECUTABLE}")
   message("                version .............: ${Java_VERSION_STRING}")
   message("                runtime .............: ${Java_JAVA_EXECUTABLE}")
@@ -936,6 +969,11 @@ if(pybind11_FOUND)
   message("        Compile Python bindings .....: ${enable_python}")
   message("          module ....................: ${PYTHON_MODULE_PREFIX}simgrid${PYTHON_MODULE_EXTENSION}")
   message("          install path ..............: ${SIMGRID_PYTHON_LIBDIR} (force another value with -DSIMGRID_PYTHON_LIBDIR)")
+  if(SIMGRID_HAVE_PYTHON_SMPI)
+    message("          MPI bindings ..............: ON")
+  else()
+    message("          MPI bindings ..............: OFF")
+  endif()
 else()
   message("        Compile Python bindings .....: OFF (disabled, or pybind11 not found)")
 endif()

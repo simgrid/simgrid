@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -108,21 +108,21 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   /* simple platform containing 2 hosts and 2 disks */
-  auto* zone = sg4::create_full_zone("");
-  auto* bob  = zone->create_host("bob", 1e6);
-  auto* alice  = zone->create_host("alice", 1e6);
+  auto* zone   = e.get_netzone_root();
+  auto* bob  = zone->add_host("bob", 1e6);
+  auto* alice  = zone->add_host("alice", 1e6);
 
-  auto* link = zone->create_link("link", "2MBps")->set_latency("50us");
+  auto* link = zone->add_link("link", "2MBps")->set_latency("50us");
   zone->add_route(bob, alice, {link});
 
-  bob->create_disk("bob_disk", "1MBps", "500kBps");
-  alice->create_disk("alice_disk", "4MBps", "4MBps");
+  bob->add_disk("bob_disk", "1MBps", "500kBps");
+  alice->add_disk("alice_disk", "4MBps", "4MBps");
 
   zone->seal();
 
-  sg4::Actor::create("streamer", bob, streamer, 4e6);
-  sg4::Actor::create("background send", bob, background_send);
-  sg4::Actor::create("background recv", alice, background_recv);
+  bob->add_actor("streamer", streamer, 4e6);
+  bob->add_actor("background send", background_send);
+  alice->add_actor("background recv", background_recv);
 
   e.run();
 

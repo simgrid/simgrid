@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -92,15 +92,6 @@ public:
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;
-
-#ifndef DOXYGEN
-  static ssize_t deprecated_wait_any_for(const std::vector<ExecPtr>& execs, double timeout); // XBT_ATTRIB_DEPRECATED_v339
-
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
-      wait_any(const std::vector<ExecPtr>& execs) { return deprecated_wait_any_for(execs, -1); }
-  XBT_ATTRIB_DEPRECATED_v339("Please use ActivitySet instead") static ssize_t
-      wait_any_for(const std::vector<ExecPtr>& execs, double timeout) { return deprecated_wait_any_for(execs, timeout); }
-#endif
 };
 
 } // namespace simgrid::s4u

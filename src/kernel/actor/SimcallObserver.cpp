@@ -1,26 +1,27 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "simgrid/forward.h"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
-
-#include <sstream>
+#include "src/mc/remote/Channel.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
 namespace simgrid::kernel::actor {
 
-void RandomSimcall::serialize(std::stringstream& stream) const
+void RandomSimcall::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::RANDOM << ' ';
-  stream << min_ << ' ' << max_;
+  channel.pack(mc::Transition::Type::RANDOM);
+  channel.pack<int>(min_);
+  channel.pack<int>(max_);
 }
 std::string RandomSimcall::to_string() const
 {
@@ -46,18 +47,28 @@ bool ActorJoinSimcall::is_enabled()
 {
   return other_->get_impl()->wannadie();
 }
-void ActorJoinSimcall::serialize(std::stringstream& stream) const
+void ActorJoinSimcall::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::ACTOR_JOIN << ' ';
-  stream << other_->get_pid() << ' ' << (timeout_ > 0);
+  channel.pack(mc::Transition::Type::ACTOR_JOIN);
+  channel.pack<aid_t>(other_->get_pid());
+  channel.pack<bool>((timeout_ > 0));
 }
 std::string ActorJoinSimcall::to_string() const
 {
   return "ActorJoin(pid:" + std::to_string(other_->get_pid()) + ")";
 }
-void ActorSleepSimcall::serialize(std::stringstream& stream) const
+ActorExitSimcall::ActorExitSimcall(ActorImpl* actor) : SimcallObserver(actor) {}
+void ActorExitSimcall::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::ACTOR_SLEEP;
+  channel.pack(mc::Transition::Type::ACTOR_EXIT);
+}
+std::string ActorExitSimcall::to_string() const
+{
+  return "ActorExit()";
+}
+void ActorSleepSimcall::serialize(mc::Channel& channel) const
+{
+  channel.pack(mc::Transition::Type::ACTOR_SLEEP);
 }
 
 std::string ActorSleepSimcall::to_string() const
@@ -65,9 +76,10 @@ std::string ActorSleepSimcall::to_string() const
   return "ActorSleep()";
 }
 
-void ActorCreateSimcall::serialize(std::stringstream& stream) const
+void ActorCreateSimcall::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::ACTOR_CREATE << ' ' << child_;
+  channel.pack(mc::Transition::Type::ACTOR_CREATE);
+  channel.pack<aid_t>(child_);
 }
 
 std::string ActorCreateSimcall::to_string() const
@@ -75,10 +87,11 @@ std::string ActorCreateSimcall::to_string() const
   return "ActorCreate(" + std::to_string(child_) + ")";
 }
 
-void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
+void ObjectAccessSimcallObserver::serialize(mc::Channel& channel) const
 {
-  stream << (short)mc::Transition::Type::OBJECT_ACCESS << ' ';
-  stream << object_ << ' ' << get_owner()->get_pid();
+  channel.pack(mc::Transition::Type::OBJECT_ACCESS);
+  channel.pack(object_);
+  channel.pack(get_owner()->get_pid());
 }
 std::string ObjectAccessSimcallObserver::to_string() const
 {

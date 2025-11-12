@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -Xcheck:jni -cp ../../simgrid.jar:dag_comm.jar dag_comm ${platfdir}/two_hosts.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (0:maestro@) Execution 'parent' vetoed. Dependencies: solved; Ressources: NOT assigned
+> [  0.000000] (0:maestro@) Communication 'transfer' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
+> [  0.000000] (0:maestro@) Execution 'child' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
+> [  0.000000] (0:maestro@) 'parent' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] (0:maestro@) Communication 'transfer' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
+> [  0.000000] (0:maestro@) Execution 'child' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  0.000000] (0:maestro@) Communication 'transfer' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  1.000000] (0:maestro@) Exec 'parent' is complete (start time: 0.000000, finish time: 1.000000)
+> [  1.000000] (0:maestro@) Remove a dependency from 'parent' on 'transfer'
+> [  1.000000] (0:maestro@) 'transfer' is assigned to a resource and all dependencies are solved. Let's start
+> [  2.083775] (0:maestro@) Remove a dependency from 'transfer' on 'child'
+> [  2.083775] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
+> [  2.083775] (0:maestro@) Comm 'transfer' is complete
+> [  3.083775] (0:maestro@) Exec 'child' is complete (start time: 2.083775, finish time: 3.083775)
+> [  3.083775] (0:maestro@) Simulation ends.

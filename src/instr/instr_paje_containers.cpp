@@ -1,11 +1,14 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/instr/instr_paje_containers.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/instr/instr_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
@@ -30,17 +33,15 @@ NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, 
   }
 }
 
-RouterContainer::RouterContainer(const std::string& name, Container* parent)
-    : Container::Container(name, "ROUTER", parent)
+RouterContainer::RouterContainer(kernel::routing::NetPoint const& netpoint)
+    : Container::Container(netpoint.get_name(), "ROUTER", Container::by_name(netpoint.get_englobing_zone()->get_name()))
 {
-  xbt_assert(parent, "Only the Root container has no parent");
   xbt_assert(s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()), "Element '%s' not found", get_cname());
 }
 
-HostContainer::HostContainer(s4u::Host const& host, NetZoneContainer* parent)
-    : Container::Container(host.get_name(), "HOST", parent)
+HostContainer::HostContainer(s4u::Host const& host)
+    : Container::Container(host.get_name(), "HOST", Container::by_name(host.get_englobing_zone()->get_name()))
 {
-  xbt_assert(parent, "Only the Root container has no parent");
   xbt_assert(host.get_netpoint(), "Element '%s' not found", host.get_cname());
 }
 

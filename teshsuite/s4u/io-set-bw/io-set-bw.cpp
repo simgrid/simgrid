@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -78,16 +78,16 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("bob_zone");
-  auto* bob  = zone->create_host("bob", 1e6);
-  auto* disk = bob->create_disk("bob_disk", 1e3, 1e3);
+  auto* zone = e.get_netzone_root();
+  auto* bob  = zone->add_host("bob", 1e6);
+  auto* disk = bob->add_disk("bob_disk", 1e3, 1e3);
   /* manually setting before seal */
   disk->set_read_bandwidth(1e6);
   disk->set_write_bandwidth(1e6);
   disk->set_readwrite_bandwidth(1e6);
   zone->seal();
 
-  sg4::Actor::create("", bob, host);
+  bob->add_actor("", host);
 
   e.run();
 

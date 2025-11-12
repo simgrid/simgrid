@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
   auto hosts = e.get_all_hosts();
   xbt_assert(hosts.size() >= 3, "This example requires at least 3 hosts");
 
-  sg4::Actor::create("server", hosts[0], &server, 2);
-  sg4::Actor::create("client1", hosts[1], &client, 1);
-  sg4::Actor::create("client2", hosts[2], &client, 2);
+  hosts[0]->add_actor("server", &server, 2);
+  hosts[1]->add_actor("client1", &client, 1);
+  hosts[2]->add_actor("client2", &client, 2);
 
   e.run();
   return 0;

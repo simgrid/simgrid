@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -67,7 +67,7 @@ public:
   void operator()()
   {
     /* Where we store all incoming msgs */
-    std::unordered_map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
+    std::map<sg4::CommPtr, std::shared_ptr<std::string*>> pending_msgs;
     sg4::ActivitySet pending_comms;
 
     XBT_INFO("Wait for %d messages asynchronously", messages_count);
@@ -100,21 +100,21 @@ int main(int argc, char* argv[])
    * | Sender |===============| Receiver |
    * |________|    Link1      |__________|
    */
-  auto* zone     = sg4::create_full_zone("Zone1");
-  auto* sender   = zone->create_host("sender", 1)->seal();
-  auto* receiver = zone->create_host("receiver", 1)->seal();
+  auto* zone     = e.get_netzone_root();
+  auto* sender   = zone->add_host("sender", 1)->seal();
+  auto* receiver = zone->add_host("receiver", 1)->seal();
 
   /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
   const auto* link =
-      zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
+      zone->add_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
 
   /* create routes between nodes */
   zone->add_route(sender, receiver, {link});
   zone->seal();
 
   /* create actors Sender/Receiver */
-  sg4::Actor::create("receiver", receiver, Receiver(10));
-  sg4::Actor::create("sender", sender, Sender(1e6, 10));
+  receiver->add_actor("receiver", Receiver(10));
+  sender->add_actor("sender", Sender(1e6, 10));
 
   e.run();
 

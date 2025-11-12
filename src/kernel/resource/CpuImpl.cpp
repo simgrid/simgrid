@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -207,5 +207,20 @@ std::list<CpuImpl*> CpuAction::cpus() const
   }
 
   return retlist;
+}
+/** @brief returns the first CPU that this action is using */
+CpuImpl* CpuAction::cpu0() const
+{
+  int llen = get_variable()->get_number_of_constraint();
+  for (int i = 0; i < llen; i++) {
+    /* Beware of composite actions: ptasks put links and cpus together */
+    // extra pb: we cannot dynamic_cast from void*...
+    Resource* resource = get_variable()->get_constraint(i)->get_id();
+    auto* cpu          = dynamic_cast<CpuImpl*>(resource);
+    if (cpu != nullptr)
+      return cpu;
+  }
+
+  return nullptr;
 }
 } // namespace simgrid::kernel::resource

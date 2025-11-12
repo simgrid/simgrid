@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,8 +30,8 @@ static void master_fun()
   std::string data = "Example data";
   bool done        = false;
 
-  auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex, std::ref(data),
-                                   std::ref(done));
+  auto worker =
+      sg4::Host::by_name("Jupiter")->add_actor("worker", worker_fun, cv, mutex, std::ref(data), std::ref(done));
 
   // wait for the worker
   cv->wait(std::unique_lock(*mutex), [&done]() { return done; });
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  sg4::Actor::create("main", e.host_by_name("Tremblay"), master_fun);
+  e.host_by_name("Tremblay")->add_actor("main", master_fun);
   e.run();
 
   return 0;

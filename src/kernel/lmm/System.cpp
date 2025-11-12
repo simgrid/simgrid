@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,6 +7,8 @@
 #include "src/kernel/lmm/fair_bottleneck.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/simgrid/math_utils.h"
+#include "xbt/backtrace.hpp"
+#include "xbt/config.hpp"
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif
@@ -15,6 +17,11 @@
 #include <typeinfo>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_lmm, kernel, "Kernel Linear Max-Min solver");
+
+static simgrid::config::Flag<bool> cfg_debug_varleak{"debug/lmm-leaks",
+                                                     "Whether to take a backtrace of each LMM variable to debug "
+                                                     "leaking issues. Note that it really slows down the simulation",
+                                                     false};
 
 double sg_precision_workamount = 1E-5; /* Change this with --cfg=precision/work-amount:VALUE */
 double sg_precision_timing = 1E-9; /* Change this with --cfg=precision/timing:VALUE */
@@ -163,6 +170,9 @@ void System::var_free(Variable* var)
       on_disabled_var(elem.constraint);
   }
 
+  if (var->backtrace_)
+    delete var->backtrace_;
+
   var->cnsts_.clear();
 
   check_concurrency();
@@ -184,8 +194,13 @@ System::~System()
   while (Variable* var = extract_variable()) {
     const char* name = var->id_ ? typeid(*var->id_).name() : "(unidentified)";
     boost::core::scoped_demangled_name demangled(name);
-    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.",
-             demangled.get() ? demangled.get() : name, var->rank_);
+    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction. %s",
+             demangled.get() ? demangled.get() : name, var->rank_,
+             var->backtrace_ == nullptr ? "Use --cfg=debug/lmm-leaks:on to see where this variable was created "
+                                          "(warning: this parameter will slow down your simulation)"
+                                        : "This variable was created here:");
+    if (var->backtrace_)
+      var->backtrace_->display();
     var_free(var);
   }
   while (Constraint* cnst = extract_constraint())
@@ -513,6 +528,9 @@ void Variable::initialize(resource::Action* id_value, double sharing_penalty, do
   value_             = 0.0;
   visited_           = visited_value;
   mu_                = 0.0;
+
+  if (cfg_debug_varleak.get())
+    backtrace_ = new xbt::Backtrace();
 
   xbt_assert(not variable_set_hook_.is_linked());
   xbt_assert(not saturated_variable_set_hook_.is_linked());

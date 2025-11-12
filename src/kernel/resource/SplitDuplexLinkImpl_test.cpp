@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,14 +13,14 @@
 TEST_CASE("SplitDuplexLink: create", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone = simgrid::s4u::create_star_zone("test");
+  auto* zone = e.get_netzone_root();
 
   SECTION("create string")
   {
     simgrid::s4u::Link* link_up;
     simgrid::s4u::Link* link_down;
     simgrid::s4u::SplitDuplexLink* link;
-    REQUIRE_NOTHROW(link = zone->create_split_duplex_link("link", "100GBps"));
+    REQUIRE_NOTHROW(link = zone->add_split_duplex_link("link", "100GBps"));
     REQUIRE(e.split_duplex_link_by_name("link") == link);
     REQUIRE_NOTHROW(link_up = e.link_by_name("link_UP"));
     REQUIRE_NOTHROW(link_down = e.link_by_name("link_DOWN"));
@@ -30,14 +30,14 @@ TEST_CASE("SplitDuplexLink: create", "")
     REQUIRE(link_down == link->get_link_down());
   }
 
-  SECTION("create double") { REQUIRE_NOTHROW(zone->create_split_duplex_link("link", 10e6)); }
+  SECTION("create double") { REQUIRE_NOTHROW(zone->add_split_duplex_link("link", 10e6)); }
 }
 
 TEST_CASE("SplitDuplexLink: sets", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone            = simgrid::s4u::create_star_zone("test");
-  auto* link            = zone->create_split_duplex_link("link", 100e6);
+  auto* zone            = e.get_netzone_root()->add_netzone_star("test");
+  auto* link            = zone->add_split_duplex_link("link", 100e6);
   auto const* link_up   = link->get_link_up();
   auto const* link_down = link->get_link_down();
 

@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
+
+# Copyright (c) 2014-2025. The SimGrid Team. All rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # Generate a tesh file from a given command (simple case).
 
 command="$1"

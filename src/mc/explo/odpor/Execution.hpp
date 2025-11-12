@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,7 +13,10 @@
 #include "src/mc/transition/Transition.hpp"
 
 #include <list>
+#include <map>
 #include <optional>
+#include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -21,6 +24,9 @@ namespace simgrid::mc::odpor {
 
 std::vector<std::string> get_textual_trace(const PartialExecution& w);
 std::string one_string_textual_trace(const PartialExecution& w);
+
+// Data structure to implement FastTrack algorithm (see [Flanagan'09])
+using epoch = std::pair<aid_t, long>;
 
 /**
  * @brief The occurrence of a transition in an execution
@@ -31,6 +37,8 @@ std::string one_string_textual_trace(const PartialExecution& w);
  */
 class Event {
   std::pair<std::shared_ptr<Transition>, ClockVector> contents_;
+
+  std::unordered_map<void*, epoch> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;
@@ -47,6 +55,8 @@ public:
 
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }
+  void initialize_epoch();
+  void update_epoch_from(const ClockVector prev_clock, const Event prev_event);
 };
 
 /**
@@ -90,13 +100,17 @@ public:
  * the two concepts are analogous if not identical
  */
 class Execution {
-private:
-  std::vector<Event> contents_;
-  Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
-
 public:
   using EventHandle = uint32_t;
 
+private:
+  std::vector<Event> contents_;
+  std::vector<std::vector<EventHandle>> skip_list_ = {{}};
+  Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
+
+  static PartialExecution preallocated_partial_execution_;
+
+public:
   Execution()                            = default;
   Execution(const Execution&)            = default;
   Execution& operator=(Execution const&) = default;
@@ -313,10 +327,12 @@ public:
    *
    * @param handle the event with respect to which
    * reversible races are computed
+   * @param S the stack of states. This is used to help determine wether a
+   * race is truly reversible
    * @returns a set of event handles, each element of which is an event
    * in this execution which is in a *reversible race* with event `handle`
    */
-  std::list<EventHandle> get_reversible_races_of(EventHandle handle) const;
+  std::list<EventHandle> get_reversible_races_of(EventHandle handle, stack_t* S) const;
 
   /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
@@ -372,7 +388,7 @@ public:
    * notation of [1]) `E.proc(t)` where `proc(t)` is the
    * actor which executed transition `t`.
    */
-  void push_transition(std::shared_ptr<Transition>);
+  void push_transition(std::shared_ptr<Transition>, bool are_we_restoring_execution = false);
 
   /**
    * @brief Shorten the execution by one step
@@ -388,6 +404,32 @@ public:
    * the execution
    */
   void push_partial_execution(const PartialExecution&);
+
+  /**
+   * @brief Returns wether a given transition is in WI(v)
+   *
+   */
+  static bool is_in_weak_initial_of(Transition*, const PartialExecution&);
+
+  /**
+   * @brief Computes wether the sequence without the unlock can fire the wait
+   *
+   */
+  bool is_sem_wait_fireable_without_unlock(EventHandle unlock_handle, EventHandle wait_handle) const;
+};
+
+class MazurkiewiczTraces {
+
+  static std::set<PartialExecution> classes_;
+
+  static bool are_equivalent(const PartialExecution&, const PartialExecution&);
+
+public:
+  MazurkiewiczTraces() = delete;
+
+  static void record_new_execution(const Execution&);
+
+  static void log_data();
 };
 
 } // namespace simgrid::mc::odpor

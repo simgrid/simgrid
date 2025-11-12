@@ -1,7 +1,7 @@
-# Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.
+# Copyright(c) 2006 - 2025. The SimGrid Team. All rights reserved.
 #
-# This program is free software; you can redistribute it and/or modify it
-# under the terms of the license (GNU LGPL) which comes with this package.
+# This program is free software; you can redistribute it and / or modify it
+# under the terms of the license(GNU LGPL) which comes with this package.
 
 """
 This example shows how to build a torus cluster with multi-core hosts.
@@ -25,8 +25,8 @@ class Sender:
         self.hosts = hosts
         self.msg_size = msg_size
 
-    # Actors that are created as object will execute their __call__ method.
-    # So, the following constitutes the main function of the Sender actor.
+# Actors that are created as object will execute their __call__ method.
+# So, the following constitutes the main function of the Sender actor.
     def __call__(self):
         pending_comms = simgrid.ActivitySet()
         mboxes = []
@@ -39,7 +39,7 @@ class Sender:
 
         simgrid.this_actor.info("Done dispatching all messages")
 
-        # Now that all message exchanges were initiated, wait for their completion in one single call
+# Now that all message exchanges were initiated, wait for their completion in one single call
         pending_comms.wait_all()
 
         simgrid.this_actor.info("Goodbye now!")
@@ -88,25 +88,22 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) 
     link_lat = "1ns"  # Link latency
 
     hostname = "host" + str(ident)
-    # create the StarZone
-    host_zone = simgrid.NetZone.create_star_zone(hostname)
-    # setting my Torus parent zone
-    host_zone.set_parent(zone)
+    host_zone = zone.add_netzone_star(hostname)
 
-    # create CPUs
+# create CPUs
     for i in range(num_cpus):
         cpu_name = hostname + "-cpu" + str(i)
-        host = host_zone.create_host(cpu_name, speed).seal()
-        # the first CPU is the gateway
+        host = host_zone.add_host(cpu_name, speed).seal()
+# the first CPU is the gateway
         if i == 0:
             host_zone.set_gateway(host.netpoint)
-        # create split-duplex link
-        link = host_zone.create_split_duplex_link("link-" + cpu_name, link_bw)
+# create split - duplex link
+        link = host_zone.add_split_duplex_link("link-" + cpu_name, link_bw)
         link.set_latency(link_lat).seal()
-        # connecting CPU to outer world
+# connecting CPU to outer world
         host_zone.add_route(host, None, [simgrid.LinkInRoute(link, simgrid.LinkInRoute.Direction.UP)], True)
 
-    # seal newly created netzone
+# seal newly created netzone
     host_zone.seal()
     return host_zone
 
@@ -130,10 +127,10 @@ def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -
     :param ident: Internal identifier in the torus (for information)
     :return: Limiter link
     """
-    return zone.create_link("limiter-" + str(ident), [1e9]).seal()
+    return zone.add_link("limiter-" + str(ident), [1e9]).seal()
 
 
-def create_torus_cluster():
+def create_torus_cluster(parent: simgrid.NetZone):
     """
     Creates a TORUS cluster
 
@@ -168,15 +165,14 @@ def create_torus_cluster():
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html?highlight=torus#torus-cluster">Torus
     Cluster</a>
     """
-    # create the torus cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_torus_zone("cluster", None, [2, 2, 2],
-                                      simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                      simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the torus cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_torus("cluster", [2, 2, 2], 10e9, 10e-6,
+                             simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 #####################################################################################################
 
 
-def create_fat_tree_cluster():
+def create_fat_tree_cluster(parent: simgrid.NetZone):
     r"""
     Creates a Fat-Tree cluster
 
@@ -224,15 +220,14 @@ def create_fat_tree_cluster():
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#fat-tree-cluster">Fat-Tree
     Cluster</a>
     """
-    # create the fat tree cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_fatTree_zone("cluster", None, simgrid.FatTreeParams(2, [2, 3], [1, 2], [1, 1]),
-                                        simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                        simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the fat tree cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_fatTree("cluster", 2, [2, 3], [1, 2], [1, 1], 10e9, 10e-6,
+                               simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 #####################################################################################################
 
 
-def create_dragonfly_cluster():
+def create_dragonfly_cluster(parent: simgrid.NetZone):
     r"""
     Creates a Dragonfly cluster
 
@@ -270,10 +265,9 @@ def create_dragonfly_cluster():
     More details in: <a href="https://simgrid.org/doc/latest/Platform_examples.html#dragonfly-cluster">Dragonfly
     Cluster</a>
     """
-    # create the dragonfly cluster, 10Gbs link between elements in the cluster
-    simgrid.NetZone.create_dragonfly_zone("cluster", None, simgrid.DragonflyParams([2, 2], [2, 1], [2, 2], 2),
-                                          simgrid.ClusterCallbacks(create_hostzone, None, create_limiter), 10e9, 10e-6,
-                                          simgrid.Link.SharingPolicy.SPLITDUPLEX).seal()
+# create the dragonfly cluster, 10Gbs link between elements in the cluster
+    parent.add_netzone_dragonfly("cluster", [2, 2], [2, 1], [2, 2], 2, 10e9, 10e-6,
+                                 simgrid.Link.SharingPolicy.SPLITDUPLEX).set_netzone_cb(create_hostzone).set_limiter_cb(create_limiter).seal()
 
 ###################################################################################################
 
@@ -282,24 +276,24 @@ def main():
     e = simgrid.Engine(sys.argv)
     platform = sys.argv[1]
 
-    # create platform
+# create platform
     if platform == "torus":
-        create_torus_cluster()
+        create_torus_cluster(e.netzone_root)
     elif platform == "fatTree":
-        create_fat_tree_cluster()
+        create_fat_tree_cluster(e.netzone_root)
     elif platform == "dragonfly":
-        create_dragonfly_cluster()
+        create_dragonfly_cluster(e.netzone_root)
     else:
         sys.exit("invalid param")
 
     host_list = e.all_hosts
-    # create the sender actor running on first host
-    simgrid.Actor.create("sender", host_list[0], Sender(host_list))
-    # create receiver in every host
+# create the sender actor running on first host
+    host_list[0].add_actor("sender", Sender(host_list))
+# create receiver in every host
     for host in host_list:
-        simgrid.Actor.create("receiver-" + host.name, host, Receiver())
+        host.add_actor("receiver-" + host.name, Receiver())
 
-    # runs the simulation
+# runs the simulation
     e.run()
 
 if __name__ == '__main__':

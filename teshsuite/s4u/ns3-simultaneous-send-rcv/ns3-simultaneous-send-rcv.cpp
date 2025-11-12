@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -48,9 +48,9 @@ int main(int argc, char *argv[])
 
   auto hosts = e.get_all_hosts();
 
-  simgrid::s4u::Actor::create("receiver", hosts[0], test_receive);
+  hosts[0]->add_actor("receiver", test_receive);
   for (int i = 0; i < nb_sender; i++)
-    simgrid::s4u::Actor::create("sender_" + std::to_string(i), hosts[i % (e.get_host_count() - 1) + 1], test_send);
+    hosts[i % (e.get_host_count() - 1) + 1]->add_actor("sender_" + std::to_string(i), test_send);
 
   e.run();
 

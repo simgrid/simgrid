@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])             # Load the platform description
 
-    Actor.create("sender", Host.by_name("Tremblay"), sender, 3, 50000000, 1)
-    Actor.create("receiver", Host.by_name("Ruby"), receiver, 0)
+    e.host_by_name("Tremblay").add_actor("sender", sender, 3, 50000000, 1)
+    e.host_by_name("Ruby").add_actor("receiver", receiver, 0)
 
     e.run()

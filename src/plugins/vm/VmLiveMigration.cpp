@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -6,7 +6,9 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/plugins/live_migration.h>
 
-#include "src/instr/instr_private.hpp"
+#include "simgrid/s4u/Engine.hpp"
+#include "src/instr/instr_paje_containers.hpp"
+#include "src/instr/instr_paje_types.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/plugins/vm/VmLiveMigration.hpp"
 
@@ -336,10 +338,22 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   std::string rx_name = "__pr_mig_rx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
   std::string tx_name = "__pr_mig_tx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
 
-  simgrid::s4u::ActorPtr rx =
-      simgrid::s4u::Actor::create(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
-  simgrid::s4u::ActorPtr tx =
-      simgrid::s4u::Actor::create(tx_name.c_str(), src_pm, simgrid::plugin::vm::MigrationTx(vm, dst_pm));
+  simgrid::s4u::ActorPtr rx = dst_pm->add_actor(rx_name.c_str(), simgrid::plugin::vm::MigrationRx(vm, dst_pm));
+  simgrid::s4u::ActorPtr tx = src_pm->add_actor(tx_name.c_str(), simgrid::plugin::vm::MigrationTx(vm, dst_pm));
+
+  // Make sure that if one of the actor is killed (e.g. because its host was turned off, the other actor is killed too)
+  rx->on_exit([tx](bool killed) {
+    if (killed) {
+      XBT_INFO("RX actor of VM migration killed. Killing the TX actor");
+      tx->kill();
+    }
+  });
+  tx->on_exit([rx](bool killed) {
+    if (killed) {
+      XBT_INFO("TX actor of VM migration killed. Killing the RX actor");
+      rx->kill();
+    }
+  });
 
   vm->extension_set<VmMigrationExt>(new VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
 

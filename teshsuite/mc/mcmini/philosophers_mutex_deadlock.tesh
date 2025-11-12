@@ -15,6 +15,10 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
 > [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 5)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -27,13 +31,17 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;5'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 141 unique states visited; 7 explored traces (68 transition replays, 209 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;5'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 175 unique states visited; 7 explored traces (102 transition replays, 269 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 5)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -64,6 +72,10 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:3 owner:5)
 > [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 5)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -76,13 +88,17 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_WAIT(mutex: 3, owner: 5)
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;5'
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 141 unique states visited; 7 explored traces (68 transition replays, 209 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;5'
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 175 unique states visited; 7 explored traces (102 transition replays, 269 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 5)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -112,6 +128,11 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
 > [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 5)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 6)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -127,13 +148,18 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 4, owner: 6)
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 317 unique states visited; 15 explored traces (224 transition replays, 541 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 516 unique states visited; 15 explored traces (322 transition replays, 696 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 6)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -167,6 +193,11 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [ker_engine/INFO]  - pid 5 (thread 4@Lilibeth) simcall MUTEX_WAIT(mutex_id:4 owner:6)
 > [0.000000] [ker_engine/INFO]  - pid 6 (thread 5@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 5)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 6)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
@@ -182,13 +213,18 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_global/INFO]   Actor 5 in simcall MUTEX_ASYNC_LOCK(mutex: 4, owner: 6)
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_WAIT(mutex: 4, owner: 6)
 > [0.000000] [mc_global/INFO]   Actor 6 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
-> [0.000000] [mc_befs/INFO] BeFS exploration ended. 317 unique states visited; 15 explored traces (224 transition replays, 541 states visited overall)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 513 unique states visited; 15 explored traces (322 transition replays, 696 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 5)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 6)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)

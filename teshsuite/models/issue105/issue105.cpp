@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2013-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -55,9 +55,9 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  sg4::NetZone* world = sg4::create_full_zone("world");
-  sg4::Host* hostGl01 = world->create_host("host-gl01", "98Mf")->seal();
-  sg4::Host* hostSa01 = world->create_host("host-sa01", "98Mf")->seal();
+  sg4::NetZone* world = e.get_netzone_root();
+  sg4::Host* hostGl01 = world->add_host("host-gl01", "98Mf")->seal();
+  sg4::Host* hostSa01 = world->add_host("host-sa01", "98Mf")->seal();
 
   // create latency and bandwidth profiles
   auto* linkSaLatencyProfile   = simgrid::kernel::profile::ProfileBuilder::from_string("link-sa-latency-profile",
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
                                                                                        "1 200\n"
                                                                                        "100 42000000\n",
                                                                                        150);
-  const sg4::Link* linkSa      = world->create_link("link-front-sa", "42MBps")
+  const sg4::Link* linkSa      = world->add_link("link-front-sa", "42MBps")
                                 ->set_latency("20ms")
                                 ->set_latency_profile(linkSaLatencyProfile)
                                 ->set_bandwidth_profile(linkSaBandwidthProfile)
@@ -79,8 +79,8 @@ int main(int argc, char* argv[])
   world->seal();
 
   sg4::Mailbox* mb1 = e.mailbox_by_name_or_create("Mailbox 1");
-  sg4::Actor::create("load-generator", hostGl01, load_generator, mb1);
-  sg4::Actor::create("cluster-node-sa01", hostSa01, receiver, mb1);
+  hostGl01->add_actor("load-generator", load_generator, mb1);
+  hostSa01->add_actor("cluster-node-sa01", receiver, mb1);
 
   e.run();
 

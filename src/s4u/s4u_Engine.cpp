@@ -1,17 +1,19 @@
 /* s4u::Engine Simulation Engine and global functions. */
 
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
-#include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/modelchecker.h>
-#include <simgrid/s4u/Engine.hpp>
-
-#include "simgrid/forward.h"
+#include "simgrid/kernel/routing/DijkstraZone.hpp"
+#include "simgrid/kernel/routing/EmptyZone.hpp"
+#include "simgrid/kernel/routing/FloydZone.hpp"
+#include "simgrid/kernel/routing/FullZone.hpp"
+#include "simgrid/kernel/routing/StarZone.hpp"
+#include "simgrid/kernel/routing/VivaldiZone.hpp"
+#include "simgrid/kernel/routing/WifiZone.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
@@ -20,7 +22,12 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/module.hpp"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Engine.hpp>
 
 #if HAVE_PAPI
 #include "src/simgrid/sg_config.hpp"
@@ -47,6 +54,8 @@ xbt::signal<void(double)> Engine::on_time_advance;
 xbt::signal<void(void)> Engine::on_deadlock;
 
 Engine* Engine::instance_ = nullptr; /* This singleton is awful, but I don't see no other solution right now. */
+bool Engine::shutdown_ongoing_ =
+    false; // set to true just before the final shutdown, to break dependency loops in that area
 
 void Engine::initialize(int* argc, char** argv)
 {
@@ -73,6 +82,7 @@ Engine::Engine(int* argc, char** argv) : pimpl_(new kernel::EngineImpl())
 
 Engine::~Engine()
 {
+  shutdown_ongoing_ = true;
   kernel::EngineImpl::shutdown();
   Engine::instance_ = nullptr;
 }
@@ -239,6 +249,19 @@ void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
 const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() const
 {
   return pimpl_->get_all_models();
+}
+
+
+ActorPtr Engine::add_actor(const std::string& name, s4u::Host* host, const std::function<void()>& code) //XBT_ATTRIB_DEPRECATED_v403
+{
+  return host->add_actor(name, code);
+}
+
+ActorPtr Engine::add_actor(const std::string& name, s4u::Host* host, const std::string& function,
+                           std::vector<std::string> args) //XBT_ATTRIB_DEPRECATED_v403
+{
+  const simgrid::kernel::actor::ActorCodeFactory& factory = pimpl_->get_function(function);
+  return host->add_actor(name, factory(std::move(args)));
 }
 
 void Engine::load_platform(const std::string& platf) const
@@ -624,6 +647,11 @@ std::vector<ActorPtr> Engine::get_all_actors() const
   return actor_list;
 }
 
+void Engine::display_all_actors_status() const
+{
+  pimpl_->display_all_actor_status();
+}
+
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
@@ -655,13 +683,35 @@ void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) con
 {
   Activity::set_vetoed_activities(vetoed_activities);
 }
-
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {
-  if (pimpl_->netzone_root_)
-    return pimpl_->netzone_root_->get_iface();
-  return nullptr;
+  if (not pimpl_->netzone_root_) {
+    /* The platform is getting populated with netzones. It's time to finish the initialization.
+     *
+     * Without globals and with current model description init functions (see module.hpp), we need
+     * the root netzone to exist when creating the models.
+     */
+    pimpl_->netzone_root_ = new kernel::routing::FullZone("_world_");
+
+    simgrid::s4u::Engine::on_platform_creation();
+
+    /* Initialize the models. That must be done after we got all config, and before we need the models.
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
+     *
+     * I'm not sure for <trace> and <trace_cb>, there may be a bug here
+     * (FIXME: check it out by creating a file beginning with one of these tags)
+     * but cluster and peer come down to zone creations, so putting this verification here is correct.
+     */
+    simgrid_host_models().init_from_flag_value();
+    simgrid_vm_model_init_HL13();
+
+    /* HACK: direct access to the global controlling the level of configuration to prevent
+     * any further config now that we created some real content */
+    _sg_cfg_init_status = 2;
+  }
+
+  return pimpl_->netzone_root_->get_iface();
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
 void Engine::set_netzone_root(const s4u::NetZone* netzone)

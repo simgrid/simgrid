@@ -5,7 +5,7 @@
 tesh -- testing shell
 ========================
 
-Copyright (c) 2012-2024. The SimGrid Team. All rights reserved.
+Copyright (c) 2012-2025. The SimGrid Team. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the license (GNU LGPL) which comes with this package.
@@ -96,6 +96,7 @@ def setenv(arg):
         arg = re.sub(r"\${(\w+):=([^}]*)}", replace_perl_variables, arg)
         arg = expandvars2(arg)
     (var, val) = arg.split("=", 1)
+    val = val.strip('"') # Remove the "" around the value (but not the ones within the string)
     print("[Tesh/INFO] setenv " + var + "=" + val)
     os.environ[var] = val
     # os.putenv(var, val) does not work
@@ -443,6 +444,7 @@ class Cmd:
         else:
             stdouta = stdout_data.split("\n")
             stdouta = self.remove_ignored_lines(stdouta)
+            self.output_pipe_stdout = self.remove_ignored_lines(self.output_pipe_stdout)
             while stdouta and stdouta[-1] == "":
                 del stdouta[-1]
             stdcpy = stdouta[:]
@@ -594,6 +596,8 @@ def main():
             re.compile(r"profiling:"),
             re.compile(r"Unable to clean temporary file C:"),
             re.compile(r".*Configuration change: Set 'contexts/"),
+            re.compile(r"Picked up JAVA_TOOL_OPTIONS: "),
+            re.compile(r"Picked up _JAVA_OPTIONS: "),
             re.compile(r".*Configuration change: Set 'smpi/tmpdir"),
             re.compile(r"==[0-9]+== ?WARNING: ASan doesn't fully support"),
             re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack "),
@@ -607,6 +611,10 @@ def main():
             re.compile(
                 r".*mmap broken on FreeBSD, but dlopen\+thread broken too\. Switching to dlopen\+raw contexts\."),
             re.compile(r".*dlopen\+thread broken on Apple and BSD\. Switching to raw contexts\."),
+            # Supurious warning from OpenJDK with -Xcheck:jni
+            # https://forums.oracle.com/ords/apexds/post/xcheck-jni-with-jdk-1-8-0-60-now-causes-a-flood-of-warning-6661
+            re.compile(r"WARNING: JNI local refs: .*"),
+            re.compile(r"\s*at \S*"), # This RE is maybe too generic but I struggled to make it as specific as possible
         ]
         TeshState().jenkins = True  # This is a Jenkins build
 

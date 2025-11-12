@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -161,19 +161,19 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("broadcaster", e.host_by_name("node-0.simgrid.org"), broadcaster, 8, 256);
-
-  sg4::Actor::create("peer", e.host_by_name("node-1.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-2.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-3.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-4.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-5.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-6.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-7.simgrid.org"), peer);
-  sg4::Actor::create("peer", e.host_by_name("node-8.simgrid.org"), peer);
-
+  e.host_by_name("node-0.simgrid.org")->add_actor("broadcaster", broadcaster, 8, 256);
+  
+  e.host_by_name("node-1.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-2.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-3.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-4.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-5.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-6.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-7.simgrid.org")->add_actor("peer", peer);
+  e.host_by_name("node-8.simgrid.org")->add_actor("peer", peer);
+  
   e.run();
-  XBT_INFO("Total simulation time: %e", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %e", e.get_clock());
 
   return 0;
 }

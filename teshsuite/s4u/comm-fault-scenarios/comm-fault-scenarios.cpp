@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -396,19 +396,19 @@ int main(int argc, char* argv[])
   MBoxes mbox;
   mbox.eager                  = e.mailbox_by_name_or_create("eager");
   mbox.rdv                    = e.mailbox_by_name_or_create("rdv");
-  sg4::NetZone* zone          = sg4::create_full_zone("Top");
+  sg4::NetZone* zone          = e.get_netzone_root();
   pr::Profile* profile_sender = pr::ProfileBuilder::from_string("sender_profile", ctx.sender_profile.str(), 0);
-  sg4::Host* sender_host = zone->create_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
+  sg4::Host* sender_host = zone->add_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);
   sg4::Host* receiver_host =
-      zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
-  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host, mbox, ctx));
+      zone->add_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
+  sg4::ActorPtr sender = sender_host->add_actor("sender", SendAgent(0, receiver_host, mbox, ctx));
   sender->set_auto_restart(true);
-  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host, mbox, ctx));
+  sg4::ActorPtr receiver = receiver_host->add_actor("receiver", ReceiveAgent(1, sender_host, mbox, ctx));
   receiver->set_auto_restart(true);
   pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
   sg4::Link const* link =
-      zone->create_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
+      zone->add_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
   zone->add_route(sender_host, receiver_host, {link});
   zone->seal();
 

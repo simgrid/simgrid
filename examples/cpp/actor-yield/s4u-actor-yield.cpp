@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);             /* Load the platform description */
 
-  sg4::Actor::create("yielder", e.host_by_name("Tremblay"), yielder, 10);
-  sg4::Actor::create("yielder", e.host_by_name("Ruby"), yielder, 15);
+  e.host_by_name("Tremblay")->add_actor("yielder", yielder, 10);
+  e.host_by_name("Ruby")->add_actor("yielder", yielder, 15);
 
   e.run(); /* - Run the simulation */
 

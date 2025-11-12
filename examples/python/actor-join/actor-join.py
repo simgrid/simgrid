@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -19,22 +19,22 @@ def sleeper():
 
 def master():
     this_actor.info("Start 1st sleeper")
-    actor = Actor.create("1st sleeper from master", Host.current(), sleeper)
+    actor = Host.current().add_actor("1st sleeper from master", sleeper)
     this_actor.info("Join the 1st sleeper (timeout 2)")
     actor.join(2)
 
     this_actor.info("Start 2nd sleeper")
-    actor = Actor.create("2nd sleeper from master", Host.current(), sleeper)
+    actor = Host.current().add_actor("2nd sleeper from master", sleeper)
     this_actor.info("Join the 2nd sleeper (timeout 4)")
     actor.join(4)
 
     this_actor.info("Start 3rd sleeper")
-    actor = Actor.create("3rd sleeper from master", Host.current(), sleeper)
+    actor = Host.current().add_actor("3rd sleeper from master", sleeper)
     this_actor.info("Join the 3rd sleeper (timeout 2)")
     actor.join(2)
 
     this_actor.info("Start 4th sleeper")
-    actor = Actor.create("4th sleeper from master", Host.current(), sleeper)
+    actor = Host.current().add_actor("4th sleeper from master", sleeper)
     this_actor.info("Waiting 4")
     this_actor.sleep_for(4)
     this_actor.info("Join the 4th sleeper after its end (timeout 1)")
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    Actor.create("master", Host.by_name("Tremblay"), master)
+    Host.by_name("Tremblay").add_actor("master", master)
 
     e.run()
 

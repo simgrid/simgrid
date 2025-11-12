@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -91,23 +90,23 @@ int main(int argc, char* argv[])
 1 0.5
 )";
   /* simple platform containing 1 host and 2 disk */
-  auto* zone = sg4::create_full_zone("red");
-  zone->create_host("erin", 1e6)
+  auto* zone = e.get_netzone_root();
+  zone->add_host("erin", 1e6)
       ->set_core_count(2)
       ->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("erin_state", erin_state_file, 0))
       ->seal();
-  zone->create_host("carol", 1e6)
+  zone->add_host("carol", 1e6)
       ->set_core_count(2)
       ->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("carol_speed", carol_speed_file, 1))
       ->seal();
   zone->seal();
 
-  sg4::Actor::create("carol", e.host_by_name("carol"), worker);
-  sg4::Actor::create("erin", e.host_by_name("erin"), failed_worker)->set_auto_restart(true);
+  e.host_by_name("carol")->add_actor("carol", worker);
+  e.host_by_name("erin")->add_actor("erin", failed_worker)->set_auto_restart(true);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

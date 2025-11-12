@@ -12,12 +12,13 @@ $ ${bindir:=.}/is-router ${srcdir:=.}/../../platforms/test_of_is_router.xml "--l
 >    - Seen: "host08". Type: host
 >    - Seen: "host09". Type: host
 >    - Seen: "host10". Type: host
-> NetCards count: 21
+> NetCards count: 22
 >    - Seen: "AS0". Type: netzone
 >    - Seen: "AS1". Type: netzone
 >    - Seen: "AS2". Type: netzone
 >    - Seen: "AS3". Type: netzone
 >    - Seen: "AS4". Type: netzone
+>    - Seen: "_world_". Type: netzone
 >    - Seen: "host01". Type: host
 >    - Seen: "host02". Type: host
 >    - Seen: "host03". Type: host

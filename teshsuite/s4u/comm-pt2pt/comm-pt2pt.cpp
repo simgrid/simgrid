@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -182,11 +182,11 @@ int main(int argc, char* argv[])
 
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
 
-  simgrid::s4u::Actor::create("sender", hosts[0], sender, argSend);
-  simgrid::s4u::Actor::create("recver", hosts[1], receiver, argRecv);
+  hosts[0]->add_actor("sender", sender, argSend);
+  hosts[1]->add_actor("recver", receiver, argRecv);
 
   e.run();
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

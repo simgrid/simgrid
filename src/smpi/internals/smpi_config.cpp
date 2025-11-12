@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2008-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,7 +28,7 @@
 # endif
 
 constexpr bool HAVE_WORKING_MMAP = ((MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12) && (MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_11_0));
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__) || HAVE_MUSL
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__) || SIMGRID_HAVE_MUSL
 constexpr bool HAVE_WORKING_MMAP = false;
 #else
 constexpr bool HAVE_WORKING_MMAP = true;

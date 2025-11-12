@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -43,7 +43,6 @@ public:
 
   /** @brief The sharing policy */
   void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override { return s4u::Link::SharingPolicy::SPLITDUPLEX; }
 
   /** @brief Get link composing this split-duplex link */
   s4u::Link* get_link_up() const { return link_up_->get_iface(); }

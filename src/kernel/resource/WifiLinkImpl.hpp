@@ -1,4 +1,4 @@
-/* Copyright (c) 2019-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2019-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,13 +41,13 @@ class WifiLinkImpl : public StandardLinkImpl {
   std::vector<Metric> decay_bandwidths_;
 
 public:
-  WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system);
+  WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system,
+               routing::NetZoneImpl* englobing_zone);
 
   void set_host_rate(const s4u::Host* host, int rate_level);
   /** @brief Get the AP rate associated to the host (or -1 if not associated to the AP) */
   double get_host_rate(const s4u::Host* host) const;
 
-  s4u::Link::SharingPolicy get_sharing_policy() const override;
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override;

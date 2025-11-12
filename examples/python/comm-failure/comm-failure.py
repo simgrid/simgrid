@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -60,22 +60,22 @@ def link_killer(link_name: str) -> None:
 
 def main():
     e = Engine(sys.argv)
-    zone: NetZone = NetZone.create_full_zone("AS0")
-    host1 = zone.create_host("Host1", "1f")
-    host2 = zone.create_host("Host2", "1f")
-    host3 = zone.create_host("Host3", "1f")
+    zone: NetZone = e.netzone_root
+    host1 = zone.add_host("Host1", "1f")
+    host2 = zone.add_host("Host2", "1f")
+    host3 = zone.add_host("Host3", "1f")
 
-    link_to_2 = zone.create_link("link_to_2", "1bps").seal()
-    link_to_3 = zone.create_link("link_to_3", "1bps").seal()
+    link_to_2 = zone.add_link("link_to_2", "1bps").seal()
+    link_to_3 = zone.add_link("link_to_3", "1bps").seal()
 
     zone.add_route(host1, host2, [link_to_2])
     zone.add_route(host1, host3, [link_to_3])
     zone.seal()
 
-    Actor.create("Sender", host1, sender, "mailbox2", "mailbox3")
-    Actor.create("Receiver-1", host2, receiver, "mailbox2").daemonize()
-    Actor.create("Receiver-2", host3, receiver, "mailbox3").daemonize()
-    Actor.create("LinkKiller", host2, link_killer, "link_to_2").daemonize()
+    host1.add_actor("Sender", sender, "mailbox2", "mailbox3")
+    host2.add_actor("Receiver-1", receiver, "mailbox2").daemonize()
+    host3.add_actor("Receiver-2", receiver, "mailbox3").daemonize()
+    host2.add_actor("LinkKiller", link_killer, "link_to_2").daemonize()
 
     e.run()
 

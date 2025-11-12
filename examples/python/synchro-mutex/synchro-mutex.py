@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -60,8 +60,8 @@ def main():
     results = [ResultHolder(value=0) for _ in range(settings.actors)]
     for i in range(settings.actors):
         mutex = Mutex()
-        Actor.create(f"worker-{i}(mgr)", Host.by_name("Jupiter"), worker_context_manager, mutex, results[i])
-        Actor.create(f"worker-{i}", Host.by_name("Tremblay"), worker, mutex, results[i])
+        e.host_by_name("Jupiter").add_actor(f"worker-{i}(mgr)", worker_context_manager, mutex, results[i])
+        e.host_by_name("Tremblay").add_actor(f"worker-{i}", worker, mutex, results[i])
 
     e.run()
 

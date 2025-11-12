@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
   } else { // No parameter at all? Then use the default value
     argSender.emplace_back("25000");
   }
-  sg4::Actor::create("sender", e.host_by_name("MyHost1"), sender, argSender);
-  sg4::Actor::create("receiver", e.host_by_name("MyHost2"), receiver, argReceiver);
+  e.host_by_name("MyHost1")->add_actor("sender", sender, argSender);
+  e.host_by_name("MyHost2")->add_actor("receiver", receiver, argReceiver);
 
   /* And now, launch the simulation */
   e.run();

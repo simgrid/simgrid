@@ -41,9 +41,10 @@ if(enable_compile_warnings)
       # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
       set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
     endif()
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.2.0")
-      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361
-      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.1.0")
+      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=101361 which symptom is:
+      #   error: ‘__builtin_memcpy’ specified bound between 9223372036854775811 and 18446744073709551615 exceeds maximum object size
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=stringop-overread -Wno-error=stringop-overflow")
     endif()
   endif()
 
@@ -134,7 +135,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
   set(enable_lto OFF)
   if(enable_compile_optimizations)
     include(CheckIPOSupported)
-    check_ipo_supported(RESULT ipo LANGUAGES C CXX)
+    check_ipo_supported(RESULT ipo LANGUAGES C CXX OUTPUT lto_output)
     if(ipo)
       set(enable_lto ON)
     endif()
@@ -146,7 +147,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
     if(NOT enable_compile_optimizations)
       message(STATUS "LTO disabled: Compile-time optimizations turned off.")
     else()
-      message(STATUS "LTO does not seem usable -- try updating your build chain.")
+      message(STATUS "LTO does not seem usable -- try updating your build chain. Output: ${lto_output}")
     endif()
   endif()
 else()
@@ -182,7 +183,7 @@ endif()
 if (CMAKE_C_COMPILER_ID MATCHES "Intel")
   # honor parentheses when determining the order of expression evaluation.
   # disallow optimizations for floating-point arithmetic with Nans or +-Infs (breaks Eigen3)
-  set(optCFLAGS "${optCFLAGS} -fprotect-parens -fno-finite-math-only")
+  set(optCFLAGS "${optCFLAGS} -fprotect-parens -Wno-unused-command-line-argument -fno-finite-math-only")
 endif()
 
 if(NOT enable_debug)

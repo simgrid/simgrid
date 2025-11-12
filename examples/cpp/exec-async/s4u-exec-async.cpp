@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2007-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -78,14 +78,14 @@ int main(int argc, char* argv[])
   sg4::Host* boivin  = e.host_by_name("Boivin");
   sg4::Host* tremblay  = e.host_by_name("Tremblay");
 
-  sg4::Actor::create("wait", fafard, waiter);
-  sg4::Actor::create("monitor", ginette, monitor);
-  sg4::Actor::create("cancel", boivin, canceller);
-  sg4::Actor::create("detach", tremblay, detached);
+  fafard->add_actor("wait", waiter);
+  ginette->add_actor("monitor", monitor);
+  boivin->add_actor("cancel", canceller);
+  tremblay->add_actor("detach", detached);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

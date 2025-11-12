@@ -1,4 +1,4 @@
-/* Copyright (c) 2016-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2016-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification 
 
 namespace simgrid::mc::udpor {
 
-UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
+UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration()
+{
+  Exploration::initialize_remote_app(args);
+}
 
 void UdporChecker::log_state()
 {
@@ -174,8 +177,11 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   // UDPOR in a deterministic order. The processing done here always processes
   // actors in a consistent order since `std::map` is by-default ordered using
   // `std::less<Key>` (see the return type of `State::get_actors_list()`)
-  for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
-    const auto& enabled_transitions = actor_state.get_enabled_transitions();
+  for (const auto& actor_state : stateC.get_actors_list()) {
+    if (not actor_state.has_value())
+      continue;
+    aid_t aid                       = actor_state->get_aid();
+    const auto& enabled_transitions = actor_state->get_enabled_transitions();
     if (enabled_transitions.empty()) {
       XBT_DEBUG("\t Actor `%ld` is disabled: no partial extensions need to be considered", aid);
     } else {
@@ -194,6 +200,7 @@ EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) 
 {
   EventSet enC;
   for (const auto* e : exC) {
+    XBT_DEBUG("Is the extension <%s> compatible with current configuration?", e->to_string().c_str());
     if (C.is_compatible_with(e)) {
       enC.insert(e);
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -113,15 +113,15 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
 
-  auto* rootzone = sg4::create_full_zone("root");
-  auto* paul     = rootzone->create_host("Paul", 1e9);
-  auto* carol    = rootzone->create_host("Carol", 1e9);
-  auto* link     = rootzone->create_link("link", "1MBps")->set_latency("24us")->seal();
+  auto* rootzone = e.get_netzone_root();
+  auto* paul     = rootzone->add_host("Paul", 1e9);
+  auto* carol    = rootzone->add_host("Carol", 1e9);
+  auto* link     = rootzone->add_link("link", "1MBps")->set_latency("24us")->seal();
   rootzone->add_route(paul, carol, {link});
 
   SharedBuffer buffer;
-  sg4::Actor::create("producer", paul, producer, std::ref(buffer))->set_auto_restart();
-  sg4::Actor::create("consumer", carol, consumer, std::cref(buffer))->set_auto_restart();
+  paul->add_actor("producer", producer, std::ref(buffer))->set_auto_restart();
+  carol->add_actor("consumer", consumer, std::cref(buffer))->set_auto_restart();
   e.run();
 
   return 0;

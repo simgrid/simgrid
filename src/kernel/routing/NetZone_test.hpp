@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2024. The SimGrid Team. All rights reserved.               */
+/* Copyright (c) 2017-2025. The SimGrid Team. All rights reserved.               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -15,7 +15,7 @@ struct CreateHost {
   simgrid::s4u::Host* operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
                                     unsigned long id) const
   {
-    return zone->create_host(std::to_string(id), "1Gf");
+    return zone->add_host(std::to_string(id), "1Gf");
   }
 };
 

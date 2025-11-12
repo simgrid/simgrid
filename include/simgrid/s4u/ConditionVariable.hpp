@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -62,7 +62,11 @@ public:
   }
 
   /// Wait until the given instant (specified as a plain double)
+  std::cv_status wait_until(s4u::MutexPtr lock, double timeout_time);
+  /// Wait until the given instant (specified as a plain double)
   std::cv_status wait_until(const std::unique_lock<s4u::Mutex>& lock, double timeout_time);
+  /// Wait for the given amount of seconds (specified as a plain double)
+  std::cv_status wait_for(MutexPtr lock, double timeout);
   /// Wait for the given amount of seconds (specified as a plain double)
   std::cv_status wait_for(const std::unique_lock<s4u::Mutex>& lock, double duration);
 

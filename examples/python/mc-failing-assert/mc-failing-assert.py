@@ -1,4 +1,4 @@
-# Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.       
+# Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -41,8 +41,8 @@ if __name__ == '__main__':
     hosts = e.all_hosts
     assert len(hosts) >= 3, "This example requires at least 3 hosts"
 
-    Actor.create("server", hosts[0], server, 2)
-    Actor.create("client1", hosts[1], client, 1)
-    Actor.create("client2", hosts[2], client, 2)
+    hosts[0].add_actor("server", server, 2)
+    hosts[1].add_actor("client1", client, 1)
+    hosts[2].add_actor("client2", client, 2)
 
     e.run()

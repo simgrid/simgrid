@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2012-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,6 +19,7 @@ class XBT_PUBLIC ConditionVariableAcquisitionImpl : public ActivityImpl_T<Condit
   MutexImpl* mutex_            = nullptr;
   ConditionVariableImpl* cond_ = nullptr;
   bool granted_                = false;
+  bool mc_timeout_             = false; // Whether we are in MC mode && a timeout was declared
 
   friend ConditionVariableImpl;
 

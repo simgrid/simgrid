@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2024. The SimGrid Team. All rights reserved.
+# Copyright (c) 2018-2025. The SimGrid Team. All rights reserved.
 #
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -57,6 +57,6 @@ if __name__ == '__main__':
 
     e.load_platform(sys.argv[1])
 
-    Actor.create("test", Host.by_name("Fafard"), Wizard())
+    e.host_by_name("Fafard").add_actor("test", Wizard())
 
     e.run()

@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2024. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2025. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -50,7 +50,7 @@ constexpr static double LATENCY   = .1e-6;
 
 /*************************************************************************************************/
 /** @brief Create a simple platform based on Dahu cluster */
-static void load_platform()
+static void load_platform(sg4::Engine& e)
 {
   /**
    * Inspired on dahu cluster on Grenoble
@@ -64,21 +64,21 @@ static void load_platform()
    * host1     ...      hostN
    */
 
-  auto* root         = sg4::create_star_zone("dahu");
+  auto* root         = e.get_netzone_root()->add_netzone_star("dahu");
   std::string prefix = "dahu-";
   std::string suffix = ".grid5000.fr";
 
   for (int id = 0; id < 32; id++) {
     std::string hostname = prefix + std::to_string(id) + suffix;
     /* create host */
-    const sg4::Host* host = root->create_host(hostname, 1)->set_core_count(32);
+    const sg4::Host* host = root->add_host(hostname, 1)->set_core_count(32);
     /* create UP/DOWN link */
-    const sg4::Link* l = root->create_split_duplex_link(hostname, BW_REMOTE)->set_latency(LATENCY);
+    const sg4::Link* l = root->add_split_duplex_link(hostname, BW_REMOTE)->set_latency(LATENCY);
 
     /* add link UP/DOWN for communications from the host */
     root->add_route(host, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
 
-    const auto* loopback = root->create_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY);
+    const auto* loopback = root->add_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY);
     root->add_route(host, host, {loopback});
   }
 
@@ -228,16 +228,16 @@ int main(int argc, char* argv[])
   }
 
   /* create platform */
-  load_platform();
+  load_platform(e);
   /* setting network factors callbacks */
   e.get_netzone_root()->set_latency_factor_cb(latency_factor_cb);
   e.get_netzone_root()->set_bandwidth_factor_cb(bandwidth_factor_cb);
 
   sg4::Host* host        = e.host_by_name("dahu-1.grid5000.fr");
   sg4::Host* host_remote = e.host_by_name("dahu-10.grid5000.fr");
-  sg4::Actor::create("receiver-local", host, Receiver());
-  sg4::Actor::create("receiver-remote", host_remote, Receiver());
-  sg4::Actor::create("sender" + host->get_name(), host, Sender({host, host_remote}, crosstraffic));
+  host->add_actor("receiver-local", Receiver());
+  host_remote->add_actor("receiver-remote", Receiver());
+  host->add_actor("sender" + host->get_name(), Sender({host, host_remote}, crosstraffic));
 
   /* runs the simulation */
   e.run();
