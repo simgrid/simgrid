@@ -259,17 +259,15 @@ void State::reset_parent_state()
 void intrusive_ptr_add_ref(State* state)
 {
   XBT_DEBUG("Adding a ref to state #%ld", state->get_num());
-  state->refcount_.fetch_add(1, std::memory_order_relaxed);
+  state->refcount_.fetch_add(1, std::memory_order_acq_rel);
 }
 
 void intrusive_ptr_release(State* state)
 {
   XBT_DEBUG("[tid : %s] Removing a ref to state #%ld, %d ref remaining", xbt::gettid().c_str(), state->get_num(),
             static_cast<int>(state->refcount_.load()));
-  if (state->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
+  if (state->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
     delete state;
-  }
 }
 
 void State::initialize(const RemoteApp& remote_app)

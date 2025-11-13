@@ -123,26 +123,11 @@ private:
 
 public:
   int get_refcount() const { return static_cast<int>(refcount_); }
-  friend void intrusive_ptr_add_ref(ActorImpl* actor)
-  {
-    // This whole memory consistency semantic drives me nuts.
-    // std::memory_order_relaxed proves to not be enough: There is a threading issue when actors commit suicide.
-    //   My guess is that the maestro context wants to propagate changes to the actor's fields after the
-    //   actor context frees that memory area or something. But I'm not 100% certain of what's going on.
-    // std::memory_order_seq_cst works but that's rather demanding.
-    // AFAIK, std::memory_order_acq_rel works on all tested platforms, so let's stick to it.
-    // Reducing the requirements to _relaxed would require to fix our suicide procedure, which is a messy piece of code.
-    actor->refcount_.fetch_add(1, std::memory_order_acq_rel);
-  }
+  friend void intrusive_ptr_add_ref(ActorImpl* actor) { actor->refcount_.fetch_add(1, std::memory_order_acq_rel); }
   friend void intrusive_ptr_release(ActorImpl* actor)
   {
-    // inspired from http://www.boost.org/doc/libs/1_55_0/doc/html/atomic/usage_examples.html
-    if (actor->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      // Make sure that any changes done on other threads before their acquire are committed before our delete
-      // http://stackoverflow.com/questions/27751025/why-is-an-acquire-barrier-needed-before-deleting-the-data-in-an-atomically-refer
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (actor->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete actor;
-    }
   }
 
   simgrid::kernel::activity::MemoryAccessImpl* get_memory_access() { return recorded_memory_accesses_.get(); }
