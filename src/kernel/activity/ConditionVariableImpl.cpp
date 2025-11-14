@@ -164,13 +164,12 @@ ConditionVariableAcquisitionImplPtr ConditionVariableImpl::acquire_async(actor::
 // boost::intrusive_ptr<ConditionVariableImpl> support:
 void intrusive_ptr_add_ref(ConditionVariableImpl* cond)
 {
-  cond->refcount_.fetch_add(1, std::memory_order_relaxed);
+  cond->refcount_.fetch_add(1, std::memory_order_acq_rel);
 }
 
 void intrusive_ptr_release(ConditionVariableImpl* cond)
 {
-  if (cond->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
+  if (cond->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1) {
     xbt_assert(cond->ongoing_acquisitions_.empty(),
                "Cannot destroy conditional since it still has ongoing acquisitions");
     delete cond;

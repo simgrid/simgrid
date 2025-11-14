@@ -212,12 +212,10 @@ public:
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Activity* a)
   {
-    if (a->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (a->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete a;
-    }
   }
-  friend void intrusive_ptr_add_ref(Activity* a) { a->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(Activity* a) { a->refcount_.fetch_add(1, std::memory_order_acq_rel); }
 #endif
   Activity* add_ref()
   {

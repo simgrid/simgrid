@@ -248,15 +248,13 @@ void ActivityImpl::cancel()
 // boost::intrusive_ptr<Activity> support:
 void intrusive_ptr_add_ref(ActivityImpl* activity)
 {
-  activity->refcount_.fetch_add(1, std::memory_order_relaxed);
+  activity->refcount_.fetch_add(1, std::memory_order_acq_rel);
 }
 
 void intrusive_ptr_release(ActivityImpl* activity)
 {
-  if (activity->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-    std::atomic_thread_fence(std::memory_order_acquire);
+  if (activity->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
     delete activity;
-  }
 }
 
 } // namespace simgrid::kernel::activity

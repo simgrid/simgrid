@@ -5,6 +5,7 @@
 #ifndef SIMGRID_PLUGINS_CHILLER_H_
 #define SIMGRID_PLUGINS_CHILLER_H_
 
+#include <atomic>
 #include <simgrid/kernel/resource/Model.hpp>
 #include <simgrid/s4u/Activity.hpp>
 #include <xbt/Extendable.hpp>
@@ -62,12 +63,10 @@ private:
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Chiller* o)
   {
-    if (o->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (o->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete o;
-    }
   }
-  friend void intrusive_ptr_add_ref(Chiller* o) { o->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(Chiller* o) { o->refcount_.fetch_add(1, std::memory_order_acq_rel); }
 #endif
 
   static xbt::signal<void(Chiller*)> on_power_change;

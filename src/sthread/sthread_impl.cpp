@@ -89,6 +89,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* Do not intercept system binaries such as valgrind step 1 */
   std::vector<std::string> binaries = {"/usr/bin/env",
+                                       "/usr/bin/lua",
                                        "/usr/bin/valgrind.bin",
                                        "/usr/bin/python3",
                                        "/bin/sh",
