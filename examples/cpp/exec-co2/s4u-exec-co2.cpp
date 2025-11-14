@@ -86,11 +86,12 @@ int main(int argc, char* argv[])
   sg4::Host* host_br_dynamic_co2 = sg4::Host::by_name("host_br_dynamic_co2");
   sg4::Host* host_usa_dynamic_co2 = sg4::Host::by_name("host_usa_dynamic_co2");
 
-  sg4::Actor::create("execution", host_br_static_co2, test_execution);
-  sg4::Actor::create("execution", host_br_dynamic_co2, test_execution);
+  host_br_static_co2->add_actor("execution_static_br",  test_execution);
+  host_br_dynamic_co2->add_actor("execution_dynamic_br",  test_execution);
 
-  sg4::Actor::create("turn_off test", host_br_static_co2, turn_host_off,host_usa_static_co2);
-  sg4::Actor::create("turn_off test", host_br_static_co2, turn_host_off,host_usa_dynamic_co2);
+  host_br_static_co2->add_actor("turn_off usa static",  turn_host_off,host_usa_static_co2);
+  host_br_dynamic_co2->add_actor("turn_off usa dynamic",  turn_host_off,host_usa_dynamic_co2);
+
 
   e.run();
 
