@@ -173,7 +173,7 @@ foreach $_ (@ARGV) {
 print STDERR "privatization called\n";
 $enabled_privatization = $1; }
     elsif (/--?wrapper=(.*)/) {
-         $wrapparg = "-wrapper \"$1\"" if $1 ne "";
+         $wrapparg = "-keep-temps -wrapper \"$1\"" if $1 ne "";
     }
     elsif (/--?xmlfile=(.*)/) {
 	$xmlfile   = $1;
@@ -659,7 +659,9 @@ sub RunMPIProgram {
 		m{^==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack } ||
 		m{^False positive error reports may follow$} ||
 		m{^For details see http://code.google.com/p/address-sanitizer/issues/detail\?id=189$} ||
-		m{^For details see https://github.com/google/sanitizers/issues/189$}) {
+		m{^For details see https://github.com/google/sanitizers/issues/189$} ||
+		m{^Generated unrolled hostfile .*? kept.$} || # keep-temp actually keeps the temps
+		m{^.*?--cfg=smpi/privatization:ON  --cfg=precision/timing:1e-9 --cfg=network/model:SMPI.*$}) { # my_valgrind.pl outputs the ran experiment
 		next;
 	    }
 	    if (/^\s*No [Ee]rrors\s*$/ && $found_noerror == 0) {

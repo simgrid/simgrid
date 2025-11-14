@@ -556,7 +556,7 @@ sonarqube:
   - unzip -q -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
   - export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
   # configure and build simgrid
-  - cmake -GNinja -Denable_memcheck=ON -Denable_memcheck_xml=ON -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  - cmake -GNinja -Denable_memcheck=ON -Denable_memcheck_xml=ON -Denable_python=ON -Denable_java=ON -Denable_lib_in_jar=OFF -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - build-wrapper-linux-x86-64 --out-dir bw-output ninja all tests
   # Install Jacoco
   - wget https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip -O /tmp/jacoco.zip
