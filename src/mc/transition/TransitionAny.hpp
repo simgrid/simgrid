@@ -28,7 +28,7 @@ public:
   Transition* get_current_transition() const { return transitions_.at(times_considered_); }
   bool result() const
   {
-    return std::any_of(begin(transitions_), end(transitions_), [](const Transition* transition) {
+    return std::ranges::any_of(transitions_, [](const Transition* transition) {
       const auto* tested_transition = static_cast<const CommTestTransition*>(transition);
       return (tested_transition->get_sender() != -1 && tested_transition->get_receiver() != -1);
     });

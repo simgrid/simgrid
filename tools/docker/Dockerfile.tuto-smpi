@@ -2,7 +2,7 @@
 FROM simgrid/stable
 
 # https://stackoverflow.com/questions/35134713/disable-cache-for-specific-run-commands
-ADD "http://deb.debian.org/debian/dists/testing/Release" skipcache
+ADD "https://deb.debian.org/debian/dists/testing/Release" skipcache
 RUN apt update && apt -y upgrade
 
 # - Clone simgrid-template-smpi, as it is needed by the tutorial

@@ -1,10 +1,10 @@
 FROM debian:11.1-slim
 
 RUN printf '%s\n' \
-    "deb    [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye main contrib non-free" \
-    "deb-src [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye main contrib non-free" \
-    "deb     [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye-updates main contrib non-free" \
-    "deb-src [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye-updates main contrib non-free" > /etc/apt/sources.list \
+    "deb    [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye main contrib non-free" \
+    "deb-src [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye main contrib non-free" \
+    "deb     [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye-updates main contrib non-free" \
+    "deb-src [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20211101T024700Z/ bullseye-updates main contrib non-free" > /etc/apt/sources.list \
 && \
     apt-get -o Acquire::Check-Valid-Until=false update \
 && \
@@ -53,8 +53,8 @@ RUN pip install --no-cache-dir --no-dependencies \
     descartes==1.1.0
 
 # R package not available at debian's cran
-RUN R -e "install.packages('remotes', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
-    R -e "require(remotes); install_version('Ckmeans.1d.dp','4.3.3', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('remotes', dependencies=TRUE, repos='https://cran.rstudio.com/')" && \
+    R -e "require(remotes); install_version('Ckmeans.1d.dp','4.3.3', dependencies=TRUE, repos='https://cran.rstudio.com/')"
 
 # python jupyterlab packages
 RUN pip install --no-cache-dir --upgrade pip && \
