@@ -45,7 +45,7 @@ endif()
 # These tests timeout when run within valgrind
 if(enable_memcheck)
   foreach(x barber_shop_ok barber_shop_deadlock simple_cond_broadcast_ok)
-    set(_${example_disable} 1)
+    set(_${example}_disable 1)
   endforeach()
 endif()
 
