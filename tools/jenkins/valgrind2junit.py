@@ -112,6 +112,7 @@ def generate_junit(valgrind_files, junit_output):
 def generate_html(valgrind_files, output_html):
     rows = {} # One chunk of HTML per test name, a row in the summary table
     reports = {} # One chunk of HTML per test name, the details of each callsite
+    leaks_per_test = {} # amount of bytes leaked per test (str -> int)
     totals = {
         'Leak_StillReachable': {'leakedbytes': 0, 'leakedblocks':0},
         'Leak_IndirectlyLost': {'leakedbytes': 0, 'leakedblocks':0}, 
@@ -192,6 +193,7 @@ def generate_html(valgrind_files, output_html):
             """
             if file_totals['Leak_DefinitelyLost']["leakedbytes"] >0:
                 reports[test] = report
+            leaks_per_test[test] = file_totals["Leak_DefinitelyLost"]['leakedbytes']
 
     html = f"""
     <html>
@@ -234,7 +236,7 @@ def generate_html(valgrind_files, output_html):
     """
 
     linecount = 0
-    for test in sorted(rows):
+    for test in sorted(rows, key=lambda t: leaks_per_test[t], reverse=True):
         if linecount == 0:
             html += "<tr><th>Test</th> <th>Definitely lost</th> <th>Indirectly lost</th> <th>Possibly lost</th> <th>Still reachable</th></tr>"
             linecount = 15
