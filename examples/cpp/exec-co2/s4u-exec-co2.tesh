@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+p Testing the mechanism for computing host emissions
+
+$ ${bindir:=.}/s4u-exec-co2 ${platfdir}/emission_platform.xml
+> [0.000000] [host_carbon_footprint/INFO] Carbon trace file 'co2.csv' loaded successfully. Found traces for 3 hosts.
+> [36000.000000] [host_energy/INFO] Total energy consumption: 20160000.000000 Joules (used hosts: 12600000.000000 Joules; unused/idle hosts: 7560000.000000)
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_br_dynamic_co2: 6300000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_br_dynamic_co2: 167.644250 g
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_br_static_co2: 6300000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_br_static_co2: 160.090000 g
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_fr_dynamic_co2: 3600000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_fr_dynamic_co2: 32.314000 g
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_fr_static_co2: 3600000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_fr_static_co2: 33.450000 g
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_usa_dynamic_co2: 180000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_usa_dynamic_co2: 22.393500 g
+> [36000.000000] [host_energy/INFO] Energy consumption of host host_usa_static_co2: 180000.000000 Joules
+> [36000.000000] [host_carbon_footprint/INFO] Carbon emitted by host host_usa_static_co2: 20.182500 g
