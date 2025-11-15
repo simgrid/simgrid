@@ -102,7 +102,7 @@ def generate_junit(valgrind_files, junit_output):
 
     ET.ElementTree(testsuite).write(junit_output, encoding="utf-8", xml_declaration=True)
 
-    print(f"[JUnit] {tests} files processed → {junit_output} (failures: {failures})")
+    print(f"[JUnit] {tests} files processed: {junit_output} (failures: {failures})")
 
 
 # -----------------------------
@@ -257,7 +257,7 @@ def generate_html(valgrind_files, output_html):
     with open(output_html, "w") as f:
         f.write(html)
 
-    print(f"[HTML] Leak report generated → {output_html}")
+    print(f"[HTML] Leak report generated: {output_html}")
 
 
 # -----------------------------
@@ -273,7 +273,7 @@ if __name__ == "__main__":
 
     print(f"Found {len(valgrind_files)} valgrind XML files.")
 
-    #generate_junit(valgrind_files, "valgrind_junit.xml")
+    generate_junit(valgrind_files, "valgrind_junit.xml")
     generate_html(valgrind_files, "valgrind_report.html")
 
     print("Done.")
