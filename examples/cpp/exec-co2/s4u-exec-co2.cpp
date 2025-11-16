@@ -3,20 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u.hpp"
-#include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/carbon_footprint.h"
+#include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 namespace sg4 = simgrid::s4u;
 
-
-void turn_host_off(simgrid::s4u::Host * host)
-{
-  host->turn_off();
-}
-
-void test_execution()
+static void test_execution()
 {          
     sg4::Host* host = sg4::this_actor::get_host();
     
@@ -67,13 +60,10 @@ void test_execution()
     activity_4_2->wait();
     activity_4_3->wait();
     activity_4_4->wait();
- 
 }
 
 int main(int argc, char* argv[])
 {
-
-  sg_host_energy_plugin_init();              
   sg_host_carbon_footprint_plugin_init();
   sg_host_carbon_footprint_load_trace_file("co2.csv");  
 
@@ -89,13 +79,10 @@ int main(int argc, char* argv[])
   host_br_static_co2->add_actor("execution_static_br",  test_execution);
   host_br_dynamic_co2->add_actor("execution_dynamic_br",  test_execution);
 
-  host_br_static_co2->add_actor("turn_off usa static",  turn_host_off,host_usa_static_co2);
-  host_br_dynamic_co2->add_actor("turn_off usa dynamic",  turn_host_off,host_usa_dynamic_co2);
-
+  host_br_static_co2->add_actor("turn_off usa static", [](sg4::Host* h) { h->turn_off(); }, host_usa_static_co2);
+  host_br_dynamic_co2->add_actor("turn_off usa dynamic", [](sg4::Host* h) { h->turn_off(); }, host_usa_dynamic_co2);
 
   e.run();
 
-
   return 0;
-
 }
