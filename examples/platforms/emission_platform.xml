@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- This platform is to be used with the Carbon Footprint plugin.
+     See examples/cpp/exec-co2 for more information -->
+
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="AS0" routing="Full">          
+    <host core="4" id="host_br_static_co2" pstate="0" speed="100.0Mf">
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="91.48" />
+    </host>
+
+    <host core="4" id="host_fr_static_co2" pstate="0" speed="100.0Mf">      
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="33.45" />
+    </host>
+
+    <host core="4" id="host_usa_static_co2" pstate="0" speed="100.0Mf">      
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="403.65" />
+    </host>
+
+    <host core="4" id="host_br_dynamic_co2" pstate="0" speed="100.0Mf">
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="91.48" />
+    </host>
+
+    <host core="4" id="host_fr_dynamic_co2" pstate="0" speed="100.0Mf">      
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="33.45" />
+    </host>
+
+    <host core="4" id="host_usa_dynamic_co2" pstate="0" speed="100.0Mf">      
+      <prop id="wattage_per_state" value="100.0:100:200.0" />
+      <prop id="wattage_off" value="5" />
+      <prop id="carbon_intensity" value="403.65" />
+    </host>
+
+  </zone>
+
+</platform>

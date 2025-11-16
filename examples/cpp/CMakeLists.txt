@@ -103,7 +103,7 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  cloud-capping cloud-migration cloud-simple
                  dag-comm dag-from-json-simple dag-from-dax-simple dag-from-dax dag-from-dot-simple dag-from-dot dag-failure dag-io dag-scheduling dag-simple dag-tuto
                  dht-chord dht-kademlia
-                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
+                 energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi exec-co2
                  engine-filtering engine-run-partial
                  exec-async exec-basic exec-dvfs exec-remote exec-suspend exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-ptask-multicore-latency exec-cpu-nonlinear exec-cpu-factors exec-failure exec-threads
@@ -253,6 +253,8 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simpl
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot-simple/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-json-simple/dag.json
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-co2/co2.csv
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-co2/validation.md
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
