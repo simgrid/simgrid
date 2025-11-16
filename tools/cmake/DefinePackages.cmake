@@ -1129,6 +1129,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/crosstraffic.xml
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
+  examples/platforms/emission_platform.xml
   examples/platforms/energy_boot.xml
   examples/platforms/energy_cluster.xml
   examples/platforms/energy_platform.xml

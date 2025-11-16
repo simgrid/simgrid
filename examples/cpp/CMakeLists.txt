@@ -253,6 +253,8 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simpl
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot-simple/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-json-simple/dag.json
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-co2/co2.csv
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/exec-co2/validation.md
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt

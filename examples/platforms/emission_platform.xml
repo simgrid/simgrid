@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
+
+<!-- This platform is to be used with the Carbon Footprint plugin.
+     See examples/cpp/exec-co2 for more information -->
+
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <zone id="AS0" routing="Full">          
