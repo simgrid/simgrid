@@ -45,7 +45,7 @@ jobs:
           ctest --output-on-failure -j$(nproc)
       - name: Send the failure message
         if: ${{ failure() }}
-        uses: mattermost/action-mattermost-notify@v2.0.0
+        uses: mattermost/action-mattermost-notify@master
         with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
@@ -59,7 +59,7 @@ jobs:
             }]}
 #      - name: Send the success message
 #        if: ${{ success() }}
-#        uses: mattermost/action-mattermost-notify@v2.0.0
+#        uses: mattermost/action-mattermost-notify@master
 #        with:
 #          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
 #          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
