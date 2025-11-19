@@ -73,7 +73,7 @@ $batchRun = 0;           # Set to true to batch the execution of the tests
 $testCount = 0;          # Used with batchRun to count tests.
 $batrundir = ".";        # Set to the directory into which to run the examples
 
-$execarg="";
+$execarg="--log=smpi_linting.threshold:critical ";
 $wrapparg="";
 
 $enabled_privatization = 1; # disable tests that need SMPI privatization to run

@@ -46,6 +46,7 @@
 #include <link.h>
 #endif
 
+XBT_LOG_NEW_SUBCATEGORY(smpi_linting, smpi, "Messages about the user code quality in SMPI");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 
 #if SMPI_IFORT
@@ -307,7 +308,8 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
     }
     auto self = smpi_process();
     if (not self->finalized())
-      XBT_WARN("SMPI rank %d did not call MPI_Finalize() before ending its execution.", self->comm_world()->rank());
+      XBT_CWARN(smpi_linting, "SMPI rank %d did not call MPI_Finalize() before ending its execution. Its state is %s",
+                self->comm_world()->rank(), self->get_state_str());
 
   } catch (simgrid::ForcefulKillException const& e) {
     XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
