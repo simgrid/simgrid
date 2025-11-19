@@ -16,6 +16,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/sthread/sthread.h"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
@@ -300,10 +301,14 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
     char** argv = args4argv.data();
     int res = entry_point(argc, argv);
     if (res != 0) {
-      XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+      XBT_WARN("SMPI process did not return 0. Return value: %d", res);
       if (smpi_exit_status == 0)
         smpi_exit_status = res;
     }
+    auto self = smpi_process();
+    if (not self->finalized())
+      XBT_WARN("SMPI rank %d did not call MPI_Finalize() before ending its execution.", self->comm_world()->rank());
+
   } catch (simgrid::ForcefulKillException const& e) {
     XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
   }
