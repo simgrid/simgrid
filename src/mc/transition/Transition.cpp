@@ -9,6 +9,7 @@
 #include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
+#include <atomic>
 #include <simgrid/config.h>
 
 #if SIMGRID_HAVE_MC
@@ -24,8 +25,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_transition, mc, "Logging specific to MC transitions");
 
 namespace simgrid::mc {
-unsigned long Transition::executed_transitions_ = 0;
-unsigned long Transition::replayed_transitions_ = 0;
+std::atomic_ulong Transition::executed_transitions_ = 0;
+std::atomic_ulong Transition::replayed_transitions_ = 0;
 
 // Do not move this to the header, to ensure that we have a vtable for Transition
 Transition::~Transition() = default;

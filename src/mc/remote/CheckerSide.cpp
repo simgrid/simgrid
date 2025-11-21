@@ -15,7 +15,10 @@
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
+#include <atomic>
 #include <cerrno>
+#include <cstdio>
+#include <cstring>
 #include <unistd.h>
 #include <utility>
 
@@ -49,7 +52,7 @@ static simgrid::config::Flag<std::string> _sg_mc_setenv{
 
 namespace simgrid::mc {
 
-unsigned CheckerSide::count_ = 0;
+std::atomic_uint32_t CheckerSide::count_ = 0;
 
 XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<char*>& args)
 {
@@ -188,6 +191,7 @@ CheckerSide::CheckerSide(int socket, CheckerSide* child_checker)
 
 static void handle_sigalarm(int)
 {
+  perror("Going to die of SIGALRM");
   xbt_die("The child process failed to connect within the 5 seconds time limit. The model-checker is bailing out now.");
 }
 
@@ -204,6 +208,7 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
 
   /* Accept an incomming socket under a 5 seconds time limit*/
   struct sigaction action;
+  memset(&action, 0, sizeof(struct sigaction));
   action.sa_handler = handle_sigalarm;
   sigaction(SIGALRM, &action, nullptr); /* Override the default behaviour which would be to end the process */
   alarm(5);

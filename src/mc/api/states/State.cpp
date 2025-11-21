@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
 namespace simgrid::mc {
 
-long State::expended_states_  = 0;
+std::atomic_ulong State::expended_states_  = 0;
 std::atomic_ulong State::in_memory_states_ = 0;
 size_t State::max_actor_encountered_ = 1;
 

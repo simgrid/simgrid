@@ -13,8 +13,8 @@
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
-#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <atomic>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -39,15 +39,20 @@ namespace simgrid::mc {
     std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
 
     static PostFixTraversal* first_;
+    static std::atomic_long first_num_;
 
   public:
     // Construct a traversal information corresponding to the child of parameter state
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
     static StatePtr get_first();
+    static long get_first_num() { return first_num_; }
     static void remove_first();
     static std::string get_traversal_as_ids();
+    unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
     static void update_leftness();
+
+    static std::mutex global_mutex;
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
@@ -55,7 +60,7 @@ namespace simgrid::mc {
   bool to_be_deleted_ = false;
   void remove_ref_in_parent();
 
-  static long expended_states_; /* Count total amount of states, for stats */
+  static std::atomic_ulong expended_states_; /* Count total amount of states, for stats */
 
   static std::atomic_ulong in_memory_states_; // Count the number of states currently still in memory
 
@@ -80,7 +85,7 @@ namespace simgrid::mc {
   unsigned long depth_ = 0;
 
   /** leftness in the tree */
-  unsigned long leftness_ = 0;
+  unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
 
   /** Unique parent of this state */
   StatePtr parent_state_ = nullptr;
