@@ -353,6 +353,7 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   parent_traversal->prev_ = this;
 
   if (first_ == nullptr or first_ == parent_traversal) {
+    XBT_DEBUG("Pushing state %ld as postfix traversal first", state->get_num());
     first_num_ = state->get_num();
     first_ = this;
   }
@@ -384,7 +385,8 @@ void State::garbage_collect()
     PostFixTraversal::remove_first();
 
     if (first_state->parent_state_ != nullptr) {
-      first_state->parent_state_->to_be_deleted_ = true;
+      if (not first_state->parent_state_->has_more_to_be_explored())
+        first_state->parent_state_->to_be_deleted_ = true;
       first_state->remove_ref_in_parent();
       first_state->reset_parent_state();
     }
@@ -407,6 +409,8 @@ void State::PostFixTraversal::remove_first()
 
   auto old      = first_;
   first_        = first_->next_;
+
+  XBT_DEBUG("Popping state #%ld from the postfix traversal", old->self_->get_num());
 
   if (first_ == nullptr)
     first_num_ = 0;
