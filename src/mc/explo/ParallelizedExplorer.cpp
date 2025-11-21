@@ -18,6 +18,7 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include "xbt/random.hpp"
 
 #include <cassert>
 #include <cstdio>
@@ -69,7 +70,14 @@ void ParallelizedExplorer::TreeHandler()
 
     XBT_DEBUG("[tid:TreeHandler] New round of tree handling! There are currently %d remaining todo", remaining_todo);
 
-    Reduction::RaceUpdate* to_apply = races_list_.pop();
+    Reduction::RaceUpdate* to_apply; // = races_list_.pop();
+
+    long best_state_num = State::get_leftest_state_num();
+
+    to_apply = races_list_.pop_best([=](auto race) {
+      return race != nullptr and race->get_last_explored_state() != nullptr and
+             race->get_last_explored_state()->get_num() == best_state_num;
+    });
 
     if (to_apply == nullptr) {
       // An Explorer reached a bug! We need to terminate the exploration ASAP
@@ -87,8 +95,10 @@ void ParallelizedExplorer::TreeHandler()
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
-    for (auto state_it = new_opened.begin(); state_it != new_opened.end(); state_it++)
+    for (auto state_it = new_opened.rbegin(); state_it != new_opened.rend(); state_it++) {
+      XBT_DEBUG("[tid:TreeHandler] Pushing state %ld in the queue", (*state_it)->get_num());
       opened_heads_.push((*state_it).get());
+    }
 
     if (to_apply->get_last_explored_state() != nullptr)
       to_apply->get_last_explored_state()->mark_to_delete();
@@ -96,15 +106,17 @@ void ParallelizedExplorer::TreeHandler()
 
     State::garbage_collect();
     traces_count++;
-    if (traces_count % 10 == 0)
-      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d", traces_count, remaining_todo);
+    if (traces_count % 100 == 0)
+      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d (with %ld states remaining in memory)",
+               traces_count, remaining_todo, State::get_in_memory_states());
 
     if (traces_count % 1000 == 0) {
-      // State::update_leftness();
-      // opened_heads_.sort();
+      opened_heads_.sort();
+      races_list_.sort();
     }
   }
 
+  // Once we left the main loop, poison the explorers
   for (int i = 0; i < number_of_threads; i++)
     opened_heads_.push(nullptr);
 }
@@ -164,7 +176,13 @@ void Explorer(ThreadLocalExplorer& local_explorer)
   while (true) {
 
     XBT_DEBUG("[tid: Explorer %d] Let's grab something to work on shall we?", local_explorer.get_explorer_id());
-    State* to_visit = opened_heads_->pop();
+
+    StatePtr to_visit;
+
+    long best_state_num = State::get_leftest_state_num();
+
+    to_visit = opened_heads_->pop_best(
+        [best_state_num](auto state) { return state != nullptr and state->get_num() == best_state_num; });
 
     if (to_visit == nullptr) {
       XBT_DEBUG("[tid:Explorer %d] Drinking the Kool-Aid sent by the TreeHandler! See ya",
@@ -174,26 +192,31 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
     if (to_visit->being_explored.test_and_set()) {
       // This state has already been or will be explored very soon by the TreeHandler, skip it
+      XBT_DEBUG("[tid: Explorer %d] We lost the TAS race with the TH for state #%ld, let's move on",
+                local_explorer.get_explorer_id(), to_visit->get_num());
+
       races_list_->push(reduction_algo_->empty_race_update());
       continue;
     }
 
-    XBT_DEBUG("[tid: Explorer %d] Found a next candidate to visit: state #%ld!", local_explorer.get_explorer_id(),
-              to_visit->get_num());
+    XBT_VERB("[tid: Explorer %d] Found a next candidate to visit: state #%ld!", local_explorer.get_explorer_id(),
+             to_visit->get_num());
 
     // Backtrack to to_visit, and restore stack/execution
-    local_explorer.backtrack_to_state(to_visit);
+    local_explorer.backtrack_to_state(to_visit.get());
 
     local_explorer.stack.clear();
     local_explorer.execution_seq = odpor::Execution();
-    State* current_state         = to_visit;
+
+    StatePtr current_state = to_visit;
     local_explorer.stack.emplace_front(current_state);
     // condition corresponds to reaching initial state
     while (current_state->get_parent_state() != nullptr) {
       current_state = current_state->get_parent_state();
       local_explorer.stack.emplace_front(current_state);
     }
-    XBT_DEBUG("Replaced stack with %s", get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
+    XBT_DEBUG("[tid: Explorer %d] Replaced stack with %s", local_explorer.get_explorer_id(),
+              get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
     for (auto iter = std::next(local_explorer.stack.begin()); iter != local_explorer.stack.end(); ++iter) {
       XBT_DEBUG("... taking transition <Actor %ld: %s> from state %ld to reconstitute the execution sequence",
                 (*iter)->get_transition_in()->aid_, (*iter)->get_transition_in()->to_string().c_str(),
