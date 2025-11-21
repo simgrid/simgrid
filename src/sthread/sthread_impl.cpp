@@ -57,26 +57,10 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     }
 
   /* Do not intercept system binaries such as valgrind step 1 */
-  std::vector<std::string> binaries = {"/usr/bin/env",
-                                       "/usr/bin/valgrind.bin",
-                                       "/usr/bin/python3",
-                                       "/bin/sh",
-                                       "/bin/bash",
-                                       "addr2line",
-                                       "cat",
-                                       "dirname",
-                                       "gdb",
-                                       "grep",
-                                       "ls",
-                                       "ltrace",
-                                       "make",
-                                       "md5sum",
-                                       "mktemp",
-                                       "rm",
-                                       "sed",
-                                       "sh",
-                                       "strace",
-                                       "simgrid-mc",
+  std::vector<std::string> binaries = {"/usr/bin/env", "/usr/bin/valgrind.bin", "/usr/bin/python3", "/bin/sh",
+                                       "/bin/bash", "addr2line", "cat", "dirname", "gdb", "grep", "ls", "ltrace",
+                                       "make", "md5sum", "mktemp", "rm", "sed", "sh", "strace",
+                                       // "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
     auto view = std::string_view(envp[i]);
