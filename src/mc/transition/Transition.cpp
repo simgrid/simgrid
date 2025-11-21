@@ -144,4 +144,16 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Chann
 #endif
 }
 
+// boost::intrusive_ptr<Transition> support:
+void intrusive_ptr_add_ref(Transition* transition)
+{
+  transition->refcount_.fetch_add(1, std::memory_order_acq_rel);
+}
+
+void intrusive_ptr_release(Transition* transition)
+{
+  if (transition->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+    delete transition;
+}
+
 } // namespace simgrid::mc

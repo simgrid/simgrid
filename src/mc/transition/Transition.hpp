@@ -29,8 +29,12 @@ using EventHandle = uint32_t;
  *  in things like waitany and for associating a given value of MC_random()
  *  calls.
  */
-  class Transition : public boost::intrusive_ref_counter<Transition, boost::thread_safe_counter> {
-  
+class Transition {
+  // Support for the TransitionPtr datatype, aka boost::intrusive_ptr<Transition>
+  std::atomic_int_fast32_t refcount_{0};
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(Transition* activity);
+  friend XBT_PUBLIC void intrusive_ptr_release(Transition* activity);
+
   /* Global statistics */
   static std::atomic_ulong executed_transitions_;
 
