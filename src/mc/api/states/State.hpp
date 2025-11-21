@@ -13,7 +13,9 @@
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <atomic>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -21,13 +23,10 @@
 
 namespace simgrid::mc {
 
+  
 /* A node in the exploration graph (kind-of) */
-class XBT_PUBLIC State : public xbt::Extendable<State> {
-  // Support for the StatePtr datatype, aka boost::intrusive_ptr<State>
-  std::atomic_int_fast32_t refcount_{0};
-  friend XBT_PUBLIC void intrusive_ptr_add_ref(State* activity);
-  friend XBT_PUBLIC void intrusive_ptr_release(State* activity);
-
+  class XBT_PUBLIC State : public xbt::Extendable<State>, public boost::intrusive_ref_counter<State, boost::thread_safe_counter> {
+    
   // Helper class used to store every information to realize a postorder traversal
   // by saving one element of it per State
   class PostFixTraversal {
@@ -69,10 +68,10 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   std::unique_ptr<CheckerSide> state_factory_ = nullptr;
 
   /** @brief The incoming transition is what led to this state, coming from its parent  */
-  std::shared_ptr<Transition> incoming_transition_ = nullptr;
+  TransitionPtr incoming_transition_ = nullptr;
 
   /** @brief The outgoing transition is the last transition that we took to leave this state.  */
-  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
+  TransitionPtr outgoing_transition_ = nullptr;
 
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
@@ -106,7 +105,7 @@ protected:
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
    *  revisit, but also to remember the order in which the children were visited. The latter information
    *  being important for the correction. */
-  std::vector<std::shared_ptr<Transition>> opened_;
+  std::vector<TransitionPtr> opened_;
 
   size_t get_opened_size()
   {
@@ -146,7 +145,7 @@ public:
    * Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
    */
-  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
+  TransitionPtr execute_next(aid_t next, RemoteApp& app);
 
   long get_num() const { return num_; }
   unsigned long get_depth() const { return depth_; }
@@ -252,7 +251,7 @@ public:
 
   void record_child_state(StatePtr child);
 
-  const std::vector<std::shared_ptr<Transition>> get_opened_transitions() const { return opened_; }
+  const std::vector<TransitionPtr> get_opened_transitions() const { return opened_; }
 
   xbt::reference_holder<State> reference_holder_;
 

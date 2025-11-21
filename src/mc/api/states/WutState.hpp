@@ -18,7 +18,7 @@ class XBT_PRIVATE WutState : public SleepSetState {
 
 public:
   explicit WutState(RemoteApp& remote_app) : SleepSetState(remote_app) {}
-  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+  explicit WutState(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
                     bool set_actor_status = true)
       : SleepSetState(remote_app, parent_state, incoming_transition, set_actor_status)
   {

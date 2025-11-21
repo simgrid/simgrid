@@ -43,7 +43,7 @@ private:
   std::list<std::unique_ptr<WakeupTreeNode>> children_ = {};
 
   /** @brief The contents of the node */
-  std::shared_ptr<Transition> action_ = nullptr;
+  TransitionPtr action_ = nullptr;
 
   /** @brief Removes the node as a child from the parent */
   void detatch_from_parent();
@@ -54,7 +54,7 @@ private:
   friend WakeupTree;
 
 public:
-  explicit WakeupTreeNode(std::shared_ptr<Transition> u) : action_(u), sequence_({u}) {}
+  explicit WakeupTreeNode(TransitionPtr u) : action_(u), sequence_({u}) {}
 
   WakeupTreeNode()                                 = default;
   ~WakeupTreeNode()                                = default;
@@ -73,12 +73,12 @@ public:
   aid_t get_actor() const { return action_->aid_; }
   const PartialExecution& get_sequence() const;
 
-  /** @brief Return a shared pointer to the transition if the action exists.
+  /** @brief Return an intrusiv pointer to the transition if the action exists.
 
    *  @note that the root of a wakeup tree does not correspond to any action.
    *  In that case, get_action() return nullptr.
    **/
-  std::shared_ptr<Transition> get_action() const { return action_; }
+  TransitionPtr get_action() const { return action_; }
   const std::list<std::unique_ptr<WakeupTreeNode>>& get_ordered_children() const { return children_; }
 
   std::string string_of_whole_tree(const std::string& prefix, bool is_first, bool is_last) const;
@@ -190,7 +190,7 @@ public:
    */
   std::optional<WakeupTreeNode*> get_min_single_process_node() const;
 
-  void insert_at_root(std::shared_ptr<Transition> u);
+  void insert_at_root(TransitionPtr u);
 
   /**
    * @brief Inserts an sequence `seq` of processes into the tree

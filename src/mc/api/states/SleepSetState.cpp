@@ -69,7 +69,7 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
   }
 }
 
-void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)
+void SleepSetState::sleep_add_and_mark(TransitionPtr transition)
 {
   XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
             transition->to_string().c_str());

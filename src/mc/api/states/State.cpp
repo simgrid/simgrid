@@ -132,7 +132,7 @@ std::pair<aid_t, int> State::next_transition_guided() const
 }
 
 // This should be done in GuidedState, or at least interact with it
-std::shared_ptr<Transition> State::execute_next(aid_t next, RemoteApp& app)
+TransitionPtr State::execute_next(aid_t next, RemoteApp& app)
 {
   // This actor is ready to be executed. Execution involves three phases:
 
@@ -290,13 +290,16 @@ void State::initialize(const RemoteApp& remote_app)
 
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
 {
-  incoming_transition_ = std::shared_ptr<Transition>(remote_app.handle_simcall(aid, times_considered, true));
+  //std::lock_guard<std::recursive_mutex> g(state_update_lock_);
+  aid_t previous_incoming_aid = incoming_transition_->aid_;
+  incoming_transition_ = TransitionPtr(remote_app.handle_simcall(aid, times_considered, true));
+  xbt_assert(previous_incoming_aid == incoming_transition_->aid_, "Update should only update the type of the exact transition type, not the actor. FixMe!");
   if (_sg_mc_output_lts)
     XBT_CRITICAL("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
                  incoming_transition_->to_string().c_str(), num_);
 }
 
-void State::update_opened(std::shared_ptr<Transition> transition)
+void State::update_opened(TransitionPtr transition)
 {
 
   xbt_assert(transition != nullptr);
@@ -427,8 +430,8 @@ unsigned long State::consider_all()
     if (actor.value().is_enabled() && not actor.value().is_done()) {
       actor.value().mark_todo();
       count++;
-      opened_.emplace_back(std::make_shared<Transition>(Transition::Type::UNKNOWN, actor.value().get_aid(),
-                                                        actor.value().get_times_considered()));
+      opened_.push_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, actor.value().get_aid(),
+						     actor.value().get_times_considered())));
       XBT_DEBUG("Marked actor %hd at state %ld", actor->get_aid(), get_num());
     }
   }

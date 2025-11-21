@@ -37,10 +37,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
   {
     // We check each permutation for happens before
     // among the given actions added to the execution
-    const auto a1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a2 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a3 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 4);
 
     Execution execution;
     execution.push_transition(a1);
@@ -95,10 +95,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
 
   SECTION("Example 2")
   {
-    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a1 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a2 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a3 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a4 = new IndependentAction(Transition::Type::UNKNOWN, 3);
 
     // Notice that `a5` and `a6` are executed by the same actor; thus, although
     // the actor is executing independent actions, each still "happen-before"
@@ -146,11 +146,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
       // Given a reversible race between events `e1` and `e3` in a simulation,
       // we assert that `e5` would be eliminated from being contained in
       // the sequence `notdep(e1, E)`
-      const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-      const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-      const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+      const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2);
+      const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+      const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 3);
+      const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+      const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3);
 
       Execution execution;
       execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4});
@@ -164,17 +164,17 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
       // This test verifies that for each triple of events
       // in the execution, for a modestly intersting one,
       // that transitivity holds
-      const auto e0  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-      const auto e1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto e2  = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto e3  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
-      const auto e4  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-      const auto e5  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
-      const auto e6  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -5);
-      const auto e7  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto e8  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
-      const auto e9  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
-      const auto e10 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+      const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2);
+      const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1);
+      const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+      const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
+      const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3);
+      const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0);
+      const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -5);
+      const auto e7  = new DependentAction(Transition::Type::UNKNOWN, 1);
+      const auto e8  = new DependentAction(Transition::Type::UNKNOWN, 0);
+      const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
+      const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3);
 
       Execution execution;
       execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
@@ -199,11 +199,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 {
   SECTION("Example 1")
   {
-    const auto a1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a4 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a5 = new DependentAction(Transition::Type::UNKNOWN, 2);
 
     Execution execution;
     execution.push_transition(a1);
@@ -234,10 +234,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 2: Events with multiple races")
   {
-    const auto a1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 3);
 
     Execution execution;
     execution.push_transition(a1);
@@ -281,11 +281,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
   {
     // In this example, `e0` and `e1` are lock actions that
     // are in a race. We assert that
-    const auto e0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e2 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3);
 
     Execution execution;
     execution.push_transition(e0);
@@ -298,16 +298,16 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 4: Indirect Races")
   {
-    const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 6);
-    const auto e5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto e7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto e8 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto e9 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 6);
+    const auto e5 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e8 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+    const auto e9 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9});
 
@@ -350,17 +350,17 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 5: Stress testing race detection")
   {
-    const auto e0  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e2  = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e3  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
-    const auto e4  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto e5  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 0);
-    const auto e6  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -5);
-    const auto e7  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, -5);
-    const auto e8  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 0, 4);
-    const auto e9  = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, -10);
-    const auto e10 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
+    const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
+    const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0);
+    const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -5);
+    const auto e7  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, -5);
+    const auto e8  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 0, 4);
+    const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
+    const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
 
@@ -403,13 +403,13 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example with many races for one event")
   {
-    const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto e4 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 5);
-    const auto e5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 6);
-    const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 7);
+    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const auto e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 5);
+    const auto e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 6);
+    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 7);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6});
     REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{5, 4, 3, 2, 1, 0});
@@ -422,14 +422,14 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
   {
     // Every transition is independent with every other and run by different actors. Hopefully
     // we say that the events are independent with each other...
-    const auto a0 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a3 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 5);
-    const auto a5 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 6);
-    const auto a6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
-    const auto a7 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 7);
+    const auto a0 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a2 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a3 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a4 = new IndependentAction(Transition::Type::UNKNOWN, 5);
+    const auto a5 = new IndependentAction(Transition::Type::UNKNOWN, 6);
+    const auto a6 = new IndependentAction(Transition::Type::UNKNOWN, 7);
+    const auto a7 = new IndependentAction(Transition::Type::UNKNOWN, 7);
     Execution execution(PartialExecution{a0, a1, a2, a3});
 
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a4, a5}, a6));
@@ -449,21 +449,21 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
   SECTION("Independence is trivial with an empty extension")
   {
     REQUIRE(Execution().is_independent_with_execution_of(
-        PartialExecution{}, std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1)));
+        PartialExecution{}, new DependentAction(Transition::Type::UNKNOWN, 1)));
   }
 
   SECTION("Dependencies stopping independence from being possible")
   {
-    const auto a0    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a1    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a2    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a3    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a4    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a5    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a6    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a1    = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a6    = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const auto indep = new IndependentAction(Transition::Type::UNKNOWN, 2);
     Execution execution(PartialExecution{a0, a1, a2, a3});
 
     // We see that although `a4` comes after `a1` with which it is dependent, it
@@ -488,24 +488,24 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
 
   SECTION("More interesting dependencies stopping independence")
   {
-    const auto e0 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, 5);
-    const auto e1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto e4 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 3, 5);
-    const auto e5 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 4, 4);
+    const auto e0 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, 5);
+    const auto e1 = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e4 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3, 5);
+    const auto e5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4, 4);
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5});
 
     SECTION("Action run by same actor disqualifies independence")
     {
-      const auto w_1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto w_2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto w_3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-      const auto w_4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-      const auto w   = PartialExecution{w_1, w_2, w_3};
+      const auto w_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+      const auto w_2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+      const auto w_3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+      const auto w_4 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+      const auto w   = PartialExecution{w_1, w_2, w_3, w_4};
 
-      const auto actor4_action  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-      const auto actor4_action2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+      const auto actor4_action  = new IndependentAction(Transition::Type::UNKNOWN, 4);
+      const auto actor4_action2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
 
       // Action `actor4_action` is independent with everything EXCEPT the last transition
       // which is executed by the same actor
@@ -513,23 +513,23 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
 
       // Action `actor4_action2` is independent with everything
       // EXCEPT the last transition which is executed by the same actor
-      execution.is_independent_with_execution_of(w, actor4_action);
+      execution.is_independent_with_execution_of(w, actor4_action2);
     }
   }
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
 {
-  const auto a0    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto a1    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto a2    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto a3    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto a4    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto a5    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a6    = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto a7    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto a8    = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto indep = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
+  const auto a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+  const auto a1    = new DependentAction(Transition::Type::UNKNOWN, 1);
+  const auto a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+  const auto a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const auto a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const auto a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+  const auto a6    = new DependentAction(Transition::Type::UNKNOWN, 3);
+  const auto a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+  const auto a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const auto indep = new IndependentAction(Transition::Type::UNKNOWN, 2);
   Execution execution(PartialExecution{a0, a1, a2, a3});
 
   SECTION("Initials trivial with empty executions")
@@ -592,15 +592,15 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
 
   SECTION("Example: Stress tests for initials computation")
   {
-    const auto v_1 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 1, 3);
-    const auto v_2 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto v_3 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 2, 3);
-    const auto v_4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto v_5 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 3, 8);
-    const auto v_6 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto v_7 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto v_8 = std::make_shared<DependentIfSameValueAction>(Transition::Type::UNKNOWN, 4, 3);
-    const auto v   = PartialExecution{v_1, v_2, v_3, v_4};
+    const auto v_1 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, 3);
+    const auto v_2 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+    const auto v_3 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, 3);
+    const auto v_4 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto v_5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3, 8);
+    const auto v_6 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto v_7 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto v_8 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4, 3);
+    const auto v   = PartialExecution{v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8};
 
     // Actor 1 being the first actor in the expansion, it is clearly an initial
     REQUIRE(Execution().is_initial_after_execution_of(v, 1));
@@ -623,14 +623,14 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
 {
   // This test case assumes that each detected race is detected to also
   // be reversible. For each reversible
-  const auto e0 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto e1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto e2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto e3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto e4 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto e5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto e6 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto e7 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
+  const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+  const auto e1 = new DependentAction(Transition::Type::UNKNOWN, 1);
+  const auto e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+  const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const auto e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const auto e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+  const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 3);
+  const auto e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
 
   Execution execution;
 
@@ -694,12 +694,12 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
 
 TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
 {
-  const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-  const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-  const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-  const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-  const auto a5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+  const auto a0 = new DependentAction(Transition::Type::UNKNOWN, 2);
+  const auto a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+  const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+  const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
+  const auto a4 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+  const auto a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
 
   Execution execution;
   execution.push_transition(a0);

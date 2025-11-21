@@ -73,11 +73,12 @@ public:
 
     for (auto& [state, choices] : sdpor_updates->get_value()) {
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
-      StatePtr(new SleepSetState(remote_app, state,
-                                 std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
-                                                              state->get_actor_at(considered).get_times_considered()),
-                                 false),
-               true);
+      auto s           = StatePtr(
+          new SleepSetState(remote_app, state,
+			    TransitionPtr(new Transition(Transition::Type::UNKNOWN, considered,
+                                                         state->get_actor_at(considered).get_times_considered()),
+					  false)),
+			    true);
       if (opened_states != nullptr) {
         opened_states->emplace_back(state);
         nb_updates++;
@@ -86,8 +87,7 @@ public:
     return nb_updates;
   }
 
-  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
-                        std::shared_ptr<Transition> incoming_transition) override
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition) override
   {
     auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
     auto sleep_set_state = static_cast<SleepSetState*>(res.get());

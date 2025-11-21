@@ -57,7 +57,7 @@ public:
                                   std::vector<StatePtr>* opened_states = nullptr) override;
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
-                        std::shared_ptr<Transition> incoming_transition) override;
+                        TransitionPtr incoming_transition) override;
 
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
 };

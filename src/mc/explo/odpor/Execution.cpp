@@ -128,7 +128,7 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
-void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
+void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution)
 {
 
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
@@ -451,7 +451,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
                                                   [&](const auto& e) { return e.get_transition()->aid_ == aid; });
     xbt_assert(next_transition_aid != this->end(),
                "Since this actor is in the sleep set, it should be executed at some point. Fix me!");
-    if (is_in_weak_initial_of(next_transition_aid->get_transition().get(), v)) {
+    if (is_in_weak_initial_of(next_transition_aid->get_transition(), v)) {
       XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;
     }
@@ -460,13 +460,13 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   return v;
 }
 
-bool Execution::is_in_weak_initial_of(Transition* t, const PartialExecution& w)
+bool Execution::is_in_weak_initial_of(TransitionPtr t, const PartialExecution& w)
 {
 
   for (const auto& w_i : w) {
     if (t->aid_ == w_i->aid_)
       return true;
-    if (w_i->depends(t))
+    if (w_i->depends(t.get()))
       return false;
   }
   return true;
@@ -490,7 +490,7 @@ bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p
   return false;
 }
 
-bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p)
+bool Execution::is_independent_with_execution_of(const PartialExecution& w, TransitionPtr next_E_p)
 {
   for (const auto& transition : w)
     if (transition->depends(next_E_p.get()))
@@ -612,7 +612,7 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
   if (u.size() == 0)
     return true;
 
-  const std::shared_ptr<Transition> a = u[0];
+  const TransitionPtr a = u[0];
 
   auto new_v = v;
   auto new_u = u;

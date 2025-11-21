@@ -8,9 +8,11 @@
 
 #include "simgrid/forward.h" // aid_t
 #include "src/mc/api/MemOp.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -27,16 +29,17 @@ using EventHandle = uint32_t;
  *  in things like waitany and for associating a given value of MC_random()
  *  calls.
  */
-class Transition {
+  class Transition : public boost::intrusive_ref_counter<Transition, boost::thread_safe_counter> {
+  
   /* Global statistics */
-  static unsigned long executed_transitions_;
+  static std::atomic_ulong executed_transitions_;
 
   std::vector<MemOp> memory_operations_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
 public:
-  static unsigned long replayed_transitions_;
+  static std::atomic_ulong replayed_transitions_;
 
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
   XBT_DECLARE_ENUM_CLASS(

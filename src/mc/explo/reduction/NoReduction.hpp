@@ -38,7 +38,7 @@ public:
   }
 
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
-                        std::shared_ptr<Transition> incoming_transition) override
+                        TransitionPtr incoming_transition) override
   {
     StatePtr state;
     if (parent_state == nullptr)

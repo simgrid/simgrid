@@ -17,20 +17,20 @@ protected:
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
-  std::map<aid_t, std::shared_ptr<Transition>> sleep_set_;
+  std::map<aid_t, TransitionPtr> sleep_set_;
 
 public:
   explicit SleepSetState(RemoteApp& remote_app);
-  explicit SleepSetState(RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+  explicit SleepSetState(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
                          bool set_actor_status = true);
 
   void add_arbitrary_transition(RemoteApp& remote_app);
   virtual std::unordered_set<aid_t> get_sleeping_actors(aid_t) const;
   std::vector<aid_t> get_enabled_minus_sleep() const;
 
-  std::map<aid_t, std::shared_ptr<Transition>> const& get_sleep_set() const { return sleep_set_; }
-  void add_sleep_set(std::shared_ptr<Transition> t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
-  void sleep_add_and_mark(std::shared_ptr<Transition> t);
+  std::map<aid_t, TransitionPtr> const& get_sleep_set() const { return sleep_set_; }
+  void add_sleep_set(TransitionPtr t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
+  void sleep_add_and_mark(TransitionPtr t);
   bool is_actor_sleeping(aid_t actor) const;
 
   std::string string_of_sleep_set() const

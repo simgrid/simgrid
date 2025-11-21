@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_reduction, mc, "Logging specific to the reduc
 namespace simgrid::mc {
 
 StatePtr Reduction::state_create(RemoteApp& remote_app, StatePtr parent_state,
-                                 std::shared_ptr<Transition> incoming_transition)
+                                 TransitionPtr incoming_transition)
 {
   if (parent_state == nullptr)
     return StatePtr(new SleepSetState(remote_app), true);

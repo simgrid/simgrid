@@ -102,7 +102,7 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   return next;
 }
 StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
-                             std::shared_ptr<Transition> incoming_transition)
+                             TransitionPtr incoming_transition)
 {
   StatePtr new_state;
   if (parent_state == nullptr)

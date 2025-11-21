@@ -87,7 +87,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
 
   XBT_DEBUG("Going to execute actor %ld", next_actor);
 
-  std::shared_ptr<Transition> executed_transition;
+  TransitionPtr executed_transition;
   StatePtr next_state;
   try {
     executed_transition = state->execute_next(next_actor, get_remote_app());
@@ -114,7 +114,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     backtrack_to_state(state.get(), false);
 
     // ... construct a fake state with no successors so the reduction think it is time to compute races
-    executed_transition = std::make_shared<Transition>(Transition::Type::UNKNOWN, next_actor, 0);
+    executed_transition = TransitionPtr(new Transition(Transition::Type::UNKNOWN, next_actor, 0));
     next_state          = StatePtr(new SoftLockedState(get_remote_app(), state, executed_transition));
 
     // ... Add that fake state and compute races

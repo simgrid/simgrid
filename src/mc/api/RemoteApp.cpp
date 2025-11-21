@@ -182,7 +182,7 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
       if ((unsigned)actor.aid >= whereto.size())
         whereto.resize(actor.aid + 1);
 
-      std::vector<std::shared_ptr<Transition>> actor_transitions;
+      std::vector<TransitionPtr> actor_transitions;
 
       if (Exploration::need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;

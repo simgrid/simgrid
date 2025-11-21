@@ -63,12 +63,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
   {
     // Here, we make everything dependent. This will ensure that each unique sequence
     // inserted into the tree never "eventually looks like"
-    const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a1 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a2 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 5);
-    const auto a5 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 6);
+    const auto a0 = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a1 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a2 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 5);
+    const auto a5 = new DependentAction(Transition::Type::UNKNOWN, 6);
 
     Execution execution;
     execution.push_transition(a0);
@@ -152,11 +152,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     // We first notice that there's a reversible race between
     // events 0 and 3.
 
-    const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a3 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a4 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto a0 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 2);
 
     Execution execution;
     execution.push_transition(a0);
@@ -244,12 +244,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
 
   SECTION("Performing Arbitrary Insertions")
   {
-    const auto a0 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a1 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 4);
-    const auto a2 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto a3 = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto a4 = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto a5 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 4);
+    const auto a0 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto a4 = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
     WakeupTree tree;
 
     SECTION("Attempting to insert the empty sequence into an empty tree should have no effect")
@@ -336,11 +336,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
 
   SECTION("Insertion with more subtle equivalents")
   {
-    const auto cd_1 = std::make_shared<ConditionallyDependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto i_2  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 2);
-    const auto i_3  = std::make_shared<IndependentAction>(Transition::Type::UNKNOWN, 3);
-    const auto d_1  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 1);
-    const auto d_2  = std::make_shared<DependentAction>(Transition::Type::UNKNOWN, 2);
+    const auto cd_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+    const auto i_2  = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const auto i_3  = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto d_1  = new DependentAction(Transition::Type::UNKNOWN, 1);
+    const auto d_2  = new DependentAction(Transition::Type::UNKNOWN, 2);
     WakeupTree complex_tree;
     // After the insertions below, the tree looks like the following:
     //                              {}

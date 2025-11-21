@@ -32,6 +32,7 @@ public:
     RaceUpdate() = default;
     State* last_explored_state_ = nullptr; // This is mandatory if we want the // algo to handle state destruction
     State* get_last_explored_state() const { return last_explored_state_; }
+    
   };
 
   Reduction()          = default;
@@ -58,7 +59,7 @@ public:
   // The base case is to only do the Sleep-Set procedure since most of the
   // algorithm are based on sleep sets anyway.
   virtual StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state = nullptr,
-                                std::shared_ptr<Transition> incoming_transition = nullptr);
+                                TransitionPtr incoming_transition = nullptr);
   // Update the state s fields assuming we just ended the exploration of the subtree
   // rooted in s.
   // base case simply add the incoming transition to the sleep set of the parent
@@ -69,5 +70,12 @@ public:
 };
 
 } // namespace simgrid::mc
+
+template <> struct std::less<simgrid::mc::Reduction::RaceUpdate> {
+  bool operator()(const simgrid::mc::Reduction::RaceUpdate& lhs, const simgrid::mc::Reduction::RaceUpdate& rhs) const
+  {
+    return lhs.get_last_explored_state() < rhs.get_last_explored_state();
+  }
+};
 
 #endif
