@@ -51,8 +51,6 @@ class XBT_PUBLIC State : public xbt::Extendable<State>,
     static std::string get_traversal_as_ids();
     unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
     static void update_leftness();
-
-    static std::mutex global_mutex;
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
@@ -96,7 +94,7 @@ class XBT_PUBLIC State : public xbt::Extendable<State>,
 
   /** @brief Add transition to the opened_ one in this state.
    *  If we find a placeholder for transition, replace it. Else simply add it. */
-  void update_opened(std::shared_ptr<Transition> transition);
+  void update_opened(TransitionPtr transition);
 
 protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now.
@@ -263,21 +261,19 @@ public:
 
   void mark_to_delete() { to_be_deleted_ = true; }
 
+  static long get_leftest_state_num();
+
   static void update_leftness() { PostFixTraversal::update_leftness(); };
-  unsigned long get_leftness() const { return leftness_; }
+  unsigned long long get_leftness() const { return this->traversal_->leftness_; }
 };
 
 } // namespace simgrid::mc
 
+// Used for sorting
 template <> struct std::less<simgrid::mc::State> {
   bool operator()(const simgrid::mc::State& lhs, const simgrid::mc::State& rhs) const
   {
     return lhs.get_leftness() < rhs.get_leftness();
-    // if (lhs.get_depth() < rhs.get_depth())
-    //   return true;
-    // if (lhs.get_depth() > rhs.get_depth())
-    //   return false;
-    // return lhs.get_num() < rhs.get_num();
   }
 };
 
