@@ -32,7 +32,6 @@ public:
     RaceUpdate() = default;
     State* last_explored_state_ = nullptr; // This is mandatory if we want the // algo to handle state destruction
     State* get_last_explored_state() const { return last_explored_state_; }
-    
   };
 
   Reduction()          = default;

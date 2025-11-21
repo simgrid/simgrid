@@ -56,8 +56,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
   {
     UnfoldingEvent e1_diff_actor(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 1, 0));
     UnfoldingEvent e2_diff_actor(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 1, 0));
-    UnfoldingEvent e5_diff_actor(EventSet({&e1, &e3, &e2}),
-                                 new DependentAction(Transition::Type::UNKNOWN, 1, 0));
+    UnfoldingEvent e5_diff_actor(EventSet({&e1, &e3, &e2}), new DependentAction(Transition::Type::UNKNOWN, 1, 0));
     REQUIRE(e1 != e1_diff_actor);
     REQUIRE(e1 != e2_diff_actor);
     REQUIRE(e1 != e5_diff_actor);
@@ -69,10 +68,8 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
     // modifying the `Type` enum that exists in `Transition` just for the tests,
     // we instead provide different values of `Transition::Type` to simulate
     // the different types
-    UnfoldingEvent e1_diff_transition(EventSet(),
-                                      new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
-    UnfoldingEvent e2_diff_transition(EventSet({&e1}),
-                                      new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
+    UnfoldingEvent e1_diff_transition(EventSet(), new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
+    UnfoldingEvent e2_diff_transition(EventSet({&e1}), new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
     UnfoldingEvent e5_diff_transition(EventSet({&e1, &e3, &e2}),
                                       new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
     REQUIRE(e1 != e1_diff_transition);
@@ -84,8 +81,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
   {
     // With a different number for `times_considered`, we know
     UnfoldingEvent e1_diff_considered(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
-    UnfoldingEvent e2_diff_considered(EventSet({&e1}),
-                                      new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
+    UnfoldingEvent e2_diff_considered(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
     UnfoldingEvent e5_diff_considered(EventSet({&e1, &e3, &e2}),
                                       new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
     REQUIRE(e1 != e1_diff_considered);
@@ -97,8 +93,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
   {
     UnfoldingEvent e1_diff_hist(EventSet({&e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
     UnfoldingEvent e2_diff_hist(EventSet({&e3}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-    UnfoldingEvent e5_diff_hist(EventSet({&e1, &e2}),
-                                new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
+    UnfoldingEvent e5_diff_hist(EventSet({&e1, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
     REQUIRE(e1 != e1_diff_hist);
     REQUIRE(e1 != e2_diff_hist);
     REQUIRE(e1 != e5_diff_hist);

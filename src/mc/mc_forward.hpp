@@ -32,11 +32,11 @@ class Frame;
 class Session;
 class Exploration;
 class SleepSetState;
-  
+
 using StatePtr = boost::intrusive_ptr<State>;
 
 using TransitionPtr = boost::intrusive_ptr<Transition>;
-  
+
 using stack_t = std::deque<StatePtr>;
 
 } // namespace simgrid::mc

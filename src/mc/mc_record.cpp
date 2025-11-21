@@ -24,8 +24,7 @@ namespace simgrid::mc {
 
 // Create a model check transition with the memory access so we can feed the Execution structure
 // which executes the FastTrack algorithm in order to find data races
-static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Channel& app_side,
-                                                        Channel& checker_side)
+static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Channel& app_side, Channel& checker_side)
 {
 
   actor->simcall_.observer_->serialize(app_side);

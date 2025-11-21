@@ -430,8 +430,8 @@ unsigned long State::consider_all()
     if (actor.value().is_enabled() && not actor.value().is_done()) {
       actor.value().mark_todo();
       count++;
-      opened_.push_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, actor.value().get_aid(),
-						     actor.value().get_times_considered())));
+      opened_.push_back(TransitionPtr(
+          new Transition(Transition::Type::UNKNOWN, actor.value().get_aid(), actor.value().get_times_considered())));
       XBT_DEBUG("Marked actor %hd at state %ld", actor->get_aid(), get_num());
     }
   }

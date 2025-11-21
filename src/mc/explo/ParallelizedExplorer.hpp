@@ -77,8 +77,8 @@ public:
   T pop() override
   {
     std::unique_lock<std::mutex> lock(m_); // unique lock so we can pass it to cv and it's released at the end of func
-    cv_.wait(lock, [&]{ return !queue_.empty(); });
-    
+    cv_.wait(lock, [&] { return !queue_.empty(); });
+
     T element = queue_.front();
     queue_.pop_front();
 
@@ -91,10 +91,10 @@ public:
     cv_.notify_one();
     m_.unlock();
   }
-  T pop_best(std::function<bool (T)> is_best)
+  T pop_best(std::function<bool(T)> is_best)
   {
     std::unique_lock<std::mutex> lock(m_); // unique lock so we can pass it to cv and it's released at the end of func
-    cv_.wait(lock, [&]{ return !queue_.empty(); });
+    cv_.wait(lock, [&] { return !queue_.empty(); });
 
     T element;
     auto best_option = std::find_if(queue_.begin(), queue_.end(), is_best);
@@ -105,10 +105,10 @@ public:
       element = *best_option;
       queue_.erase(best_option);
     }
-    
+
     return element;
   }
-  
+
   void sort() override
   {
     m_.lock();

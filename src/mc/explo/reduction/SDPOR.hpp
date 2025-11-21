@@ -75,10 +75,10 @@ public:
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
       auto s           = StatePtr(
           new SleepSetState(remote_app, state,
-			    TransitionPtr(new Transition(Transition::Type::UNKNOWN, considered,
-                                                         state->get_actor_at(considered).get_times_considered()),
-					  false)),
-			    true);
+                                      TransitionPtr(new Transition(Transition::Type::UNKNOWN, considered,
+                                                                   state->get_actor_at(considered).get_times_considered()),
+                                                    false)),
+          true);
       if (opened_states != nullptr) {
         opened_states->emplace_back(state);
         nb_updates++;

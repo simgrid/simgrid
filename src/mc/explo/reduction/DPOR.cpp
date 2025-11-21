@@ -101,7 +101,7 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
         continue; // Do not create a new state if the actor was already created before
       StatePtr(new SleepSetState(remote_app, state,
                                  new Transition(Transition::Type::UNKNOWN, considered,
-						state->get_actor_at(considered).get_times_considered()),
+                                                state->get_actor_at(considered).get_times_considered()),
                                  false),
                true);
     } else {
@@ -109,10 +109,10 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
       for (auto const& actor : state->get_actors_list())
         if (actor.has_value())
           if (state->get_children_state_of_aid(actor->get_aid(), actor->get_times_considered()) == nullptr)
-            StatePtr(new SleepSetState(remote_app, state,
-                                       new Transition(Transition::Type::UNKNOWN, actor->get_aid(),
-						      actor->get_times_considered()),
-                                       false),
+            StatePtr(new SleepSetState(
+                         remote_app, state,
+                         new Transition(Transition::Type::UNKNOWN, actor->get_aid(), actor->get_times_considered()),
+                         false),
                      true);
     }
 
@@ -124,8 +124,7 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
   return nb_updates;
 }
 
-StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
-                            TransitionPtr incoming_transition)
+StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
 {
   auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
   auto sleep_set_state = static_cast<SleepSetState*>(res.get());

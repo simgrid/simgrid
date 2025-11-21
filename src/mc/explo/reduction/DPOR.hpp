@@ -56,8 +56,7 @@ public:
   unsigned long apply_race_update(RemoteApp&, Reduction::RaceUpdate* updates,
                                   std::vector<StatePtr>* opened_states = nullptr) override;
 
-  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state,
-                        TransitionPtr incoming_transition) override;
+  StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition) override;
 
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
 };

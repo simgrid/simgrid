@@ -448,8 +448,8 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
 
   SECTION("Independence is trivial with an empty extension")
   {
-    REQUIRE(Execution().is_independent_with_execution_of(
-        PartialExecution{}, new DependentAction(Transition::Type::UNKNOWN, 1)));
+    REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{},
+                                                         new DependentAction(Transition::Type::UNKNOWN, 1)));
   }
 
   SECTION("Dependencies stopping independence from being possible")

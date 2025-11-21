@@ -87,7 +87,7 @@ void BeFSExplorer::log_state() // override
            "%lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
-           visited_states_count_);
+           static_cast<unsigned long>(visited_states_count_));
   Exploration::log_state();
 }
 

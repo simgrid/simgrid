@@ -28,7 +28,7 @@ void UdporChecker::log_state()
 {
   on_log_state_signal(get_remote_app());
   XBT_INFO("UDPOR exploration ended. %ld unique events considered; %lu backtracks", Unfolding::get_expanded_events(),
-           backtrack_count_);
+           static_cast<unsigned long>(backtrack_count_));
   Exploration::log_state();
 }
 

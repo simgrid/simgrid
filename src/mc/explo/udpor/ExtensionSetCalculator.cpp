@@ -28,8 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_extension, mc_udpor, "Logging specific to the
 
 namespace simgrid::mc::udpor {
 
-EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfolding* U,
-                                                  TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   using Action     = Transition::Type;
   using Handler    = std::function<EventSet(const Configuration&, Unfolding*, const TransitionPtr)>;
@@ -67,12 +66,11 @@ EventSet ExtensionSetCalculator::partially_extend(const Configuration& C, Unfold
   }
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, Unfolding* U,
-                                                           TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto send_action        = (CommSendTransition*) (action.get());
+  const auto send_action        = (CommSendTransition*)(action.get());
   const auto pre_event_a_C      = C.pre_event(send_action->aid_);
   const unsigned sender_mailbox = send_action->get_mailbox();
 
@@ -109,12 +107,11 @@ EventSet ExtensionSetCalculator::partially_extend_CommSend(const Configuration& 
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, Unfolding* U,
-                                                           TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto recv_action      = (CommRecvTransition*) (action.get());
+  const auto recv_action      = (CommRecvTransition*)(action.get());
   const unsigned recv_mailbox = recv_action->get_mailbox();
   const auto pre_event_a_C    = C.pre_event(recv_action->aid_);
 
@@ -151,12 +148,11 @@ EventSet ExtensionSetCalculator::partially_extend_CommRecv(const Configuration& 
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& C, Unfolding* U,
-                                                           TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto wait_action   = (CommWaitTransition*) (action.get());
+  const auto wait_action   = (CommWaitTransition*)(action.get());
   const auto wait_comm     = wait_action->get_comm();
   const auto pre_event_a_C = C.pre_event(wait_action->aid_);
 
@@ -355,8 +351,7 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& C, Unfolding* U,
-                                                           TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_CommTest(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
@@ -500,7 +495,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
                                                                  TransitionPtr action)
 {
   EventSet exC;
-  const auto mutex_lock    = (MutexTransition*) (action.get());
+  const auto mutex_lock    = (MutexTransition*)(action.get());
   auto pre_event_a_C       = C.pre_event(mutex_lock->aid_);
   // If this is the first action from this aid, we need to check for a related Actor_Create
   if (not pre_event_a_C.has_value()) {
@@ -559,7 +554,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexUnlock(const Configuratio
                                                               TransitionPtr action)
 {
   EventSet exC;
-  const auto mutex_unlock  = (MutexTransition*) (action.get());
+  const auto mutex_unlock  = (MutexTransition*)(action.get());
   auto pre_event_a_C       = C.pre_event(mutex_unlock->aid_);
   // If this is the first action from this aid, we need to check for a related Actor_Create
   if (not pre_event_a_C.has_value()) {
@@ -634,11 +629,10 @@ bool ExtensionSetCalculator::is_mutex_available_before(const UnfoldingEvent* e, 
   return requests_over_mutex == 1;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration& C, Unfolding* U,
-                                                            TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
-  const auto mutex_wait    = (MutexTransition*) (action.get());
+  const auto mutex_wait    = (MutexTransition*)(action.get());
   const auto pre_event_a_C = C.pre_event(mutex_wait->aid_);
   xbt_assert(pre_event_a_C.has_value());
 
@@ -674,11 +668,10 @@ EventSet ExtensionSetCalculator::partially_extend_MutexWait(const Configuration&
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration& C, Unfolding* U,
-                                                            TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
-  const auto mutex_test    = (MutexTransition*) (action.get());
+  const auto mutex_test    = (MutexTransition*)(action.get());
   auto pre_event_a_C       = C.pre_event(mutex_test->aid_);
   // If this is the first action from this aid, we need to check for a related Actor_Create
   if (not pre_event_a_C.has_value()) {
@@ -714,12 +707,11 @@ EventSet ExtensionSetCalculator::partially_extend_MutexTest(const Configuration&
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration& C, Unfolding* U,
-                                                            TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto join_action = (ActorJoinTransition*) (action.get());
+  const auto join_action = (ActorJoinTransition*)(action.get());
 
   const auto last_event_waited = C.pre_event(join_action->get_target());
   xbt_assert(last_event_waited.has_value(), "We considered the extension of an ActorJoin waiting for a process"
@@ -738,12 +730,11 @@ EventSet ExtensionSetCalculator::partially_extend_ActorJoin(const Configuration&
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_ActorExit(const Configuration& C, Unfolding* U,
-                                                            TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_ActorExit(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto exit_action = (ActorExitTransition*) (action.get());
+  const auto exit_action = (ActorExitTransition*)(action.get());
 
   // Handling ActorExit is very simple: it corresponds to a no-op.
   if (const auto pre_event_a_C = C.pre_event(exit_action->aid_); pre_event_a_C.has_value()) {
@@ -763,12 +754,11 @@ EventSet ExtensionSetCalculator::partially_extend_ActorExit(const Configuration&
 
   return exC;
 }
-EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration& C, Unfolding* U,
-                                                             TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
 
-  const auto sleep_action = (ActorSleepTransition*) (action.get());
+  const auto sleep_action = (ActorSleepTransition*)(action.get());
 
   // Handling ActorSleep is very simple: it corresponds to a no action.
   if (const auto pre_event_a_C = C.pre_event(sleep_action->aid_); pre_event_a_C.has_value()) {
@@ -813,7 +803,7 @@ EventSet ExtensionSetCalculator::partially_extend_ActorCreate(const Configuratio
 {
   EventSet exC;
 
-  const auto create_action = (ActorCreateTransition*) (action.get());
+  const auto create_action = (ActorCreateTransition*)(action.get());
 
   // To handle an actor create has no backward dependencies, so it is basically the same as a nop.
   // I hope it doesn't require to be tracked in each single different thread action though.
@@ -957,7 +947,7 @@ EventSet ExtensionSetCalculator::partially_extend_SemAsyncLock(const Configurati
 {
 
   EventSet exC;
-  const auto sem_lock      = (SemaphoreTransition*) (action.get());
+  const auto sem_lock      = (SemaphoreTransition*)(action.get());
   auto pre_event_a_C       = C.pre_event(sem_lock->aid_);
   // If this is the first action from this aid, we need to check for a related Actor_Create
   if (not pre_event_a_C.has_value()) {
@@ -996,12 +986,11 @@ EventSet ExtensionSetCalculator::partially_extend_SemAsyncLock(const Configurati
   return exC;
 }
 
-EventSet ExtensionSetCalculator::partially_extend_SemWait(const Configuration& C, Unfolding* U,
-                                                          TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_SemWait(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
 
   EventSet exC;
-  const auto sem_wait      = (SemaphoreTransition*) (action.get());
+  const auto sem_wait      = (SemaphoreTransition*)(action.get());
   const auto pre_event_a_C = C.pre_event(sem_wait->aid_);
   xbt_assert(pre_event_a_C.has_value(), "A SemWait can't be the first action of an actor. FixMe");
   const auto* unwrapped_pre_event = pre_event_a_C.value();
@@ -1033,11 +1022,10 @@ EventSet ExtensionSetCalculator::partially_extend_SemWait(const Configuration& C
   }
   return exC;
 }
-EventSet ExtensionSetCalculator::partially_extend_SemUnlock(const Configuration& C, Unfolding* U,
-                                                            TransitionPtr action)
+EventSet ExtensionSetCalculator::partially_extend_SemUnlock(const Configuration& C, Unfolding* U, TransitionPtr action)
 {
   EventSet exC;
-  const auto sem_unlock    = (SemaphoreTransition*) (action.get());
+  const auto sem_unlock    = (SemaphoreTransition*)(action.get());
   auto pre_event_a_C       = C.pre_event(sem_unlock->aid_);
   // If this is the first action from this aid, we need to check for a related Actor_Create
   if (not pre_event_a_C.has_value()) {

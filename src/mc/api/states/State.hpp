@@ -23,10 +23,10 @@
 
 namespace simgrid::mc {
 
-  
 /* A node in the exploration graph (kind-of) */
-  class XBT_PUBLIC State : public xbt::Extendable<State>, public boost::intrusive_ref_counter<State, boost::thread_safe_counter> {
-    
+class XBT_PUBLIC State : public xbt::Extendable<State>,
+                         public boost::intrusive_ref_counter<State, boost::thread_safe_counter> {
+
   // Helper class used to store every information to realize a postorder traversal
   // by saving one element of it per State
   class PostFixTraversal {
@@ -126,19 +126,18 @@ protected:
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
-  explicit State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+  explicit State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
                  bool set_actor_status = true);
   virtual ~State();
 
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);
   void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered);
-  void update_incoming_transition_explicitly(std::shared_ptr<Transition> incoming_transition)
+  void update_incoming_transition_explicitly(TransitionPtr incoming_transition)
   {
     incoming_transition_ = incoming_transition;
   }
 
-  int get_ref_count() { return refcount_; }
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -178,8 +177,8 @@ public:
   unsigned long consider_all();
 
   bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).value().is_done(); }
-  std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
-  std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
+  TransitionPtr const get_transition_out() const { return outgoing_transition_; }
+  TransitionPtr const get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
   void reset_parent_state();
 
@@ -196,7 +195,7 @@ public:
    *  Of course, that's very memory hungry but this is meant to be a rare event, and it's subject to future
    *  optimizations (to remove some forks when they become useless).
    */
-  bool has_state_factory() { return state_factory_ != nullptr; }
+  bool has_state_factory() const { return state_factory_ != nullptr; }
   void set_state_factory(std::unique_ptr<simgrid::mc::CheckerSide> checkerside)
   {
     state_factory_ = std::move(checkerside);
@@ -246,7 +245,7 @@ public:
    */
   static void garbage_collect();
 
-  StatePtr get_children_state_of_aid(aid_t next, int times_considered)
+  StatePtr get_children_state_of_aid(aid_t next, int times_considered) const
   {
     if (next >= 0 && times_considered >= 0 && children_states_.size() > static_cast<long unsigned>(next) &&
         children_states_[next].size() > static_cast<long unsigned>(times_considered))

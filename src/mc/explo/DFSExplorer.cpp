@@ -57,7 +57,7 @@ void DFSExplorer::log_state() // override
   XBT_INFO("DFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
-           visited_states_count_);
+           static_cast<unsigned long>(visited_states_count_));
   Exploration::log_state();
 }
 
