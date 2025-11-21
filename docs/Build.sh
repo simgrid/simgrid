@@ -10,12 +10,12 @@
 # If you are missing some dependencies, try: pip3 install --requirement docs/requirements.txt
 
 # Python needs to find simgrid on my machine, but not ctest -- sorry for the hack
-if [ -e /opt/simgrid ] ; then chmod +x /opt/simgrid; fi
+if [[ -e /opt/simgrid ]] ; then chmod +x /opt/simgrid; fi
 
 set -e
 set -o pipefail
 
-if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
+if [[ "x$1" != 'xdoxy' ]] && [[ -e build/xml ]] ; then
   echo "Doxygen not rerun: 'doxy' was not provided as an argument"
 else
   set -x
@@ -24,7 +24,7 @@ else
   set +x
 fi
 
-if [ "x$1" != 'xlogs' ] && [ -e build/log_categories.rst ] ; then
+if [[ "x$1" != 'xlogs' ]] && [[ -e build/log_categories.rst ]] ; then
   echo "Log categories not extracted: 'logs' was not provided as an argument"
 else
   set -x
@@ -57,7 +57,7 @@ do
 done
 
 set +e # Don't fail
-if [ -e /usr/bin/linkchecker ] ; then
+if [[ -e /usr/bin/linkchecker ]] ; then
     linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=build/html/_modules build/html \
      | grep -v '^#' \
      | grep -v 'urlname;parentname;baseref;result;warningstring'

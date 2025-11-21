@@ -546,7 +546,12 @@ void Request::start()
     XBT_DEBUG("recv simcall posted");
   } else { /* the RECV flag was not set, so this is a send */
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
-    xbt_assert(process, "Actor pid=%ld is gone??", dst_);
+    if (process == nullptr)
+      simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+    xbt_assert(process,
+               "Rank %d (pid:%ld) is trying to send data to rank %d (pid:%ld), which is not to be found. Is the "
+               "receiving rank gone??",
+               comm_->group()->rank(src_), src_, comm_->group()->rank(dst_), dst_);
     if (TRACE_smpi_view_internals())
       TRACE_smpi_send(src_, src_, dst_, tag_, size_);
     this->print_request("New send");

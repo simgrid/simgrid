@@ -254,6 +254,21 @@ void State::reset_parent_state()
   parent_state_ = nullptr;
 }
 
+// boost::intrusive_ptr<State> support:
+void intrusive_ptr_add_ref(State* state)
+{
+  XBT_DEBUG("Adding a ref to state #%ld", state->get_num());
+  state->refcount_.fetch_add(1, std::memory_order_acq_rel);
+}
+
+void intrusive_ptr_release(State* state)
+{
+  XBT_DEBUG("[tid : %s] Removing a ref to state #%ld, %d ref remaining", xbt::gettid().c_str(), state->get_num(),
+            static_cast<int>(state->refcount_.load()));
+  if (state->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+    delete state;
+}
+
 void State::initialize(const RemoteApp& remote_app)
 {
   if (_sg_mc_explore_algo != "parallel")
@@ -308,7 +323,6 @@ void State::consider_one(aid_t aid)
 }
 State::PostFixTraversal::PostFixTraversal(StatePtr state)
 {
-  std::lock_guard<std::mutex> g(global_mutex);
   prev_ = nullptr;
   next_ = nullptr;
   self_ = state;

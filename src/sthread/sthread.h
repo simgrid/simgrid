@@ -27,7 +27,8 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 XBT_PUBLIC void sthread_enable(void);  // Start intercepting all pthread calls
 XBT_PUBLIC void sthread_disable(void); // Stop intercepting all pthread calls
 XBT_PUBLIC int sthread_is_enabled(void); // Returns whether sthread is currenctly active
-XBT_PUBLIC int sthread_in_memory(void); // Returns whether sthread was LD_PRELOADED in memory
+XBT_PUBLIC void sthread_do_initialize(); // Specify that sthread is initialized in memory
+XBT_PUBLIC int sthread_is_initialized(void); // Returns whether sthread was inithalized (probably through LD_PRELOADED)
 
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);

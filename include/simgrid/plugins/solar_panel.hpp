@@ -36,12 +36,10 @@ class SolarPanel {
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(SolarPanel* o)
   {
-    if (o->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (o->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete o;
-    }
   }
-  friend void intrusive_ptr_add_ref(SolarPanel* o) { o->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(SolarPanel* o) { o->refcount_.fetch_add(1, std::memory_order_acq_rel); }
 #endif
 
   static xbt::signal<void(SolarPanel*)> on_power_change;

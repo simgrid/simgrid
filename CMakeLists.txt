@@ -1,7 +1,7 @@
 # Build the version number
 
 set(SIMGRID_VERSION_MAJOR "4")
-set(SIMGRID_VERSION_MINOR "0")
+set(SIMGRID_VERSION_MINOR "1")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")

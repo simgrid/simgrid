@@ -62,7 +62,7 @@ Please apply the following checklist before releasing.
   - git commit -a && git push # Check that the pipeline goes well on framagit
 
 - Rebuild and upload the python package
-  - Download the simgrid-*.tar.gz artefact from a build-pip job on gitlab CI
+  - Download the simgrid-*.tar.gz artefact from a build-pip job on inria gitlab CI
   - (alternatively, build it locally) rm -rf dist/ ; python3 -m build --outdir dist/
   - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
     twine upload dist/simgrid-*.tar.gz # User and token should be located in ~/.pypirc
@@ -92,8 +92,9 @@ Please apply the following checklist before releasing.
     (tuto-mc is not based on simgrid/stable but rebuilds from the git)
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
 - Add the new simgrid/stable image to the .gitlab-ci.yml of:
-  - https://framagit.org/simgrid/simgrid-template-s4u/
+  - https://framagit.org/simgrid/simgrid-template-s4u/  (tutorial-s4u on my disk)
   - https://framagit.org/simgrid/simgrid-template-smpi/
+  - https://framagit.org/simgrid/simgrid-template-model-checking
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
@@ -107,6 +108,7 @@ Please apply the following checklist before releasing.
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
 - Regenerate the unstable docker with this new version
+- Merge all patches (Debian, etc) back to the git tree
 
 Release numbering semantic:
   - 3.X is a named release.

@@ -62,12 +62,10 @@ private:
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(Jbod* jbod)
   {
-    if (jbod->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (jbod->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete jbod;
-    }
   }
-  friend void intrusive_ptr_add_ref(Jbod* jbod) { jbod->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(Jbod* jbod) { jbod->refcount_.fetch_add(1, std::memory_order_acq_rel); }
 #endif
 };
 
@@ -91,12 +89,10 @@ public:
 #ifndef DOXYGEN
   friend void intrusive_ptr_release(JbodIo* io)
   {
-    if (io->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (io->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete io;
-    }
   }
-  friend void intrusive_ptr_add_ref(JbodIo* io) { io->refcount_.fetch_add(1, std::memory_order_relaxed); }
+  friend void intrusive_ptr_add_ref(JbodIo* io) { io->refcount_.fetch_add(1, std::memory_order_acq_rel); }
 #endif
 };
 

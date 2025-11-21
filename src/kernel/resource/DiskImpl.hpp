@@ -67,10 +67,8 @@ public:
   }
   friend void intrusive_ptr_release(DiskImpl* disk)
   {
-    if (disk->refcount_.fetch_sub(1, std::memory_order_release) == 1) {
-      std::atomic_thread_fence(std::memory_order_acquire);
+    if (disk->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
       delete disk;
-    }
   }
 
   /** @brief Public interface */

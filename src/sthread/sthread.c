@@ -103,31 +103,13 @@ static void intercepter_init()
   raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
 }
 
-static thread_local int sthread_inside_simgrid = 1;
-void sthread_enable(void)
-{ // Start intercepting all pthread calls
-  sthread_inside_simgrid = 0;
-}
-void sthread_disable(void)
-{ // Stop intercepting all pthread calls
-  sthread_inside_simgrid = 1;
-}
-int sthread_in_memory()
-{
-  return 1;
-}
-int sthread_is_enabled(void)
-{ // Returns whether sthread is currenctly active
-  return sthread_inside_simgrid == 0;
-}
-
 #define _STHREAD_CONCAT(a, b) a##b
 #define intercepted_pthcall(name, raw_params, call_params, sim_params)                                                 \
   int _STHREAD_CONCAT(pthread_, name) raw_params                                                                       \
   {                                                                                                                    \
     if (_STHREAD_CONCAT(raw_pthread_, name) == NULL)                                                                   \
       intercepter_init();                                                                                              \
-    if (sthread_inside_simgrid)                                                                                        \
+    if (!sthread_is_enabled())                                                                                         \
       return _STHREAD_CONCAT(raw_pthread_, name) call_params;                                                          \
                                                                                                                        \
     sthread_disable();                                                                                                 \
@@ -154,7 +136,7 @@ void pthread_exit(void* retval)
 { // our macros do not cope properly with void non-returning functions
   if (raw_pthread_exit == NULL)
     intercepter_init();
-  if (sthread_inside_simgrid)
+  if (!sthread_is_enabled())
     raw_pthread_exit(retval);
   sthread_disable();
   sthread_exit(retval);
@@ -187,7 +169,7 @@ intercepted_pthcall(cond_destroy, (pthread_cond_t * cond), (cond), ((sthread_con
   {                                                                                                                    \
     if (_STHREAD_CONCAT(raw_, name) == NULL)                                                                           \
       intercepter_init();                                                                                              \
-    if (sthread_inside_simgrid)                                                                                        \
+    if (!sthread_is_enabled())                                                                                         \
       return _STHREAD_CONCAT(raw_, name) call_params;                                                                  \
                                                                                                                        \
     sthread_disable();                                                                                                 \
@@ -236,6 +218,8 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
 int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, int (*init)(int, char**, char**),
                       void (*fini)(void), void (*rtld_fini)(void), void* stack_end)
 {
+  sthread_do_initialize();
+
   /* Save the real main function address */
   raw_main = main;
 

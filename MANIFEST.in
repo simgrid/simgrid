@@ -273,6 +273,10 @@ include examples/cpp/exec-async/s4u-exec-async.cpp
 include examples/cpp/exec-async/s4u-exec-async.tesh
 include examples/cpp/exec-basic/s4u-exec-basic.cpp
 include examples/cpp/exec-basic/s4u-exec-basic.tesh
+include examples/cpp/exec-co2/co2.csv
+include examples/cpp/exec-co2/s4u-exec-co2.cpp
+include examples/cpp/exec-co2/s4u-exec-co2.tesh
+include examples/cpp/exec-co2/validation.md
 include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.cpp
 include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.tesh
 include examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear.cpp
@@ -2077,6 +2081,7 @@ include examples/platforms/config_tracing.xml
 include examples/platforms/crosstraffic.xml
 include examples/platforms/data_center.xml
 include examples/platforms/dogbone.xml
+include examples/platforms/emission_platform.xml
 include examples/platforms/energy_boot.xml
 include examples/platforms/energy_cluster.xml
 include examples/platforms/energy_platform.xml
@@ -2187,6 +2192,7 @@ include include/simgrid/modelchecker.h
 include include/simgrid/mutex.h
 include include/simgrid/plugins/ProducerConsumer.hpp
 include include/simgrid/plugins/battery.hpp
+include include/simgrid/plugins/carbon_footprint.h
 include include/simgrid/plugins/chiller.hpp
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
@@ -2269,6 +2275,7 @@ include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h
 include setup.py
 include src/3rd-party/catch.hpp
+include src/bindings/java/MANIFEST.in
 include src/bindings/java/org/simgrid/s4u/Activity.java
 include src/bindings/java/org/simgrid/s4u/ActivitySet.java
 include src/bindings/java/org/simgrid/s4u/Actor.java
@@ -2590,6 +2597,7 @@ include src/plugins/battery.cpp
 include src/plugins/chaos_monkey.cpp
 include src/plugins/chiller.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
+include src/plugins/host_carbon_footprint.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp

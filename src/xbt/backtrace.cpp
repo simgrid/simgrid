@@ -36,7 +36,7 @@ void xbt_backtrace_display_current()
   simgrid::xbt::Backtrace().display();
 }
 
-simgrid::config::Flag<bool> cfg_fullstdstack{"debug/fullstack:yes",
+simgrid::config::Flag<bool> cfg_fullstdstack{"debug/fullstack",
                                              "Whether the std::stacktrace should be displayed completely. The default "
                                              "value 'no' requests the stack to be trimed for user comfort.",
                                              true};

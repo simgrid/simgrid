@@ -24,8 +24,11 @@
 namespace simgrid::mc {
 
 /* A node in the exploration graph (kind-of) */
-class XBT_PUBLIC State : public xbt::Extendable<State>,
-                         public boost::intrusive_ref_counter<State, boost::thread_safe_counter> {
+class XBT_PUBLIC State : public xbt::Extendable<State> {
+  // Support for the StatePtr datatype, aka boost::intrusive_ptr<State>
+  std::atomic_int_fast32_t refcount_{0};
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(State* activity);
+  friend XBT_PUBLIC void intrusive_ptr_release(State* activity);
 
   // Helper class used to store every information to realize a postorder traversal
   // by saving one element of it per State
@@ -100,7 +103,7 @@ protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now.
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
-  bool actor_status_set_ = false;
+  bool actor_status_set_  = false;
   volatile bool is_a_leaf = true;
 
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered

@@ -47,7 +47,7 @@ do_cleanup() {
     fi
     mkdir "$d" || die "Could not create $d"
   done
-  find "$WORKSPACE" -name "memcheck_test_*.memcheck" -exec rm {} \;
+  find "$WORKSPACE" -name "valgrind_test_*.xml" -exec rm {} \;
 }
 
 do_cleanup "$WORKSPACE/build" "$WORKSPACE/memcheck" "$WORKSPACE/generatedJUnitFiles"
@@ -72,7 +72,7 @@ ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 
 cd "$WORKSPACE"/build
 if [ -f Testing/TAG ] ; then
-   find "$WORKSPACE" -iname "*.memcheck" -exec mv {} "$WORKSPACE"/memcheck \;
+   find "$WORKSPACE" -iname "valgrind_test*.xml" -exec mv {} "$WORKSPACE"/memcheck \;
    #remove all "empty" files
    grep -r -L "error>" "$WORKSPACE"/memcheck | xargs rm -f
    mv Testing/"$(head -n 1 < Testing/TAG)"/Test.xml  "$WORKSPACE"/DynamicAnalysis.xml

@@ -53,19 +53,17 @@ and other bugs that can only be observed for specific ordering of the memory rea
 used to detect misuses of the synchronization functions such as pthread calls or MPI calls (depending on the leveraged
 instrumentation solution), such as the ones resulting in deadlocks.
 
-Starting with v4.1 (not released at the time of writing), read and write memory events can be observed in programs compiled with
-our ``mclang`` compilation wrapper that adds an extra pass to the ``clang`` compiler that tracks memory accesses at runtime. The
-memory events are not interleaved explicitly. Instead, Mc SimGrid uses a race detector inspired from `FastTrack
+Starting with v4.1, read and write memory events can be observed in programs compiled with our ``mclang`` compilation wrapper
+that adds an extra pass to the ``clang`` compiler that tracks memory accesses at runtime. The memory events are not interleaved
+explicitly. Instead, Mc SimGrid uses a race detector inspired from `FastTrack
 <https://dl.acm.org/doi/abs/10.1145/1543135.1542490>`_ to detect races on the explored executions.
 
 
 Limits
 ^^^^^^
 
-The first limit lies in the observation of events. At time of writing, technical limitations make it tedious to combine all
-instrumentation solutions (SMPI + sthread + the clang pass). Things should improve in the coming months, but many other
-applicative events remain unobserved. Communications are not observed if they don't use the MPI standard; Disk accesses are left
-completely unobserved, and so are the time-related APIs, to name a few.
+The first limit lies in the observation of events. Many applicative events remain unobserved. Communications are not observed if
+they don't use the MPI standard; Disk accesses are left completely unobserved, and so are the time-related APIs, to name a few.
 
 The second practical limit lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant scenarios
 thanks to classical reduction techniques (such as DPOR) but the exploration may well never finish if you don't carefully adapt
@@ -172,12 +170,9 @@ Let's first explore the behavior of bugged implementation of the `dining philoso
 
    .. group-tab:: simgrid/mc-slim
 
-      First download the tutorial files from git.
-
-      .. code-block:: console
-
-         $ git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git
-         $ cd tutorial-model-checking.git
+      First download the :ref:`zip file <https://framagit.org/api/v4/projects/74478/jobs/artifacts/main/raw/simgrid-mc-tutorial.zip?job=files>`_
+      containing all you need for this tutorial, and unpack it somewhere on your disk. The rest of the tutorial must be run in a
+      terminal running where the files are. 
 
    .. group-tab:: simgrid/tuto-mc
 
@@ -191,7 +186,8 @@ Let's first explore the behavior of bugged implementation of the `dining philoso
 
       Several files should have appeared in the ``~/tuto-mcsimgrid`` directory of your computer (out of the container).
 
-This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_
+This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_ that you just
+installed.
 
 .. toggle-header::
    :header: Code of ``philosophers.c``: click here to open
@@ -202,10 +198,12 @@ This lab uses `philosophers.c <https://framagit.org/simgrid/tutorial-model-check
       :language: cpp
 
 |br|
-The provided code is as simple as possible. It simply declares a ``philosopher_code`` function, representing a philosopher that
-first picks its left fork and then right fork before eating. This code is obviously wrong: if all philosopher manage to get
-their left fork at the same time, no one will manage to get its right fork (because it's the left fork of someone else), and the
-execution will deadlock.
+
+If you are not familiar with the *Dining philosophers problem*, see the :ref:`corresponding page on Wikipedia
+<https://en.wikipedia.org/wiki/Dining_philosophers_problem>`_.  The provided code declares a ``philosopher_code`` function,
+representing a philosopher that first picks its left fork and then right fork before eating. This code is obviously wrong: if
+all philosopher manage to get their left fork at the same time, no one will manage to get its right fork (because it's the left
+fork of someone else), and the execution will deadlock.
 
 .. tabs::
 
@@ -299,11 +297,11 @@ If simgrid-mc fails with the error ``[root/CRITICAL] Could not wait for the mode
 PTRACE capability to your docker. Restart your docker with the additional parameter ``--cap-add SYS_PTRACE``.
 
 Since Mc SimGrid is a software model checker, it exhaustively explores all possible outcomes of your application, so you can
-take for granted that it will find a bug if there is any. If the exploration terminates without finding any bug, then you can be
-reasonably confident that your program is bug-free. It's not a proof either, because Mc SimGrid itself is a complex program
-which may contain bugs, preventing it from finding existing bugs in your application. If your program is too large, its
-exhaustive exploration may be too large to be practical. But in our case, Mc SimGrid produces a counter example in one tenth of
-a second:
+take for granted that if a bug is reachable by your program, Mc SimGrid will find it. If the exploration terminates without
+finding any bug, then you can be reasonably confident that your program is bug-free. It's not a proof either, because Mc SimGrid
+itself is a complex program which may contain bugs, preventing it from finding existing bugs in your application. If your
+program is too large, its exhaustive exploration may be too large to be practical. But in our case, Mc SimGrid produces a
+counter example in one tenth of a second:
 
 .. code-block:: console
 
@@ -634,8 +632,8 @@ to address any challenges you encounter while working with Mc SimGrid.
 Lab2: race condition with sthread
 ---------------------------------
 
-This short lab aims at searching for race conditions with the latest version of SimGrid. It requires SimGrid v4.1 (that is not
-yet released), and was only tested with the Docker image. See above to pull and start the Docker image.
+This short lab aims at searching for race conditions with the latest version of SimGrid. It requires SimGrid v4.1 and was only
+tested with the Docker image. See above to pull and start the Docker image.
 
 If you want to search for race conditions in your code, you must use our compilation wrapper to compile the programs.
 Do not forget the ``-g`` flag, or the messages will be less informative.

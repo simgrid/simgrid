@@ -1,13 +1,23 @@
-SimGrid (4.1) unreleased. Target: summer or fall 2025
+SimGrid (4.2) not released yet (target: spring 2026)
+
+S4U:
+ - New plugin for Host carbon footprint. See examples/cpp/exec-co2 and https://arxiv.org/abs/2508.13693
+   Thanks to the authors for this great contribution.
+
+----------------------------------------------------------------------------
+
+SimGrid (4.1) November 11. 2025
+
+Breaking the seal: v4.0 was not the final release.
 
 S4U:
  - Allow to unseal() netzones to add more content to them at any point. Don't forget to reuse seal() afterward
  - Deprecate Engine::add_actor in favor of Host::add_actor to avoid always passing the host 
    on which to create the new actor as parameter. 
  - Add s4u::Link::get_englobing_zone()
- - Add VM load plugin (similar to host load).
-   Thanks Igor Fontana de Nardin for this nice contribution.
+ - Add VM load plugin (similar to host load). Thanks to Igor Fontana de Nardin for this nice contribution.
  - Add Engine::display_all_actors_status() for debug
+ - Add this_actor::thread_execute_async() for asynchronous threaded execution.
 
 Java:
  - Add plugin host_load and link_load (see the relevant examples)
@@ -19,24 +29,46 @@ Java:
 Python:
  - Fix the declaration of Engine.set_config as the C++ function is a static one
  - Added a few missing functions related to Disk (host, turn_on, turn_off)
+ - Fix the pip builds
 
 Model-checking:
- - The 'none' reduction method is gone. It was useless and made the code more complex than needed.
+ - The 'none' reduction method is gone. It was useless and complexified the code base.
  - Enable the joint use of SMPI and sthread.
- - Implement a 'parallel' stategy to leverage multicores during the exploration
+ - Implement a 'parallel' stategy to leverage multicores during the exploration. Its robustness shall improve very soon.
  - Observe ActorExit events, to get the trailing memory accesses when memory accesses are observed.
- - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will execve() the binary to remove itself.
+ - simgrid-mc now accepts the --cfg=model-check/replay parameter. In this case, it will correctly execve() the binary to reduce
+   the burden on the user.
+ - Add some support to observe the race conditions in memory read/writes, based on the FastTrack algorithm by Flanagan et Al.
+   See the tutorial on how to activate it.
+ - New docker image simgrid/mc-slim. It's smaller but you cannot log into it as usual. See the tutorial on how to use it.
 
 sthread:
- - Now also work with the 'thread' context factory of SimGrid. Mostly useful for internal debugging
+ - Allow the sthread interception of SMPI runs, to study MPI+pthread executions. See examples/sthread/smpi-*.c
+ - Now also work with the 'thread' context factory of SimGrid. Mostly useful for internal debugging.
+ - Add a compile option to disable sthread. Mostly useful on exotic CI runners like the one using GLIBC debug features.
 
 Platforms:
+ - Allow to unseal netzones to add more content, even after the simulation start.
  - Remove Engine::on_platform_sealed that was semi-private (not documented). Use Engine::on_simulation_start instead
+ - Routing overhaul to fix issues when using 3+ nested level nested zones [Jérémie Rodez]
+ - Add debug/lmm-leaks runtime option to debug LMM bugs, and advice the users about it on need.
 
-Maint:
+SMPI:
+ - Improve a bit the support of FindSimGrid.cmake for MPI projects.
+
+Maintenance and Software quality assurance:
  - Simplify our code by removing SysV contexts which do not bring much. It's not portable on all OSes and a bit less efficient
    than our raw contexts. Raw contexts are limited to amd64 processors, but boost contexts should work on exotic architectures.
  - Perl is no longer a build dependency. Some scripts still use it, but they are not mandatory.
+ - Bump the C++ standard to C++23 when we find a usable std::stacktrace implementation. Stick to C++17 when not.
+ - https://gitlab.inria.fr/simgrid/simgrid/ is now our main CI platform. It hosts most of SimGrid's jobs and other heavy CI jobs
+   such as the proxy-apps. Some tests (valgrind to detect memory leaks) were not ported from our jenkins infrastructure yet.
+   - MacOSX/amd64, MacOSX/Arm and Linux/Arm are now tested in github actions, as it's our only access to such resources.
+   - Only light jobs such as the webpages and our sister projects (Wrench, BatSim, SimGrid-FMI, the images of tutorials) are
+     still built on framasoft, to save their resources.
+   - Sonarqube is our main tool for code analysis.  https://sonarcloud.io/organizations/simgrid/
+   - CircleCI was redundent and thus phased out.
+   - Every failed builds are reported live in https://framateam.org/simgrid/channels/bot-office
  
 ----------------------------------------------------------------------------
 

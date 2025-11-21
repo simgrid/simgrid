@@ -1,10 +1,10 @@
 FROM debian:10.10-slim
 
 RUN printf '%s\n' \
-    "deb    [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20210707T150931Z/ buster main contrib non-free" \
-    "deb-src [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian/20210707T150931Z/ buster main contrib non-free" \
-    "deb     [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian-security/20210707T150931Z/ buster/updates main contrib non-free" \
-    "deb-src [check-valid-until=no, trusted=yes] http://snapshot.debian.org/archive/debian-security/20210707T150931Z/ buster/updates main contrib non-free" > /etc/apt/sources.list \
+    "deb    [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20210707T150931Z/ buster main contrib non-free" \
+    "deb-src [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian/20210707T150931Z/ buster main contrib non-free" \
+    "deb     [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian-security/20210707T150931Z/ buster/updates main contrib non-free" \
+    "deb-src [check-valid-until=no, trusted=yes] https://snapshot.debian.org/archive/debian-security/20210707T150931Z/ buster/updates main contrib non-free" > /etc/apt/sources.list \
 && \
     apt-get -o Acquire::Check-Valid-Until=false update \
 && \

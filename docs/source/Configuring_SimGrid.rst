@@ -99,6 +99,8 @@ Existing Configuration Items
 
 - **debug/breakpoint:** :ref:`cfg=debug/breakpoint`
 - **debug/clean-atexit:** :ref:`cfg=debug/clean-atexit`
+- **debug/fullstack:** :ref:`cfg=debug/fullstack`
+- **debug/lmm-leaks:** :ref:`cfg=debug/lmm-leaks`
 - **debug/verbose-exit:** :ref:`cfg=debug/verbose-exit`
 
 - **exception/cutpath:** :ref:`cfg=exception/cutpath`
@@ -1752,6 +1754,17 @@ disable this option to request that SimGrid not attempt any cleanups at
 the end of the simulation. Since the Unix process is ending anyway,
 the operating system will wipe it all.
 
+.. _cfg=debug/lmm-leaks:
+
+Cleanup at Termination
+......................
+
+**Option** ``debug/lmm-leaks`` **default:** off
+
+Under some conditions, not all LMM variables are cleaned at the end of the simulation. As this is most certainly due to a bug,
+you may want to activate this option to get more information about the leaked variables. Note that taking all the system
+backtraces will hurt the performance of your simulation.
+
 .. _cfg=path:
 
 Search Path
@@ -1808,6 +1821,18 @@ backtrace shown when an exception is thrown. This is mainly useful for
 the tests: the full file path would makes the tests non-reproducible because
 the paths of source files depend of the build settings. That would
 break most of the tests since their output is continually compared.
+
+.. _cfg=debug/fullstack:
+
+Trim the exception backtrace
+----------------------------
+
+**Option** ``debug/fullstack`` **default:** on
+
+By default, the exception backtrace is trimmed to remove internal symbols that are useless and troubling for the user, but it
+may happen that this trimming feature is buggy on some architectures. This may be as bad as completely empty stack traces. This
+option is intended for the users facing such issue, allowing them to request complete, untrimmed stack traces. The result will
+contain cruft, but at least not being completely empty.
 
 .. _logging_config:
 

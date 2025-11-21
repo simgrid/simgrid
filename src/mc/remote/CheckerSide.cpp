@@ -208,7 +208,7 @@ std::unique_ptr<CheckerSide> CheckerSide::clone(int master_socket, const std::st
 
   /* Accept an incomming socket under a 5 seconds time limit*/
   struct sigaction action;
-  memset(&action, 0, sizeof(struct sigaction));
+  memset(&action, 0, sizeof(action));
   action.sa_handler = handle_sigalarm;
   sigaction(SIGALRM, &action, nullptr); /* Override the default behaviour which would be to end the process */
   alarm(5);
