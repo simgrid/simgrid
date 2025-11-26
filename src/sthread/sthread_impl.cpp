@@ -424,7 +424,10 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+  if (cond->cond == nullptr)
+    XBT_WARN("The condition %p is destroyed, but it's not initialized yet or it's already destroyed.", cond);
   intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
+  cond->cond = nullptr;
   return 0;
 }
 
