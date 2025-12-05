@@ -43,10 +43,8 @@ void MC_assert(int prop)
     if (MC_record_replay_is_active())
       xbt_die("MC assertion failed");
   }
-#else
-  if (not prop)
-    xbt_die("Safety property violation detected without the model-checker");
 #endif
+  xbt_assert(prop, "Safety property violation detected without the model-checker");
 }
 
 int MC_is_active()

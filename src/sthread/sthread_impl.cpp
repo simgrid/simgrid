@@ -427,7 +427,7 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
 }
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
-  XBT_DEBUG("%s(%p) AAHAHHAHAHAH", __func__, cond);
+  XBT_DEBUG("%s(%p)", __func__, cond);
   if (cond->cond == nullptr)
     sthread_cond_init(cond, nullptr);
   intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
