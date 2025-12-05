@@ -212,6 +212,8 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
 
 bool RemoteApp::check_deadlock(bool verbose) const
 {
+  if (checker_side_->has_been_killed_by_us())
+    return false; // If we killed the application ourselves, checking deadlock makes no sense
 
   auto* explo = Exploration::get_instance();
   // While looking for critical transition, we don't want to dilute the output with
