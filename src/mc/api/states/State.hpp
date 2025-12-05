@@ -15,6 +15,7 @@
 #include "xbt/asserts.h"
 #include <atomic>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <condition_variable>
 #include <limits>
 #include <memory>
 #include <mutex>
@@ -104,8 +105,10 @@ protected:
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
   bool actor_status_set_  = false;
-  volatile bool is_a_leaf = true;
+  bool is_a_leaf          = true;
 
+  std::mutex children_lock_;
+  std::condition_variable adding_children;
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
@@ -268,6 +271,10 @@ public:
 
   static void update_leftness() { PostFixTraversal::update_leftness(); };
   unsigned long long get_leftness() const { return this->traversal_->leftness_; }
+
+  /** Called by the exploration to excplicitly tells this state won't be explored further, eg.
+      because the max depth limit was reached */
+  void mark_as_leaf() { this->actors_to_run_ = std::vector<std::optional<ActorState>>(); }
 };
 
 } // namespace simgrid::mc

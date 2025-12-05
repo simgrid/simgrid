@@ -15,7 +15,7 @@ class XBT_PRIVATE SoftLockedState : public State {
 protected:
 public:
   explicit SoftLockedState(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
-      : State(remote_app, parent_state, incoming_transition)
+      : State(remote_app, parent_state, incoming_transition, false)
   {
   }
 

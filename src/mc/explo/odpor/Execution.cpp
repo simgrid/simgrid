@@ -16,6 +16,7 @@
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
+#include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <algorithm>
@@ -449,8 +450,14 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   for (const auto& aid : sleep_E_prime) {
     const auto next_transition_aid = std::find_if(this->begin() + e + 1, this->end(),
                                                   [&](const auto& e) { return e.get_transition()->aid_ == aid; });
+
+    // If we are cutting exploration at some arbitrary depth, we might not find what we are looking for
+    // It's okay, we just don't cut any exploration opportunity in that case
+    if (_sg_mc_max_depth != config::is_default("model-check/max-depth") and next_transition_aid == this->end())
+      continue;
+
     xbt_assert(next_transition_aid != this->end(),
-               "Since this actor is in the sleep set, it should be executed at some point. Fix me!");
+               "Since actor `%ld` is in the sleep set, it should be executed at some point. Fix me!", aid);
     if (is_in_weak_initial_of(next_transition_aid->get_transition(), v)) {
       XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;

@@ -162,16 +162,22 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
                 _sg_mc_max_depth.get());
       XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
     } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-      XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
-                "when stopping at a fixed depth /!\\",
-                _sg_mc_max_depth.get());
-      XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+      XBT_WARN("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+               "when stopping at a fixed depth /!\\",
+               _sg_mc_max_depth.get());
+      XBT_WARN("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
     } else {
       XBT_WARN("/!\\ Max depth reached ! /!\\ ");
     }
-  } else {
-    explore(S, state_stack);
+    XBT_DEBUG("Finalizing App ASAP to explore somewhere else");
+    get_remote_app().finalize_app(true);
+
+    backtrack_to_state(stack_->back().get(), false);
+
+    stack_->back()->mark_as_leaf();
   }
+
+  explore(S, state_stack);
 
   XBT_DEBUG("Backtracking from the exploration by one step");
 
@@ -194,8 +200,6 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   aid_t next_to_explore;
 
   while ((next_to_explore = s->next_transition()) != -1) {
-
-    // reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }
