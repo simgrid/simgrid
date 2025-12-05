@@ -231,6 +231,7 @@ void State::register_as_correct()
 
 void State::record_child_state(StatePtr child)
 {
+  std::lock_guard<std::mutex> g(children_lock_);
   aid_t child_aid      = child->get_transition_in()->aid_;
   int times_considered = child->get_transition_in()->times_considered_;
   if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
@@ -239,6 +240,7 @@ void State::record_child_state(StatePtr child)
     children_states_[child_aid].resize(times_considered + 1);
   children_states_[child_aid][times_considered] = std::move(child);
   is_a_leaf                                     = false;
+  adding_children.notify_one();
 }
 
 void State::signal_on_backtrack()

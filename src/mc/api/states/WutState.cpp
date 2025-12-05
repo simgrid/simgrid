@@ -14,6 +14,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <memory>
+#include <mutex>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree for ODPOR algorithm");
 
@@ -26,16 +27,23 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   if (w.size() == 0)
     return nullptr;
 
-  if (this->is_a_leaf) {
-    // If the state considered is a leaf
-    if (this->being_explored.test_and_set()) {
-      // ... and it is already being explored by someone
-      // then wait for a child to appear
-      while (this->is_a_leaf) {
-      } // busy-waiting
-    }
+  // If we exceeded the max depth, we won't explore anyway so skip this race
+  if (this->get_depth() >= (unsigned)_sg_mc_max_depth)
+    return nullptr;
 
-    // Else, we just set the value ourself: we are responsible for this leaf exploration!
+  if (_sg_mc_explore_algo == "parallel") {
+    std::unique_lock<std::mutex> lock(children_lock_);
+    if (this->is_a_leaf) {
+      // If the state considered is a leaf
+      if (this->being_explored.test_and_set()) {
+        // ... and it is already being explored by someone
+        // then wait on the condition variable for a child to appear
+        XBT_DEBUG("Going to wait for something to be added");
+        adding_children.wait(lock);
+      }
+
+      // Else, we just set the value ourself: we are responsible for this leaf exploration!
+    }
   }
 
   for (auto& t : this->opened_) {
