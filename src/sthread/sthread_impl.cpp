@@ -163,8 +163,9 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in sthread initialization.");
   }
 #endif
-  sg4::ActorPtr actor = 
-    lilibeth->add_actor(name, [](auto* user_function, auto* param) {
+  sg4::ActorPtr actor = lilibeth->add_actor(
+      name,
+      [](auto* user_function, auto* param) {
 #if HAVE_SMPI
         if (SMPI_is_inited())
           SMPI_thread_create();
@@ -215,7 +216,7 @@ int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
       attr->recursive = 0;
       break;
     case PTHREAD_MUTEX_RECURSIVE:
-      attr->recursive = 1;
+      attr->recursive  = 1;
       attr->errorcheck = 0; // reset
       break;
     case PTHREAD_MUTEX_ERRORCHECK:
@@ -252,7 +253,7 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
   auto m = sg4::Mutex::create(attr != nullptr && attr->recursive);
   intrusive_ptr_add_ref(m.get());
 
-  mutex->mutex = m.get();
+  mutex->mutex      = m.get();
   mutex->errorcheck = attr ? attr->errorcheck : false;
 
   return 0;
@@ -312,19 +313,22 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   return 0;
 }
 
-int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count){
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count)
+{
   auto b = sg4::Barrier::create(count);
   intrusive_ptr_add_ref(b.get());
 
   barrier->barrier = b.get();
   return 0;
 }
-int sthread_barrier_wait(sthread_barrier_t* barrier){
+int sthread_barrier_wait(sthread_barrier_t* barrier)
+{
   XBT_DEBUG("%s(%p)", __func__, barrier);
   static_cast<sg4::Barrier*>(barrier->barrier)->wait();
   return 0;
 }
-int sthread_barrier_destroy(sthread_barrier_t* barrier){
+int sthread_barrier_destroy(sthread_barrier_t* barrier)
+{
   XBT_DEBUG("%s(%p)", __func__, barrier);
   intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
   return 0;
@@ -335,7 +339,7 @@ int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
   auto cv = sg4::ConditionVariable::create();
   intrusive_ptr_add_ref(cv.get());
 
-  cond->cond = cv.get();
+  cond->cond  = cv.get();
   cond->mutex = nullptr;
   return 0;
 }
@@ -423,8 +427,11 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
 }
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
-  XBT_DEBUG("%s(%p)", __func__, cond);
+  XBT_DEBUG("%s(%p) AAHAHHAHAHAH", __func__, cond);
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
   intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
+  cond->cond = nullptr;
   return 0;
 }
 
