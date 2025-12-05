@@ -19,7 +19,6 @@ StatePtr Reduction::state_create(RemoteApp& remote_app, StatePtr parent_state, T
     return StatePtr(new SleepSetState(remote_app), true);
   else {
     auto new_state = StatePtr(new SleepSetState(remote_app, parent_state, incoming_transition), true);
-    parent_state->record_child_state(new_state);
 
     return new_state;
   }
