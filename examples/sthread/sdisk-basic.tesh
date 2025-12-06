@@ -1,0 +1,36 @@
+$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./sdisk-basic
+> == TEST: basic open/close ==
+> open() ok. fd=1000
+> close() ok
+> 
+> == TEST: Unlinking files ==
+> unlink() on a file that does not exist fails appropriately: No such file or directory
+> unlink() on a file that exist works.
+>
+> == TEST: write; close/open; read ==
+> write() ok
+> read() ok
+>
+> == TEST: reading and writing to closed fd is forbidden ==
+> Writing to a closed fd failed as expected: Bad file descriptor
+> Reading from a closed fd failed as expected: Bad file descriptor
+> 
+> == TEST: respect read-only and write-only flags ==
+> Write on O_RDONLY failed as expected: Bad file descriptor
+> Reading from O_WRONLY failed as expected: Bad file descriptor
+>
+> == TEST: fstat() and lseek() ==
+> fstat() size is correct after writing 10 chars
+> lseek() whence semantics ok
+>
+> == TEST: readv()/writev() ==
+> writev(3+3) wrote 6 bytes
+> readv(3+3) wrote 6 bytes
+> Vector data matching.
+> 
+> == TEST: preadv()/pwritev() ==
+> pwritev(3+4) wrote 7 bytes and did not change offset.
+> preadv(2+2+3) got 7 bytes and did not change offset.
+> preadv() returned the expected data.
+> 
+> [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.

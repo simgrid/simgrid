@@ -16,7 +16,11 @@
 #define SIMGRID_STHREAD_H
 
 #include "xbt/base.h"
+#include <stddef.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/uio.h> // iovect
+#include <unistd.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -98,6 +102,22 @@ int sthread_gettimeofday(struct timeval* tv);
 time_t sthread_time(time_t* time);
 unsigned int sthread_sleep(double seconds);
 int sthread_usleep(double seconds);
+
+int sthread_open(const char* pathname, int flags, mode_t mode);
+int sthread_close(int fd);
+ssize_t sthread_write(int fd, const void* buf, size_t count);
+ssize_t sthread_pwrite(int fd, const void* buf, size_t count, off_t offset);
+ssize_t sthread_read(int fd, void* buf, size_t count);
+ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset);
+ssize_t sthread_readv(int fd, const struct iovec* iov, int iovcnt);
+ssize_t sthread_writev(int fd, const struct iovec* iov, int iovcnt);
+ssize_t sthread_preadv(int fd, const struct iovec* iov, int iovcnt, off_t offset);
+ssize_t sthread_pwritev(int fd, const struct iovec* iov, int iovcnt, off_t offset);
+ssize_t sthread_preadv2(int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags);
+ssize_t sthread_pwritev2(int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags);
+off_t sthread_lseek(int fd, off_t offset, int whence);
+int sthread_fstat(int fd, struct stat* buf);
+int sthread_unlink(const char* pathname);
 
 int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* function);
 void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* function);

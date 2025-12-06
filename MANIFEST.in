@@ -817,6 +817,8 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
+include examples/sthread/sdisk-basic.c
+include examples/sthread/sdisk-basic.tesh
 include examples/sthread/smpi-mc-mutex-simple.tesh
 include examples/sthread/smpi-mc-mutex-simpledeadlock.tesh
 include examples/sthread/smpi-mutex-simple.c

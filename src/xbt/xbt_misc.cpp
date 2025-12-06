@@ -69,3 +69,35 @@ std::string& gettid()
   return sid;
 }
 }; // namespace simgrid::xbt
+
+extern "C" {
+// Allow to disable the interception when needed, e.g. when SimGrid wants to use the real operating system without being
+// intercepted.
+//
+// When sthread is not loaded in memory, using these functions is useless and harmless.  Only sthread_is_initialized()
+// is called anyway, here and there to detect that sthread is or is not loaded in memory, to adapt the library
+// initialization code.
+static thread_local int sthread_inside_simgrid = 1;
+void sthread_enable(void)
+{ // Start intercepting all pthread calls
+  sthread_inside_simgrid = 0;
+}
+void sthread_disable(void)
+{ // Stop intercepting all pthread calls
+  sthread_inside_simgrid = 1;
+}
+int sthread_is_enabled(void)
+{ // Returns whether sthread is currenctly active
+  return sthread_inside_simgrid == 0;
+}
+
+static int sthread_inited = 0;
+void sthread_do_initialize()
+{
+  sthread_inited = 1;
+}
+int sthread_is_initialized()
+{
+  return sthread_inited;
+}
+}

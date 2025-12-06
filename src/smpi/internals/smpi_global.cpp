@@ -434,6 +434,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
       function_name,
       static_cast<simgrid::kernel::actor::ActorCodeFactory>([executable, fdin_size](std::vector<std::string> args) {
         return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
+          sthread_disable();
           static std::size_t rank = 0;
           // Copy the dynamic library:
           simgrid::xbt::Path path(executable);
@@ -490,6 +491,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
 
           smpi_entry_point_type entry_point = smpi_resolve_function(handle);
           xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
+          sthread_enable();
           smpi_run_entry_point(entry_point, executable, args);
         });
       }));
