@@ -833,6 +833,14 @@ include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
 include teshsuite/kernel/stack-overflow/stack-overflow.tesh
+include teshsuite/mc/dpu/dispatcher.c
+include teshsuite/mc/dpu/dispatcher.tesh
+include teshsuite/mc/dpu/mpat.c
+include teshsuite/mc/dpu/mpat.tesh
+include teshsuite/mc/dpu/pi.c
+include teshsuite/mc/dpu/pi.tesh
+include teshsuite/mc/dpu/poke.c
+include teshsuite/mc/dpu/poke.tesh
 include teshsuite/mc/mcmini/barber_shop_deadlock.c
 include teshsuite/mc/mcmini/barber_shop_deadlock.tesh
 include teshsuite/mc/mcmini/barber_shop_ok.c

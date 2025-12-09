@@ -96,6 +96,30 @@ if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
   message(STATUS "McMini tests cannot be executed when MC is disabled.")
 endif()
 
+###
+### DPU tests, from https://github.com/cesaro/dpu
+
+foreach(x      dispatcher mpat multiprodcon pi poke)
+
+  set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.c)
+  set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
+
+  if(${enable_sthread} AND ${enable_testsuite_dpu} AND SIMGRID_HAVE_MC AND (NOT DEFINED _${example}_disable))
+    add_executable       (dpu-${x}  EXCLUDE_FROM_ALL dpu/${x}.c)         
+    set_target_properties(dpu-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(dpu-${x}  PRIVATE Threads::Threads)
+    add_dependencies(tests-mc dpu-${x})
+
+    ADD_TESH(dpu-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
+  endif()
+endforeach()
+if(${enable_testsuite_dpu} AND (NOT ${enable_sthread}))
+  message(STATUS "DPU tests cannot be executed when sthread is disabled.")
+endif()
+if(${enable_testsuite_dpu} AND (NOT SIMGRID_HAVE_MC))
+  message(STATUS "DPU tests cannot be executed when MC is disabled.")
+endif()
+
 set(probe_deadlock_disable 1)
 set(probe_ok_disable 1)
 foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)

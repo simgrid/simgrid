@@ -72,6 +72,7 @@ if(enable_smpi_MBI_testsuite)
 endif()
 
 option(enable_testsuite_McMini "Whether the test suite from McMini should be built." off)
+option(enable_testsuite_dpu    "Whether the test suite from DPU should be built." off)
 
 # Internal targets used by jenkins
 ###
