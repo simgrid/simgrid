@@ -77,7 +77,7 @@ int main(void)
     assert_perror(fd >= 0, "open() failed while reopening.");
     assert_perror(close(fd) == 0, "close failed.");
 
-    char c;
+    char c      = 'A';
     ssize_t got = write(fd, &c, 1);
     assert_perror(got == -1, "Writing to a closed fd did work. Return: %zd. ", got);
     fprintf(stderr, "Writing to a closed fd failed as expected: %s\n", strerror(errno));
