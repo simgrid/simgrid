@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <threads.h>
 #include <unistd.h>
