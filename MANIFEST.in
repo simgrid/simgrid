@@ -837,6 +837,8 @@ include teshsuite/mc/dpu/dispatcher.c
 include teshsuite/mc/dpu/dispatcher.tesh
 include teshsuite/mc/dpu/mpat.c
 include teshsuite/mc/dpu/mpat.tesh
+include teshsuite/mc/dpu/multiprodcon.c
+include teshsuite/mc/dpu/multiprodcon.tesh
 include teshsuite/mc/dpu/pi.c
 include teshsuite/mc/dpu/pi.tesh
 include teshsuite/mc/dpu/poke.c
