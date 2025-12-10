@@ -2,7 +2,7 @@
 ! ignore .*LD_PRELOAD.*
 
 ! timeout 300
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/dpu-dispatcher
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/dpu-poke
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4875 unique states visited; 137 explored traces (5236 transition replays, 10111 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4769 unique states visited; 160 explored traces (6752 transition replays, 11521 states visited overall)

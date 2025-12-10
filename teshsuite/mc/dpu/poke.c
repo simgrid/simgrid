@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /*
  This benchmark simulates a system that
@@ -29,36 +30,28 @@
  signals via a channel *a* that it is free
  to work.
 
- Then, it will for K iterations poke the
+ Then, it will for NITERS iterations poke the
  thread pool non-determistically to gather
  the number of free threads.
 
  Thus, the maximum number of free threads
- is automatically bounded by K.
+ is automatically bounded by NITERS.
 
- For a fixed K (e.g. K 1) and an
- increasing N, we obtain an exponential
+ For a fixed NITERS (e.g. NITERS 1) and an
+ increasing NTHREADS, we obtain an exponential
  number of SSBs in nidhugg.
 
- For a fixed N > 1 (e.g. N 2) and
- an increasing K, we obtain almost
+ For a fixed NTHREADS > 1 (e.g. NTHREADS 2) and
+ an increasing NITERS, we obtain almost
  the same number of maximal configurations
  as SSBs in nidhugg.
 */
 
-#ifndef PARAM1
-#define PARAM1 4
-#endif
+int NTHREADS = 3;
+int NITERS   = 3;
 
-#ifndef PARAM2
-#define PARAM2 4
-#endif
-
-#define N PARAM1 // number of threads
-#define K PARAM2 // nunmber of iterations
-
-pthread_mutex_t ma[N];
-int a[N];
+pthread_mutex_t* ma;
+int* a;
 
 pthread_mutex_t mi;
 int i = 0;
@@ -68,7 +61,7 @@ int d = 0;
 static void* choice()
 {
   // printf ("choice: start\n");
-  for (int x = 1; x < N; x++) {
+  for (int x = 1; x < NTHREADS; x++) {
     // printf ("choice: it %d\n",x);
     pthread_mutex_lock(&mi);
     i = x;
@@ -118,18 +111,33 @@ static void* ra()
   return 0;
 }
 
-int main()
+int main(int argc, char** argv)
 {
   pthread_t idk;
   pthread_t idr;
-  pthread_t idw[N];
+
+  if (argc > 1 && argv[1][0] == '-') {
+    printf("Usage: Usage: ./poke <nthread_count> <iteration_count>   # (default: %d threads; %d iterations)\n",
+           NTHREADS, NITERS);
+    exit(0);
+  }
+
+  if (argc == 3) {
+    NTHREADS = atoi(argv[1]);
+    NITERS   = atoi(argv[2]);
+    printf("Using %d threads and %d iterations\n", NTHREADS, NITERS);
+  }
+
+  pthread_t* idw = malloc(sizeof(pthread_t) * NTHREADS);
+  ma             = malloc(sizeof(pthread_mutex_t) * NTHREADS);
+  a              = malloc(sizeof(int) * NTHREADS);
 
   pthread_mutex_init(&mi, NULL);
 
   // printf ("== start ==\n");
 
   // spawn the write threads
-  for (int x = 0; x < N; x++) {
+  for (int x = 0; x < NTHREADS; x++) {
     // initialize the array index
     a[x] = 0;
     // initialize the mutex
@@ -138,11 +146,11 @@ int main()
     pthread_create(&idw[x], NULL, wa, (void*)(long)x);
   }
 
-  // lets find out in K iterations
+  // lets find out in NITERS iterations
   // how many elements have been initialized
   // by poking one thread non-deterministically
   // per iteration.
-  for (int x = 0; x < K; x++) {
+  for (int x = 0; x < NITERS; x++) {
     // printf ("main: iteration %d\n", x);
     //  spawn the counter
     pthread_create(&idk, NULL, choice, NULL);
@@ -154,18 +162,21 @@ int main()
   }
 
   assert(d >= 0);
-  assert(d <= N);
+  assert(d <= NTHREADS);
 
   // join the writer threads
-  for (int x = 0; x < N; x++)
+  for (int x = 0; x < NTHREADS; x++)
     pthread_join(idw[x], NULL);
 
   // assert that d equals to the number of threads that finished before the
   // poking thread checked
-  for (int x = 0; x < N; x++)
+  for (int x = 0; x < NTHREADS; x++)
     if (a[x])
       d++;
-  assert(d == N);
+  assert(d == NTHREADS);
 
+  free(idw);
+  free(ma);
+  free(a);
   return 0;
 }

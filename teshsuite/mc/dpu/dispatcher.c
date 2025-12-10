@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /*
  This benchmark simulates communication between
@@ -50,22 +51,14 @@
  number of SSBs in nidhugg.
 */
 
-#ifndef PARAM1
-#define PARAM1 5
-#endif
+int SNUM = 5; // number of servers
+int RNUM = 2; // number of requests
 
-#ifndef PARAM2
-#define PARAM2 2
-#endif
-
-#define SNUM PARAM1 // number of servers
-#define RNUM PARAM2 // number of requests
-
-pthread_mutex_t servers[SNUM];
+pthread_mutex_t* servers;
 pthread_mutex_t k;
 int sid = 0;           // server id
-int in_channel[SNUM];  // input  communication channel
-int out_channel[SNUM]; // output communicatino channel
+int* in_channel;       // input  communication channel
+int* out_channel;      // output communication channel
 
 // this thread just chooses a server
 // different from the last one if there
@@ -152,8 +145,24 @@ static int process_request(int req_id, int last_server_id)
   return idx;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+
+  if (argc > 1 && argv[1][0] == '-') {
+    printf("Usage: Usage: ./dispatcher <server_count> <request_count>   # (default: %d servers; %d requests)\n", SNUM,
+           RNUM);
+    exit(0);
+  }
+  if (argc == 3) {
+    SNUM = atoi(argv[1]);
+    RNUM = atoi(argv[2]);
+    printf("Using %d servers and %d requests\n", SNUM, RNUM);
+  }
+
+  servers     = malloc(sizeof(pthread_mutex_t) * SNUM);
+  in_channel  = malloc(sizeof(int) * SNUM);
+  out_channel = malloc(sizeof(int) * SNUM);
+
   pthread_t idw[SNUM];
   int picked_servers[RNUM];
 
@@ -176,6 +185,12 @@ int main()
       picked_servers[r] = process_request(r, picked_servers[r - 1]);
   }
 
+  for (int x = 0; x < SNUM; x++)
+    pthread_join(idw[x], NULL);
+
+  free(servers);
+  free(in_channel);
+  free(out_channel);
   pthread_exit(0);
 
 #if 0

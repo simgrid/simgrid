@@ -107,7 +107,7 @@ foreach(x      dispatcher mpat multiprodcon pi poke)
   if(${enable_sthread} AND ${enable_testsuite_dpu} AND SIMGRID_HAVE_MC AND (NOT DEFINED _${example}_disable))
     add_executable       (dpu-${x}  EXCLUDE_FROM_ALL dpu/${x}.c)         
     set_target_properties(dpu-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    target_link_libraries(dpu-${x}  PRIVATE Threads::Threads)
+    target_link_libraries(dpu-${x}  PRIVATE Threads::Threads PUBLIC m)
     add_dependencies(tests-mc dpu-${x})
 
     ADD_TESH(dpu-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)

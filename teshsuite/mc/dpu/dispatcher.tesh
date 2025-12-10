@@ -5,4 +5,4 @@
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/dpu-dispatcher
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 4875 unique states visited; 137 explored traces (5236 transition replays, 10111 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 5560 unique states visited; 137 explored traces (5264 transition replays, 10824 states visited overall)

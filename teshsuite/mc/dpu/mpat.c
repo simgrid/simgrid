@@ -14,13 +14,8 @@
 
 #include <assert.h>
 #include <pthread.h>
-
-// default value
-#ifndef PARAM1
-#define PARAM1 3
-#endif
-
-#define K PARAM1
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
 The left part of the unfolding:
@@ -42,7 +37,7 @@ w1:ma[1]  .   .
    r1:ma[1]    r1:ma[1]
 
 */
-pthread_mutex_t ma[K];
+pthread_mutex_t* ma;
 pthread_mutex_t mi;
 
 // The parametric threads
@@ -82,8 +77,19 @@ static void* ra(void* arg)
   return 0;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+  int K = 3;
+
+  if (argc > 1 && argv[1][0] == '-') {
+    printf("Usage: Usage: ./mpat <k>   # (default: k=%d)\n", K);
+    exit(0);
+  }
+  if (argc > 1) {
+    K = atoi(argv[1]);
+    printf("Using k=%d\n", K);
+  }
+  ma = malloc(sizeof(pthread_mutex_t) * K);
   pthread_t idr[K];
   pthread_t idw[K];
   pthread_mutex_init(&mi, NULL);
@@ -99,4 +105,5 @@ int main()
     pthread_join(idw[i], NULL);
     pthread_join(idr[i], NULL);
   }
+  free(ma);
 }

@@ -2,24 +2,20 @@
 #include <math.h>
 #include <pthread.h>
 #include <stdio.h>
-
-// default values for the parameters
-#ifndef PARAM1
-#define PARAM1 2
-#endif
+#include <stdlib.h>
 
 #ifndef PARAM2
 #define PARAM2 5
 #endif
 
-#define TASKS 2        // maximum number of tasks processed by a worker
-#define PRODS PARAM1   // number of producers
-#define ITERS 2        // number of iterations that producers make before producing a number
-#define WORKERS PARAM2 // number of worker threads
+#define TASKS 2  // maximum number of tasks processed by a worker
+int PRODS = 2;   // number of producers
+#define ITERS 2  // number of iterations that producers make before producing a number
+int WORKERS = 5; // number of worker threads
 
-pthread_mutex_t mut[WORKERS];
-int workreq[WORKERS];
-int workdone[WORKERS];
+pthread_mutex_t* mut;
+int* workreq;
+int* workdone;
 
 pthread_mutex_t prodmut;
 unsigned prodbuff;
@@ -54,7 +50,7 @@ static void* worker(void* arg)
 static void* producer(void* arg)
 {
   unsigned dst, i, tmp;
-  unsigned id = (unsigned long)arg;
+  long id = (unsigned long)arg;
 
   // printf ("prod%d: starting\n", id);
   assert(id < PRODS);
@@ -91,8 +87,12 @@ static void* producer(void* arg)
 
 int main()
 {
-  pthread_t t;
-  int i;
+  mut      = malloc(sizeof(pthread_mutex_t) * WORKERS);
+  workreq  = malloc(sizeof(int) * WORKERS);
+  workdone = malloc(sizeof(int) * WORKERS);
+
+  pthread_t workers[WORKERS];
+  pthread_t producers[PRODS];
 
   // printf ("== start ==\n");
 
@@ -101,21 +101,26 @@ int main()
 
   // launch the worker threads; thread i will work when workreq[i] >= 1, and
   // will increment workdon[i] when it finishes a task
-  for (i = 0; i < WORKERS; i++) {
+  for (int i = 0; i < WORKERS; i++) {
     pthread_mutex_init(mut + i, 0);
     workreq[i]  = 0;
     workdone[i] = 0;
-    pthread_create(&t, 0, worker, (void*)(long)i);
+    pthread_create(&workers[i], 0, worker, (void*)(long)i);
   }
 
   // launch the producer threads, which will build a shared buffer and
   pthread_mutex_init(&prodmut, 0);
   prodbuff = 0;
-  for (i = 0; i < PRODS; i++) {
-    pthread_create(&t, 0, producer, (void*)(long)i);
-  }
+  for (int i = 0; i < PRODS; i++)
+    pthread_create(&producers[i], 0, producer, (void*)(long)i);
 
   // wait for all threads to finish
+  for (int i = 0; i < WORKERS; i++)
+    pthread_join(workers[i], NULL);
+
+  for (int i = 0; i < PRODS; i++)
+    pthread_join(producers[i], NULL);
+
   // printf ("== done ==\n");
   pthread_exit(0);
 }
