@@ -526,7 +526,9 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
       sthread_enable();
       return -1;
     }
-    read(realfd, vfile->content->data(), sb.st_size);
+    res = read(realfd, vfile->content->data(), sb.st_size);
+    xbt_assert(res == sb.st_size, "Reading in %s yielded only %d bytes while stat() promised %d bytes (error: %s)",
+               pathname, res, (int)sb.st_size, strerror(errno));
     close(realfd);
     sthread_enable();
   }
