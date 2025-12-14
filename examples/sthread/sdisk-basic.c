@@ -21,7 +21,6 @@
 int main(void)
 {
   const char* path = "/tmp/sthread_test_disk_API.tmp";
-  unlink(path);
 
   // ----------------------------------
   fprintf(stderr, "== TEST: basic open/close ==\n");

@@ -48,6 +48,121 @@ static std::map<int, VirtualFile>
 static int next_virtual_fd =
     1000; // We arbitrarily skip some values. We could check in /proc which fd are used and which ones are free.
 
+static bool lambda_append_to_text(char* out, const char* str, size_t size, size_t used)
+{
+  const char* sep = (used > 0) ? " | " : "";
+  size_t sep_len  = strlen(sep);
+  size_t str_len  = strlen(str);
+  size_t needed   = strlen(sep) + strlen(str) + 1; /* + '\0' */
+
+  if (used + needed <= size) {
+    if (sep_len > 0) {
+      memcpy(out + used, sep, sep_len);
+      used += sep_len;
+    }
+    memcpy(out + used, str, str_len);
+    used += str_len;
+    out[used] = '\0';
+    return true;
+  }
+
+  /* too long. Truncate the resulting string */
+  if (size >= 4) {
+    memcpy(out + size - 4, "...", 3);
+    out[size - 1] = '\0';
+  } else if (size >= 1) {
+    out[size - 1] = '\0';
+  }
+  return false;
+}
+static char* open_flags_to_text(int flags, char* out, size_t out_size)
+{
+  if (out == nullptr || out_size == 0)
+    return out;
+
+  size_t used = 0;
+  out[0]      = '\0';
+
+  /* access mode */
+  switch (flags & O_ACCMODE) {
+    case O_RDONLY:
+      lambda_append_to_text(out, "O_RDONLY", out_size, used);
+      break;
+    case O_WRONLY:
+      lambda_append_to_text(out, "O_WRONLY", out_size, used);
+      break;
+    case O_RDWR:
+      lambda_append_to_text(out, "O_RDWR", out_size, used);
+      break;
+    default:
+      lambda_append_to_text(out, "O_ACCMODE?", out_size, used);
+      break;
+  }
+
+  static const std::vector<std::pair<int, const char*>> flag_table = {
+      {O_CREAT, "O_CREAT"},         {O_EXCL, "O_EXCL"},       {O_TRUNC, "O_TRUNC"},
+      {O_APPEND, "O_APPEND"},       {O_CLOEXEC, "O_CLOEXEC"}, {O_SYNC, "O_SYNC"},
+#ifdef O_DSYNC
+      {O_DSYNC, "O_DSYNC"},
+#endif
+#ifdef O_RSYNC
+      {O_RSYNC, "O_RSYNC"},
+#endif
+#ifdef O_NONBLOCK
+      {O_NONBLOCK, "O_NONBLOCK"},
+#endif
+#ifdef O_NOFOLLOW
+      {O_NOFOLLOW, "O_NOFOLLOW"},
+#endif
+#ifdef O_DIRECTORY
+      {O_DIRECTORY, "O_DIRECTORY"},
+#endif
+#ifdef O_TMPFILE
+      {O_TMPFILE, "O_TMPFILE"},
+#endif
+  };
+
+  for (const auto& p : flag_table) {
+    if ((flags & p.first) && not lambda_append_to_text(out, p.second, out_size, used))
+      return out;
+  }
+
+  return out;
+}
+static char* open_mod_to_text(mode_t mode, char* out, size_t out_size)
+{
+  if (out == nullptr || out_size == 0)
+    return out;
+
+  size_t used = 0;
+  out[0]      = '\0';
+
+  static const std::pair<mode_t, const char*> mode_table[] = {
+      {S_IRUSR, "S_IRUSR"}, {S_IWUSR, "S_IWUSR"}, {S_IXUSR, "S_IXUSR"}, // owner read/write/execute
+      {S_IRGRP, "S_IRGRP"}, {S_IWGRP, "S_IWGRP"}, {S_IXGRP, "S_IXGRP"}, // group read/write/execute
+      {S_IROTH, "S_IROTH"}, {S_IWOTH, "S_IWOTH"}, {S_IXOTH, "S_IXOTH"}, // others read/write/execute
+#ifdef S_ISUID
+      {S_ISUID, "S_ISUID"}, // set-user-ID
+#endif
+#ifdef S_ISGID
+      {S_ISGID, "S_ISGID"}, // set-group-ID
+#endif
+#ifdef S_ISVTX
+      {S_ISVTX, "S_ISVTX"}, // sticky bit
+#endif
+  };
+
+  for (const auto& p : mode_table) {
+    if ((mode & p.first) && not lambda_append_to_text(out, p.second, out_size, used))
+      return out;
+  }
+
+  if (out[0] == '\0')
+    strcat(out, "0");
+
+  return out;
+}
+
 int sthread_open(const char* pathname, int flags, mode_t mode)
 {
   // Create the file descriptor in our data structures
@@ -56,6 +171,10 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
   vfile->flags       = flags;
   vfile->offset      = 0;
   vfile->content     = &pathname_to_vfile[pathname];
+
+  // For debug messages
+  char flags_buff[512];
+  char mod_buff[512];
 
   if (flags & O_TRUNC && (flags & O_RDWR || flags & O_WRONLY))
     // Trunc the file content as requested
@@ -68,6 +187,9 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
     if (res != 0 && errno == ENOENT) {
       // File not found, no need to read its content
       sthread_enable();
+
+      XBT_VERB("open(%s, flags:%s, mode:%s) -> %d", pathname, open_flags_to_text(flags, flags_buff, 511),
+               open_mod_to_text(mode, mod_buff, 511), vfd);
       return vfd;
     }
     if (res != 0)
@@ -77,6 +199,8 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
     int realfd = open(pathname, flags, mode);
     if (realfd == -1) {
       sthread_enable();
+      XBT_VERB("open(%s, flags:%s, mode:%s) -> -1", pathname, open_flags_to_text(flags, flags_buff, 511),
+               open_mod_to_text(mode, mod_buff, 511));
       return -1;
     }
     res = read(realfd, vfile->content->data(), sb.st_size);
@@ -86,15 +210,23 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
     sthread_enable();
   }
 
+  XBT_VERB("open(%s, flags:%s, mode:%s) -> %d", pathname, open_flags_to_text(flags, flags_buff, 511),
+           open_mod_to_text(mode, mod_buff, 511), vfd);
+
   return vfd;
 }
 
 int sthread_close(int fd)
 {
   auto it = fd_to_vfile.find(fd);
-  xbt_assert(it != fd_to_vfile.end(), "sthread is trying to close a file it didn't open. It's either a bug in your "
-                                      "application, or in the sthread interception code");
+  if (it == fd_to_vfile.end()) {
+    XBT_ERROR("Cannot close fd %d which does not seem to be a virtualized one.", fd);
+    errno = ENOENT;
+    return -1;
+  }
+
   fd_to_vfile.erase(it);
+  XBT_VERB("close(fd:%d) -> 0", fd);
 
   return 0;
 }
@@ -102,6 +234,7 @@ int sthread_unlink(const char* pathname)
 {
   auto it = pathname_to_vfile.find(pathname);
   if (it == pathname_to_vfile.end()) {
+    XBT_ERROR("Cannot unlink file %s which does not seem to exist in the virtualisation layer.", pathname);
     errno = ENOENT;
     return -1;
   }
@@ -112,14 +245,17 @@ ssize_t sthread_write(int fd, const void* buf, size_t count)
 {
   auto it = fd_to_vfile.find(fd);
   if (it == fd_to_vfile.end()) {
+    XBT_ERROR("File descriptor %d does not seem to be a valid sthread one. write() is failing.", fd);
     errno = EBADF;
     return -1;
   }
   VirtualFile* vfile = &it->second;
 
-  int res = sthread_pwrite(fd, buf, count, vfile->offset);
+  ssize_t res = sthread_pwrite(fd, buf, count, vfile->offset);
   if (res > 0)
     vfile->offset += res;
+
+  XBT_VERB("write(fd:%d, count:%zu) -> %zd", fd, count, res);
 
   return res;
 }
@@ -134,6 +270,9 @@ ssize_t sthread_pwrite(int fd, const void* buf, size_t count, off_t offset)
   VirtualFile* vfile = &it->second;
 
   if (not(vfile->flags & O_RDWR || vfile->flags & O_WRONLY)) {
+    char buffer[512];
+    XBT_ERROR("The flags of the file descriptor %d are '%s'. write() not allowed.", fd,
+              open_flags_to_text(vfile->flags, buffer, 511));
     errno = EBADF;
     return -1;
   }
@@ -152,6 +291,7 @@ ssize_t sthread_read(int fd, void* buf, size_t count)
 {
   auto it = fd_to_vfile.find(fd);
   if (it == fd_to_vfile.end()) {
+    XBT_ERROR("File descriptor %d does not seem to be a valid sthread one. read() is failing.", fd);
     errno = EBADF;
     return -1;
   }
@@ -161,6 +301,7 @@ ssize_t sthread_read(int fd, void* buf, size_t count)
   if (result >= 0)
     vfile->offset += result;
 
+  XBT_VERB("read(fd:%d, count:%zu) -> %zd", fd, count, result);
   return result;
 }
 /* Reads data from a specific offset without modifying the file's current offset. */
@@ -174,6 +315,9 @@ ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset)
   VirtualFile* vfile = &it->second;
 
   if (not(vfile->flags & O_RDWR || vfile->flags & O_RDONLY)) {
+    char buffer[512];
+    XBT_ERROR("The flags of the file descriptor %d are '%s'. read() not allowed.", fd,
+              open_flags_to_text(vfile->flags, buffer, 511));
     errno = EBADF;
     return -1;
   }
