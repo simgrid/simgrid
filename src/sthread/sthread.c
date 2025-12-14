@@ -53,6 +53,8 @@
 
 /* ---- Retrieving the real implementation of all intercepted symbols (to allow SimGrid to use them instead of
  * intercepting itself) ---- */
+static long (*raw_syscall)(long number, ...);
+
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
 static int (*raw_pthread_detach)(pthread_t);
 static int (*raw_pthread_join)(pthread_t, void**);
@@ -111,6 +113,8 @@ static int (*raw_unlink)(const char* pathname);
 
 static void intercepter_init()
 {
+  raw_syscall = dlsym(RTLD_NEXT, "syscall");
+
   raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   raw_pthread_detach        = dlsym(RTLD_NEXT, "pthread_detach");
   raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
@@ -165,6 +169,34 @@ static void intercepter_init()
   raw_preadv2  = dlsym(RTLD_NEXT, "preadv2");
   raw_pwritev2 = dlsym(RTLD_NEXT, "pwritev2");
   raw_unlink   = dlsym(RTLD_NEXT, "unlink");
+}
+
+/* ---- direct syscall ---- */
+long syscall(long number, ...)
+{
+  if (raw_pthread_exit == NULL)
+    intercepter_init();
+
+  va_list ap;
+  va_start(ap, number);
+
+  // x86_64 Linux ABI: up to 6 parameters
+  long a1 = va_arg(ap, long);
+  long a2 = va_arg(ap, long);
+  long a3 = va_arg(ap, long);
+  long a4 = va_arg(ap, long);
+  long a5 = va_arg(ap, long);
+  long a6 = va_arg(ap, long);
+  va_end(ap);
+
+  if (!sthread_is_enabled())
+    return raw_syscall(number, a1, a2, a3, a4, a5, a6);
+
+  sthread_disable();
+
+  int res = sthread_syscall(number, a1, a2, a3, a4, a5, a6);
+  sthread_enable();
+  return res;
 }
 
 /* ---- pthread ---- */

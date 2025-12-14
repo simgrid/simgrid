@@ -34,6 +34,8 @@ XBT_PUBLIC int sthread_is_enabled(void); // Returns whether sthread is currenctl
 XBT_PUBLIC void sthread_do_initialize(); // Specify that sthread is initialized in memory
 XBT_PUBLIC int sthread_is_initialized(void); // Returns whether sthread was inithalized (probably through LD_PRELOADED)
 
+long sthread_syscall(int number, long a1, long a2, long a3, long a4, long a5, long a6);
+
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);
 int sthread_detach(sthread_t thread);

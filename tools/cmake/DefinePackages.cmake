@@ -235,6 +235,7 @@ set(STHREAD_SRC
   
   src/sthread/sthread_impl.cpp
   src/sthread/sthread_disk.cpp
+  src/sthread/sthread_syscall.cpp
 
   src/sthread/ObjectAccess.cpp
 )

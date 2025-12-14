@@ -2840,6 +2840,7 @@ include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_disk.cpp
 include src/sthread/sthread_impl.cpp
+include src/sthread/sthread_syscall.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
 include src/xbt/backtrace.cpp
