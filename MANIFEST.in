@@ -2837,6 +2837,7 @@ include src/smpi/smpitools.sh
 include src/sthread/ObjectAccess.cpp
 include src/sthread/sthread.c
 include src/sthread/sthread.h
+include src/sthread/sthread_disk.cpp
 include src/sthread/sthread_impl.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
