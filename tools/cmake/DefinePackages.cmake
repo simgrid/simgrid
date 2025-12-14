@@ -636,7 +636,6 @@ set(headers_to_install
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
   include/simgrid/simcall.hpp
-  include/simgrid/simix.hpp
   include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp
   include/simgrid/disk.h
@@ -819,11 +818,8 @@ set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURC
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
-  doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/outcomes_vizu.doc
-  doc/doxygen/uhood.doc
-  doc/doxygen/uhood_switch.doc
 
   examples/README.rst
 

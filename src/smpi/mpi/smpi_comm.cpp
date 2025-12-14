@@ -42,7 +42,7 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, bool smp, int in_id)
     : group_(group), topo_(topo), is_smp_comm_(smp), id_(in_id)
 {
   errhandler_->ref();
-  //First creation of comm is done before SIMIX_run, so only do comms for others
+  // First creation of comm is done before Engine::run, so only do comms for others
   if(in_id==MPI_UNDEFINED && smp==0 && this->rank()!=MPI_UNDEFINED ){
     this->add_f();
     group->c2f();
@@ -371,7 +371,7 @@ void Comm::unref(Comm* comm){
 }
 
 MPI_Comm Comm::find_intra_comm(int * leader){
-  //get the indices of all processes sharing the same simix host
+  // get the indices of all processes sharing the same s4u host
   int intra_comm_size     = 0;
   aid_t min_index         = std::numeric_limits<aid_t>::max(); // the minimum index will be the leader
   sg_host_self()->get_impl()->foreach_actor([this, &intra_comm_size, &min_index](auto& actor) {
