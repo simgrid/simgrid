@@ -231,11 +231,6 @@ void BeFSExplorer::run()
 
     visited_states_count_++;
 
-    // Before leaving that state, if the transition we just took can be taken multiple times, we
-    // need to give it to the opened states
-    if (stack_.back()->has_more_to_be_explored() > 0)
-      opened_states_.emplace_back(state);
-
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
 
