@@ -225,7 +225,7 @@ public:
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 
-  /* Returns the total amount of states created so far (for statistics) */
+  /* Returns amount of states still in memory (for statistics) */
   static long get_in_memory_states() { return in_memory_states_; }
 
   /**

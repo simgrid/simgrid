@@ -106,9 +106,11 @@ void ParallelizedExplorer::TreeHandler()
 
     State::garbage_collect();
     traces_count++;
-    if (traces_count % 100 == 0)
-      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d (with %ld states remaining in memory)",
-               traces_count, remaining_todo, State::get_in_memory_states());
+    if (traces_count % 1000 == 0)
+      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d (with %ld states remaining in memory "
+               "and %ld already freed)",
+               traces_count, remaining_todo, State::get_in_memory_states(),
+               State::get_expanded_states() - State::get_in_memory_states());
 
     if (traces_count % 1000 == 0) {
       opened_heads_.sort();
