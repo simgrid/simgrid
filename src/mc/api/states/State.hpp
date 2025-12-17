@@ -121,12 +121,9 @@ protected:
     return std::count_if(opened_.begin(), opened_.end(), [](auto const& ptr_t) { return ptr_t != nullptr; });
   }
 
-  /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
-   *  value, and then updated when nearby states are closed. */
-  bool is_leftmost_;
-
-  /** Store the aid that have been closed. This is usefull to determine wether a given state is leftmost. */
-  std::vector<aid_t> closed_;
+  /** Store the (aid,times considered) that have been closed. This is usefull to determine wether a given state is
+   * leftmost. */
+  std::vector<std::pair<aid_t, int>> closed_;
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);

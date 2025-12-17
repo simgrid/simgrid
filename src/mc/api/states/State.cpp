@@ -56,9 +56,6 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
   if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor) {
     traversal_ = std::make_shared<PostFixTraversal>(this);
 
-    is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
-  }
-
   being_explored.test_and_set();
 }
 
@@ -72,9 +69,6 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr i
   depth_               = parent_state_->depth_ + 1;
 
   parent_state_->update_opened(get_transition_in());
-  // This is leftmost iff parent is leftmost, and this is the leftest opened child of the parent
-  is_leftmost_ =
-      parent_state_->is_leftmost_ and parent_state_->opened_[parent_state_->closed_.size()] == get_transition_in();
   parent_state_->record_child_state(this);
 
   traversal_ = std::make_shared<PostFixTraversal>(this);
