@@ -219,11 +219,11 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     XBT_VERB("Execution came to an end at %.100s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %lu, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
 
-    state_stack.back()->update_expected_total_children(true);
+    state_stack.back()->on_branch_completion();
     if (_sg_mc_eta_steps != 0 and explored_traces_ % abs(_sg_mc_eta_steps) == 0)
       XBT_INFO("Explored a total of %.5e/%.5e states. Hence %3.2f completion rate",
                (double)State::get_expanded_states(), state_stack.front()->get_expected_total_children(),
-               100 * (float)State::get_expanded_states() / state_stack.front()->get_expected_total_children());
+               100 * (double)State::get_expanded_states() / state_stack.front()->get_expected_total_children());
 
     report_correct_execution(s);
     if (_sg_mc_debug_optimality)

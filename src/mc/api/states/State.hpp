@@ -107,8 +107,6 @@ protected:
   bool actor_status_set_ = false;
   bool is_a_leaf         = true;
 
-  std::mutex children_lock_;
-  std::condition_variable adding_children;
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
@@ -260,7 +258,10 @@ public:
 
   xbt::reference_holder<State> reference_holder_;
 
-  std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
+  /**
+   * @brief Called by a leaf of the tree when we finished exploring the corresponding branch
+   */
+  virtual void on_branch_completion() { update_expected_total_children(true); }
 
   void mark_to_delete() { to_be_deleted_ = true; }
 
@@ -280,10 +281,10 @@ private:
   // Save the value both to save computation time and to keep the data even if the child
   // is being remove from memory
   std::vector<double> expected_of_children_ = {};
+  void update_expected_total_children(bool is_leaf);
 
 public:
   double get_expected_total_children() const { return expected_total_children_; }
-  void update_expected_total_children(bool is_leaf);
 };
 
 } // namespace simgrid::mc

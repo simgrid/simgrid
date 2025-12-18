@@ -57,8 +57,6 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
   // its own way so let it cook
   if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor)
     traversal_ = std::make_shared<PostFixTraversal>(this);
-
-  being_explored.test_and_set();
 }
 
 State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
@@ -225,7 +223,6 @@ void State::register_as_correct()
 
 void State::record_child_state(StatePtr child)
 {
-  std::lock_guard<std::mutex> g(children_lock_);
   aid_t child_aid      = child->get_transition_in()->aid_;
   int times_considered = child->get_transition_in()->times_considered_;
   if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
@@ -234,7 +231,6 @@ void State::record_child_state(StatePtr child)
     children_states_[child_aid].resize(times_considered + 1);
   children_states_[child_aid][times_considered] = std::move(child);
   is_a_leaf                                     = false;
-  adding_children.notify_one();
 }
 
 void State::signal_on_backtrack()

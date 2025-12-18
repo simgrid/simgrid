@@ -59,7 +59,7 @@ RecordTrace get_record_trace_from_stack(stack_t& stack)
   return res;
 }
 
-void ParallelizedExplorer::TreeHandler()
+void ParallelizedExplorer::TreeHandler(StatePtr initial_state)
 {
   long traces_count = 0;
   // This local counter will repreent the number of things in opened_heads_ + the number of currently working Explorer
@@ -89,6 +89,10 @@ void ParallelizedExplorer::TreeHandler()
     remaining_todo--;
     XBT_DEBUG("[tid:TreeHandler] Received a race update! Going to apply it");
 
+    // Warn the tree the explorer finished exploring this branch
+    if (to_apply->get_last_explored_state() != nullptr)
+      to_apply->get_last_explored_state()->on_branch_completion();
+
     std::vector<StatePtr> new_opened;
     remaining_todo +=
         reduction_algo_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
@@ -107,15 +111,20 @@ void ParallelizedExplorer::TreeHandler()
     State::garbage_collect();
     traces_count++;
     if (traces_count % 1000 == 0)
-      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d (with %ld states remaining in memory "
-               "and %ld already freed)",
-               traces_count, remaining_todo, State::get_in_memory_states(),
-               State::get_expanded_states() - State::get_in_memory_states());
+      XBT_INFO("About %ld traces have been explored so far. Remaining todo: %d (with %.3e states remaining in memory "
+               "and %.3e already freed)",
+               traces_count, remaining_todo, (double)State::get_in_memory_states(),
+               (double)(State::get_expanded_states() - State::get_in_memory_states()));
 
     if (traces_count % 1000 == 0) {
       opened_heads_.sort();
       races_list_.sort();
     }
+
+    if (_sg_mc_eta_steps != 0 and traces_count % abs(_sg_mc_eta_steps) == 0)
+      XBT_INFO("Explored a total of %.5e/%.5e states. Hence %3.2f completion rate",
+               (double)State::get_expanded_states(), initial_state->get_expected_total_children(),
+               100 * (double)State::get_expanded_states() / initial_state->get_expected_total_children());
   }
 
   // Once we left the main loop, poison the explorers
@@ -190,15 +199,6 @@ void Explorer(ThreadLocalExplorer& local_explorer)
       XBT_DEBUG("[tid:Explorer %d] Drinking the Kool-Aid sent by the TreeHandler! See ya",
                 local_explorer.get_explorer_id());
       break;
-    }
-
-    if (to_visit->being_explored.test_and_set()) {
-      // This state has already been or will be explored very soon by the TreeHandler, skip it
-      XBT_DEBUG("[tid: Explorer %d] We lost the TAS race with the TH for state #%lu, let's move on",
-                local_explorer.get_explorer_id(), to_visit->get_num());
-
-      races_list_->push(reduction_algo_->empty_race_update());
-      continue;
     }
 
     XBT_VERB("[tid: Explorer %d] Found a next candidate to visit: state #%lu!", local_explorer.get_explorer_id(),
@@ -301,7 +301,6 @@ void ParallelizedExplorer::run()
   one_way_disabled_ = true;
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
-  initial_state->being_explored.clear();
 
   one_way_disabled_ = false;
 
@@ -326,7 +325,7 @@ void ParallelizedExplorer::run()
     //	     &races_list_, &thread_results_[i]);
   }
 
-  TreeHandler();
+  TreeHandler(initial_state);
 
   for (int i = 0; i < number_of_threads; i++) {
     thread_pool_[i].join();

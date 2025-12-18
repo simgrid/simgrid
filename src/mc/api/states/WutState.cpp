@@ -31,19 +31,14 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   if (this->get_depth() >= (unsigned)_sg_mc_max_depth)
     return nullptr;
 
-  if (_sg_mc_explore_algo == "parallel") {
-    std::unique_lock<std::mutex> lock(children_lock_);
-    if (this->is_a_leaf) {
-      // If the state considered is a leaf
-      if (this->being_explored.test_and_set()) {
-        // ... and it is already being explored by someone
-        // then wait on the condition variable for a child to appear
-        XBT_DEBUG("Going to wait for something to be added");
-        adding_children.wait(lock);
-      }
+  if (_sg_mc_explore_algo == "parallel" and this->owned_by_the_explorers_) {
 
-      // Else, we just set the value ourself: we are responsible for this leaf exploration!
-    }
+    // We want to insert something in a subtree currently being explored.
+    // Let's put that execution somewhere else for now, we will proceed later.
+
+    to_be_inserted_.push_back(w);
+
+    return nullptr;
   }
 
   for (auto& t : this->opened_) {
@@ -127,8 +122,8 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
     XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
     current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
-  // Mark the last state (the leaf) as not being explored (ie. someone need to transform it into a node later)
-  current_state->being_explored.clear();
+
+  static_cast<WutState*>(current_state.get())->give_ownership_to_explorers();
   return current_state;
 }
 
@@ -149,6 +144,30 @@ std::unordered_set<aid_t> WutState::get_sleeping_actors(aid_t after_actor) const
     actors.insert(t->aid_);
   }
   return actors;
+}
+
+void WutState::on_branch_completion()
+{
+  State::on_branch_completion();
+
+  if (_sg_mc_explore_algo == "parallel") {
+
+    // Let's mark that this state is not owned by the explorers anymore
+    WutState* curr_state = this;
+
+    while (not curr_state->owned_by_the_explorers_) {
+      curr_state = static_cast<WutState*>(curr_state->get_parent_state());
+      xbt_assert(
+          curr_state != nullptr,
+          "This state was previously owned by the explorers, why isn't that information marked somewhere? Fix Me");
+    }
+
+    curr_state->owned_by_the_explorers_ = false;
+
+    for (auto seq : curr_state->to_be_inserted_) {
+      curr_state->insert_into_tree(seq, Exploration::get_instance()->get_remote_app());
+    }
+  }
 }
 
 } // namespace simgrid::mc

@@ -104,8 +104,11 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
 {
   StatePtr new_state;
-  if (parent_state == nullptr)
+  if (parent_state == nullptr) {
     new_state = StatePtr(new WutState(remote_app), true);
+    static_cast<WutState*>(new_state.get())->give_ownership_to_explorers();
+  }
+
   else {
     if (auto existing_state =
             parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
