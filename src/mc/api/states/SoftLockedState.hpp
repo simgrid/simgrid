@@ -19,7 +19,7 @@ public:
   {
   }
 
-  std::unordered_set<aid_t> get_enabled_actors() const override { return std::unordered_set<aid_t>(); }
+  bool has_enabled_actors() const override { return false; }
 };
 
 } // namespace simgrid::mc

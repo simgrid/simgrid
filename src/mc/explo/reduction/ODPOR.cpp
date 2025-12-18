@@ -23,7 +23,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
-  if (not s->get_enabled_actors().empty())
+  if (s->has_enabled_actors())
     return new RaceUpdate();
 
   const auto last_event = E.get_latest_event_handle();

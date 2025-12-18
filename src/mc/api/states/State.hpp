@@ -219,8 +219,8 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  virtual std::unordered_set<aid_t> get_enabled_actors() const;
-  std::vector<aid_t> get_batrack_minus_done() const;
+  virtual bool has_enabled_actors() const;
+  bool has_todo_actors() const;
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

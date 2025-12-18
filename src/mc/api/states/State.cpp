@@ -194,30 +194,28 @@ std::unordered_set<aid_t> State::get_backtrack_set() const
   return actors;
 }
 
-std::unordered_set<aid_t> State::get_enabled_actors() const
+bool State::has_enabled_actors() const
 {
-  std::unordered_set<aid_t> actors;
   for (const auto& state : get_actors_list()) {
     if (not state.has_value())
       continue;
     if (state.value().is_enabled()) {
-      actors.insert(state.value().get_aid());
+      return true;
     }
   }
-  return actors;
+  return false;
 }
 
-std::vector<aid_t> State::get_batrack_minus_done() const
+bool State::has_todo_actors() const
 {
-  std::vector<aid_t> actors;
   for (const auto& state : get_actors_list()) {
     if (not state.has_value())
       continue;
     if (state.value().is_todo()) {
-      actors.insert(actors.begin(), state.value().get_aid());
+      return true;
     }
   }
-  return actors;
+  return false;
 }
 
 void State::register_as_correct()

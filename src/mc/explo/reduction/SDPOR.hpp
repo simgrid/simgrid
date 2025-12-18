@@ -44,7 +44,7 @@ public:
 
     State* s = S->back().get();
     // let's look for race only on the maximal executions
-    if (not s->get_enabled_actors().empty())
+    if (s->has_enabled_actors())
       return new RaceUpdate();
 
     auto updates = new RaceUpdate();
@@ -101,7 +101,7 @@ public:
 
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override
   {
-    if (S->back()->get_batrack_minus_done().empty())
+    if (not S->back()->has_todo_actors())
       return -1;
     return S->back()->next_transition_guided().first;
   }
