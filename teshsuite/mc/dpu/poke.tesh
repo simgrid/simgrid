@@ -6,3 +6,16 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 4769 unique states visited; 160 explored traces (6752 transition replays, 11521 states visited overall)
+
+! ignore .*todo.*
+# We ignore output of each explorer since this is dependent of the threads scheduling
+! ignore .*Explorer.*
+! ignore Using.*
+
+! timeout 300
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --cfg=model-check/exploration-algo:parallel --cfg=model-check/parallel-thread:8 --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/dpu-poke 8 3
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'parallel'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/parallel-thread' to '8'
+> [0.000000] [mc_parallel/INFO] Start a Parallel exploration with 8 threads. Reduction is: odpor.
+> [0.000000] [mc_parallel/INFO] Parallel exploration ended. 3700 explored traces overall
