@@ -78,7 +78,7 @@ public:
   /**
    * @brief Sets the number of parallel threads to use  for the user contexts.
    *
-   * This function should be called before initializing SIMIX.
+   * This function should be called before initializing the engine.
    * A value of 1 means no parallelism (1 thread only).
    * If the value is greater than 1, the thread support must be enabled.
    * If the value is less than 1, the optimal number of threads is chosen automatically.

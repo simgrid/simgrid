@@ -59,7 +59,7 @@ RecordTrace BeFSExplorer::get_record_trace() // override
 
 void BeFSExplorer::restore_stack(StatePtr state)
 {
-  XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%ld", stack_.size(), state->get_num());
+  XBT_DEBUG("Going to restore stack. Current depth is %lu; chosen state is #%lu", stack_.size(), state->get_num());
   stack_.clear();
   execution_seq_     = odpor::Execution();
   State* current_state = state.get();
@@ -117,7 +117,7 @@ void BeFSExplorer::run()
     State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo; %lu currently opened states)", stack_.size(),
+    XBT_DEBUG("Exploration depth=%zu (state:#%lu; %zu interleaves todo; %lu currently opened states)", stack_.size(),
               state->get_num(), state->count_todo(), opened_states_.size());
 
     // Backtrack if we reached the maximum depth
@@ -158,7 +158,7 @@ void BeFSExplorer::run()
           odpor::MazurkiewiczTraces::record_new_execution(execution_seq_);
         get_remote_app().finalize_app();
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
-        XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
+        XBT_VERB("(state: %lu, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
         report_correct_execution(state);
 
         state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
@@ -207,7 +207,7 @@ void BeFSExplorer::run()
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves, %lu opened states)",
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves, %lu opened states)",
              state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
 
@@ -236,7 +236,7 @@ void BeFSExplorer::run()
     execution_seq_.push_transition(std::move(executed_transition));
 
     if (dot_output_ != nullptr)
-      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), stack_.back()->get_num(),
+      dot_output("\"%lu\" -> \"%lu\" [%s];\n", state->get_num(), stack_.back()->get_num(),
                  state->get_transition_out()->dot_string().c_str());
   }
   log_state();
@@ -266,7 +266,7 @@ StatePtr BeFSExplorer::best_opened_state()
     StatePtr candidate = std::move(opened_states_[guess]);
     opened_states_.erase(opened_states_.begin() + guess);
     while (candidate->next_transition_guided().first == -1) {
-      XBT_DEBUG("Candidate state #%ld discarded because the next transition guided is -1", candidate->get_num());
+      XBT_DEBUG("Candidate state #%lu discarded because the next transition guided is -1", candidate->get_num());
       if (opened_states_.size() == 0) {
         XBT_DEBUG("No more opened state");
         return nullptr;
@@ -298,7 +298,7 @@ void BeFSExplorer::backtrack()
     return;
   }
 
-  XBT_DEBUG("Backtracking to state #%ld at depth %lu", backtracking_point->get_num(), backtracking_point->get_depth());
+  XBT_DEBUG("Backtracking to state #%lu at depth %lu", backtracking_point->get_num(), backtracking_point->get_depth());
 
   // We found a backtracking point, let's go to it
   backtrack_to_state(backtracking_point.get());

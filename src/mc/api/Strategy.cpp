@@ -63,7 +63,7 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
         continue;
         XBT_DEBUG("Actor %ld discarded as best possible transition", aid);
       }
-      XBT_DEBUG("Actor %ld is the best possible transition at state @ %ld", aid, state->get_num());
+      XBT_DEBUG("Actor %ld is the best possible transition at state @ %lu", aid, state->get_num());
       return std::make_pair(aid, state->get_depth());
     }
     return std::make_pair(-1, state->get_depth());

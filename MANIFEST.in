@@ -817,6 +817,8 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
+include examples/sthread/sdisk-basic.c
+include examples/sthread/sdisk-basic.tesh
 include examples/sthread/smpi-mc-mutex-simple.tesh
 include examples/sthread/smpi-mc-mutex-simpledeadlock.tesh
 include examples/sthread/smpi-mutex-simple.c
@@ -831,6 +833,16 @@ include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
 include teshsuite/kernel/stack-overflow/stack-overflow.tesh
+include teshsuite/mc/dpu/dispatcher.c
+include teshsuite/mc/dpu/dispatcher.tesh
+include teshsuite/mc/dpu/mpat.c
+include teshsuite/mc/dpu/mpat.tesh
+include teshsuite/mc/dpu/multiprodcon.c
+include teshsuite/mc/dpu/multiprodcon.tesh
+include teshsuite/mc/dpu/pi.c
+include teshsuite/mc/dpu/pi.tesh
+include teshsuite/mc/dpu/poke.c
+include teshsuite/mc/dpu/poke.tesh
 include teshsuite/mc/mcmini/barber_shop_deadlock.c
 include teshsuite/mc/mcmini/barber_shop_deadlock.tesh
 include teshsuite/mc/mcmini/barber_shop_ok.c
@@ -1914,11 +1926,8 @@ include MANIFEST.in.in
 include NEWS
 include README.md
 include doc/doxygen/FAQ.doc
-include doc/doxygen/inside_extending.doc
 include doc/doxygen/inside_release.doc
 include doc/doxygen/outcomes_vizu.doc
-include doc/doxygen/uhood.doc
-include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
 include docs/README.md
 include docs/bin/extract_logs_hierarchy.pl
@@ -2829,7 +2838,9 @@ include src/smpi/smpitools.sh
 include src/sthread/ObjectAccess.cpp
 include src/sthread/sthread.c
 include src/sthread/sthread.h
+include src/sthread/sthread_disk.cpp
 include src/sthread/sthread_impl.cpp
+include src/sthread/sthread_syscall.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
 include src/xbt/backtrace.cpp

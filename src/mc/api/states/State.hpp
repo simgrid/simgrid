@@ -50,7 +50,7 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
     static StatePtr get_first();
-    static long get_first_num() { return first_num_; }
+    static unsigned long get_first_num() { return first_num_; }
     static void remove_first();
     static std::string get_traversal_as_ids();
     unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
@@ -81,7 +81,7 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   TransitionPtr outgoing_transition_ = nullptr;
 
   /** Sequential state ID (used for debugging) */
-  long num_ = 0;
+  unsigned long num_ = 0;
 
   /** Depth of this state in the tree. Used for DFS-like strategy in BeFS algorithm */
   unsigned long depth_ = 0;
@@ -152,7 +152,7 @@ public:
    */
   TransitionPtr execute_next(aid_t next, RemoteApp& app);
 
-  long get_num() const { return num_; }
+  unsigned long get_num() const { return num_; }
   unsigned long get_depth() const { return depth_; }
   std::size_t count_todo() const;
 
@@ -165,7 +165,7 @@ public:
 
   const ActorState& get_actor_at(aid_t aid)
   {
-    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
+    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%lu, yet one was asked", aid, get_num());
     return *actors_to_run_[aid];
   }
 
@@ -216,13 +216,13 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  virtual std::unordered_set<aid_t> get_enabled_actors() const;
-  std::vector<aid_t> get_batrack_minus_done() const;
+  virtual bool has_enabled_actors() const;
+  bool has_todo_actors() const;
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 
-  /* Returns the total amount of states created so far (for statistics) */
+  /* Returns amount of states still in memory (for statistics) */
   static long get_in_memory_states() { return in_memory_states_; }
 
   /**
@@ -264,7 +264,7 @@ public:
 
   void mark_to_delete() { to_be_deleted_ = true; }
 
-  static long get_leftest_state_num();
+  static unsigned long get_leftest_state_num();
 
   static void update_leftness() { PostFixTraversal::update_leftness(); };
   unsigned long long get_leftness() const { return this->traversal_->leftness_; }

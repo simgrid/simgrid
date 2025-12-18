@@ -52,6 +52,26 @@ foreach(x
 
 endforeach()
 
+# Regular disk examples, without MC
+###################################
+
+foreach(x
+        basic)
+
+  if(enable_sthread)
+
+    add_executable       (sdisk-${x} EXCLUDE_FROM_ALL sdisk-${x}.c)
+    set_target_properties(sdisk-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+    add_dependencies(tests sdisk-${x})
+    ADD_TESH(sdisk-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/sdisk-${x}.tesh)
+  endif()
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/sdisk-${x}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/sdisk-${x}.c)
+
+endforeach()
+
 # MPI + pthread tests in C (with or without error)
 ###################################################
 

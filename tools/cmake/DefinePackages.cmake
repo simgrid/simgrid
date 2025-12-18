@@ -232,6 +232,11 @@ set(SMPI_SRC
 set(STHREAD_SRC
   src/sthread/sthread.c
   src/sthread/sthread.h
+  
+  src/sthread/sthread_impl.cpp
+  src/sthread/sthread_disk.cpp
+  src/sthread/sthread_syscall.cpp
+
   src/sthread/ObjectAccess.cpp
 )
 
@@ -468,8 +473,6 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
-
-  src/sthread/sthread_impl.cpp
 
   src/smo/memory_observer.cpp
   src/smo/memory_observer.h
@@ -818,11 +821,8 @@ set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURC
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
-  doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/outcomes_vizu.doc
-  doc/doxygen/uhood.doc
-  doc/doxygen/uhood_switch.doc
 
   examples/README.rst
 

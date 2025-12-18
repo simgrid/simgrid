@@ -22,7 +22,7 @@ namespace simgrid::mc {
 
 StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
 {
-  XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
+  XBT_DEBUG("Inserting at state #%lu sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
   if (w.size() == 0)
     return nullptr;
@@ -111,7 +111,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   auto tran_it           = w.begin();
 
   parent_state = current_state;
-  XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+  XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
   current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
 
   // We need to mark the option of the first state as TODO in order to take this branch at some point
@@ -124,7 +124,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
 
   for (; tran_it != w.end(); tran_it++) {
     parent_state = current_state;
-    XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+    XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
     current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
   // Mark the last state (the leaf) as not being explored (ie. someone need to transform it into a node later)

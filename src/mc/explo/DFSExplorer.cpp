@@ -97,7 +97,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   try {
     executed_transition = state->execute_next(next_actor, get_remote_app());
     on_transition_execute_signal(executed_transition.get(), get_remote_app());
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_,
              executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
     next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
@@ -109,7 +109,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     // If an error is reached while executing the transition ...
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
       auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
-      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
+      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)",
                 transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
                 state->get_num(), state->count_todo());
     }
@@ -217,7 +217,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
     explored_traces_++;
     get_remote_app().finalize_app();
     XBT_VERB("Execution came to an end at %.100s", get_record_trace().to_string().c_str());
-    XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
+    XBT_VERB("(state: %lu, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
 
     state_stack.back()->update_expected_total_children(true);
     if (_sg_mc_eta_steps != 0 and explored_traces_ % abs(_sg_mc_eta_steps) == 0)

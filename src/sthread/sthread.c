@@ -9,8 +9,10 @@
 #include "src/sthread/sthread.h"
 #include "src/internal_config.h"
 #include <dlfcn.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <threads.h>
 #include <unistd.h>
@@ -20,7 +22,39 @@
 #include <valgrind/valgrind.h>
 #endif
 
-/* We don't want to intercept pthread within SimGrid. Instead we should provide the real implem to SimGrid */
+/* ---- Helper macros ---- */
+#define _STHREAD_CONCAT(a, b) a##b
+#define intercepted_pthcall(name, raw_params, call_params, sim_params)                                                 \
+  int _STHREAD_CONCAT(pthread_, name) raw_params                                                                       \
+  {                                                                                                                    \
+    if (_STHREAD_CONCAT(raw_pthread_, name) == NULL)                                                                   \
+      intercepter_init();                                                                                              \
+    if (!sthread_is_enabled())                                                                                         \
+      return _STHREAD_CONCAT(raw_pthread_, name) call_params;                                                          \
+                                                                                                                       \
+    sthread_disable();                                                                                                 \
+    int res = _STHREAD_CONCAT(sthread_, name) sim_params;                                                              \
+    sthread_enable();                                                                                                  \
+    return res;                                                                                                        \
+  }
+#define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
+  rettype name raw_params                                                                                              \
+  {                                                                                                                    \
+    if (_STHREAD_CONCAT(raw_, name) == NULL)                                                                           \
+      intercepter_init();                                                                                              \
+    if (!sthread_is_enabled())                                                                                         \
+      return _STHREAD_CONCAT(raw_, name) call_params;                                                                  \
+                                                                                                                       \
+    sthread_disable();                                                                                                 \
+    rettype res = _STHREAD_CONCAT(sthread_, name) sim_params;                                                          \
+    sthread_enable();                                                                                                  \
+    return res;                                                                                                        \
+  }
+
+/* ---- Retrieving the real implementation of all intercepted symbols (to allow SimGrid to use them instead of
+ * intercepting itself) ---- */
+static long (*raw_syscall)(long number, ...);
+
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
 static int (*raw_pthread_detach)(pthread_t);
 static int (*raw_pthread_join)(pthread_t, void**);
@@ -61,8 +95,26 @@ static int (*raw_sem_destroy)(sem_t*);
 static int (*raw_sem_trywait)(sem_t*);
 static int (*raw_sem_timedwait)(sem_t*, const struct timespec*);
 
+static int (*raw_open)(const char*, int, ...);
+static int (*raw_close)(int);
+static ssize_t (*raw_read)(int, void*, size_t);
+static ssize_t (*raw_write)(int, const void*, size_t);
+static ssize_t (*raw_pread)(int, void*, size_t, off_t);
+static ssize_t (*raw_pwrite)(int, const void*, size_t, off_t);
+static off_t (*raw_lseek)(int, off_t, int);
+static int (*raw_fstat)(int, struct stat*);
+static ssize_t (*raw_readv)(int, const struct iovec*, int);
+static ssize_t (*raw_writev)(int, const struct iovec*, int);
+static ssize_t (*raw_preadv)(int, const struct iovec*, int, off_t);
+static ssize_t (*raw_pwritev)(int, const struct iovec*, int, off_t);
+static ssize_t (*raw_preadv2)(int, const struct iovec*, int, off_t, int);
+static ssize_t (*raw_pwritev2)(int, const struct iovec*, int, off_t, int);
+static int (*raw_unlink)(const char* pathname);
+
 static void intercepter_init()
 {
+  raw_syscall = dlsym(RTLD_NEXT, "syscall");
+
   raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   raw_pthread_detach        = dlsym(RTLD_NEXT, "pthread_detach");
   raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
@@ -101,33 +153,53 @@ static void intercepter_init()
   raw_sem_destroy   = dlsym(RTLD_NEXT, "sem_destroy");
   raw_sem_trywait   = dlsym(RTLD_NEXT, "sem_trywait");
   raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
+
+  raw_open     = dlsym(RTLD_NEXT, "open");
+  raw_close    = dlsym(RTLD_NEXT, "close");
+  raw_read     = dlsym(RTLD_NEXT, "read");
+  raw_write    = dlsym(RTLD_NEXT, "write");
+  raw_pread    = dlsym(RTLD_NEXT, "pread");
+  raw_pwrite   = dlsym(RTLD_NEXT, "pwrite");
+  raw_lseek    = dlsym(RTLD_NEXT, "lseek");
+  raw_fstat    = dlsym(RTLD_NEXT, "fstat");
+  raw_readv    = dlsym(RTLD_NEXT, "readv");
+  raw_writev   = dlsym(RTLD_NEXT, "writev");
+  raw_preadv   = dlsym(RTLD_NEXT, "preadv");
+  raw_pwritev  = dlsym(RTLD_NEXT, "pwritev");
+  raw_preadv2  = dlsym(RTLD_NEXT, "preadv2");
+  raw_pwritev2 = dlsym(RTLD_NEXT, "pwritev2");
+  raw_unlink   = dlsym(RTLD_NEXT, "unlink");
 }
 
-#define _STHREAD_CONCAT(a, b) a##b
-#define intercepted_pthcall(name, raw_params, call_params, sim_params)                                                 \
-  int _STHREAD_CONCAT(pthread_, name) raw_params                                                                       \
-  {                                                                                                                    \
-    if (_STHREAD_CONCAT(raw_pthread_, name) == NULL)                                                                   \
-      intercepter_init();                                                                                              \
-    if (!sthread_is_enabled())                                                                                         \
-      return _STHREAD_CONCAT(raw_pthread_, name) call_params;                                                          \
-                                                                                                                       \
-    sthread_disable();                                                                                                 \
-    int res = _STHREAD_CONCAT(sthread_, name) sim_params;                                                              \
-    sthread_enable();                                                                                                  \
-    return res;                                                                                                        \
-  }
+/* ---- direct syscall ---- */
+long syscall(long number, ...)
+{
+  if (raw_pthread_exit == NULL)
+    intercepter_init();
 
-intercepted_pthcall(mutexattr_init, (pthread_mutexattr_t * attr), (attr), ((sthread_mutexattr_t*)attr));
-intercepted_pthcall(mutexattr_settype, (pthread_mutexattr_t * attr, int type), (attr, type),
-                    ((sthread_mutexattr_t*)attr, type));
-intercepted_pthcall(mutexattr_gettype, (const pthread_mutexattr_t* attr, int* type), (attr, type),
-                    ((sthread_mutexattr_t*)attr, type));
-intercepted_pthcall(mutexattr_setrobust, (pthread_mutexattr_t * attr, int robustness), (attr, robustness),
-                    ((sthread_mutexattr_t*)attr, robustness));
-intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* robustness), (attr, robustness),
-                    ((sthread_mutexattr_t*)attr, robustness));
+  va_list ap;
+  va_start(ap, number);
 
+  // x86_64 Linux ABI: up to 6 parameters
+  long a1 = va_arg(ap, long);
+  long a2 = va_arg(ap, long);
+  long a3 = va_arg(ap, long);
+  long a4 = va_arg(ap, long);
+  long a5 = va_arg(ap, long);
+  long a6 = va_arg(ap, long);
+  va_end(ap);
+
+  if (!sthread_is_enabled())
+    return raw_syscall(number, a1, a2, a3, a4, a5, a6);
+
+  sthread_disable();
+
+  int res = sthread_syscall(number, a1, a2, a3, a4, a5, a6);
+  sthread_enable();
+  return res;
+}
+
+/* ---- pthread ---- */
 intercepted_pthcall(create, (pthread_t * thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg),
                     (thread, attr, start_routine, arg), ((sthread_t*)thread, attr, start_routine, arg));
 intercepted_pthcall(detach, (pthread_t thread), (thread), ((sthread_t)thread));
@@ -142,12 +214,26 @@ void pthread_exit(void* retval)
   sthread_exit(retval);
 }
 
+/* ---- Mutex ---- */
+
+intercepted_pthcall(mutexattr_init, (pthread_mutexattr_t * attr), (attr), ((sthread_mutexattr_t*)attr));
+intercepted_pthcall(mutexattr_settype, (pthread_mutexattr_t * attr, int type), (attr, type),
+                    ((sthread_mutexattr_t*)attr, type));
+intercepted_pthcall(mutexattr_gettype, (const pthread_mutexattr_t* attr, int* type), (attr, type),
+                    ((sthread_mutexattr_t*)attr, type));
+intercepted_pthcall(mutexattr_setrobust, (pthread_mutexattr_t * attr, int robustness), (attr, robustness),
+                    ((sthread_mutexattr_t*)attr, robustness));
+intercepted_pthcall(mutexattr_getrobust, (const pthread_mutexattr_t* attr, int* robustness), (attr, robustness),
+                    ((sthread_mutexattr_t*)attr, robustness));
+
 intercepted_pthcall(mutex_init, (pthread_mutex_t * mutex, const pthread_mutexattr_t* attr), (mutex, attr),
                     ((sthread_mutex_t*)mutex, (sthread_mutexattr_t*)attr));
 intercepted_pthcall(mutex_lock, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
 intercepted_pthcall(mutex_trylock, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
 intercepted_pthcall(mutex_unlock, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
 intercepted_pthcall(mutex_destroy, (pthread_mutex_t * mutex), (mutex), ((sthread_mutex_t*)mutex));
+
+/* ---- Barrier ---- */
 
 intercepted_pthcall(barrier_init, (pthread_barrier_t * barrier, const pthread_barrierattr_t* attr, unsigned count),
                     (barrier, attr, count), ((sthread_barrier_t*)barrier, (const sthread_barrierattr_t*)attr, count));
@@ -164,19 +250,7 @@ intercepted_pthcall(cond_timedwait, (pthread_cond_t * cond, pthread_mutex_t* mut
                     (cond, mutex, abstime), ((sthread_cond_t*)cond, (sthread_mutex_t*)mutex, abstime));
 intercepted_pthcall(cond_destroy, (pthread_cond_t * cond), (cond), ((sthread_cond_t*)cond));
 
-#define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
-  rettype name raw_params                                                                                              \
-  {                                                                                                                    \
-    if (_STHREAD_CONCAT(raw_, name) == NULL)                                                                           \
-      intercepter_init();                                                                                              \
-    if (!sthread_is_enabled())                                                                                         \
-      return _STHREAD_CONCAT(raw_, name) call_params;                                                                  \
-                                                                                                                       \
-    sthread_disable();                                                                                                 \
-    rettype res = _STHREAD_CONCAT(sthread_, name) sim_params;                                                          \
-    sthread_enable();                                                                                                  \
-    return res;                                                                                                        \
-  }
+/* ---- Semaphore ---- */
 
 intercepted_call(int, sem_init, (sem_t * sem, int pshared, unsigned int value), (sem, pshared, value),
                  ((sthread_sem_t*)sem, pshared, value));
@@ -186,6 +260,50 @@ intercepted_call(int, sem_wait, (sem_t * sem), (sem), ((sthread_sem_t*)sem));
 intercepted_call(int, sem_trywait, (sem_t * sem), (sem), ((sthread_sem_t*)sem));
 intercepted_call(int, sem_timedwait, (sem_t * sem, const struct timespec* abs_timeout), (sem, abs_timeout),
                  ((sthread_sem_t*)sem, abs_timeout));
+
+/* ---- Disk ---- */
+
+// We have no macro for variadic functions, so do this one manually
+int open(const char* pathname, int flags, ...)
+{
+  if (raw_open == NULL)
+    intercepter_init();
+
+  va_list args;
+  va_start(args, flags);
+  mode_t mode = va_arg(args, mode_t);
+  va_end(args);
+
+  if (!sthread_is_enabled())
+    return raw_open(pathname, flags, mode);
+
+  sthread_disable();
+
+  int res = sthread_open(pathname, flags, mode);
+  sthread_enable();
+  return res;
+}
+intercepted_call(int, close, (int fd), (fd), (fd));
+intercepted_call(ssize_t, read, (int fd, void* buf, size_t count), (fd, buf, count), (fd, buf, count));
+intercepted_call(ssize_t, write, (int fd, const void* buf, size_t count), (fd, buf, count), (fd, buf, count));
+intercepted_call(ssize_t, pread, (int fd, void* buf, size_t count, off_t offset), (fd, buf, count, offset),
+                 (fd, buf, count, offset));
+intercepted_call(ssize_t, pwrite, (int fd, const void* buf, size_t count, off_t offset), (fd, buf, count, offset),
+                 (fd, buf, count, offset));
+intercepted_call(off_t, lseek, (int fd, off_t offset, int whence), (fd, offset, whence), (fd, offset, whence));
+intercepted_call(int, fstat, (int fd, struct stat* buf), (fd, buf), (fd, buf));
+intercepted_call(ssize_t, readv, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt), (fd, iov, iovcnt));
+intercepted_call(ssize_t, writev, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt), (fd, iov, iovcnt));
+intercepted_call(ssize_t, preadv, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
+                 (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
+intercepted_call(ssize_t, pwritev, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
+                 (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
+intercepted_call(ssize_t, preadv2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
+                 (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
+intercepted_call(ssize_t, pwritev2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
+                 (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
+intercepted_call(int, unlink, (const char* pathname), (pathname), (pathname));
+/* ---- time-related ---- */
 
 /* Glibc < 2.31 uses type "struct timezone *" for the second parameter of gettimeofday.
    Other implementations use "void *" instead. */
@@ -201,6 +319,8 @@ intercepted_call(int, gettimeofday, (struct timeval * tv, XBT_ATTRIB_UNUSED TIME
 intercepted_call(time_t, time, (time_t * t), (t), (t));
 intercepted_call(unsigned int, sleep, (unsigned int seconds), (seconds), (seconds));
 intercepted_call(int, usleep, (useconds_t usec), (usec), (((double)usec) / 1000000.));
+
+/* ---- Intercept the main symbol ---- */
 
 /* Trampoline for the real main() */
 static int (*raw_main)(int, char**, char**);

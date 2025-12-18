@@ -4,6 +4,10 @@ S4U:
  - New plugin for Host carbon footprint. See examples/cpp/exec-co2 and https://arxiv.org/abs/2508.13693
    Thanks to the authors for this great contribution.
 
+sthread:
+ - Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,
+   but allow programs requiring the disk to run in sthread.
+
 ----------------------------------------------------------------------------
 
 SimGrid (4.1) November 11. 2025
