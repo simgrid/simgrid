@@ -57,7 +57,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value()) {
         updates->add_element(prev_state, v.value());
-        XBT_DEBUG("... ... work will be added at state #%ld", prev_state->get_num());
+        XBT_DEBUG("... ... work will be added at state #%lu", prev_state->get_num());
       }
     }
     E.get_event_with_handle(e_prime).consider_races();
@@ -76,10 +76,10 @@ unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpd
   XBT_DEBUG("Applying the %lu received race updates", odpor_updates->get_value().size());
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
-    XBT_DEBUG("... at state #%ld", state->get_num());
+    XBT_DEBUG("... at state #%lu", state->get_num());
     const auto inserted_state = static_cast<WutState*>(state.get())->insert_into_tree(seq, remote_app);
     if (inserted_state != nullptr) {
-      XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
+      XBT_DEBUG("... ended up adding work to do at state #%lu", inserted_state->get_num());
 
       if (opened_states != nullptr)
         opened_states->push_back(inserted_state);

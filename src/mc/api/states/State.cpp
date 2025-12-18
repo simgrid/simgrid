@@ -34,7 +34,7 @@ State::~State()
 {
   in_memory_states_--;
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("Closing state n°%ld! There are %ld remaining states", this->get_num(), get_in_memory_states());
+    XBT_CRITICAL("Closing state n°%lu! There are %ld remaining states", this->get_num(), get_in_memory_states());
 }
 
 State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expended_states_)
@@ -80,7 +80,7 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr i
   traversal_ = std::make_shared<PostFixTraversal>(this);
 
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %ld: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
                  incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -250,20 +250,20 @@ void State::signal_on_backtrack()
 
 void State::reset_parent_state()
 {
-  XBT_DEBUG("Cleaning the parent state of state #%ld", get_num());
+  XBT_DEBUG("Cleaning the parent state of state #%lu", get_num());
   parent_state_ = nullptr;
 }
 
 // boost::intrusive_ptr<State> support:
 void intrusive_ptr_add_ref(State* state)
 {
-  XBT_DEBUG("Adding a ref to state #%ld", state->get_num());
+  XBT_DEBUG("Adding a ref to state #%lu", state->get_num());
   state->refcount_.fetch_add(1, std::memory_order_acq_rel);
 }
 
 void intrusive_ptr_release(State* state)
 {
-  XBT_DEBUG("[tid : %s] Removing a ref to state #%ld, %d ref remaining", xbt::gettid().c_str(), state->get_num(),
+  XBT_DEBUG("[tid : %s] Removing a ref to state #%lu, %d ref remaining", xbt::gettid().c_str(), state->get_num(),
             static_cast<int>(state->refcount_.load()));
   if (state->refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1)
     delete state;
@@ -272,7 +272,7 @@ void intrusive_ptr_release(State* state)
 void State::initialize(const RemoteApp& remote_app)
 {
   if (_sg_mc_explore_algo != "parallel")
-    xbt_assert(not actor_status_set_, "State #%ld is already initialized!", get_num());
+    xbt_assert(not actor_status_set_, "State #%lu is already initialized!", get_num());
   remote_app.get_actors_status(actors_to_run_); // We tell the remote app to get the transitions this time
   actor_status_set_ = true;
 
@@ -292,7 +292,7 @@ void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_a
   xbt_assert(previous_incoming_aid == incoming_transition_->aid_,
              "Update should only update the type of the exact transition type, not the actor. FixMe!");
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %ld ==> Actor %ld: %.60s ==> State %ld", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %ld: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
                  incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -314,12 +314,12 @@ void State::update_opened(TransitionPtr transition)
 void State::consider_one(aid_t aid)
 {
   auto actor = get_actor_at(aid);
-  xbt_assert(actor.is_enabled(), "Tried to mark as TODO actor %ld in state #%ld but it is not enabled", aid, get_num());
-  xbt_assert(not actor.is_done(), "Tried to mark as TODO actor %ld in state #%ld but it is already done", aid,
+  xbt_assert(actor.is_enabled(), "Tried to mark as TODO actor %ld in state #%lu but it is not enabled", aid, get_num());
+  xbt_assert(not actor.is_done(), "Tried to mark as TODO actor %ld in state #%lu but it is already done", aid,
              get_num());
   actors_to_run_[aid]->mark_todo();
   opened_.emplace_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, aid, actor.get_times_considered())));
-  XBT_DEBUG("Considered actor %hd at state %ld", actor.get_aid(), get_num());
+  XBT_DEBUG("Considered actor %hd at state %lu", actor.get_aid(), get_num());
 }
 State::PostFixTraversal::PostFixTraversal(StatePtr state)
 {
@@ -353,7 +353,7 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   parent_traversal->prev_ = this;
 
   if (first_ == nullptr or first_ == parent_traversal) {
-    XBT_DEBUG("Pushing state %ld as postfix traversal first", state->get_num());
+    XBT_DEBUG("Pushing state %lu as postfix traversal first", state->get_num());
     first_num_ = state->get_num();
     first_ = this;
   }
@@ -410,7 +410,7 @@ void State::PostFixTraversal::remove_first()
   auto old      = first_;
   first_        = first_->next_;
 
-  XBT_DEBUG("Popping state #%ld from the postfix traversal", old->self_->get_num());
+  XBT_DEBUG("Popping state #%lu from the postfix traversal", old->self_->get_num());
 
   if (first_ == nullptr)
     first_num_ = 0;
@@ -455,7 +455,7 @@ unsigned long State::consider_all()
       count++;
       opened_.push_back(TransitionPtr(
           new Transition(Transition::Type::UNKNOWN, actor.value().get_aid(), actor.value().get_times_considered())));
-      XBT_DEBUG("Marked actor %hd at state %ld", actor->get_aid(), get_num());
+      XBT_DEBUG("Marked actor %hd at state %lu", actor->get_aid(), get_num());
     }
   }
   return count;
@@ -472,7 +472,7 @@ void State::PostFixTraversal::update_leftness()
     count++;
   }
 }
-long State::get_leftest_state_num()
+unsigned long State::get_leftest_state_num()
 {
   return PostFixTraversal::get_first_num();
 }

@@ -98,7 +98,7 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
-      XBT_DEBUG("Enabling the considered actor %ld in state #%ld", considered, state->get_num());
+      XBT_DEBUG("Enabling the considered actor %ld in state #%lu", considered, state->get_num());
       if (considered == -1)
         continue; // Do not create a new state if the actor was already created before
       StatePtr(new SleepSetState(remote_app, state,

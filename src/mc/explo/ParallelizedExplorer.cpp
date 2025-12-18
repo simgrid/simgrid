@@ -72,7 +72,7 @@ void ParallelizedExplorer::TreeHandler()
 
     Reduction::RaceUpdate* to_apply; // = races_list_.pop();
 
-    long best_state_num = State::get_leftest_state_num();
+    unsigned long best_state_num = State::get_leftest_state_num();
 
     to_apply = races_list_.pop_best([=](auto race) {
       return race != nullptr and race->get_last_explored_state() != nullptr and
@@ -96,7 +96,7 @@ void ParallelizedExplorer::TreeHandler()
               new_opened.size(), remaining_todo);
 
     for (auto state_it = new_opened.rbegin(); state_it != new_opened.rend(); state_it++) {
-      XBT_DEBUG("[tid:TreeHandler] Pushing state %ld in the queue", (*state_it)->get_num());
+      XBT_DEBUG("[tid:TreeHandler] Pushing state %lu in the queue", (*state_it)->get_num());
       opened_heads_.push((*state_it).get());
     }
 
@@ -181,7 +181,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
     StatePtr to_visit;
 
-    long best_state_num = State::get_leftest_state_num();
+    unsigned long best_state_num = State::get_leftest_state_num();
 
     to_visit = opened_heads_->pop_best(
         [best_state_num](auto state) { return state != nullptr and state->get_num() == best_state_num; });
@@ -194,14 +194,14 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
     if (to_visit->being_explored.test_and_set()) {
       // This state has already been or will be explored very soon by the TreeHandler, skip it
-      XBT_DEBUG("[tid: Explorer %d] We lost the TAS race with the TH for state #%ld, let's move on",
+      XBT_DEBUG("[tid: Explorer %d] We lost the TAS race with the TH for state #%lu, let's move on",
                 local_explorer.get_explorer_id(), to_visit->get_num());
 
       races_list_->push(reduction_algo_->empty_race_update());
       continue;
     }
 
-    XBT_VERB("[tid: Explorer %d] Found a next candidate to visit: state #%ld!", local_explorer.get_explorer_id(),
+    XBT_VERB("[tid: Explorer %d] Found a next candidate to visit: state #%lu!", local_explorer.get_explorer_id(),
              to_visit->get_num());
 
     // Backtrack to to_visit, and restore stack/execution
@@ -220,7 +220,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
     XBT_DEBUG("[tid: Explorer %d] Replaced stack with %s", local_explorer.get_explorer_id(),
               get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
     for (auto iter = std::next(local_explorer.stack.begin()); iter != local_explorer.stack.end(); ++iter) {
-      XBT_DEBUG("... taking transition <Actor %ld: %s> from state %ld to reconstitute the execution sequence",
+      XBT_DEBUG("... taking transition <Actor %ld: %s> from state %lu to reconstitute the execution sequence",
                 (*iter)->get_transition_in()->aid_, (*iter)->get_transition_in()->to_string().c_str(),
                 (*iter)->get_num());
       local_explorer.execution_seq.push_transition((*iter)->get_transition_in());
@@ -254,7 +254,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
           local_explorer.get_remote_app().finalize_app();
           XBT_VERB("[tid: Explorer %d] Execution came to an end at %s", local_explorer.get_explorer_id(),
                    get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
-          XBT_VERB("[tid: Explorer %d] (state: %ld, depth: %zu, %lu explored traces)", local_explorer.get_explorer_id(),
+          XBT_VERB("[tid: Explorer %d] (state: %lu, depth: %zu, %lu explored traces)", local_explorer.get_explorer_id(),
                    state->get_num(), local_explorer.stack.size(), local_explorer.explored_traces);
         }
 
@@ -267,7 +267,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
       xbt_assert(state->is_actor_enabled(next));
       auto executed_transition = state->execute_next(next, local_explorer.get_remote_app());
 
-      XBT_VERB("[tid: Explorer %d] Executed %ld: %.60s (stack depth: %zu, state: %ld)",
+      XBT_VERB("[tid: Explorer %d] Executed %ld: %.60s (stack depth: %zu, state: %lu)",
                local_explorer.get_explorer_id(), state->get_transition_out()->aid_,
                state->get_transition_out()->to_string().c_str(), local_explorer.stack.size(), state->get_num());
 
