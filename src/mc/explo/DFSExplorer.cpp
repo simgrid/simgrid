@@ -29,6 +29,7 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -82,10 +83,10 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
     auto sleep_state = static_cast<SleepSetState*>(state.get());
     if (not sleep_state->get_sleep_set().empty()) {
-      XBT_VERB("Sleep set actually containing:");
+      XBT_DEBUG("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
-        XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+        XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
     }
   }
 
@@ -199,7 +200,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   aid_t next_to_explore;
 
-  while ((next_to_explore = s->next_transition()) != -1) {
+  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }
@@ -215,8 +216,15 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   if (s->get_actor_count() == 0) {
     explored_traces_++;
     get_remote_app().finalize_app();
-    XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
+    XBT_VERB("Execution came to an end at %.100s", get_record_trace().to_string().c_str());
     XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
+
+    state_stack.back()->update_expected_total_children(true);
+    if (_sg_mc_eta_steps != 0 and explored_traces_ % abs(_sg_mc_eta_steps) == 0)
+      XBT_INFO("Explored a total of %.5e/%.5e states. Hence %3.2f completion rate",
+               (double)State::get_expanded_states(), state_stack.front()->get_expected_total_children(),
+               100 * (float)State::get_expanded_states() / state_stack.front()->get_expected_total_children());
+
     report_correct_execution(s);
     if (_sg_mc_debug_optimality)
       odpor::MazurkiewiczTraces::record_new_execution(S);

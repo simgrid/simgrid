@@ -19,6 +19,7 @@
 #include <boost/range/algorithm.hpp>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <optional>
 #include <string>
 
@@ -28,7 +29,7 @@ namespace simgrid::mc {
 
 std::atomic_ulong State::expended_states_  = 0;
 std::atomic_ulong State::in_memory_states_ = 0;
-size_t State::max_actor_encountered_ = 1;
+size_t State::max_actor_encountered_       = 1;
 
 State::~State()
 {
@@ -50,10 +51,11 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
   }
 
   opened_.reserve(max_actor_encountered_);
+  expected_of_children_.resize(max_actor_encountered_, 0);
 
   // UDPOR create state that have no parentship links at all and manage everything
   // its own way so let it cook
-  if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor) {
+  if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor)
     traversal_ = std::make_shared<PostFixTraversal>(this);
 
   being_explored.test_and_set();
@@ -351,7 +353,7 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   if (first_ == nullptr or first_ == parent_traversal) {
     XBT_DEBUG("Pushing state %ld as postfix traversal first", state->get_num());
     first_num_ = state->get_num();
-    first_ = this;
+    first_     = this;
   }
 
   leftness_ = prev_leftness + (next_leftness - prev_leftness) / 2;
@@ -364,8 +366,11 @@ void State::remove_ref_in_parent()
 {
   parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
 
-  auto findme = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), get_transition_in()->aid_);
+  auto new_pair = std::make_pair(get_transition_in()->aid_, get_transition_in()->times_considered_);
+  auto findme   = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), new_pair);
   xbt_assert(findme == parent_state_->closed_.end(), "I'm already in the closed_ of my parent");
+
+  parent_state_->closed_.push_back(new_pair);
 }
 
 State::PostFixTraversal* simgrid::mc::State::PostFixTraversal::first_ = nullptr;
@@ -381,9 +386,9 @@ void State::garbage_collect()
     PostFixTraversal::remove_first();
 
     if (first_state->parent_state_ != nullptr) {
+      first_state->remove_ref_in_parent();
       if (not first_state->parent_state_->has_more_to_be_explored())
         first_state->parent_state_->to_be_deleted_ = true;
-      first_state->remove_ref_in_parent();
       first_state->reset_parent_state();
     }
 
@@ -403,8 +408,8 @@ void State::PostFixTraversal::remove_first()
     // try to remove the second entry predecessor
     first_->next_->prev_ = nullptr;
 
-  auto old      = first_;
-  first_        = first_->next_;
+  auto old = first_;
+  first_   = first_->next_;
 
   XBT_DEBUG("Popping state #%ld from the postfix traversal", old->self_->get_num());
 
@@ -471,5 +476,43 @@ void State::PostFixTraversal::update_leftness()
 long State::get_leftest_state_num()
 {
   return PostFixTraversal::get_first_num();
+}
+
+void State::update_expected_total_children(bool is_leaf)
+{
+
+  if (is_leaf) {
+    expected_total_children_ = 1;
+  } else {
+    // Self -- could be the time of exploring the branch
+    float explored_children  = 0;
+    float scheduled_children = 0;
+    double estimate_sum      = 0;
+    for (auto t : opened_) {
+      aid_t aid = t->aid_;
+
+      if (expected_of_children_[aid] == 0)
+        scheduled_children += 1;
+      else
+        explored_children += 1;
+
+      estimate_sum += expected_of_children_[aid];
+    }
+
+    if (scheduled_children == 0)
+      expected_total_children_ = 1 + estimate_sum;
+    else
+      expected_total_children_ =
+          1 + (1 + ((_sg_mc_eta_steps < 0 ? scheduled_children : 1) / explored_children)) * estimate_sum;
+
+    xbt_assert(expected_total_children_ >=
+                   1 + std::accumulate(expected_of_children_.begin(), expected_of_children_.end(), 0),
+               "The expected number of children should always be greater than what we already observed");
+  }
+
+  if (parent_state_ != nullptr) {
+    parent_state_->expected_of_children_[incoming_transition_->aid_] = expected_total_children_;
+    parent_state_->update_expected_total_children(false);
+  }
 }
 } // namespace simgrid::mc

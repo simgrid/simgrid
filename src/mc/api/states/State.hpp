@@ -104,8 +104,8 @@ protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now.
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
-  bool actor_status_set_  = false;
-  bool is_a_leaf          = true;
+  bool actor_status_set_ = false;
+  bool is_a_leaf         = true;
 
   std::mutex children_lock_;
   std::condition_variable adding_children;
@@ -272,6 +272,18 @@ public:
   /** Called by the exploration to excplicitly tells this state won't be explored further, eg.
       because the max depth limit was reached */
   void mark_as_leaf() { this->actors_to_run_ = std::vector<std::optional<ActorState>>(); }
+
+  // Termination estimators //
+
+private:
+  double expected_total_children_ = 1;
+  // Save the value both to save computation time and to keep the data even if the child
+  // is being remove from memory
+  std::vector<double> expected_of_children_ = {};
+
+public:
+  double get_expected_total_children() const { return expected_total_children_; }
+  void update_expected_total_children(bool is_leaf);
 };
 
 } // namespace simgrid::mc

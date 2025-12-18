@@ -72,6 +72,12 @@ simgrid::config::Flag<int> _sg_mc_parallel_thread{
     "McSimGrid.",
     1, [](int val) { xbt_assert(val >= 1, "The value of model-check/parallel-thread must be >= 1"); }};
 
+simgrid::config::Flag<int> _sg_mc_eta_steps{
+    "model-check/eta-steps",
+    "If a non-zero X value is provided, the estimated number of states that remain to be explored will be displayed "
+    "every X steps",
+    0};
+
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",
     "Specify the type of search politic to use in MC algorithm",

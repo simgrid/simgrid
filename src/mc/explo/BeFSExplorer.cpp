@@ -160,8 +160,9 @@ void BeFSExplorer::run()
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
         report_correct_execution(state);
+
+        state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
       }
-      state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
 
       Exploration::check_deadlock();
 

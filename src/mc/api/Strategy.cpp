@@ -9,6 +9,8 @@
 #include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
+#include <algorithm>
+#include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_strategy, mc, "Generic exploration algorithm of the model-checker");
 
@@ -35,17 +37,27 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
   }
 
   // For now, we only have to way of considering local actors
-  //   + either arbitrary in aid ordre
+  //   + either arbitrary in inserted ordre
   //   + uniform over the activated
   auto actors = state->get_actors_list();
 
   if (_sg_mc_strategy == "none") {
+    // The initial case
+    if (state->get_opened_transitions().size() == 0 and not must_be_todo) {
+      auto actor_opt = std::find_if(actors.begin(), actors.end(), [](auto& actor) {
+        return actor.has_value() and actor->is_enabled() and not actor->is_done();
+      });
+      if (actor_opt == actors.end())
+        return std::make_pair(-1, state->get_depth());
+      return std::make_pair(actor_opt->value().get_aid(), state->get_depth());
+    }
 
-    for (auto const& actor_opt : actors) {
+    for (auto const& t : state->get_opened_transitions()) {
       /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-      if (not actor_opt.has_value())
+      if (actors.size() <= (size_t)t->aid_ or not actors[t->aid_].has_value())
         continue;
-      auto const actor = actor_opt.value();
+
+      auto const actor = actors[t->aid_].value();
       aid_t aid        = actor.get_aid();
       if ((not actor.is_todo() && must_be_todo) || not actor.is_enabled() || actor.is_done()) {
         continue;
