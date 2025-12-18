@@ -281,9 +281,9 @@ private:
   // Save the value both to save computation time and to keep the data even if the child
   // is being remove from memory
   std::vector<double> expected_of_children_ = {};
-  void update_expected_total_children(bool is_leaf);
 
 public:
+  void update_expected_total_children(bool is_leaf);
   double get_expected_total_children() const { return expected_total_children_; }
 };
 

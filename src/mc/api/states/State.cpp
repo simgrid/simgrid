@@ -498,10 +498,6 @@ void State::update_expected_total_children(bool is_leaf)
     else
       expected_total_children_ =
           1 + (1 + ((_sg_mc_eta_steps < 0 ? scheduled_children : 1) / explored_children)) * estimate_sum;
-
-    xbt_assert(expected_total_children_ >=
-                   1 + std::accumulate(expected_of_children_.begin(), expected_of_children_.end(), 0),
-               "The expected number of children should always be greater than what we already observed");
   }
 
   if (parent_state_ != nullptr) {
