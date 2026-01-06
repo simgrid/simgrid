@@ -36,7 +36,7 @@ std::pair<aid_t, int> ExplorationStrategy::best_transition_in(const State* state
     }
   }
 
-  // For now, we only have to way of considering local actors
+  // For now, we only have two way of considering local actors
   //   + either arbitrary in inserted ordre
   //   + uniform over the activated
   auto actors = state->get_actors_list();
