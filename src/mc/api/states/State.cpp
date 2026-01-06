@@ -274,7 +274,8 @@ void State::initialize(const RemoteApp& remote_app)
   }
 
   // Tell the parent we are being done (and are not "todo" anymore)
-  parent_state_->actors_to_run_[incoming_transition_->aid_]->mark_done();
+  if (not parent_state_->actors_to_run_[incoming_transition_->aid_]->has_more_to_consider())
+    parent_state_->actors_to_run_[incoming_transition_->aid_]->mark_done();
 }
 
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
