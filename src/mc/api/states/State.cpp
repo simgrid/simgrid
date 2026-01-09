@@ -320,22 +320,23 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   next_ = nullptr;
   self_ = state;
 
-  if (state->parent_state_ == nullptr)
+  if (state->parent_state_ == nullptr) {
+    // Special case for the root node
+    first_      = this;
+    first_lock_ = &lock_;
     return;
+  }
 
-  // Insert the new node just at the left of his parent
+  // Insert the new node just at the left of its parent
   PostFixTraversal* parent_traversal = state->parent_state_->traversal_.get();
   xbt_assert(parent_traversal != nullptr, "Why does this state parent have no traversal?");
+
+  parent_traversal->lock_.lock();
 
   next_ = parent_traversal;
 
   unsigned long long next_leftness = next_->leftness_;
   unsigned long long prev_leftness = 0;
-
-  // Wait until we can lock the node before where we are inserting, if any
-  // This is mandatory when we try to insert at the beginning of the list
-  while (parent_traversal->prev_ != nullptr and parent_traversal->prev_->lock_.try_lock()) {
-  }
 
   if (parent_traversal->prev_ != nullptr) {
     parent_traversal->prev_->next_ = this;
@@ -345,16 +346,15 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   prev_                   = parent_traversal->prev_;
   parent_traversal->prev_ = this;
 
-  if (first_ == nullptr or first_ == parent_traversal) {
-    XBT_DEBUG("Pushing state %lu as postfix traversal first", state->get_num());
-    first_num_ = state->get_num();
-    first_     = this;
-  }
-
   leftness_ = prev_leftness + (next_leftness - prev_leftness) / 2;
 
-  if (prev_ != nullptr)
-    prev_->lock_.unlock();
+  if (first_ == nullptr or first_ == parent_traversal) {
+    XBT_DEBUG("Pushing state %lu as postfix traversal first", state->get_num());
+    first_      = this;
+    first_lock_ = &lock_;
+  }
+
+  parent_traversal->lock_.unlock();
 }
 
 void State::remove_ref_in_parent()
@@ -369,13 +369,11 @@ void State::remove_ref_in_parent()
 }
 
 State::PostFixTraversal* simgrid::mc::State::PostFixTraversal::first_ = nullptr;
-std::atomic_long simgrid::mc::State::PostFixTraversal::first_num_     = -1;
+std::mutex* simgrid::mc::State::PostFixTraversal::first_lock_         = nullptr;
 
-void State::garbage_collect()
+void State::PostFixTraversal::garbage_collect()
 {
-
-  StatePtr first_state = PostFixTraversal::get_first();
-
+  auto first_state = first_->self_;
   while (first_state != nullptr and first_state->to_be_deleted_) {
 
     PostFixTraversal::remove_first();
@@ -387,41 +385,44 @@ void State::garbage_collect()
       first_state->reset_parent_state();
     }
 
-    first_state = PostFixTraversal::get_first();
+    first_state = first_->self_;
   }
 }
+
+void State::garbage_collect()
+{
+
+  PostFixTraversal::garbage_collect();
+}
+
 void State::PostFixTraversal::remove_first()
 {
   // Waiting until the first is accessible
   // and lock it so no one modify what's coming next
-  while (not first_->lock_.try_lock()) {
+  while (not first_lock_->try_lock()) {
   }
-
+  xbt_assert(&first_->lock_ == first_lock_);
   xbt_assert(first_->prev_ == nullptr, "Why is the first state in the order not the first state in the order?");
 
-  if (first_->next_ != nullptr)
-    // try to remove the second entry predecessor
-    first_->next_->prev_ = nullptr;
+  if (first_->next_ == nullptr) {
+    // Removing the last node, exploration is finished, nothing to do here
+    first_->self_ = nullptr;
+    return;
+  }
 
-  auto old = first_;
-  first_   = first_->next_;
+  while (not first_->next_->lock_.try_lock()) {
+  }
+
+  auto old      = first_;
+  first_        = first_->next_;
+  first_lock_   = &first_->lock_;
+  first_->prev_ = nullptr;
 
   XBT_DEBUG("Popping state #%lu from the postfix traversal", old->self_->get_num());
 
-  if (first_ == nullptr)
-    first_num_ = 0;
-  else
-    first_num_ = first_->self_->get_num();
-
+  first_->lock_.unlock();
   old->lock_.unlock();
   old->self_ = nullptr;
-}
-StatePtr State::PostFixTraversal::get_first()
-{
-  if (first_ != nullptr) {
-    return first_->self_;
-  } else
-    return nullptr;
 }
 
 std::string State::PostFixTraversal::get_traversal_as_ids()
@@ -458,7 +459,7 @@ unsigned long State::consider_all()
 }
 void State::PostFixTraversal::update_leftness()
 {
-  PostFixTraversal* current_state = PostFixTraversal::get_first()->traversal_.get();
+  PostFixTraversal* current_state = first_;
   unsigned long count             = 0;
   while (current_state != nullptr) {
 

@@ -43,18 +43,21 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
 
     static PostFixTraversal* first_;
-    static std::atomic_long first_num_;
+    // This lock should correspond to the lock_ of the first postfix traversal
+    // At any point the following invariant should be verified; either:
+    // &first_->lock_ == first_lock_ or *first_lock_ is being held
+    static std::mutex* first_lock_;
 
   public:
     // Construct a traversal information corresponding to the child of parameter state
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
-    static StatePtr get_first();
-    static unsigned long get_first_num() { return first_num_; }
+    static unsigned long get_first_num() { return first_->self_->get_num(); }
     static void remove_first();
     static std::string get_traversal_as_ids();
     unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
     static void update_leftness();
+    static void garbage_collect();
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
