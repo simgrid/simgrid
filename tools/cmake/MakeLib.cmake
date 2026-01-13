@@ -68,10 +68,6 @@ if (HAVE_BOOST_CONTEXTS)
   target_link_libraries(simgrid ${Boost_CONTEXT_LIBRARY})
 endif()
 
-if (HAVE_BOOST_STACKTRACE_BACKTRACE)
-  target_link_libraries(simgrid ${Boost_STACKTRACE_BACKTRACE_LIBRARY})
-endif()
-
 if (HAVE_STD_STACKTRACE)
   # Listing specifically stdc++ is needed at least on MUSL when compiling C code against libsimgrid, as GCC does not provide stdc++ by default
   target_link_libraries(simgrid stdc++exp stdc++)

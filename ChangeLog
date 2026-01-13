@@ -8,6 +8,9 @@ sthread:
  - Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,
    but allow programs requiring the disk to run in sthread.
 
+Core:
+ - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust.
+
 ----------------------------------------------------------------------------
 
 SimGrid (4.1) November 11. 2025
