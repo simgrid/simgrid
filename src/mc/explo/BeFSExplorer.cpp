@@ -160,8 +160,9 @@ void BeFSExplorer::run()
         XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
         XBT_VERB("(state: %lu, depth: %zu, %lu explored traces)", state->get_num(), stack_.size(), explored_traces_);
         report_correct_execution(state);
+
+        state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
       }
-      state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
 
       Exploration::check_deadlock();
 
@@ -230,11 +231,6 @@ void BeFSExplorer::run()
     on_state_creation_signal(next_state.get(), get_remote_app());
 
     visited_states_count_++;
-
-    // Before leaving that state, if the transition we just took can be taken multiple times, we
-    // need to give it to the opened states
-    if (stack_.back()->has_more_to_be_explored() > 0)
-      opened_states_.emplace_back(state);
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));

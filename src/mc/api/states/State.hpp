@@ -42,19 +42,22 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     StatePtr self_;
     std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
 
-    static PostFixTraversal* first_;
-    static std::atomic_long first_num_;
+    // Sentinells corresponding to first and last
+    // structure is empty iff first_.next == &last_
+    static PostFixTraversal HEAD_;
+    static PostFixTraversal TAIL_;
+
+    PostFixTraversal() {}
 
   public:
     // Construct a traversal information corresponding to the child of parameter state
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
-    static StatePtr get_first();
-    static unsigned long get_first_num() { return first_num_; }
+    static unsigned long get_first_num();
     static void remove_first();
     static std::string get_traversal_as_ids();
     unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
-    static void update_leftness();
+    static void garbage_collect();
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
@@ -104,11 +107,9 @@ protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now.
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
-  bool actor_status_set_  = false;
-  bool is_a_leaf          = true;
+  bool actor_status_set_ = false;
+  bool is_a_leaf         = true;
 
-  std::mutex children_lock_;
-  std::condition_variable adding_children;
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
@@ -121,12 +122,9 @@ protected:
     return std::count_if(opened_.begin(), opened_.end(), [](auto const& ptr_t) { return ptr_t != nullptr; });
   }
 
-  /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
-   *  value, and then updated when nearby states are closed. */
-  bool is_leftmost_;
-
-  /** Store the aid that have been closed. This is usefull to determine wether a given state is leftmost. */
-  std::vector<aid_t> closed_;
+  /** Store the (aid,times considered) that have been closed. This is usefull to determine wether a given state is
+   * leftmost. */
+  std::vector<std::pair<aid_t, int>> closed_;
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
@@ -263,18 +261,32 @@ public:
 
   xbt::reference_holder<State> reference_holder_;
 
-  std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
+  /**
+   * @brief Called by a leaf of the tree when we finished exploring the corresponding branch
+   */
+  virtual void on_branch_completion() { update_expected_total_children(true); }
 
   void mark_to_delete() { to_be_deleted_ = true; }
 
   static unsigned long get_leftest_state_num();
 
-  static void update_leftness() { PostFixTraversal::update_leftness(); };
   unsigned long long get_leftness() const { return this->traversal_->leftness_; }
 
   /** Called by the exploration to excplicitly tells this state won't be explored further, eg.
       because the max depth limit was reached */
   void mark_as_leaf() { this->actors_to_run_ = std::vector<std::optional<ActorState>>(); }
+
+  // Termination estimators //
+
+private:
+  double expected_total_children_ = 1;
+  // Save the value both to save computation time and to keep the data even if the child
+  // is being remove from memory
+  std::vector<double> expected_of_children_ = {};
+
+public:
+  void update_expected_total_children(bool is_leaf);
+  double get_expected_total_children() const { return expected_total_children_; }
 };
 
 } // namespace simgrid::mc

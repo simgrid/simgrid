@@ -154,14 +154,14 @@ static void intercepter_init()
   raw_sem_trywait   = dlsym(RTLD_NEXT, "sem_trywait");
   raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
 
-  raw_open   = dlsym(RTLD_NEXT, "open");
-  raw_close  = dlsym(RTLD_NEXT, "close");
-  raw_read   = dlsym(RTLD_NEXT, "read");
-  raw_write  = dlsym(RTLD_NEXT, "write");
-  raw_pread  = dlsym(RTLD_NEXT, "pread");
-  raw_pwrite = dlsym(RTLD_NEXT, "pwrite");
-  raw_lseek  = dlsym(RTLD_NEXT, "lseek");
-  raw_fstat  = dlsym(RTLD_NEXT, "fstat");
+  raw_open     = dlsym(RTLD_NEXT, "open");
+  raw_close    = dlsym(RTLD_NEXT, "close");
+  raw_read     = dlsym(RTLD_NEXT, "read");
+  raw_write    = dlsym(RTLD_NEXT, "write");
+  raw_pread    = dlsym(RTLD_NEXT, "pread");
+  raw_pwrite   = dlsym(RTLD_NEXT, "pwrite");
+  raw_lseek    = dlsym(RTLD_NEXT, "lseek");
+  raw_fstat    = dlsym(RTLD_NEXT, "fstat");
   raw_readv    = dlsym(RTLD_NEXT, "readv");
   raw_writev   = dlsym(RTLD_NEXT, "writev");
   raw_preadv   = dlsym(RTLD_NEXT, "preadv");

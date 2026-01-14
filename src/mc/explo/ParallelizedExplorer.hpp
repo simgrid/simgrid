@@ -170,7 +170,7 @@ public:
   explicit ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;
   RecordTrace get_record_trace() override;
-  void TreeHandler();
+  void TreeHandler(StatePtr initial_state);
 };
 
 // Wrapper function around explorer that helps handling the different termination cases of the explorer

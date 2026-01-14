@@ -108,6 +108,13 @@ private:
   std::vector<std::vector<EventHandle>> skip_list_ = {{}};
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
 
+  /** @brief returns the eventhandle corresponding to:
+   *  - the previous action made by actor if it exists
+   *  - else, the action that created the actor if it exists
+   *  - -1 if none of the above exist
+   */
+  EventHandle find_pre_event_of_aid(aid_t actor);
+
   static PartialExecution preallocated_partial_execution_;
 
 public:

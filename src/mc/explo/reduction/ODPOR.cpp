@@ -104,8 +104,11 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
 {
   StatePtr new_state;
-  if (parent_state == nullptr)
+  if (parent_state == nullptr) {
     new_state = StatePtr(new WutState(remote_app), true);
+    static_cast<WutState*>(new_state.get())->give_ownership_to_explorers();
+  }
+
   else {
     if (auto existing_state =
             parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
@@ -118,7 +121,20 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, Trans
       }
       return existing_state;
     }
+
+    // The state doesn't exist yet
     new_state = StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
+
+    auto incoming_actor = parent_state->get_actor_at(incoming_transition->aid_);
+    if (incoming_actor.get_times_considered() == 1 and incoming_actor.has_more_to_consider())
+      // This is the first time a transition with multiple variants is being considered here:
+      // => let's add all the variations now, if it's not already the case
+      for (int i = 2; i < incoming_actor.get_max_considered(); i++) {
+        if (parent_state->get_children_state_of_aid(incoming_transition->aid_, i) == nullptr)
+          StatePtr(new WutState(remote_app, parent_state,
+                                TransitionPtr(new Transition(incoming_transition->type_, incoming_transition->aid_, i)),
+                                false));
+      }
   }
   static_cast<SleepSetState*>(new_state.get())->add_arbitrary_transition(remote_app);
   return new_state;

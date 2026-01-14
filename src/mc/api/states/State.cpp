@@ -19,6 +19,7 @@
 #include <boost/range/algorithm.hpp>
 #include <memory>
 #include <mutex>
+#include <numeric>
 #include <optional>
 #include <string>
 
@@ -28,7 +29,7 @@ namespace simgrid::mc {
 
 std::atomic_ulong State::expended_states_  = 0;
 std::atomic_ulong State::in_memory_states_ = 0;
-size_t State::max_actor_encountered_ = 1;
+size_t State::max_actor_encountered_       = 1;
 
 State::~State()
 {
@@ -50,16 +51,12 @@ State::State(const RemoteApp& remote_app, bool set_actor_status) : num_(++expend
   }
 
   opened_.reserve(max_actor_encountered_);
+  expected_of_children_.resize(max_actor_encountered_, 0);
 
   // UDPOR create state that have no parentship links at all and manage everything
   // its own way so let it cook
-  if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor) {
+  if (get_num() == 1 and get_model_checking_reduction() != ReductionMode::udpor)
     traversal_ = std::make_shared<PostFixTraversal>(this);
-
-    is_leftmost_ = true; // The first state is the only one at that depth, so the leftmost one.
-  }
-
-  being_explored.test_and_set();
 }
 
 State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
@@ -72,9 +69,6 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr i
   depth_               = parent_state_->depth_ + 1;
 
   parent_state_->update_opened(get_transition_in());
-  // This is leftmost iff parent is leftmost, and this is the leftest opened child of the parent
-  is_leftmost_ =
-      parent_state_->is_leftmost_ and parent_state_->opened_[parent_state_->closed_.size()] == get_transition_in();
   parent_state_->record_child_state(this);
 
   traversal_ = std::make_shared<PostFixTraversal>(this);
@@ -229,7 +223,6 @@ void State::register_as_correct()
 
 void State::record_child_state(StatePtr child)
 {
-  std::lock_guard<std::mutex> g(children_lock_);
   aid_t child_aid      = child->get_transition_in()->aid_;
   int times_considered = child->get_transition_in()->times_considered_;
   if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
@@ -238,7 +231,6 @@ void State::record_child_state(StatePtr child)
     children_states_[child_aid].resize(times_considered + 1);
   children_states_[child_aid][times_considered] = std::move(child);
   is_a_leaf                                     = false;
-  adding_children.notify_one();
 }
 
 void State::signal_on_backtrack()
@@ -282,7 +274,8 @@ void State::initialize(const RemoteApp& remote_app)
   }
 
   // Tell the parent we are being done (and are not "todo" anymore)
-  parent_state_->actors_to_run_[incoming_transition_->aid_]->mark_done();
+  if (not parent_state_->actors_to_run_[incoming_transition_->aid_]->has_more_to_consider())
+    parent_state_->actors_to_run_[incoming_transition_->aid_]->mark_done();
 }
 
 void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
@@ -321,118 +314,136 @@ void State::consider_one(aid_t aid)
   opened_.emplace_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, aid, actor.get_times_considered())));
   XBT_DEBUG("Considered actor %hd at state %lu", actor.get_aid(), get_num());
 }
+
+State::PostFixTraversal State::PostFixTraversal::HEAD_;
+State::PostFixTraversal State::PostFixTraversal::TAIL_;
+
 State::PostFixTraversal::PostFixTraversal(StatePtr state)
 {
+
   prev_ = nullptr;
   next_ = nullptr;
   self_ = state;
 
-  if (state->parent_state_ == nullptr)
-    return;
+  if (state->parent_state_ == nullptr) {
+    // Special case for the root node
+    HEAD_.next_     = this;
+    HEAD_.prev_     = nullptr;
+    HEAD_.leftness_ = 0;
+    HEAD_.self_     = nullptr;
 
-  // Insert the new node just at the left of his parent
+    TAIL_.prev_     = this;
+    TAIL_.next_     = nullptr;
+    TAIL_.leftness_ = std::numeric_limits<unsigned long long>::max();
+    TAIL_.self_     = nullptr;
+
+    prev_ = &HEAD_;
+    next_ = &TAIL_;
+
+    return;
+  }
+
+  // Insert the new node just at the left of its parent
   PostFixTraversal* parent_traversal = state->parent_state_->traversal_.get();
   xbt_assert(parent_traversal != nullptr, "Why does this state parent have no traversal?");
 
-  next_ = parent_traversal;
+  // Locking the node and then it's predecessor
+  parent_traversal->lock_.lock();
+  parent_traversal->prev_->lock_.lock();
+
+  next_                          = parent_traversal;
+  prev_                          = parent_traversal->prev_;
+  parent_traversal->prev_->next_ = this;
+  parent_traversal->prev_        = this;
 
   unsigned long long next_leftness = next_->leftness_;
-  unsigned long long prev_leftness = 0;
-
-  // Wait until we can lock the node before where we are inserting, if any
-  // This is mandatory when we try to insert at the beginning of the list
-  while (parent_traversal->prev_ != nullptr and parent_traversal->prev_->lock_.try_lock()) {
-  }
-
-  if (parent_traversal->prev_ != nullptr) {
-    parent_traversal->prev_->next_ = this;
-    prev_leftness                  = parent_traversal->prev_->leftness_;
-  }
-
-  prev_                   = parent_traversal->prev_;
-  parent_traversal->prev_ = this;
-
-  if (first_ == nullptr or first_ == parent_traversal) {
-    XBT_DEBUG("Pushing state %lu as postfix traversal first", state->get_num());
-    first_num_ = state->get_num();
-    first_ = this;
-  }
+  unsigned long long prev_leftness = prev_->leftness_;
 
   leftness_ = prev_leftness + (next_leftness - prev_leftness) / 2;
 
-  if (prev_ != nullptr)
-    prev_->lock_.unlock();
+  parent_traversal->lock_.unlock();
+  this->prev_->lock_.unlock();
 }
 
 void State::remove_ref_in_parent()
 {
   parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
 
-  auto findme = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), get_transition_in()->aid_);
+  auto new_pair = std::make_pair(get_transition_in()->aid_, get_transition_in()->times_considered_);
+  auto findme   = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), new_pair);
   xbt_assert(findme == parent_state_->closed_.end(), "I'm already in the closed_ of my parent");
+
+  parent_state_->closed_.push_back(new_pair);
 }
 
-State::PostFixTraversal* simgrid::mc::State::PostFixTraversal::first_ = nullptr;
-std::atomic_long simgrid::mc::State::PostFixTraversal::first_num_     = -1;
+void State::PostFixTraversal::garbage_collect()
+{
+  HEAD_.lock_.lock();
+  auto first_state = HEAD_.next_->self_;
+  while (first_state != nullptr and first_state->to_be_deleted_) {
+
+    HEAD_.lock_.unlock();
+    PostFixTraversal::remove_first();
+
+    if (first_state->parent_state_ != nullptr) {
+      first_state->remove_ref_in_parent();
+      if (not first_state->parent_state_->has_more_to_be_explored())
+        first_state->parent_state_->to_be_deleted_ = true;
+      first_state->reset_parent_state();
+    }
+
+    HEAD_.lock_.lock();
+    first_state = HEAD_.next_->self_;
+  }
+  HEAD_.lock_.unlock();
+}
 
 void State::garbage_collect()
 {
 
-  StatePtr first_state = PostFixTraversal::get_first();
-
-  while (first_state != nullptr and first_state->to_be_deleted_) {
-
-    PostFixTraversal::remove_first();
-
-    if (first_state->parent_state_ != nullptr) {
-      if (not first_state->parent_state_->has_more_to_be_explored())
-        first_state->parent_state_->to_be_deleted_ = true;
-      first_state->remove_ref_in_parent();
-      first_state->reset_parent_state();
-    }
-
-    first_state = PostFixTraversal::get_first();
-  }
+  PostFixTraversal::garbage_collect();
 }
+
 void State::PostFixTraversal::remove_first()
 {
-  // Waiting until the first is accessible
-  // and lock it so no one modify what's coming next
-  while (not first_->lock_.try_lock()) {
+
+  while (true) {
+
+    HEAD_.lock_.lock();
+    auto first = HEAD_.next_;
+    if (not first->lock_.try_lock()) {
+      HEAD_.lock_.unlock();
+      continue;
+    }
+
+    // There should always be something to pop
+    assert(first != &TAIL_);
+    assert(first->next_ != nullptr);
+
+    auto second = first->next_;
+    if (not second->lock_.try_lock()) {
+      first->lock_.unlock();
+      HEAD_.lock_.unlock();
+      continue;
+    }
+
+    HEAD_.next_   = second;
+    first->self_  = nullptr;
+    second->prev_ = &HEAD_;
+
+    second->lock_.unlock();
+    first->lock_.unlock();
+    HEAD_.lock_.unlock();
+
+    break;
   }
-
-  xbt_assert(first_->prev_ == nullptr, "Why is the first state in the order not the first state in the order?");
-
-  if (first_->next_ != nullptr)
-    // try to remove the second entry predecessor
-    first_->next_->prev_ = nullptr;
-
-  auto old      = first_;
-  first_        = first_->next_;
-
-  XBT_DEBUG("Popping state #%lu from the postfix traversal", old->self_->get_num());
-
-  if (first_ == nullptr)
-    first_num_ = 0;
-  else
-    first_num_ = first_->self_->get_num();
-
-  old->lock_.unlock();
-  old->self_ = nullptr;
-}
-StatePtr State::PostFixTraversal::get_first()
-{
-  if (first_ != nullptr) {
-    return first_->self_;
-  } else
-    return nullptr;
 }
 
 std::string State::PostFixTraversal::get_traversal_as_ids()
 {
   std::string res = "";
 
-  auto curr = first_;
+  auto curr = &HEAD_;
   while (curr != nullptr) {
     res += std::to_string(curr->self_->num_) + ';';
     curr = curr->next_;
@@ -460,20 +471,51 @@ unsigned long State::consider_all()
   }
   return count;
 }
-void State::PostFixTraversal::update_leftness()
-{
-  PostFixTraversal* current_state = PostFixTraversal::get_first()->traversal_.get();
-  unsigned long count             = 0;
-  while (current_state != nullptr) {
 
-    current_state->self_->leftness_ = count;
-
-    current_state = current_state->next_;
-    count++;
-  }
-}
 unsigned long State::get_leftest_state_num()
 {
   return PostFixTraversal::get_first_num();
+}
+
+void State::update_expected_total_children(bool is_leaf)
+{
+
+  if (is_leaf) {
+    expected_total_children_ = 1;
+  } else {
+    // Self -- could be the time of exploring the branch
+    float explored_children  = 0;
+    float scheduled_children = 0;
+    double estimate_sum      = 0;
+    for (auto t : opened_) {
+      aid_t aid = t->aid_;
+
+      if (expected_of_children_[aid] == 0)
+        scheduled_children += 1;
+      else
+        explored_children += 1;
+
+      estimate_sum += expected_of_children_[aid];
+    }
+
+    if (scheduled_children == 0)
+      expected_total_children_ = 1 + estimate_sum;
+    else
+      expected_total_children_ =
+          1 + (1 + ((_sg_mc_eta_steps < 0 ? scheduled_children : 1) / explored_children)) * estimate_sum;
+  }
+
+  if (parent_state_ != nullptr) {
+    parent_state_->expected_of_children_[incoming_transition_->aid_] = expected_total_children_;
+    parent_state_->update_expected_total_children(false);
+  }
+}
+unsigned long State::PostFixTraversal::get_first_num()
+{
+  std::lock_guard<std::mutex> g(HEAD_.lock_);
+  if (HEAD_.next_->self_)
+    return HEAD_.next_->self_->get_num();
+  else
+    return -1;
 }
 } // namespace simgrid::mc

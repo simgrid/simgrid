@@ -15,7 +15,11 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
+#include <cstring>
+#include <fstream>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <sys/socket.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
@@ -133,7 +137,19 @@ void RecordTrace::replay() const
 void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(kernel::actor::ActorImpl::get_maxpid());
-  simgrid::mc::RecordTrace trace(path_string.c_str());
+  std::string data = "";
+  if (path_string.starts_with("FILE:")) {
+    std::string filepath = path_string.substr(5);
+    std::ifstream file(filepath);
+
+    if (!file.is_open())
+      throw std::invalid_argument("Could not open file " + filepath);
+
+    std::getline(file, data);
+
+  } else
+    data = path_string;
+  simgrid::mc::RecordTrace trace(data.c_str());
   trace.replay();
   for (auto* item : trace.transitions_)
     delete item;
@@ -157,7 +173,7 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');
-    if(end == nullptr)
+    if (end == nullptr)
       break;
     else
       current = end + 1;

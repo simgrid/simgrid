@@ -56,9 +56,9 @@ int RNUM = 2; // number of requests
 
 pthread_mutex_t* servers;
 pthread_mutex_t k;
-int sid = 0;           // server id
-int* in_channel;       // input  communication channel
-int* out_channel;      // output communication channel
+int sid = 0;      // server id
+int* in_channel;  // input  communication channel
+int* out_channel; // output communication channel
 
 // this thread just chooses a server
 // different from the last one if there
