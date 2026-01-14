@@ -314,16 +314,32 @@ void State::consider_one(aid_t aid)
   opened_.emplace_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, aid, actor.get_times_considered())));
   XBT_DEBUG("Considered actor %hd at state %lu", actor.get_aid(), get_num());
 }
+
+State::PostFixTraversal State::PostFixTraversal::HEAD_;
+State::PostFixTraversal State::PostFixTraversal::TAIL_;
+
 State::PostFixTraversal::PostFixTraversal(StatePtr state)
 {
+
   prev_ = nullptr;
   next_ = nullptr;
   self_ = state;
 
   if (state->parent_state_ == nullptr) {
     // Special case for the root node
-    first_      = this;
-    first_lock_ = &lock_;
+    HEAD_.next_     = this;
+    HEAD_.prev_     = nullptr;
+    HEAD_.leftness_ = 0;
+    HEAD_.self_     = nullptr;
+
+    TAIL_.prev_     = this;
+    TAIL_.next_     = nullptr;
+    TAIL_.leftness_ = std::numeric_limits<unsigned long long>::max();
+    TAIL_.self_     = nullptr;
+
+    prev_ = &HEAD_;
+    next_ = &TAIL_;
+
     return;
   }
 
@@ -331,30 +347,22 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
   PostFixTraversal* parent_traversal = state->parent_state_->traversal_.get();
   xbt_assert(parent_traversal != nullptr, "Why does this state parent have no traversal?");
 
+  // Locking the node and then it's predecessor
   parent_traversal->lock_.lock();
+  parent_traversal->prev_->lock_.lock();
 
-  next_ = parent_traversal;
+  next_                          = parent_traversal;
+  prev_                          = parent_traversal->prev_;
+  parent_traversal->prev_->next_ = this;
+  parent_traversal->prev_        = this;
 
   unsigned long long next_leftness = next_->leftness_;
-  unsigned long long prev_leftness = 0;
-
-  if (parent_traversal->prev_ != nullptr) {
-    parent_traversal->prev_->next_ = this;
-    prev_leftness                  = parent_traversal->prev_->leftness_;
-  }
-
-  prev_                   = parent_traversal->prev_;
-  parent_traversal->prev_ = this;
+  unsigned long long prev_leftness = prev_->leftness_;
 
   leftness_ = prev_leftness + (next_leftness - prev_leftness) / 2;
 
-  if (first_ == nullptr or first_ == parent_traversal) {
-    XBT_DEBUG("Pushing state %lu as postfix traversal first", state->get_num());
-    first_      = this;
-    first_lock_ = &lock_;
-  }
-
   parent_traversal->lock_.unlock();
+  this->prev_->lock_.unlock();
 }
 
 void State::remove_ref_in_parent()
@@ -368,14 +376,13 @@ void State::remove_ref_in_parent()
   parent_state_->closed_.push_back(new_pair);
 }
 
-State::PostFixTraversal* simgrid::mc::State::PostFixTraversal::first_ = nullptr;
-std::mutex* simgrid::mc::State::PostFixTraversal::first_lock_         = nullptr;
-
 void State::PostFixTraversal::garbage_collect()
 {
-  auto first_state = first_->self_;
+  HEAD_.lock_.lock();
+  auto first_state = HEAD_.next_->self_;
   while (first_state != nullptr and first_state->to_be_deleted_) {
 
+    HEAD_.lock_.unlock();
     PostFixTraversal::remove_first();
 
     if (first_state->parent_state_ != nullptr) {
@@ -385,8 +392,10 @@ void State::PostFixTraversal::garbage_collect()
       first_state->reset_parent_state();
     }
 
-    first_state = first_->self_;
+    HEAD_.lock_.lock();
+    first_state = HEAD_.next_->self_;
   }
+  HEAD_.lock_.unlock();
 }
 
 void State::garbage_collect()
@@ -397,39 +406,44 @@ void State::garbage_collect()
 
 void State::PostFixTraversal::remove_first()
 {
-  // Waiting until the first is accessible
-  // and lock it so no one modify what's coming next
-  while (not first_lock_->try_lock()) {
+
+  while (true) {
+
+    HEAD_.lock_.lock();
+    auto first = HEAD_.next_;
+    if (not first->lock_.try_lock()) {
+      HEAD_.lock_.unlock();
+      continue;
+    }
+
+    // There should always be something to pop
+    assert(first != &TAIL_);
+    assert(first->next_ != nullptr);
+
+    auto second = first->next_;
+    if (not second->lock_.try_lock()) {
+      first->lock_.unlock();
+      HEAD_.lock_.unlock();
+      continue;
+    }
+
+    HEAD_.next_   = second;
+    first->self_  = nullptr;
+    second->prev_ = &HEAD_;
+
+    second->lock_.unlock();
+    first->lock_.unlock();
+    HEAD_.lock_.unlock();
+
+    break;
   }
-  xbt_assert(&first_->lock_ == first_lock_);
-  xbt_assert(first_->prev_ == nullptr, "Why is the first state in the order not the first state in the order?");
-
-  if (first_->next_ == nullptr) {
-    // Removing the last node, exploration is finished, nothing to do here
-    first_->self_ = nullptr;
-    return;
-  }
-
-  while (not first_->next_->lock_.try_lock()) {
-  }
-
-  auto old      = first_;
-  first_        = first_->next_;
-  first_lock_   = &first_->lock_;
-  first_->prev_ = nullptr;
-
-  XBT_DEBUG("Popping state #%lu from the postfix traversal", old->self_->get_num());
-
-  first_->lock_.unlock();
-  old->lock_.unlock();
-  old->self_ = nullptr;
 }
 
 std::string State::PostFixTraversal::get_traversal_as_ids()
 {
   std::string res = "";
 
-  auto curr = first_;
+  auto curr = &HEAD_;
   while (curr != nullptr) {
     res += std::to_string(curr->self_->num_) + ';';
     curr = curr->next_;
@@ -457,18 +471,7 @@ unsigned long State::consider_all()
   }
   return count;
 }
-void State::PostFixTraversal::update_leftness()
-{
-  PostFixTraversal* current_state = first_;
-  unsigned long count             = 0;
-  while (current_state != nullptr) {
 
-    current_state->self_->leftness_ = count;
-
-    current_state = current_state->next_;
-    count++;
-  }
-}
 unsigned long State::get_leftest_state_num()
 {
   return PostFixTraversal::get_first_num();
@@ -506,5 +509,13 @@ void State::update_expected_total_children(bool is_leaf)
     parent_state_->expected_of_children_[incoming_transition_->aid_] = expected_total_children_;
     parent_state_->update_expected_total_children(false);
   }
+}
+unsigned long State::PostFixTraversal::get_first_num()
+{
+  std::lock_guard<std::mutex> g(HEAD_.lock_);
+  if (HEAD_.next_->self_)
+    return HEAD_.next_->self_->get_num();
+  else
+    return -1;
 }
 } // namespace simgrid::mc

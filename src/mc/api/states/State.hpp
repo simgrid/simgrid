@@ -42,21 +42,21 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     StatePtr self_;
     std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
 
-    static PostFixTraversal* first_;
-    // This lock should correspond to the lock_ of the first postfix traversal
-    // At any point the following invariant should be verified; either:
-    // &first_->lock_ == first_lock_ or *first_lock_ is being held
-    static std::mutex* first_lock_;
+    // Sentinells corresponding to first and last
+    // structure is empty iff first_.next == &last_
+    static PostFixTraversal HEAD_;
+    static PostFixTraversal TAIL_;
+
+    PostFixTraversal() {}
 
   public:
     // Construct a traversal information corresponding to the child of parameter state
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
-    static unsigned long get_first_num() { return first_->self_->get_num(); }
+    static unsigned long get_first_num();
     static void remove_first();
     static std::string get_traversal_as_ids();
     unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
-    static void update_leftness();
     static void garbage_collect();
   };
 
@@ -270,7 +270,6 @@ public:
 
   static unsigned long get_leftest_state_num();
 
-  static void update_leftness() { PostFixTraversal::update_leftness(); };
   unsigned long long get_leftness() const { return this->traversal_->leftness_; }
 
   /** Called by the exploration to excplicitly tells this state won't be explored further, eg.
