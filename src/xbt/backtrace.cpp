@@ -239,6 +239,8 @@ public:
         }
       }
       sthread_enable();
+      ss << "If some frame symbols are not shown in this trace, compile with '-fno-omit-frame-pointer -rdynamic' "
+            "and/or use --cfg=debug/stacktrace:gcc and figure the missing elements manually.";
 
       free(strings);
     }
