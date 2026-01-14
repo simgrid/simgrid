@@ -20,6 +20,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree
 
 namespace simgrid::mc {
 
+std::set<unsigned long> WutState::state_with_remaining_work = {};
+
+WutState::~WutState()
+{
+  // xbt_assert(not owned_by_the_explorers_);
+  // xbt_assert(state_with_remaining_work.find(get_num()) == state_with_remaining_work.end());
+}
+
 StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
 {
   XBT_DEBUG("Inserting at state #%lu sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
@@ -37,6 +45,9 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
     // Let's put that execution somewhere else for now, we will proceed later.
 
     to_be_inserted_.push_back(w);
+    state_with_remaining_work.emplace(this->get_num());
+
+    xbt_assert(owned_by_the_explorers_);
 
     return nullptr;
   }
@@ -164,9 +175,24 @@ void WutState::on_branch_completion()
 
     curr_state->owned_by_the_explorers_ = false;
 
-    for (auto seq : curr_state->to_be_inserted_) {
-      curr_state->insert_into_tree(seq, Exploration::get_instance()->get_remote_app());
+    if (not curr_state->to_be_inserted_.empty()) {
+      state_with_remaining_work.erase(curr_state->get_num());
     }
+
+    std::vector<StatePtr> inserted_states = {};
+    while (not curr_state->to_be_inserted_.empty()) {
+      auto seq = curr_state->to_be_inserted_.back();
+      curr_state->to_be_inserted_.pop_back();
+      auto new_state = curr_state->insert_into_tree(seq, Exploration::get_instance()->get_remote_app());
+      if (new_state)
+        inserted_states.push_back(new_state);
+    }
+
+    // If we are running in parallel, we have to warn the TreeHandler about those new things to explore
+    //   another solution for that would be to change the return type of that method, but since it's inherited from
+    //   basic State, I am not sure of what is easier to read
+    if (not inserted_states.empty())
+      throw StatesToVisit(inserted_states);
   }
 }
 

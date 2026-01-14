@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/ParallelizedExplorer.hpp"
+#include "src/mc/api/states/WutState.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
@@ -89,9 +90,17 @@ void ParallelizedExplorer::TreeHandler(StatePtr initial_state)
     remaining_todo--;
     XBT_DEBUG("[tid:TreeHandler] Received a race update! Going to apply it");
 
-    // Warn the tree the explorer finished exploring this branch
-    if (to_apply->get_last_explored_state() != nullptr)
-      to_apply->get_last_explored_state()->on_branch_completion();
+    // Warn the tree the explorer finished exploring this branch and eventually resume some insertions
+    try {
+      if (to_apply->get_last_explored_state() != nullptr)
+        to_apply->get_last_explored_state()->on_branch_completion();
+    } catch (StatesToVisit& ve) {
+      for (auto state_it = ve.to_visit.rbegin(); state_it != ve.to_visit.rend(); state_it++) {
+        XBT_DEBUG("[tid:TreeHandler] Pushing state %lu in the queue", (*state_it)->get_num());
+        opened_heads_.push((*state_it).get());
+        remaining_todo++;
+      }
+    }
 
     std::vector<StatePtr> new_opened;
     remaining_todo +=
@@ -348,7 +357,7 @@ void ParallelizedExplorer::run()
     for (auto s : WutState::state_with_remaining_work)
       XBT_CRITICAL("\t%ld", s);
   }
-  
+
   XBT_INFO("Parallel exploration ended. %lu explored traces overall", total_traces);
 }
 

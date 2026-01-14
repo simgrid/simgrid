@@ -17,6 +17,11 @@
 
 namespace simgrid::mc {
 
+struct StatesToVisit : public std::exception {
+  std::vector<StatePtr> to_visit;
+  explicit StatesToVisit(std::vector<StatePtr> to_visit) : to_visit(to_visit) {}
+};
+
 class XBT_PRIVATE WutState : public SleepSetState {
 
   // A vector containing the sequence that couldn't be inserted for now
@@ -32,6 +37,7 @@ public:
       : SleepSetState(remote_app, parent_state, incoming_transition, set_actor_status)
   {
   }
+  ~WutState();
 
   /**
    * @brief
@@ -47,6 +53,8 @@ public:
   void give_ownership_to_explorers() { owned_by_the_explorers_ = true; }
 
   void on_branch_completion() override;
+
+  static std::set<unsigned long> state_with_remaining_work;
 };
 
 } // namespace simgrid::mc
