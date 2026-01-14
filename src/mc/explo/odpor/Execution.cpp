@@ -13,6 +13,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
@@ -129,6 +130,29 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
+EventHandle Execution::find_pre_event_of_aid(aid_t actor)
+{
+
+  // If there is a previous action made by actor
+  if (skip_list_[actor].size() != 0)
+    return skip_list_[actor].back();
+
+  // If actor was created by someone else
+  for (auto handle = contents_.size() - 1; handle < contents_.size(); handle--) {
+    if (contents_[handle].get_transition()->type_ != Transition::Type::ACTOR_CREATE)
+      continue;
+
+    auto t = static_cast<ActorCreateTransition*>(contents_[handle].get_transition().get());
+    if (t->get_child() != actor)
+      continue;
+
+    return handle;
+  }
+
+  // Else
+  return -1;
+}
+
 void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution)
 {
 
@@ -149,7 +173,7 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
   contents_.push_back(Event({t, std::move(max_clock_vector)}));
   if (skip_list_.size() <= (unsigned)t->aid_)
     skip_list_.resize(t->aid_ + 1, {});
-  EventHandle prev_event_of_aid = skip_list_[t->aid_].size() == 0 ? -1 : skip_list_[t->aid_].back();
+  EventHandle prev_event_of_aid = find_pre_event_of_aid(t->aid_);
   skip_list_[t->aid_].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
