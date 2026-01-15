@@ -198,34 +198,32 @@ public:
       char** strings = backtrace_symbols(buffer, nptrs);
       xbt_assert(strings != NULL, "backtrace_symbols failed");
 
+#define ERRMSG                                                                                                         \
+  "The 'addr2line' stacktrace backed is unusable. Try the raw gcc stacktraces with --cfg=debug/stacktrace:gcc"
+
       sthread_disable();
       for (size_t j = 0; j < nptrs; j++) {
         char* pre  = strchr(strings[j], '(');
         char* post = strrchr(strings[j], ')');
-        xbt_assert(pre != nullptr && post != nullptr,
-                   "The output format changed, the 'addr2line' stacktrace backed is unusable. Try the raw gcc "
-                   "stacktraces with --cfg=debug/stacktrace:gcc");
+        xbt_assert(pre != nullptr && post != nullptr, "The output format changed. " ERRMSG);
         *pre  = '\0';
         *post = '\0';
 
         int pipes[2];
-        pipe(pipes);
+        int res = pipe(pipes);
+        xbt_assert(res == 0, "pipe() failed (error: %s). " ERRMSG, strerror(errno));
         int pid = fork();
-        xbt_assert(pid >= 0,
-                   "Fork failed (error: %s). The 'addr2line' stacktrace backed is unusable. Try the raw gcc "
-                   "stacktraces with --cfg=debug/stacktrace:gcc",
-                   strerror(errno));
+        xbt_assert(pid >= 0, "Fork failed (error: %s). " ERRMSG, strerror(errno));
         if (pid == 0) { // child
           const char* argv[5] = {"addr2line", "-Cfpe", strings[j], pre + 1, (char*)NULL};
 
           close(pipes[0]);
           close(1);
-          dup2(pipes[1], 1);
+          res = dup2(pipes[1], 1);
+          xbt_assert(res == 0, "dup2() failed (error: %s). " ERRMSG, strerror(errno));
           close(pipes[1]);
           execvp("addr2line", (char* const*)argv);
-          xbt_die("Failed to exec addr2line (error: %s). The 'addr2line' stacktrace backed is unusable. Try the raw "
-                  "gcc stacktraces with --cfg=debug/stacktrace:gcc",
-                  strerror(errno));
+          xbt_die("Failed to exec addr2line (error: %s). " ERRMSG, strerror(errno));
         } else { // parent
           close(pipes[1]);
           char buffer[1024];
@@ -242,6 +240,7 @@ public:
       ss << "If some frame symbols are not shown in this trace, compile with '-fno-omit-frame-pointer -rdynamic' "
             "and/or use --cfg=debug/stacktrace:gcc and figure the missing elements manually.";
 
+#undef ERRMSG
       free(strings);
     }
 #endif
