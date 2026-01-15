@@ -1976,8 +1976,10 @@ long sthread_syscall(int number, long a1, long a2, long a3, long a4, long a5, lo
       return sthread_read(a1, (void*)a2, a3);
     case SYS_write:
       return sthread_write(a1, (void*)a2, a3);
+#ifdef SYS_open
     case SYS_open:
       return sthread_open((const char*)a1, a2, a3);
+#endif
     case SYS_close:
       return sthread_close(a1);
   }
