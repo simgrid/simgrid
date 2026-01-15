@@ -109,7 +109,7 @@ if(HAVE_POSIX_GETTIME)
 endif()
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat")
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat -lexecinfo")
 endif()
 
 # Compute the dependencies of SMPI
