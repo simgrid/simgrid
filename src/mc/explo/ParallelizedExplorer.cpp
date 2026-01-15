@@ -355,7 +355,7 @@ void ParallelizedExplorer::run()
   if (WutState::state_with_remaining_work.size() != 0) {
     XBT_CRITICAL("There are still states with things to be inserted later, the algorithm shouldn't be exiting yet!!");
     for (auto s : WutState::state_with_remaining_work)
-      XBT_CRITICAL("\t%ld", s);
+      XBT_CRITICAL("\t%lu", s);
   }
 
   XBT_INFO("Parallel exploration ended. %lu explored traces overall", total_traces);
