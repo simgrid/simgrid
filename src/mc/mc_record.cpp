@@ -15,6 +15,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
+
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -138,7 +139,8 @@ void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(kernel::actor::ActorImpl::get_maxpid());
   std::string data = "";
-  if (path_string.starts_with("FILE:")) {
+  // FIXME: once we are in C++20, use -  starts_with() instead of this trick
+  if (path_string.rfind("FILE:", 0) != std::string::npos) {
     std::string filepath = path_string.substr(5);
     std::ifstream file(filepath);
 
