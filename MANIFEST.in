@@ -2586,8 +2586,10 @@ include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/mc_protocol.h
-include src/mc/smemory/src/memory_observer.cpp
-include src/mc/smemory/src/memory_observer.h
+include src/mc/smemory/mclang.in
+include src/mc/smemory/pass/smemory_pass.cpp
+include src/mc/smemory/runtime/smemory_observer.cpp
+include src/mc/smemory/runtime/smemory_observer.h
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
 include src/mc/transition/TransitionActor.cpp

@@ -25,6 +25,7 @@ set(libsimgrid-java_version "${release_version}")
 cmake_minimum_required(VERSION 3.12)
 # once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
 # once we move CMake to >= 3.13.1, we could get rid of _Boost_STACKTRACE_BACKTRACE_HEADERS
+# once we move CMake to >= 3.19, we should use file(CHMOD) instead of the shell command directly
 # When updating, try to remove some cmake_policy() to see if it's OK or if it generates a warning
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
@@ -458,6 +459,31 @@ endif()
 
 if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
   message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option.")
+endif()
+
+if(enable_smemory)
+  if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler or use --enable-smemory=OFF")
+  endif()
+
+  find_package( LLVM REQUIRED CONFIG )
+  include(AddLLVM)
+
+  add_llvm_library(smemory_pass
+    MODULE      src/mc/smemory/pass/smemory_pass.cpp
+    DEPENDS     intrinsics_gen
+    PLUGIN_TOOL opt
+    PARTIAL_SOURCES_INTENDED
+  )
+  set_property(TARGET smemory_pass
+              APPEND PROPERTY INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIRS}")
+
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in ${CMAKE_BINARY_DIR}/mclang @ONLY)
+  execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
+  install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang
+          DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+
+  message(STATUS "Enabling the MC memory interceptor as requested.")
 endif()
 
 if(enable_smpi)

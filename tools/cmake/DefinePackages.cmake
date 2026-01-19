@@ -30,6 +30,8 @@ set(EXTRA_DIST
   src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
+  src/mc/smemory/mclang.in
+  src/mc/smemory/pass/smemory_pass.cpp
 
   src/simgrid/sg_config.hpp
   src/simgrid/math_utils.h
@@ -238,6 +240,10 @@ set(STHREAD_SRC
   src/sthread/sthread_syscall.cpp
 
   src/sthread/ObjectAccess.cpp
+)
+set(SMEMORY_SRC
+  src/mc/smemory/runtime/smemory_observer.cpp
+  src/mc/smemory/runtime/smemory_observer.h
 )
 
 set(XBT_SRC
@@ -473,9 +479,6 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
-
-  src/mc/smemory/src/memory_observer.cpp
-  src/mc/smemory/src/memory_observer.h
   )
 
 set(DAG_SRC
@@ -753,6 +756,12 @@ set(simgrid_sources
 
 if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
+endif()
+
+if(enable_smemory)
+  set(simgrid_sources  ${simgrid_sources}  ${SMEMORY_SRC})
+else()
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${SMEMORY_SRC})
 endif()
 
 if(SIMGRID_HAVE_MC)
