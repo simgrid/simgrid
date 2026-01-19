@@ -474,8 +474,8 @@ set(SIMGRID_SRC
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
 
-  src/smo/memory_observer.cpp
-  src/smo/memory_observer.h
+  src/mc/smemory/src/memory_observer.cpp
+  src/mc/smemory/src/memory_observer.h
   )
 
 set(DAG_SRC

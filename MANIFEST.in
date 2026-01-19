@@ -2586,6 +2586,8 @@ include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/mc_protocol.h
+include src/mc/smemory/src/memory_observer.cpp
+include src/mc/smemory/src/memory_observer.h
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
 include src/mc/transition/TransitionActor.cpp
@@ -2647,8 +2649,6 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
-include src/smo/memory_observer.cpp
-include src/smo/memory_observer.h
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp
