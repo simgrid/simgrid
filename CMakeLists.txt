@@ -463,10 +463,13 @@ endif()
 
 if(enable_smemory)
   if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler or use --enable-smemory=OFF")
+    message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler, or configure cmake with --enable-smemory=OFF")
   endif()
 
-  find_package( LLVM REQUIRED CONFIG )
+  find_package(LLVM CONFIG)
+  if(NOT LLVM_FOUND)
+    message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with --enable-smemory=OFF")
+  endif()
   include(AddLLVM)
 
   add_llvm_library(smemory_pass
