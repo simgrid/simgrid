@@ -31,7 +31,7 @@ jobs:
       - name: prepare for MacOS
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |
-          brew install boost eigen pybind11 ninja
+          brew install llvm boost eigen pybind11 ninja
           sudo xcode-select -s /Applications/Xcode_16.3.app
       - name: build
         run: |
