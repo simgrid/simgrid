@@ -4,9 +4,10 @@ S4U:
  - New plugin for Host carbon footprint. See examples/cpp/exec-co2 and https://arxiv.org/abs/2508.13693
    Thanks to the authors for this great contribution.
 
-sthread:
- - Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,
+Model-Checker:
+ - [sthread] Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,
    but allow programs requiring the disk to run in sthread.
+ - Merge the support to observe the race conditions into our code base rather than relying on an external repository.
 
 Core:
  - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust.
