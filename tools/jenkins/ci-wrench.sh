@@ -18,8 +18,8 @@ $SUDO apt-get -y install unzip doxygen wget
 $SUDO apt-get -y install libboost-all-dev libpugixml-dev nlohmann-json3-dev libgtest-dev
 
 echo "XXXXXXXXXXXXXXX Install SimGrid FSMod"
-wget https://github.com/simgrid/file-system-module/archive/refs/tags/v0.2.tar.gz && tar -xf v0.2.tar.gz
-(mkdir file-system-module-0.2/build && cd file-system-module-0.2/build && cmake .. && make -j$(nproc) && $SYDO make install && cd ../.. && rm -rf file-system-module-0.2) || exit 1
+wget https://github.com/simgrid/file-system-module/archive/refs/tags/v0.4.tar.gz && tar -xf v0.4.tar.gz
+(mkdir file-system-module-0.4/build && cd file-system-module-0.4/build && cmake .. && make -j$(nproc) && $SYDO make install && cd ../.. && rm -rf file-system-module-0.4) || exit 1
 
 
 echo "XXXXXXXXXXXXXXXX build and test wrench (git version)"
