@@ -23,7 +23,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
 {
   State* s = S->back().get();
   // ODPOR only look for race on the maximal executions
-  if (not s->get_enabled_actors().empty())
+  if (s->has_enabled_actors())
     return new RaceUpdate();
 
   const auto last_event = E.get_latest_event_handle();
@@ -57,7 +57,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
 
       if (const auto v = E.get_odpor_extension_from(e, e_prime, *prev_state, actor_after_e); v.has_value()) {
         updates->add_element(prev_state, v.value());
-        XBT_DEBUG("... ... work will be added at state #%ld", prev_state->get_num());
+        XBT_DEBUG("... ... work will be added at state #%lu", prev_state->get_num());
       }
     }
     E.get_event_with_handle(e_prime).consider_races();
@@ -76,10 +76,10 @@ unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpd
   XBT_DEBUG("Applying the %lu received race updates", odpor_updates->get_value().size());
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
-    XBT_DEBUG("... at state #%ld", state->get_num());
+    XBT_DEBUG("... at state #%lu", state->get_num());
     const auto inserted_state = static_cast<WutState*>(state.get())->insert_into_tree(seq, remote_app);
     if (inserted_state != nullptr) {
-      XBT_DEBUG("... ended up adding work to do at state #%ld", inserted_state->get_num());
+      XBT_DEBUG("... ended up adding work to do at state #%lu", inserted_state->get_num());
 
       if (opened_states != nullptr)
         opened_states->push_back(inserted_state);
@@ -101,12 +101,14 @@ aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 
   return next;
 }
-StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
-                             std::shared_ptr<Transition> incoming_transition)
+StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
 {
   StatePtr new_state;
-  if (parent_state == nullptr)
+  if (parent_state == nullptr) {
     new_state = StatePtr(new WutState(remote_app), true);
+    static_cast<WutState*>(new_state.get())->give_ownership_to_explorers();
+  }
+
   else {
     if (auto existing_state =
             parent_state->get_children_state_of_aid(incoming_transition->aid_, incoming_transition->times_considered_);
@@ -119,7 +121,20 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
       }
       return existing_state;
     }
+
+    // The state doesn't exist yet
     new_state = StatePtr(new WutState(remote_app, parent_state, incoming_transition), true);
+
+    auto incoming_actor = parent_state->get_actor_at(incoming_transition->aid_);
+    if (incoming_actor.get_times_considered() == 1 and incoming_actor.has_more_to_consider())
+      // This is the first time a transition with multiple variants is being considered here:
+      // => let's add all the variations now, if it's not already the case
+      for (int i = 2; i < incoming_actor.get_max_considered(); i++) {
+        if (parent_state->get_children_state_of_aid(incoming_transition->aid_, i) == nullptr)
+          StatePtr(new WutState(remote_app, parent_state,
+                                TransitionPtr(new Transition(incoming_transition->type_, incoming_transition->aid_, i)),
+                                false));
+      }
   }
   static_cast<SleepSetState*>(new_state.get())->add_arbitrary_transition(remote_app);
   return new_state;

@@ -72,6 +72,12 @@ simgrid::config::Flag<int> _sg_mc_parallel_thread{
     "McSimGrid.",
     1, [](int val) { xbt_assert(val >= 1, "The value of model-check/parallel-thread must be >= 1"); }};
 
+simgrid::config::Flag<int> _sg_mc_eta_steps{
+    "model-check/eta-steps",
+    "If a non-zero X value is provided, the estimated number of states that remain to be explored will be displayed "
+    "every X steps",
+    0};
+
 simgrid::config::Flag<std::string> _sg_mc_explore_algo{
     "model-check/exploration-algo",
     "Specify the type of search politic to use in MC algorithm",
@@ -136,8 +142,8 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
     [](std::string_view) { _mc_cfg_cb_check("buffering mode"); }};
 
-simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth", "Maximal exploration depth (default: 1000)", 1000,
-                                            [](int) { _mc_cfg_cb_check("max depth value"); }};
+simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth", "Maximal exploration depth (default: 100000)",
+                                            100000, [](int) { _mc_cfg_cb_check("max depth value"); }};
 
 simgrid::config::Flag<int> _sg_mc_max_errors{
     "model-check/max-errors",

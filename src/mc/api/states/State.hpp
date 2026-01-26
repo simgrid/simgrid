@@ -14,6 +14,9 @@
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
 #include <atomic>
+#include <boost/smart_ptr/intrusive_ref_counter.hpp>
+#include <condition_variable>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -39,16 +42,22 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
     StatePtr self_;
     std::mutex lock_; // This lock is used to synchronize remove_first() and the constructor which insert to the left
 
-    static PostFixTraversal* first_;
+    // Sentinells corresponding to first and last
+    // structure is empty iff first_.next == &last_
+    static PostFixTraversal HEAD_;
+    static PostFixTraversal TAIL_;
+
+    PostFixTraversal() {}
 
   public:
     // Construct a traversal information corresponding to the child of parameter state
     // in particular, the new traversal is just at the left of state traversal (in the list)
     PostFixTraversal(StatePtr state);
-    static StatePtr get_first();
+    static unsigned long get_first_num();
     static void remove_first();
     static std::string get_traversal_as_ids();
-    static void update_leftness();
+    unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
+    static void garbage_collect();
   };
 
   std::shared_ptr<PostFixTraversal> traversal_;
@@ -56,7 +65,7 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   bool to_be_deleted_ = false;
   void remove_ref_in_parent();
 
-  static long expended_states_; /* Count total amount of states, for stats */
+  static std::atomic_ulong expended_states_; /* Count total amount of states, for stats */
 
   static std::atomic_ulong in_memory_states_; // Count the number of states currently still in memory
 
@@ -69,19 +78,19 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
   std::unique_ptr<CheckerSide> state_factory_ = nullptr;
 
   /** @brief The incoming transition is what led to this state, coming from its parent  */
-  std::shared_ptr<Transition> incoming_transition_ = nullptr;
+  TransitionPtr incoming_transition_ = nullptr;
 
   /** @brief The outgoing transition is the last transition that we took to leave this state.  */
-  std::shared_ptr<Transition> outgoing_transition_ = nullptr;
+  TransitionPtr outgoing_transition_ = nullptr;
 
   /** Sequential state ID (used for debugging) */
-  long num_ = 0;
+  unsigned long num_ = 0;
 
   /** Depth of this state in the tree. Used for DFS-like strategy in BeFS algorithm */
   unsigned long depth_ = 0;
 
   /** leftness in the tree */
-  unsigned long leftness_ = 0;
+  unsigned long long leftness_ = std::numeric_limits<unsigned long long>::max();
 
   /** Unique parent of this state */
   StatePtr parent_state_ = nullptr;
@@ -92,49 +101,45 @@ class XBT_PUBLIC State : public xbt::Extendable<State> {
 
   /** @brief Add transition to the opened_ one in this state.
    *  If we find a placeholder for transition, replace it. Else simply add it. */
-  void update_opened(std::shared_ptr<Transition> transition);
+  void update_opened(TransitionPtr transition);
 
 protected:
   /** State's exploration status by actor. All actors should be present, eventually disabled for now.
    *  Key is aid. */
   std::vector<std::optional<ActorState>> actors_to_run_;
   bool actor_status_set_ = false;
-  volatile bool is_a_leaf = true;
+  bool is_a_leaf         = true;
 
   std::vector<std::vector<StatePtr>> children_states_; // first key is aid, second time considered
 
   /** Store the aid that have been visited at least once. This is usefull both to know what not to
    *  revisit, but also to remember the order in which the children were visited. The latter information
    *  being important for the correction. */
-  std::vector<std::shared_ptr<Transition>> opened_;
+  std::vector<TransitionPtr> opened_;
 
   size_t get_opened_size()
   {
     return std::count_if(opened_.begin(), opened_.end(), [](auto const& ptr_t) { return ptr_t != nullptr; });
   }
 
-  /** Only leftmosts states of the tree can be closed. This is decided on creation based on parent
-   *  value, and then updated when nearby states are closed. */
-  bool is_leftmost_;
-
-  /** Store the aid that have been closed. This is usefull to determine wether a given state is leftmost. */
-  std::vector<aid_t> closed_;
+  /** Store the (aid,times considered) that have been closed. This is usefull to determine wether a given state is
+   * leftmost. */
+  std::vector<std::pair<aid_t, int>> closed_;
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
-  explicit State(const RemoteApp& remote_app, StatePtr parent_state, std::shared_ptr<Transition> incoming_transition,
+  explicit State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
                  bool set_actor_status = true);
   virtual ~State();
 
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);
   void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered);
-  void update_incoming_transition_explicitly(std::shared_ptr<Transition> incoming_transition)
+  void update_incoming_transition_explicitly(TransitionPtr incoming_transition)
   {
     incoming_transition_ = incoming_transition;
   }
 
-  int get_ref_count() { return refcount_; }
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const; // this function should disapear as it is redundant with the next one
 
@@ -146,9 +151,9 @@ public:
    * Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
    */
-  std::shared_ptr<Transition> execute_next(aid_t next, RemoteApp& app);
+  TransitionPtr execute_next(aid_t next, RemoteApp& app);
 
-  long get_num() const { return num_; }
+  unsigned long get_num() const { return num_; }
   unsigned long get_depth() const { return depth_; }
   std::size_t count_todo() const;
 
@@ -161,7 +166,7 @@ public:
 
   const ActorState& get_actor_at(aid_t aid)
   {
-    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%ld, yet one was asked", aid, get_num());
+    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%lu, yet one was asked", aid, get_num());
     return *actors_to_run_[aid];
   }
 
@@ -174,8 +179,8 @@ public:
   unsigned long consider_all();
 
   bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).value().is_done(); }
-  std::shared_ptr<Transition> get_transition_out() const { return outgoing_transition_; }
-  std::shared_ptr<Transition> get_transition_in() const { return incoming_transition_; }
+  TransitionPtr const get_transition_out() const { return outgoing_transition_; }
+  TransitionPtr const get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
   void reset_parent_state();
 
@@ -192,7 +197,7 @@ public:
    *  Of course, that's very memory hungry but this is meant to be a rare event, and it's subject to future
    *  optimizations (to remove some forks when they become useless).
    */
-  bool has_state_factory() { return state_factory_ != nullptr; }
+  bool has_state_factory() const { return state_factory_ != nullptr; }
   void set_state_factory(std::unique_ptr<simgrid::mc::CheckerSide> checkerside)
   {
     state_factory_ = std::move(checkerside);
@@ -212,13 +217,13 @@ public:
    * backtrack set still contains processes added to the done set.
    */
   std::unordered_set<aid_t> get_backtrack_set() const;
-  virtual std::unordered_set<aid_t> get_enabled_actors() const;
-  std::vector<aid_t> get_batrack_minus_done() const;
+  virtual bool has_enabled_actors() const;
+  bool has_todo_actors() const;
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 
-  /* Returns the total amount of states created so far (for statistics) */
+  /* Returns amount of states still in memory (for statistics) */
   static long get_in_memory_states() { return in_memory_states_; }
 
   /**
@@ -242,7 +247,7 @@ public:
    */
   static void garbage_collect();
 
-  StatePtr get_children_state_of_aid(aid_t next, int times_considered)
+  StatePtr get_children_state_of_aid(aid_t next, int times_considered) const
   {
     if (next >= 0 && times_considered >= 0 && children_states_.size() > static_cast<long unsigned>(next) &&
         children_states_[next].size() > static_cast<long unsigned>(times_considered))
@@ -252,29 +257,45 @@ public:
 
   void record_child_state(StatePtr child);
 
-  const std::vector<std::shared_ptr<Transition>> get_opened_transitions() const { return opened_; }
+  const std::vector<TransitionPtr> get_opened_transitions() const { return opened_; }
 
   xbt::reference_holder<State> reference_holder_;
 
-  std::atomic_flag being_explored = ATOMIC_FLAG_INIT;
+  /**
+   * @brief Called by a leaf of the tree when we finished exploring the corresponding branch
+   */
+  virtual void on_branch_completion() { update_expected_total_children(true); }
 
   void mark_to_delete() { to_be_deleted_ = true; }
 
-  static void update_leftness() { PostFixTraversal::update_leftness(); };
-  unsigned long get_leftness() const { return leftness_; }
+  static unsigned long get_leftest_state_num();
+
+  unsigned long long get_leftness() const { return this->traversal_->leftness_; }
+
+  /** Called by the exploration to excplicitly tells this state won't be explored further, eg.
+      because the max depth limit was reached */
+  void mark_as_leaf() { this->actors_to_run_ = std::vector<std::optional<ActorState>>(); }
+
+  // Termination estimators //
+
+private:
+  double expected_total_children_ = 1;
+  // Save the value both to save computation time and to keep the data even if the child
+  // is being remove from memory
+  std::vector<double> expected_of_children_ = {};
+
+public:
+  void update_expected_total_children(bool is_leaf);
+  double get_expected_total_children() const { return expected_total_children_; }
 };
 
 } // namespace simgrid::mc
 
+// Used for sorting
 template <> struct std::less<simgrid::mc::State> {
   bool operator()(const simgrid::mc::State& lhs, const simgrid::mc::State& rhs) const
   {
     return lhs.get_leftness() < rhs.get_leftness();
-    // if (lhs.get_depth() < rhs.get_depth())
-    //   return true;
-    // if (lhs.get_depth() > rhs.get_depth())
-    //   return false;
-    // return lhs.get_num() < rhs.get_num();
   }
 };
 

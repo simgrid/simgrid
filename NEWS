@@ -1,3 +1,10 @@
+                    _               _  _    ____
+__   _____ _ __ ___(_) ___  _ __   | || |  |___ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_   __) |
+ \ V /  __/ |  \__ \ | (_) | | | | |__   _| / __/
+  \_/ \___|_|  |___/_|\___/|_| |_|    |_|(_)_____|
+               (unreleased)
+
                      _               _  _    _
  __   _____ _ __ ___(_) ___  _ __   | || |  / |
  \ \ / / _ \ '__/ __| |/ _ \| '_ \  | || |_ | |
@@ -7,7 +14,7 @@
 
 Breaking the seal: v4.0 was not the final release.
 
- * Allow to unseal netzones to modify the platform even after the simulation start.
+ * Allow one to unseal netzones to modify the platform even after the simulation start.
  * The model-checker can now report memory race conditions (see tutorial).
  * Pip builds should now work out of the box.
  * (+ the usual bug fixes overall, and improvements to the Java/Python bindings).

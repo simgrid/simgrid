@@ -70,38 +70,53 @@ public:
 template <typename T> class mutex_channel : public ParallelChannel<T> {
   std::deque<T> queue_;
   std::mutex m_;
+  std::condition_variable cv_;
 
 public:
   mutex_channel() = default;
   T pop() override
   {
-    T element;
-    while (true) {
-      m_.lock();
-      if (queue_.size() == 0) {
-        m_.unlock();
-        continue;
-      } else {
-        element = queue_.front();
-        queue_.pop_front();
-        m_.unlock();
-        break;
-      }
-    }
+    std::unique_lock<std::mutex> lock(m_); // unique lock so we can pass it to cv and it's released at the end of func
+    cv_.wait(lock, [&] { return !queue_.empty(); });
+
+    T element = queue_.front();
+    queue_.pop_front();
+
     return element;
   }
   void push(T element) override
   {
     m_.lock();
     queue_.push_front(element);
+    cv_.notify_one();
     m_.unlock();
   }
+  T pop_best(std::function<bool(T)> is_best)
+  {
+    std::unique_lock<std::mutex> lock(m_); // unique lock so we can pass it to cv and it's released at the end of func
+    cv_.wait(lock, [&] { return !queue_.empty(); });
+
+    T element;
+    auto best_option = std::find_if(queue_.begin(), queue_.end(), is_best);
+    if (best_option == queue_.end()) {
+      element = queue_.front();
+      queue_.pop_front();
+    } else {
+      element = *best_option;
+      queue_.erase(best_option);
+    }
+
+    return element;
+  }
+
   void sort() override
   {
     m_.lock();
     std::sort(queue_.begin(), queue_.end());
     m_.unlock();
   }
+  std::mutex* get_mutex() { return &m_; }
+  std::deque<T>* get_container() { return &queue_; }
 };
 
 class ThreadLocalExplorer {
@@ -130,8 +145,8 @@ public:
   unsigned long visited_states_count = 0; // for statistics
 
   Reduction* reduction_algo;
-  lock_free_channel<State*>* opened_heads;
-  lock_free_channel<Reduction::RaceUpdate*>* races_list;
+  mutex_channel<StatePtr>* opened_heads;
+  mutex_channel<Reduction::RaceUpdate*>* races_list;
 };
 
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
@@ -140,8 +155,8 @@ private:
   ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
-  lock_free_channel<State*> opened_heads_;
-  lock_free_channel<Reduction::RaceUpdate*> races_list_;
+  mutex_channel<StatePtr> opened_heads_;
+  mutex_channel<Reduction::RaceUpdate*> races_list_;
 
   std::vector<std::thread> thread_pool_;
   std::vector<std::shared_ptr<ThreadLocalExplorer>> local_explorers_;
@@ -155,7 +170,7 @@ public:
   explicit ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode);
   void run() override;
   RecordTrace get_record_trace() override;
-  void TreeHandler();
+  void TreeHandler(StatePtr initial_state);
 };
 
 // Wrapper function around explorer that helps handling the different termination cases of the explorer

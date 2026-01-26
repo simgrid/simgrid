@@ -202,7 +202,7 @@ debian-clang:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y build-essential ninja-build clang gfortran libgcc-14-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y build-essential ninja-build clang gfortran libgcc-14-dev llvm-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -534,6 +534,37 @@ flags:
      ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure ;
     fi
 
+valgrind:
+  image: $CI_REGISTRY_IMAGE/build-deps:latest
+  stage: test
+  tags:
+    - large  # Inria infra
+
+  script:
+  - apt-get --allow-releaseinfo-change update
+  - apt install -y unzip curl python3-coverage wget valgrind
+  # configure and build simgrid 
+  - cmake -GNinja -Denable_memcheck=ON -Denable_memcheck_xml=ON -Denable_python=ON -Denable_java=ON -Denable_lib_in_jar=OFF -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON .
+  - ninja all tests
+  # Run the tests 
+  - ctest -T Test -j$(nproc) --output-on-failure || true
+  # convert valgrind outputs to junit reports + an aggregated html file about the leaks
+  - python3 tools/jenkins/valgrind2junit.py 
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "stable"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+    - when: never  # By default, do not execute this job (so it's executed only daily)
+  artifacts:
+    when: always
+    expire_in: 6 months
+    paths:
+      - valgrind_report.html
+    reports:
+      junit: valgrind_junit.xml
+
 sonarqube:
   image: $CI_REGISTRY_IMAGE/build-deps:latest
   stage: test
@@ -556,7 +587,7 @@ sonarqube:
   - unzip -q -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
   - export PATH=$HOME/.sonar/build-wrapper-linux-x86:$PATH
   # configure and build simgrid
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_lib_in_jar=OFF -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
   - build-wrapper-linux-x86-64 --out-dir bw-output ninja all tests
   # Install Jacoco
   - wget https://search.maven.org/remotecontent?filepath=org/jacoco/jacoco/0.8.12/jacoco-0.8.12.zip -O /tmp/jacoco.zip

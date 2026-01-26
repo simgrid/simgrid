@@ -287,8 +287,11 @@ enable_sthead (ON/off)
   Build the sthread module, in charge of intercepting the pthread actions at runtime, so that unmodified applications can run on top of the simulator, or on top of the model checker.
   It is Linux-only, so it's ON by default on this system while OFF by default on other systems (in particular Mac and FreeBSD).
 
+enable_testsuite_dpu (on/OFF)
+  Adds several extra tests for the model checker module (targeting threaded applications), from https://github.com/cesaro/dpu.
+
 enable_testsuite_McMini (on/OFF)
-  Adds several extra tests for the model checker module (targeting threaded applications).
+  Adds several extra tests for the model checker module (targeting threaded applications), from https://github.com/mcminickpt/mcmini.
 
 enable_testsuite_smpi_MBI (on/OFF)
   Adds many extra tests for the model checker module (targeting MPI applications).

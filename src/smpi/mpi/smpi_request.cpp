@@ -477,7 +477,7 @@ void Request::start()
   flags_ &= ~MPI_REQ_FINISHED;
   this->ref();
 
-  // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+  // we make a copy here, as the size is modified by the engine, and we may reuse the request in another receive later
   real_size_=size_;
   if ((flags_ & MPI_REQ_RECV) != 0) {
     this->print_request("New recv");
@@ -546,7 +546,12 @@ void Request::start()
     XBT_DEBUG("recv simcall posted");
   } else { /* the RECV flag was not set, so this is a send */
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
-    xbt_assert(process, "Actor pid=%ld is gone??", dst_);
+    if (process == nullptr)
+      simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+    xbt_assert(process,
+               "Rank %d (pid:%ld) is trying to send data to rank %d (pid:%ld), which is not to be found. Is the "
+               "receiving rank gone??",
+               comm_->group()->rank(src_), src_, comm_->group()->rank(dst_), dst_);
     if (TRACE_smpi_view_internals())
       TRACE_smpi_send(src_, src_, dst_, tag_, size_);
     this->print_request("New send");
@@ -796,7 +801,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       return 0;
     }
 
-    if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
+    if (i != -1) { // -1 is not MPI_UNDEFINED but a return code of the Engine. (nothing matches)
       *index = map[i];
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED) &&
           not(requests[*index]->flags_ & MPI_REQ_COMPLETE)) {
@@ -1187,7 +1192,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
         i = -1;
       }
 
-      // not MPI_UNDEFINED, as this is a simix return code
+      // not MPI_UNDEFINED, as this is a return code of the engine
       if (i != -1) {
         index = map[i];
         //in case of an accumulate, we have to wait the end of all requests to apply the operation, ordered correctly.

@@ -19,8 +19,7 @@ namespace simgrid::mc::udpor {
 class UnfoldingEvent {
 public:
   explicit UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init_list);
-  UnfoldingEvent(EventSet immediate_causes              = EventSet(),
-                 std::shared_ptr<Transition> transition = std::make_unique<Transition>());
+  UnfoldingEvent(EventSet immediate_causes = EventSet(), TransitionPtr transition = TransitionPtr(new Transition()));
 
   UnfoldingEvent(const UnfoldingEvent&)            = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
@@ -54,7 +53,7 @@ public:
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
 
-  void set_transition(std::shared_ptr<Transition> t)
+  void set_transition(TransitionPtr t)
   {
     has_been_executed_          = true;
     this->associated_transition = std::move(t);
@@ -80,7 +79,7 @@ private:
    * In other words, this transition was the "next" event
    * of the actor that executes it in `state(C)`.
    */
-  std::shared_ptr<Transition> associated_transition;
+  TransitionPtr associated_transition;
 
   /**
    * @brief The "immediate" causes of this event.

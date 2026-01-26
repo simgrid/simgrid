@@ -12,6 +12,7 @@
 #include "src/mc/mc.h"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
 bool simgrid_mc_replay_show_backtraces = false;
@@ -32,7 +33,10 @@ void execute_actors()
         actor->simcall_handle(0);
     }
   }
+  XBT_DEBUG("all actors are done!");
 }
+
+static bool has_been_warned = false;
 
 /** @brief returns if there this transition can proceed in a finite amount of time
  *
@@ -47,9 +51,11 @@ void execute_actors()
  */
 bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
-  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
-             "This should be called from the client side");
-
+  if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
+    XBT_CRITICAL("WARNING: the checker seems to be behaving as an application. If you are trying to verify McSimGrid "
+                 "itself that's fine. Else, that's probably a bug");
+    has_been_warned = true;
+  }
   // Now, we are in the client app, no need for remote memory reading.
   kernel::actor::Simcall* req = &actor->simcall_;
 
@@ -68,8 +74,11 @@ bool actor_is_enabled(kernel::actor::ActorImpl* actor)
  */
 bool request_is_visible(const kernel::actor::Simcall* req)
 {
-  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE,
-             "This should be called from the client side");
+  if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
+    XBT_CRITICAL("WARNING: the checker seems to be behaving as an application. If you are trying to verify McSimGrid "
+                 "itself that's fine. Else, that's probably a bug");
+    has_been_warned = true;
+  }
 
   if (req->observer_ == nullptr)
     return false;

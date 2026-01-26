@@ -46,6 +46,9 @@ install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 if(${enable_sthread})
   install(TARGETS sthread DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 endif()
+if(SIMGRID_HAVE_JAVA AND (NOT merge_java_in_libsimgrid))
+  install(TARGETS simgrid-java DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
+endif()
 
 # pkg-config files
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/pkg-config/simgrid.pc.in"

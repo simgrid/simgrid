@@ -14,28 +14,42 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <memory>
+#include <mutex>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_wutstate, mc_state, "States using wakeup tree for ODPOR algorithm");
 
 namespace simgrid::mc {
 
+std::set<unsigned long> WutState::state_with_remaining_work = {};
+
+WutState::~WutState()
+{
+  // xbt_assert(not owned_by_the_explorers_);
+  // xbt_assert(state_with_remaining_work.find(get_num()) == state_with_remaining_work.end());
+}
+
 StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remote_app)
 {
-  XBT_DEBUG("Inserting at state #%ld sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
+  XBT_DEBUG("Inserting at state #%lu sequence\n%s", get_num(), odpor::one_string_textual_trace(w).c_str());
 
   if (w.size() == 0)
     return nullptr;
 
-  if (this->is_a_leaf) {
-    // If the state considered is a leaf
-    if (this->being_explored.test_and_set()) {
-      // ... and it is already being explored by someone
-      // then wait for a child to appear
-      while (this->is_a_leaf) {
-      } // busy-waiting
-    }
+  // If we exceeded the max depth, we won't explore anyway so skip this race
+  if (this->get_depth() >= (unsigned)_sg_mc_max_depth)
+    return nullptr;
 
-    // Else, we just set the value ourself: we are responsible for this leaf exploration!
+  if (_sg_mc_explore_algo == "parallel" and this->owned_by_the_explorers_) {
+
+    // We want to insert something in a subtree currently being explored.
+    // Let's put that execution somewhere else for now, we will proceed later.
+
+    to_be_inserted_.push_back(w);
+    state_with_remaining_work.emplace(this->get_num());
+
+    xbt_assert(owned_by_the_explorers_);
+
+    return nullptr;
   }
 
   for (auto& t : this->opened_) {
@@ -103,7 +117,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   auto tran_it           = w.begin();
 
   parent_state = current_state;
-  XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+  XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
   current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
 
   // We need to mark the option of the first state as TODO in order to take this branch at some point
@@ -116,11 +130,11 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
 
   for (; tran_it != w.end(); tran_it++) {
     parent_state = current_state;
-    XBT_DEBUG("Creating state after actor %ld in parent state %ld", (*tran_it)->aid_, current_state->get_num());
+    XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
     current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
-  // Mark the last state (the leaf) as not being explored (ie. someone need to transform it into a node later)
-  current_state->being_explored.clear();
+
+  static_cast<WutState*>(current_state.get())->give_ownership_to_explorers();
   return current_state;
 }
 
@@ -141,6 +155,45 @@ std::unordered_set<aid_t> WutState::get_sleeping_actors(aid_t after_actor) const
     actors.insert(t->aid_);
   }
   return actors;
+}
+
+void WutState::on_branch_completion()
+{
+  State::on_branch_completion();
+
+  if (_sg_mc_explore_algo == "parallel") {
+
+    // Let's mark that this state is not owned by the explorers anymore
+    WutState* curr_state = this;
+
+    while (not curr_state->owned_by_the_explorers_) {
+      curr_state = static_cast<WutState*>(curr_state->get_parent_state());
+      xbt_assert(
+          curr_state != nullptr,
+          "This state was previously owned by the explorers, why isn't that information marked somewhere? Fix Me");
+    }
+
+    curr_state->owned_by_the_explorers_ = false;
+
+    if (not curr_state->to_be_inserted_.empty()) {
+      state_with_remaining_work.erase(curr_state->get_num());
+    }
+
+    std::vector<StatePtr> inserted_states = {};
+    while (not curr_state->to_be_inserted_.empty()) {
+      auto seq = curr_state->to_be_inserted_.back();
+      curr_state->to_be_inserted_.pop_back();
+      auto new_state = curr_state->insert_into_tree(seq, Exploration::get_instance()->get_remote_app());
+      if (new_state)
+        inserted_states.push_back(new_state);
+    }
+
+    // If we are running in parallel, we have to warn the TreeHandler about those new things to explore
+    //   another solution for that would be to change the return type of that method, but since it's inherited from
+    //   basic State, I am not sure of what is easier to read
+    if (not inserted_states.empty())
+      throw StatesToVisit(inserted_states);
+  }
 }
 
 } // namespace simgrid::mc

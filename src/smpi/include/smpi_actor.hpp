@@ -58,6 +58,7 @@ public:
   int initializing() const;
   int initialized() const;
   int finalizing() const;
+  const char* get_state_str() const;
   void mark_as_initialized();
   void mark_as_finalizing();
   void set_replaying(bool value);

@@ -13,7 +13,7 @@ RUN apt install -y cmake clang libstdc++-15-dev git valgrind && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git /source/tutorial-model-checking.git && \
     printf "all:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > /source/tutorial-model-checking.git/Makefile && \
     git clone --depth=1 https://gitlab.inria.fr/simgrid/llvm-instru.git /source/llvm-instru.git && cd /source/llvm-instru.git && \
-    cmake -DCMAKE_CXX_COMPILER=clang++-19 -DCMAKE_C_COMPILER=clang-19 . && make install && \
+    cmake -DCMAKE_CXX_COMPILER=clang++-21 -DCMAKE_C_COMPILER=clang-21 . && make install && \
     cd / && rm -rf /source/llvm-instru.git && \
     apt remove -y git && apt autoremove -y && apt autoclean && apt clean
 

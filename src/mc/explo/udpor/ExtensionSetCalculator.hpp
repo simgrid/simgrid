@@ -27,39 +27,39 @@ namespace simgrid::mc::udpor {
  */
 struct ExtensionSetCalculator final {
 private:
-  static EventSet partially_extend_CommSend(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_CommRecv(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_CommWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_CommTest(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_CommSend(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_CommRecv(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_CommWait(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_CommTest(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper methods that are used for the mutex extension computation
   static std::pair<aid_t, aid_t> firstTwoOwners(uintptr_t mutex_id, EventSet history);
-  static bool is_mutex_available_before(const UnfoldingEvent* e, std::shared_ptr<MutexTransition> mutex);
+  static bool is_mutex_available_before(const UnfoldingEvent* e, MutexTransition* mutex);
 
-  static EventSet partially_extend_MutexAsyncLock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_MutexWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_MutexTest(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_MutexUnlock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_MutexAsyncLock(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_MutexWait(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_MutexTest(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_MutexUnlock(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper methods that are used for the mutex extension computation
   static aid_t first_waiting_before(const EventSet history, unsigned sem_id);
   static aid_t first_waiting_before(const UnfoldingEvent*, unsigned sem_id);
   static int available_token_after(const UnfoldingEvent*, unsigned sem_id);
 
-  static EventSet partially_extend_SemAsyncLock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_SemWait(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_SemUnlock(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_SemAsyncLock(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_SemWait(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_SemUnlock(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper method that find the event that created the actor given in parameter if any
   static std::optional<const UnfoldingEvent*> find_ActorCreate_Event(const EventSet history, aid_t actor);
 
-  static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_ActorExit(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_ActorSleep(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
-  static EventSet partially_extend_ActorCreate(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_ActorExit(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_ActorSleep(const Configuration&, Unfolding*, TransitionPtr);
+  static EventSet partially_extend_ActorCreate(const Configuration&, Unfolding*, TransitionPtr);
 
 public:
-  static EventSet partially_extend(const Configuration&, Unfolding*, std::shared_ptr<Transition>);
+  static EventSet partially_extend(const Configuration&, Unfolding*, TransitionPtr);
 };
 
 } // namespace simgrid::mc::udpor

@@ -279,7 +279,7 @@ bool Exploration::soft_timouted() const
 void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* target_state, bool finalize_app)
 {
   on_backtracking_signal(remote_app);
-  XBT_DEBUG("Backtracking to state #%ld", target_state->get_num());
+  XBT_DEBUG("Backtracking to state #%lu", target_state->get_num());
 
   std::deque<Transition*> replayed_transitions;
   std::deque<std::pair<aid_t, int>> recipe;

@@ -83,5 +83,5 @@
 #cmakedefine01 HAVE_GRAPHVIZ
 /* The boost_stacktrace_backtrace library */
 #cmakedefine01 HAVE_STD_STACKTRACE /* from C++23, preferred */
-#cmakedefine01 HAVE_BOOST_STACKTRACE_BACKTRACE /* preferred in older C++ */
-#cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* fallback */
+#cmakedefine01 HAVE_BOOST_STACKTRACE_ADDR2LINE /* slow but robust fallback */
+#cmakedefine01 HAVE_EXECINFO_H /* gcc ultra hardcore stacktraces */

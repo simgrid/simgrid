@@ -31,7 +31,7 @@ class XBT_PRIVATE CriticalTransitionExplorer : public DFSExplorer {
 private:
   // The first non-correct execution found. We must record the state (in order to re-explore them later) AND
   // the corresponding out-transition (since this can change during later explorations).
-  std::deque<std::pair<StatePtr, std::shared_ptr<Transition>>> initial_bugged_stack = {};
+  std::deque<std::pair<StatePtr, TransitionPtr>> initial_bugged_stack = {};
 
   // Display the initial bugged stacked and update information to track where the current critical transition might be
   void log_stack();

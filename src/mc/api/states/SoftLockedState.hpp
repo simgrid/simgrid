@@ -14,13 +14,12 @@ namespace simgrid::mc {
 class XBT_PRIVATE SoftLockedState : public State {
 protected:
 public:
-  explicit SoftLockedState(RemoteApp& remote_app, StatePtr parent_state,
-                           std::shared_ptr<Transition> incoming_transition)
-      : State(remote_app, parent_state, incoming_transition)
+  explicit SoftLockedState(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
+      : State(remote_app, parent_state, incoming_transition, false)
   {
   }
 
-  std::unordered_set<aid_t> get_enabled_actors() const override { return std::unordered_set<aid_t>(); }
+  bool has_enabled_actors() const override { return false; }
 };
 
 } // namespace simgrid::mc

@@ -14,6 +14,7 @@
 #include "src/mc/mc_record.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
+#include <atomic>
 #include <xbt/Extendable.hpp>
 
 #include <memory>
@@ -43,8 +44,8 @@ class Exploration : public xbt::Extendable<Exploration> {
   bool is_looking_for_critical = false;
 
 protected:
-  unsigned long backtrack_count_      = 0; // for statistics
-  unsigned long visited_states_count_ = 0; // for statistics
+  std::atomic_ulong backtrack_count_      = 0; // for statistics
+  std::atomic_ulong visited_states_count_ = 0; // for statistics
 
   time_t starting_time_; // For timeouts
 

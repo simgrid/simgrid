@@ -16,6 +16,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/sthread/sthread.h"
+#include "xbt/asserts.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
@@ -45,6 +46,7 @@
 #include <link.h>
 #endif
 
+XBT_LOG_NEW_SUBCATEGORY(smpi_linting, smpi, "Messages about the user code quality in SMPI");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 
 #if SMPI_IFORT
@@ -300,10 +302,15 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
     char** argv = args4argv.data();
     int res = entry_point(argc, argv);
     if (res != 0) {
-      XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+      XBT_WARN("SMPI process did not return 0. Return value: %d", res);
       if (smpi_exit_status == 0)
         smpi_exit_status = res;
     }
+    auto self = smpi_process();
+    if (not self->finalized())
+      XBT_CWARN(smpi_linting, "SMPI rank %d did not call MPI_Finalize() before ending its execution. Its state is %s",
+                self->comm_world()->rank(), self->get_state_str());
+
   } catch (simgrid::ForcefulKillException const& e) {
     XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
   }
@@ -427,6 +434,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
       function_name,
       static_cast<simgrid::kernel::actor::ActorCodeFactory>([executable, fdin_size](std::vector<std::string> args) {
         return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
+          sthread_disable();
           static std::size_t rank = 0;
           // Copy the dynamic library:
           simgrid::xbt::Path path(executable);
@@ -483,6 +491,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable, bool u
 
           smpi_entry_point_type entry_point = smpi_resolve_function(handle);
           xbt_assert(entry_point, "Could not resolve entry point. Does your program contain a main() function?");
+          sthread_enable();
           smpi_run_entry_point(entry_point, executable, args);
         });
       }));

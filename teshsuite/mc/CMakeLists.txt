@@ -42,6 +42,13 @@ if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
 endif()
 
+# These tests timeout when run within valgrind
+if(enable_memcheck)
+  foreach(x barber_shop_ok barber_shop_deadlock simple_cond_broadcast_ok)
+    set(_${example}_disable 1)
+  endforeach()
+endif()
+
 foreach(x
             simple_barrier_ok              simple_barrier_deadlock
             simple_barrier_with_threads_ok simple_barrier_with_threads_deadlock
@@ -73,7 +80,7 @@ foreach(x
   set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.c)
   set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
 
-  if(${enable_sthread} AND ${enable_testsuite_McMini} AND SIMGRID_HAVE_MC)
+  if(${enable_sthread} AND ${enable_testsuite_McMini} AND SIMGRID_HAVE_MC AND (NOT DEFINED _${example}_disable))
     add_executable       (mcmini-${x}  EXCLUDE_FROM_ALL mcmini/${x}.c)         
     set_target_properties(mcmini-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mcmini)
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
@@ -87,6 +94,30 @@ if(${enable_testsuite_McMini} AND (NOT ${enable_sthread}))
 endif()
 if(${enable_testsuite_McMini} AND (NOT SIMGRID_HAVE_MC))
   message(STATUS "McMini tests cannot be executed when MC is disabled.")
+endif()
+
+###
+### DPU tests, from https://github.com/cesaro/dpu
+
+foreach(x      dispatcher mpat multiprodcon pi poke)
+
+  set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.c)
+  set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
+
+  if(${enable_sthread} AND ${enable_testsuite_dpu} AND SIMGRID_HAVE_MC AND (NOT DEFINED _${example}_disable))
+    add_executable       (dpu-${x}  EXCLUDE_FROM_ALL dpu/${x}.c)         
+    set_target_properties(dpu-${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(dpu-${x}  PRIVATE Threads::Threads PUBLIC m)
+    add_dependencies(tests-mc dpu-${x})
+
+    ADD_TESH(dpu-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
+  endif()
+endforeach()
+if(${enable_testsuite_dpu} AND (NOT ${enable_sthread}))
+  message(STATUS "DPU tests cannot be executed when sthread is disabled.")
+endif()
+if(${enable_testsuite_dpu} AND (NOT SIMGRID_HAVE_MC))
+  message(STATUS "DPU tests cannot be executed when MC is disabled.")
 endif()
 
 set(probe_deadlock_disable 1)

@@ -121,7 +121,7 @@ bool WakeupTree::contains(const WakeupTreeNode* node) const
                       [=](const auto& pair) { return pair.get() == node; }) != this->root_->children_.end();
 }
 
-void WakeupTree::insert_at_root(std::shared_ptr<Transition> u)
+void WakeupTree::insert_at_root(TransitionPtr u)
 {
   std::unique_ptr<WakeupTreeNode> new_node = std::make_unique<WakeupTreeNode>(std::move(u));
   this->root_->add_child(std::move(new_node));

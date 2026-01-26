@@ -16,7 +16,11 @@
 #define SIMGRID_STHREAD_H
 
 #include "xbt/base.h"
+#include <stddef.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/uio.h> // iovect
+#include <unistd.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -29,6 +33,8 @@ XBT_PUBLIC void sthread_disable(void); // Stop intercepting all pthread calls
 XBT_PUBLIC int sthread_is_enabled(void); // Returns whether sthread is currenctly active
 XBT_PUBLIC void sthread_do_initialize(); // Specify that sthread is initialized in memory
 XBT_PUBLIC int sthread_is_initialized(void); // Returns whether sthread was inithalized (probably through LD_PRELOADED)
+
+long sthread_syscall(int number, long a1, long a2, long a3, long a4, long a5, long a6);
 
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);
@@ -98,6 +104,22 @@ int sthread_gettimeofday(struct timeval* tv);
 time_t sthread_time(time_t* time);
 unsigned int sthread_sleep(double seconds);
 int sthread_usleep(double seconds);
+
+int sthread_open(const char* pathname, int flags, mode_t mode);
+int sthread_close(int fd);
+ssize_t sthread_write(int fd, const void* buf, size_t count);
+ssize_t sthread_pwrite(int fd, const void* buf, size_t count, off_t offset);
+ssize_t sthread_read(int fd, void* buf, size_t count);
+ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset);
+ssize_t sthread_readv(int fd, const struct iovec* iov, int iovcnt);
+ssize_t sthread_writev(int fd, const struct iovec* iov, int iovcnt);
+ssize_t sthread_preadv(int fd, const struct iovec* iov, int iovcnt, off_t offset);
+ssize_t sthread_pwritev(int fd, const struct iovec* iov, int iovcnt, off_t offset);
+ssize_t sthread_preadv2(int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags);
+ssize_t sthread_pwritev2(int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags);
+off_t sthread_lseek(int fd, off_t offset, int whence);
+int sthread_fstat(int fd, struct stat* buf);
+int sthread_unlink(const char* pathname);
 
 int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* function);
 void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* function);

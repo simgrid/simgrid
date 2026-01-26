@@ -56,7 +56,7 @@ class ActorState {
    * This means there may be a way to store the list once and apply differences
    * rather than repeating elements frequently.
    */
-  std::vector<std::shared_ptr<Transition>> pending_transitions_;
+  std::vector<TransitionPtr> pending_transitions_;
 
   /** The ID of that actor (not an aid_t to save space in memory) */
   const short aid_;
@@ -91,7 +91,7 @@ class ActorState {
 public:
   ActorState(aid_t aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
 
-  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<std::shared_ptr<Transition>> transitions)
+  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<TransitionPtr> transitions)
       : pending_transitions_(std::move(transitions)), aid_(aid), enabled_(enabled), max_consider_(max_consider)
   {
     pending_transitions_.shrink_to_fit();
@@ -131,7 +131,7 @@ public:
    * this actor from the State instance with respect to which this ActorState object
    * is considered
    */
-  std::shared_ptr<Transition> get_transition() const
+  TransitionPtr get_transition() const
   {
     // The rationale for this selection is as follows:
     //
@@ -152,7 +152,7 @@ public:
     return get_transition(times_considered_ > max_consider_ - 1 ? max_consider_ - 1 : times_considered_);
   }
 
-  std::shared_ptr<Transition> get_transition(unsigned char times_considered) const
+  TransitionPtr get_transition(unsigned char times_considered) const
   {
     xbt_assert(times_considered < this->pending_transitions_.size() || _sg_mc_debug,
                "There is no transition in this ActorState. Try to activate --cfg=model-check/debug:true to see the "
@@ -163,12 +163,12 @@ public:
                aid_, times_considered,
                std::accumulate(
                    pending_transitions_.begin(), pending_transitions_.end(), std::string(),
-                   [](std::string a, std::shared_ptr<Transition> b) { return std::move(a) + ';' + b->to_string(); })
+                   [](std::string a, TransitionPtr b) { return std::move(a) + ';' + b->to_string(); })
                    .c_str());
     return this->pending_transitions_[times_considered];
   }
 
-  void set_transition(std::shared_ptr<Transition> t, unsigned char times_considered)
+  void set_transition(TransitionPtr t, unsigned char times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %d does not have a state available transition with `times_considered = %u`, "
@@ -177,9 +177,9 @@ public:
     this->pending_transitions_[times_considered] = std::move(t);
   }
 
-  const std::vector<std::shared_ptr<Transition>>& get_enabled_transitions() const
+  const std::vector<TransitionPtr>& get_enabled_transitions() const
   {
-    static const auto no_enabled_transitions = std::vector<std::shared_ptr<Transition>>();
+    static const auto no_enabled_transitions = std::vector<TransitionPtr>();
     return this->is_enabled() ? this->pending_transitions_ : no_enabled_transitions;
   };
 };

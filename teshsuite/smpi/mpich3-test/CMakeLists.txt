@@ -42,7 +42,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   if(HAVE_PRIVATIZATION)
     add_library(mtest_c STATIC util/dtypes.c util/mtest.c  util/mtestcheck.c  util/mtest_datatype.c util/mtest_datatype_gen.c)
   else()
-    message(FATAL_ERROR "MPICH testsuite needs privatization. Use a modern OS.")
+    message(FATAL_ERROR "MPICH testsuite needs privatization. Please use a modern OS.")
   endif()
 endif()
 

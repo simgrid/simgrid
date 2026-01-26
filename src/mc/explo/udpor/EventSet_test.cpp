@@ -552,12 +552,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   // The tests enumerate all possible subsets of the events
   // in the structure and test whether those subsets are
   // maximal and/or valid configurations
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
-  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(3));
-  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>(4));
-  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>(5));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(0));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
+  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
+  UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4));
+  UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
 
   SECTION("Valid Configurations")
   {
@@ -803,12 +803,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 
   SECTION("No conflicts throughout the whole structure with independent actions")
   {
-    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>(1));
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
-    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(3));
-    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>(4));
-    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>(5));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
+    UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
+    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
+    UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4));
+    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
 
     // 6 choose 0 = 1 test
     CHECK(EventSet().is_conflict_free());
@@ -893,12 +893,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
   {
     // Since all actions are dependent, if a set contains a "fork" or divergent histories,
     // we expect the collections to contain conflicts
-    UnfoldingEvent e1(EventSet(), std::make_shared<DependentAction>());
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<DependentAction>());
-    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<DependentAction>());
-    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<DependentAction>());
-    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<DependentAction>());
+    UnfoldingEvent e1(EventSet(), new DependentAction());
+    UnfoldingEvent e2(EventSet({&e1}), new DependentAction());
+    UnfoldingEvent e3(EventSet({&e2}), new DependentAction());
+    UnfoldingEvent e4(EventSet({&e2}), new DependentAction());
+    UnfoldingEvent e5(EventSet({&e1}), new DependentAction());
+    UnfoldingEvent e6(EventSet({&e5}), new DependentAction());
 
     // 6 choose 0 = 1 test
     // There are no events even to be in conflict with
@@ -983,12 +983,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 
   SECTION("Conditional conflicts")
   {
-    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>(0));
-    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>(1));
-    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>(2));
-    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>(3));
-    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<DependentAction>(4));
-    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>(5));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
+    UnfoldingEvent e2(EventSet({&e1}), new ConditionallyDependentAction(1));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
+    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
+    UnfoldingEvent e5(EventSet({&e1}), new DependentAction(4));
+    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
 
     // 6 choose 0 = 1 test
     // There are no events even to be in conflict with
@@ -1090,13 +1090,13 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
   //          e3   /   /
   //         /  /    /
   //        e4  e5   e7
-  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
-  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
-  UnfoldingEvent e7(EventSet({&e2, &e6}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e1(EventSet(), new IndependentAction());
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction());
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction());
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction());
+  UnfoldingEvent e5(EventSet({&e3}), new IndependentAction());
+  UnfoldingEvent e6(EventSet({&e1}), new IndependentAction());
+  UnfoldingEvent e7(EventSet({&e2, &e6}), new IndependentAction());
 
   const EventSet all_events{&e1, &e2, &e3, &e4, &e5, &e6, &e7};
 

@@ -141,6 +141,10 @@ s4u::ActorPtr ActorExt::get_actor()
 {
   return actor_;
 }
+const char* ActorExt::get_state_str() const
+{
+  return to_c_str(state_);
+}
 
 /**
  * @brief Returns a structure that stores the location (filename + linenumber) of the last calls to MPI_* functions.

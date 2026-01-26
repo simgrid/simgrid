@@ -1,0 +1,69 @@
+$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./sdisk-basic --log=sthread_disk.thres:verbose --log=root.fmt:[%c:%p]%e%m%n
+> == TEST: basic open/close ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IWUSR) -> 1000
+> open() ok. fd=1000
+> [sthread_disk:VERBOSE] close(fd:1000) -> 0
+> close() ok
+> 
+> == TEST: Unlinking files ==
+> [sthread_disk:ERROR] Cannot unlink file /tmp/sthread-WeirdFile-ThatShallNotExist which does not seem to exist in the virtualisation layer.
+> unlink() on a file that does not exist fails appropriately: No such file or directory
+> unlink() on a file that exist works.
+>
+> == TEST: write; close/open; read ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IWUSR) -> 1001
+> [sthread_disk:VERBOSE] write(fd:1001, count:5) -> 5
+> write() ok
+> [sthread_disk:VERBOSE] close(fd:1001) -> 0
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IWUSR) -> 1002
+> [sthread_disk:VERBOSE] read(fd:1002, count:512) -> 5
+> read() ok
+> [sthread_disk:VERBOSE] close(fd:1002) -> 0
+>
+> == TEST: reading and writing to closed fd is forbidden ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IWUSR) -> 1003
+> [sthread_disk:VERBOSE] close(fd:1003) -> 0
+> [sthread_disk:ERROR] File descriptor 1003 does not seem to be a valid sthread one. write() is failing.
+> Writing to a closed fd failed as expected: Bad file descriptor
+> [sthread_disk:ERROR] File descriptor 1003 does not seem to be a valid sthread one. read() is failing.
+> Reading from a closed fd failed as expected: Bad file descriptor
+> 
+> == TEST: respect read-only and write-only flags ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_RDONLY, mode:0) -> 1004
+> [sthread_disk:ERROR] The flags of the file descriptor 1004 are 'O_RDONLY'. write() not allowed.
+> [sthread_disk:VERBOSE] write(fd:1004, count:1) -> -1
+> Write on O_RDONLY failed as expected: Bad file descriptor
+> [sthread_disk:VERBOSE] close(fd:1004) -> 0
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_WRONLY, mode:0) -> 1005
+> [sthread_disk:ERROR] The flags of the file descriptor 1005 are 'O_WRONLY'. read() not allowed.
+> [sthread_disk:VERBOSE] read(fd:1005, count:1) -> -1
+> Reading from O_WRONLY failed as expected: Bad file descriptor
+> [sthread_disk:VERBOSE] close(fd:1005) -> 0
+>
+> == TEST: fstat() and lseek() ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IROTH) -> 1006
+> [sthread_disk:VERBOSE] write(fd:1006, count:10) -> 10
+> fstat() size is correct after writing 10 chars
+> [sthread_disk:VERBOSE] read(fd:1006, count:1) -> 1
+> [sthread_disk:VERBOSE] read(fd:1006, count:1) -> 1
+> [sthread_disk:VERBOSE] read(fd:1006, count:1) -> 0
+> lseek() whence semantics ok
+>
+> == TEST: readv()/writev() ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IROTH) -> 1007
+> [sthread_disk:VERBOSE] write(fd:1007, count:3) -> 3
+> [sthread_disk:VERBOSE] write(fd:1007, count:3) -> 3
+> writev(3+3) wrote 6 bytes
+> [sthread_disk:VERBOSE] read(fd:1007, count:3) -> 3
+> [sthread_disk:VERBOSE] read(fd:1007, count:3) -> 3
+> readv(3+3) wrote 6 bytes
+> Vector data matching.
+> 
+> == TEST: preadv()/pwritev() ==
+> [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IROTH) -> 1008
+> [sthread_disk:VERBOSE] write(fd:1008, count:8) -> 8
+> pwritev(3+4) wrote 7 bytes and did not change offset.
+> preadv(2+2+3) got 7 bytes and did not change offset.
+> preadv() returned the expected data.
+> 
+> [sthread:INFO] All threads exited. Terminating the simulation.

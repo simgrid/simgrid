@@ -118,9 +118,7 @@ bool CommTestTransition::depends(const Transition* other) const
     return false; // Test & Test are independent
 
   if (other->type_ == Type::COMM_WAIT) {
-    const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-    if (wait->timeout_)
+    if (static_cast<const CommWaitTransition*>(other)->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
 
     /* Wait & Test are independent */

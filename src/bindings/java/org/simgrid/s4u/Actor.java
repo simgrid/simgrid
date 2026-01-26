@@ -10,8 +10,7 @@ import java.util.ArrayList;
 public abstract class Actor {
   protected Actor() {}
   /**
-   * this is the method you should implement in your actor (it's the main of your actor).
-   * @todo: make this abstract
+   * This is the method you should implement in your actor (it's the main of your actor).
    */
   public abstract void run() throws SimgridException; /* your code here */
 

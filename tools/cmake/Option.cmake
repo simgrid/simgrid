@@ -52,7 +52,14 @@ else()
   message(STATUS "SimGrid sthread model cannot be built on this system as it is Linux-only for now.")
   set(default_enable_sthread OFF)
 endif()
-option(enable_sthread "Whether the sthread module is built" ${default_enable_sthread})
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(default_enable_smemory ON)
+else()
+  set(default_enable_smemory OFF)
+endif()
+
+option(enable_sthread "Whether the pthread intercepter is built" ${default_enable_sthread})
+option(enable_smemory "Whether the memory intercepter is built" ${default_enable_smemory})
 
 option(enable_smpi "Whether SMPI is included in the library." on)
 option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
@@ -72,6 +79,7 @@ if(enable_smpi_MBI_testsuite)
 endif()
 
 option(enable_testsuite_McMini "Whether the test suite from McMini should be built." off)
+option(enable_testsuite_dpu    "Whether the test suite from DPU should be built." off)
 
 # Internal targets used by jenkins
 ###

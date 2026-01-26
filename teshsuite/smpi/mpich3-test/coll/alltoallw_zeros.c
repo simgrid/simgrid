@@ -22,35 +22,34 @@
 
 int main(int argc, char *argv[])
 {
-    int sendbuf = 42;
-    int recvbuf;
-    int *sendcounts;
-    int *recvcounts;
-    int *sdispls;
-    int *rdispls;
-    MPI_Datatype sendtype;
-    MPI_Datatype *sendtypes;
-    MPI_Datatype *recvtypes;
-    int rank = -1;
-    int size = -1;
-    int i;
+  int sendbuf = 42;
+  int recvbuf;
+  int* sendcounts;
+  int* recvcounts;
+  int* sdispls;
+  int* rdispls;
+  MPI_Datatype sendtype;
+  MPI_Datatype* sendtypes;
+  MPI_Datatype* recvtypes;
+  int rank = -1;
+  int size = -1;
+  int i;
 
+  MPI_Init(&argc, &argv);
 
-    MPI_Init(&argc, &argv);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    sendtypes = malloc(size * sizeof(MPI_Datatype));
-    recvtypes = malloc(size * sizeof(MPI_Datatype));
-    sendcounts = malloc(size * sizeof(int));
-    recvcounts = malloc(size * sizeof(int));
-    sdispls = malloc(size * sizeof(int));
-    rdispls = malloc(size * sizeof(int));
-    if (!sendtypes || !recvtypes || !sendcounts || !recvcounts || !sdispls || !rdispls) {
-        printf("error, unable to allocate memory\n");
-        goto fn_exit;
-    }
+  sendtypes  = malloc(size * sizeof(MPI_Datatype));
+  recvtypes  = malloc(size * sizeof(MPI_Datatype));
+  sendcounts = malloc(size * sizeof(int));
+  recvcounts = malloc(size * sizeof(int));
+  sdispls    = malloc(size * sizeof(int));
+  rdispls    = malloc(size * sizeof(int));
+  if (!sendtypes || !recvtypes || !sendcounts || !recvcounts || !sdispls || !rdispls) {
+    printf("error, unable to allocate memory\n");
+    goto fn_exit;
+  }
 
     MPI_Type_contiguous(0, MPI_INT, &sendtype);
     MPI_Type_commit(&sendtype);

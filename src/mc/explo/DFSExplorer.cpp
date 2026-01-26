@@ -29,6 +29,7 @@
 #include <cstdio>
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -41,6 +42,10 @@ namespace simgrid::mc {
 RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
+
+  // Programm did nothing or crashed immediatly, nothing to see here
+  if (stack_->size() == 0)
+    return res;
 
   if (const auto trans = stack_->back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
@@ -57,7 +62,7 @@ void DFSExplorer::log_state() // override
   XBT_INFO("DFS exploration ended. %ld unique states visited; %lu explored traces (%lu transition replays, %lu states "
            "visited overall)",
            State::get_expanded_states(), explored_traces_, Transition::get_replayed_transitions(),
-           visited_states_count_);
+           static_cast<unsigned long>(visited_states_count_));
   Exploration::log_state();
 }
 
@@ -78,21 +83,21 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
     auto sleep_state = static_cast<SleepSetState*>(state.get());
     if (not sleep_state->get_sleep_set().empty()) {
-      XBT_VERB("Sleep set actually containing:");
+      XBT_DEBUG("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
-        XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+        XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
     }
   }
 
   XBT_DEBUG("Going to execute actor %ld", next_actor);
 
-  std::shared_ptr<Transition> executed_transition;
+  TransitionPtr executed_transition;
   StatePtr next_state;
   try {
     executed_transition = state->execute_next(next_actor, get_remote_app());
     on_transition_execute_signal(executed_transition.get(), get_remote_app());
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", executed_transition->aid_,
+    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_,
              executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
     next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
@@ -104,7 +109,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     // If an error is reached while executing the transition ...
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
       auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
-      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)",
+      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)",
                 transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
                 state->get_num(), state->count_todo());
     }
@@ -114,7 +119,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     backtrack_to_state(state.get(), false);
 
     // ... construct a fake state with no successors so the reduction think it is time to compute races
-    executed_transition = std::make_shared<Transition>(Transition::Type::UNKNOWN, next_actor, 0);
+    executed_transition = TransitionPtr(new Transition(Transition::Type::UNKNOWN, next_actor, 0));
     next_state          = StatePtr(new SoftLockedState(get_remote_app(), state, executed_transition));
 
     // ... Add that fake state and compute races
@@ -158,16 +163,22 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
                 _sg_mc_max_depth.get());
       XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
     } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
-      XBT_ERROR("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
-                "when stopping at a fixed depth /!\\",
-                _sg_mc_max_depth.get());
-      XBT_ERROR("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
+      XBT_WARN("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+               "when stopping at a fixed depth /!\\",
+               _sg_mc_max_depth.get());
+      XBT_WARN("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
     } else {
       XBT_WARN("/!\\ Max depth reached ! /!\\ ");
     }
-  } else {
-    explore(S, state_stack);
+    XBT_DEBUG("Finalizing App ASAP to explore somewhere else");
+    get_remote_app().finalize_app(true);
+
+    backtrack_to_state(stack_->back().get(), false);
+
+    stack_->back()->mark_as_leaf();
   }
+
+  explore(S, state_stack);
 
   XBT_DEBUG("Backtracking from the exploration by one step");
 
@@ -189,9 +200,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   aid_t next_to_explore;
 
-  while ((next_to_explore = s->next_transition()) != -1) {
-
-    // reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
+  while ((next_to_explore = reduction_algo_->next_to_explore(S, &state_stack)) != -1) {
 
     step_exploration(S, next_to_explore, state_stack);
   }
@@ -207,8 +216,15 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   if (s->get_actor_count() == 0) {
     explored_traces_++;
     get_remote_app().finalize_app();
-    XBT_VERB("Execution came to an end at %s", get_record_trace().to_string().c_str());
-    XBT_VERB("(state: %ld, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
+    XBT_VERB("Execution came to an end at %.100s", get_record_trace().to_string().c_str());
+    XBT_VERB("(state: %lu, depth: %zu, %lu explored traces)", s->get_num(), state_stack.size(), backtrack_count_ + 1);
+
+    state_stack.back()->on_branch_completion();
+    if (_sg_mc_eta_steps != 0 and explored_traces_ % abs(_sg_mc_eta_steps) == 0)
+      XBT_INFO("Explored a total of %.5e/%.5e states. Hence %3.2f completion rate",
+               (double)State::get_expanded_states(), state_stack.front()->get_expected_total_children(),
+               100 * (double)State::get_expanded_states() / state_stack.front()->get_expected_total_children());
+
     report_correct_execution(s);
     if (_sg_mc_debug_optimality)
       odpor::MazurkiewiczTraces::record_new_execution(S);

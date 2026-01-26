@@ -15,7 +15,12 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
+
+#include <cstring>
+#include <fstream>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <sys/socket.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
@@ -24,8 +29,7 @@ namespace simgrid::mc {
 
 // Create a model check transition with the memory access so we can feed the Execution structure
 // which executes the FastTrack algorithm in order to find data races
-static std::shared_ptr<Transition> create_mc_transition(kernel::actor::ActorImpl* actor, Channel& app_side,
-                                                        Channel& checker_side)
+static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Channel& app_side, Channel& checker_side)
 {
 
   actor->simcall_.observer_->serialize(app_side);
@@ -35,7 +39,7 @@ static std::shared_ptr<Transition> create_mc_transition(kernel::actor::ActorImpl
   auto* t = deserialize_transition(actor->get_pid(), actor->get_restart_count(), checker_side);
   t->deserialize_memory_operations(checker_side);
 
-  return std::shared_ptr<Transition>(t);
+  return t;
 }
 
 void RecordTrace::replay() const
@@ -134,7 +138,20 @@ void RecordTrace::replay() const
 void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(kernel::actor::ActorImpl::get_maxpid());
-  simgrid::mc::RecordTrace trace(path_string.c_str());
+  std::string data = "";
+  // FIXME: once we are in C++20, use -  starts_with() instead of this trick
+  if (path_string.rfind("FILE:", 0) != std::string::npos) {
+    std::string filepath = path_string.substr(5);
+    std::ifstream file(filepath);
+
+    if (!file.is_open())
+      throw std::invalid_argument("Could not open file " + filepath);
+
+    std::getline(file, data);
+
+  } else
+    data = path_string;
+  simgrid::mc::RecordTrace trace(data.c_str());
   trace.replay();
   for (auto* item : trace.transitions_)
     delete item;
@@ -158,7 +175,7 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');
-    if(end == nullptr)
+    if (end == nullptr)
       break;
     else
       current = end + 1;

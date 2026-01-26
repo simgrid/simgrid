@@ -42,9 +42,9 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
     (*context)();
     sthread_disable();
     context->stop();
-  } catch (simgrid::ForcefulKillException const&) {
+  } catch (simgrid::ForcefulKillException const& e) {
     sthread_disable();
-    XBT_DEBUG("Caught a ForcefulKillException");
+    XBT_DEBUG("Caught a ForcefulKillException (what: %s)", e.what());
   } catch (simgrid::Exception const& e) {
     sthread_disable();
     XBT_INFO("Actor killed by an uncaught exception %s", boost::core::demangle(typeid(e).name()).c_str());

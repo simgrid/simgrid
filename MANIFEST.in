@@ -273,6 +273,10 @@ include examples/cpp/exec-async/s4u-exec-async.cpp
 include examples/cpp/exec-async/s4u-exec-async.tesh
 include examples/cpp/exec-basic/s4u-exec-basic.cpp
 include examples/cpp/exec-basic/s4u-exec-basic.tesh
+include examples/cpp/exec-co2/co2.csv
+include examples/cpp/exec-co2/s4u-exec-co2.cpp
+include examples/cpp/exec-co2/s4u-exec-co2.tesh
+include examples/cpp/exec-co2/validation.md
 include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.cpp
 include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.tesh
 include examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear.cpp
@@ -813,6 +817,8 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
+include examples/sthread/sdisk-basic.c
+include examples/sthread/sdisk-basic.tesh
 include examples/sthread/smpi-mc-mutex-simple.tesh
 include examples/sthread/smpi-mc-mutex-simpledeadlock.tesh
 include examples/sthread/smpi-mutex-simple.c
@@ -827,6 +833,16 @@ include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
 include teshsuite/kernel/stack-overflow/stack-overflow.tesh
+include teshsuite/mc/dpu/dispatcher.c
+include teshsuite/mc/dpu/dispatcher.tesh
+include teshsuite/mc/dpu/mpat.c
+include teshsuite/mc/dpu/mpat.tesh
+include teshsuite/mc/dpu/multiprodcon.c
+include teshsuite/mc/dpu/multiprodcon.tesh
+include teshsuite/mc/dpu/pi.c
+include teshsuite/mc/dpu/pi.tesh
+include teshsuite/mc/dpu/poke.c
+include teshsuite/mc/dpu/poke.tesh
 include teshsuite/mc/mcmini/barber_shop_deadlock.c
 include teshsuite/mc/mcmini/barber_shop_deadlock.tesh
 include teshsuite/mc/mcmini/barber_shop_ok.c
@@ -1910,11 +1926,8 @@ include MANIFEST.in.in
 include NEWS
 include README.md
 include doc/doxygen/FAQ.doc
-include doc/doxygen/inside_extending.doc
 include doc/doxygen/inside_release.doc
 include doc/doxygen/outcomes_vizu.doc
-include doc/doxygen/uhood.doc
-include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
 include docs/README.md
 include docs/bin/extract_logs_hierarchy.pl
@@ -2077,6 +2090,7 @@ include examples/platforms/config_tracing.xml
 include examples/platforms/crosstraffic.xml
 include examples/platforms/data_center.xml
 include examples/platforms/dogbone.xml
+include examples/platforms/emission_platform.xml
 include examples/platforms/energy_boot.xml
 include examples/platforms/energy_cluster.xml
 include examples/platforms/energy_platform.xml
@@ -2187,6 +2201,7 @@ include include/simgrid/modelchecker.h
 include include/simgrid/mutex.h
 include include/simgrid/plugins/ProducerConsumer.hpp
 include include/simgrid/plugins/battery.hpp
+include include/simgrid/plugins/carbon_footprint.h
 include include/simgrid/plugins/chiller.hpp
 include include/simgrid/plugins/dvfs.h
 include include/simgrid/plugins/energy.h
@@ -2269,6 +2284,7 @@ include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h
 include setup.py
 include src/3rd-party/catch.hpp
+include src/bindings/java/MANIFEST.in
 include src/bindings/java/org/simgrid/s4u/Activity.java
 include src/bindings/java/org/simgrid/s4u/ActivitySet.java
 include src/bindings/java/org/simgrid/s4u/Actor.java
@@ -2570,6 +2586,10 @@ include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/mc_protocol.h
+include src/mc/smemory/mclang.in
+include src/mc/smemory/pass/smemory_pass.cpp
+include src/mc/smemory/runtime/smemory_observer.cpp
+include src/mc/smemory/runtime/smemory_observer.h
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
 include src/mc/transition/TransitionActor.cpp
@@ -2590,6 +2610,7 @@ include src/plugins/battery.cpp
 include src/plugins/chaos_monkey.cpp
 include src/plugins/chiller.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
+include src/plugins/host_carbon_footprint.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
 include src/plugins/host_load.cpp
@@ -2630,8 +2651,6 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
-include src/smo/memory_observer.cpp
-include src/smo/memory_observer.h
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp
@@ -2821,7 +2840,9 @@ include src/smpi/smpitools.sh
 include src/sthread/ObjectAccess.cpp
 include src/sthread/sthread.c
 include src/sthread/sthread.h
+include src/sthread/sthread_disk.cpp
 include src/sthread/sthread_impl.cpp
+include src/sthread/sthread_syscall.cpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
 include src/xbt/backtrace.cpp

@@ -32,7 +32,8 @@ constexpr unsigned MPI_REQ_MATCHED        = 0x4000;
 constexpr unsigned MPI_REQ_CANCELLED      = 0x8000;
 constexpr unsigned MPI_REQ_NBC            = 0x10000;
 
-enum class SmpiProcessState { UNINITIALIZED, INITIALIZING, INITIALIZED /*(=MPI_Init called)*/, FINALIZING, FINALIZED };
+XBT_DECLARE_ENUM_CLASS(SmpiProcessState, UNINITIALIZED, INITIALIZING, INITIALIZED /*(=MPI_Init called)*/, FINALIZING,
+                       FINALIZED);
 
 constexpr int COLL_TAG_REDUCE         = -112;
 constexpr int COLL_TAG_SCATTER        = -223;

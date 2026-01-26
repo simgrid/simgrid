@@ -147,7 +147,9 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
   // unlock actors.
 
   if (not checker_side_->get_one_way()) {
-    s_mc_message_actors_status_t msg = {MessageType::ACTORS_STATUS, Exploration::need_actor_status_transitions()};
+    s_mc_message_actors_status_t msg = {};
+    msg.type                         = MessageType::ACTORS_STATUS;
+    msg.want_transitions_            = Exploration::need_actor_status_transitions();
     checker_side_->get_channel().send(msg);
   }
 
@@ -180,7 +182,7 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
       if ((unsigned)actor.aid >= whereto.size())
         whereto.resize(actor.aid + 1);
 
-      std::vector<std::shared_ptr<Transition>> actor_transitions;
+      std::vector<TransitionPtr> actor_transitions;
 
       if (Exploration::need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;
@@ -210,6 +212,8 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
 
 bool RemoteApp::check_deadlock(bool verbose) const
 {
+  if (checker_side_->has_been_killed_by_us())
+    return false; // If we killed the application ourselves, checking deadlock makes no sense
 
   auto* explo = Exploration::get_instance();
   // While looking for critical transition, we don't want to dilute the output with

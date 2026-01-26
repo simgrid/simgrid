@@ -19,7 +19,7 @@ namespace simgrid::mc {
 class CheckerSide {
   Channel channel_;
   pid_t pid_;
-  static unsigned count_;
+  static std::atomic_uint32_t count_;
   // Because of the way we fork, the real app is our grandchild.
   // child_checker_ is a CheckerSide to our child that can waitpid our grandchild on our behalf
   CheckerSide* child_checker_ = nullptr;
@@ -80,6 +80,9 @@ public:
   bool get_one_way() const { return is_one_way; }
   void set_one_way(bool b) { is_one_way = b; }
   void terminate_one_way();
+
+  /** Check wether we killed the application ourselves */
+  bool has_been_killed_by_us() const { return killed_by_us_; }
 };
 
 } // namespace simgrid::mc

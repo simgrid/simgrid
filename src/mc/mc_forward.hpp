@@ -34,8 +34,8 @@ class Exploration;
 class SleepSetState;
 
 using StatePtr = boost::intrusive_ptr<State>;
-XBT_PUBLIC void intrusive_ptr_release(State* o);
-XBT_PUBLIC void intrusive_ptr_add_ref(State* o);
+
+using TransitionPtr = boost::intrusive_ptr<Transition>;
 
 using stack_t = std::deque<StatePtr>;
 

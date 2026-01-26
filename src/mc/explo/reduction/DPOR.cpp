@@ -40,8 +40,10 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
 
   XBT_DEBUG("Computing the ancestors of aid %ld before event %u", p, i);
   std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
-  for (aid_t q : (*state_stack)[i]->get_enabled_actors()) {
-
+  for (const auto& state : (*state_stack)[i]->get_actors_list()) {
+    if (not state.has_value() || not state.value().is_enabled())
+      continue;
+    aid_t q = state.value().get_aid();
     if (q == p) {
       E.insert(q);
       continue;
@@ -65,7 +67,7 @@ Reduction::RaceUpdate* DPOR::races_computation(odpor::Execution& E, stack_t* S, 
 
   State* last_state = S->back().get();
   // let's look for all the races but only at the end
-  if (not last_state->get_enabled_actors().empty())
+  if (last_state->has_enabled_actors())
     return new RaceUpdate();
 
   auto updates = new RaceUpdate();
@@ -96,12 +98,12 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
-      XBT_DEBUG("Enabling the considered actor %ld in state #%ld", considered, state->get_num());
+      XBT_DEBUG("Enabling the considered actor %ld in state #%lu", considered, state->get_num());
       if (considered == -1)
         continue; // Do not create a new state if the actor was already created before
       StatePtr(new SleepSetState(remote_app, state,
-                                 std::make_shared<Transition>(Transition::Type::UNKNOWN, considered,
-                                                              state->get_actor_at(considered).get_times_considered()),
+                                 new Transition(Transition::Type::UNKNOWN, considered,
+                                                state->get_actor_at(considered).get_times_considered()),
                                  false),
                true);
     } else {
@@ -109,10 +111,10 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
       for (auto const& actor : state->get_actors_list())
         if (actor.has_value())
           if (state->get_children_state_of_aid(actor->get_aid(), actor->get_times_considered()) == nullptr)
-            StatePtr(new SleepSetState(remote_app, state,
-                                       std::make_shared<Transition>(Transition::Type::UNKNOWN, actor->get_aid(),
-                                                                    actor->get_times_considered()),
-                                       false),
+            StatePtr(new SleepSetState(
+                         remote_app, state,
+                         new Transition(Transition::Type::UNKNOWN, actor->get_aid(), actor->get_times_considered()),
+                         false),
                      true);
     }
 
@@ -124,8 +126,7 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
   return nb_updates;
 }
 
-StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
-                            std::shared_ptr<Transition> incoming_transition)
+StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition)
 {
   auto res             = Reduction::state_create(remote_app, parent_state, incoming_transition);
   auto sleep_set_state = static_cast<SleepSetState*>(res.get());
@@ -137,7 +138,7 @@ StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state,
 
 aid_t DPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
-  if (S->back()->get_batrack_minus_done().empty())
+  if (not S->back()->has_todo_actors())
     return -1;
   return S->back()->next_transition_guided().first;
 }

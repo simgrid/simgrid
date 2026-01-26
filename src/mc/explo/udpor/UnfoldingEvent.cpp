@@ -20,7 +20,7 @@ UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init
 {
 }
 
-UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transition> transition)
+UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, TransitionPtr transition)
     : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes))
 {
   static uint64_t event_id = 0;

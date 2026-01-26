@@ -4,6 +4,7 @@ set(EXTRA_DIST
   src/3rd-party/catch.hpp
   src/bindings/python/simgrid_python.cpp
   src/bindings/python/smpi_python.cpp
+  src/bindings/java/MANIFEST.in
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
@@ -29,6 +30,8 @@ set(EXTRA_DIST
   src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
+  src/mc/smemory/mclang.in
+  src/mc/smemory/pass/smemory_pass.cpp
 
   src/simgrid/sg_config.hpp
   src/simgrid/math_utils.h
@@ -231,7 +234,16 @@ set(SMPI_SRC
 set(STHREAD_SRC
   src/sthread/sthread.c
   src/sthread/sthread.h
+  
+  src/sthread/sthread_impl.cpp
+  src/sthread/sthread_disk.cpp
+  src/sthread/sthread_syscall.cpp
+
   src/sthread/ObjectAccess.cpp
+)
+set(SMEMORY_SRC
+  src/mc/smemory/runtime/smemory_observer.cpp
+  src/mc/smemory/runtime/smemory_observer.h
 )
 
 set(XBT_SRC
@@ -423,6 +435,7 @@ set(PLUGINS_SRC
   src/plugins/host_energy.cpp
   src/plugins/host_load.cpp
   src/plugins/vm_load.cpp
+  src/plugins/host_carbon_footprint.cpp
   src/plugins/jbod.cpp
   src/plugins/link_energy.cpp
   src/plugins/link_energy_wifi.cpp
@@ -466,11 +479,6 @@ set(SIMGRID_SRC
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp
-
-  src/sthread/sthread_impl.cpp
-
-  src/smo/memory_observer.cpp
-  src/smo/memory_observer.h
   )
 
 set(DAG_SRC
@@ -621,6 +629,7 @@ set(headers_to_install
   include/simgrid/plugins/chiller.hpp
   include/simgrid/plugins/dvfs.h
   include/simgrid/plugins/energy.h
+  include/simgrid/plugins/carbon_footprint.h
   include/simgrid/plugins/file_system.h
   include/simgrid/plugins/jbod.hpp
   include/simgrid/plugins/live_migration.h
@@ -749,6 +758,12 @@ if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
+if(enable_smemory)
+  set(simgrid_sources  ${simgrid_sources}  ${SMEMORY_SRC})
+else()
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${SMEMORY_SRC})
+endif()
+
 if(SIMGRID_HAVE_MC)
   set(simgrid_sources  ${simgrid_sources}  ${MC_SRC_STATELESS})
 endif()
@@ -815,11 +830,8 @@ set(EXTRA_DIST ${EXTRA_DIST} ${SIMGRID_JAVA_C_SOURCES} ${SIMGRID_JAVA_JAVA_SOURC
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
-  doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/outcomes_vizu.doc
-  doc/doxygen/uhood.doc
-  doc/doxygen/uhood_switch.doc
 
   examples/README.rst
 
@@ -1126,6 +1138,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/crosstraffic.xml
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
+  examples/platforms/emission_platform.xml
   examples/platforms/energy_boot.xml
   examples/platforms/energy_cluster.xml
   examples/platforms/energy_platform.xml

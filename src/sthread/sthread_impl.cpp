@@ -13,12 +13,16 @@
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <cerrno>
+#include <cstring>
+#include <err.h>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
+#include <sys/types.h>
+#include <unistd.h>
 #include <xbt/base.h>
 #include <xbt/sysdep.h>
 
@@ -27,43 +31,12 @@
 
 #include <cmath>
 #include <dlfcn.h>
+#include <fcntl.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string_view>
-
-extern "C" {
-// These functions are mostly useful in sthread.c but they must be defined in libsimgrid for it to compile (although
-// they are not used in libsimgrid) We used to have 2 definitions of these functions, one useful in libsthread and one
-// placeholder in libsimgrid, but this proved to be fragile: it broke on several CI builders in 2025 when LTO and
-// optimizations were actived. That is why this code is now in this file, which is always in libsimgrid even if it's
-// mostly unused from here. Only sthread_is_initialized() is used here and there to detect that sthread is or is not
-// loaded in memory, to adapt the library initialization code.
-static thread_local int sthread_inside_simgrid = 1;
-void sthread_enable(void)
-{ // Start intercepting all pthread calls
-  sthread_inside_simgrid = 0;
-}
-void sthread_disable(void)
-{ // Stop intercepting all pthread calls
-  sthread_inside_simgrid = 1;
-}
-static int sthread_inited = 0;
-void sthread_do_initialize()
-{
-  sthread_inited = 1;
-}
-int sthread_is_initialized()
-{
-  return sthread_inited;
-}
-int sthread_is_enabled(void)
-{ // Returns whether sthread is currenctly active
-  return sthread_inside_simgrid == 0;
-}
-}
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
 namespace sg4 = simgrid::s4u;
@@ -88,26 +61,10 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
     }
 
   /* Do not intercept system binaries such as valgrind step 1 */
-  std::vector<std::string> binaries = {"/usr/bin/env",
-                                       "/usr/bin/valgrind.bin",
-                                       "/usr/bin/python3",
-                                       "/bin/sh",
-                                       "/bin/bash",
-                                       "addr2line",
-                                       "cat",
-                                       "dirname",
-                                       "gdb",
-                                       "grep",
-                                       "ls",
-                                       "ltrace",
-                                       "make",
-                                       "md5sum",
-                                       "mktemp",
-                                       "rm",
-                                       "sed",
-                                       "sh",
-                                       "strace",
-                                       "simgrid-mc",
+  std::vector<std::string> binaries = {"/usr/bin/env", "/usr/bin/lua", "/usr/bin/valgrind.bin", "/usr/bin/python3",
+                                       "/bin/sh", "/bin/bash", "addr2line", "cat", "dirname", "gdb", "grep", "ls",
+                                       "ltrace", "make", "md5sum", "mktemp", "rm", "sed", "sh", "strace",
+                                       // "simgrid-mc",
                                        "wc"};
   for (int i = 0; envp[i] != nullptr; i++) {
     auto view = std::string_view(envp[i]);
@@ -179,8 +136,9 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in sthread initialization.");
   }
 #endif
-  sg4::ActorPtr actor = 
-    lilibeth->add_actor(name, [](auto* user_function, auto* param) {
+  sg4::ActorPtr actor = lilibeth->add_actor(
+      name,
+      [](auto* user_function, auto* param) {
 #if HAVE_SMPI
         if (SMPI_is_inited())
           SMPI_thread_create();
@@ -231,7 +189,7 @@ int sthread_mutexattr_settype(sthread_mutexattr_t* attr, int type)
       attr->recursive = 0;
       break;
     case PTHREAD_MUTEX_RECURSIVE:
-      attr->recursive = 1;
+      attr->recursive  = 1;
       attr->errorcheck = 0; // reset
       break;
     case PTHREAD_MUTEX_ERRORCHECK:
@@ -268,7 +226,7 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const sthread_mutexattr_t* attr)
   auto m = sg4::Mutex::create(attr != nullptr && attr->recursive);
   intrusive_ptr_add_ref(m.get());
 
-  mutex->mutex = m.get();
+  mutex->mutex      = m.get();
   mutex->errorcheck = attr ? attr->errorcheck : false;
 
   return 0;
@@ -328,19 +286,22 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   return 0;
 }
 
-int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count){
+int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t* attr, unsigned count)
+{
   auto b = sg4::Barrier::create(count);
   intrusive_ptr_add_ref(b.get());
 
   barrier->barrier = b.get();
   return 0;
 }
-int sthread_barrier_wait(sthread_barrier_t* barrier){
+int sthread_barrier_wait(sthread_barrier_t* barrier)
+{
   XBT_DEBUG("%s(%p)", __func__, barrier);
   static_cast<sg4::Barrier*>(barrier->barrier)->wait();
   return 0;
 }
-int sthread_barrier_destroy(sthread_barrier_t* barrier){
+int sthread_barrier_destroy(sthread_barrier_t* barrier)
+{
   XBT_DEBUG("%s(%p)", __func__, barrier);
   intrusive_ptr_release(static_cast<sg4::Barrier*>(barrier->barrier));
   return 0;
@@ -351,7 +312,7 @@ int sthread_cond_init(sthread_cond_t* cond, sthread_condattr_t* attr)
   auto cv = sg4::ConditionVariable::create();
   intrusive_ptr_add_ref(cv.get());
 
-  cond->cond = cv.get();
+  cond->cond  = cv.get();
   cond->mutex = nullptr;
   return 0;
 }
@@ -440,7 +401,10 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
 int sthread_cond_destroy(sthread_cond_t* cond)
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
   intrusive_ptr_release(static_cast<sg4::ConditionVariable*>(cond->cond));
+  cond->cond = nullptr;
   return 0;
 }
 

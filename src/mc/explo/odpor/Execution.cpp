@@ -13,9 +13,11 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
+#include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
 #include <algorithm>
@@ -128,7 +130,30 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
-void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_restoring_execution)
+EventHandle Execution::find_pre_event_of_aid(aid_t actor)
+{
+
+  // If there is a previous action made by actor
+  if (skip_list_[actor].size() != 0)
+    return skip_list_[actor].back();
+
+  // If actor was created by someone else
+  for (auto handle = contents_.size() - 1; handle < contents_.size(); handle--) {
+    if (contents_[handle].get_transition()->type_ != Transition::Type::ACTOR_CREATE)
+      continue;
+
+    auto t = static_cast<ActorCreateTransition*>(contents_[handle].get_transition().get());
+    if (t->get_child() != actor)
+      continue;
+
+    return handle;
+  }
+
+  // Else
+  return -1;
+}
+
+void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution)
 {
 
   xbt_assert(t != nullptr, "Unexpectedly received `nullptr`");
@@ -148,7 +173,7 @@ void Execution::push_transition(std::shared_ptr<Transition> t, bool are_we_resto
   contents_.push_back(Event({t, std::move(max_clock_vector)}));
   if (skip_list_.size() <= (unsigned)t->aid_)
     skip_list_.resize(t->aid_ + 1, {});
-  EventHandle prev_event_of_aid = skip_list_[t->aid_].size() == 0 ? -1 : skip_list_[t->aid_].back();
+  EventHandle prev_event_of_aid = find_pre_event_of_aid(t->aid_);
   skip_list_[t->aid_].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
@@ -449,9 +474,15 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   for (const auto& aid : sleep_E_prime) {
     const auto next_transition_aid = std::find_if(this->begin() + e + 1, this->end(),
                                                   [&](const auto& e) { return e.get_transition()->aid_ == aid; });
+
+    // If we are cutting exploration at some arbitrary depth, we might not find what we are looking for
+    // It's okay, we just don't cut any exploration opportunity in that case
+    if (_sg_mc_max_depth != config::is_default("model-check/max-depth") and next_transition_aid == this->end())
+      continue;
+
     xbt_assert(next_transition_aid != this->end(),
-               "Since this actor is in the sleep set, it should be executed at some point. Fix me!");
-    if (is_in_weak_initial_of(next_transition_aid->get_transition().get(), v)) {
+               "Since actor `%ld` is in the sleep set, it should be executed at some point. Fix me!", aid);
+    if (is_in_weak_initial_of(next_transition_aid->get_transition(), v)) {
       XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;
     }
@@ -460,13 +491,13 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   return v;
 }
 
-bool Execution::is_in_weak_initial_of(Transition* t, const PartialExecution& w)
+bool Execution::is_in_weak_initial_of(TransitionPtr t, const PartialExecution& w)
 {
 
   for (const auto& w_i : w) {
     if (t->aid_ == w_i->aid_)
       return true;
-    if (w_i->depends(t))
+    if (w_i->depends(t.get()))
       return false;
   }
   return true;
@@ -490,7 +521,7 @@ bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p
   return false;
 }
 
-bool Execution::is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p)
+bool Execution::is_independent_with_execution_of(const PartialExecution& w, TransitionPtr next_E_p)
 {
   for (const auto& transition : w)
     if (transition->depends(next_E_p.get()))
@@ -612,7 +643,7 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
   if (u.size() == 0)
     return true;
 
-  const std::shared_ptr<Transition> a = u[0];
+  const TransitionPtr a = u[0];
 
   auto new_v = v;
   auto new_u = u;

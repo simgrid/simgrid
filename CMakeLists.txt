@@ -2,7 +2,7 @@
 
 set(SIMGRID_VERSION_MAJOR "4")
 set(SIMGRID_VERSION_MINOR "1")
-set(SIMGRID_VERSION_PATCH "0") # odd => git branch; even => stable release or released snapshot
+set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -25,6 +25,7 @@ set(libsimgrid-java_version "${release_version}")
 cmake_minimum_required(VERSION 3.12)
 # once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
 # once we move CMake to >= 3.13.1, we could get rid of _Boost_STACKTRACE_BACKTRACE_HEADERS
+# once we move CMake to >= 3.19, we should use file(CHMOD) instead of the shell command directly
 # When updating, try to remove some cmake_policy() to see if it's OK or if it generates a warning
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
@@ -317,10 +318,8 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
   if(minimal-bindings) # When we want a minimal python or Java library, don't even search for boost optional components
     message(STATUS "Don't even look for boost optional components, as we build minimal binding libraries.")
     find_package(Boost 1.48)
-  elseif(HAVE_STD_STACKTRACE)
-    find_package(Boost 1.59 OPTIONAL_COMPONENTS context)
   else()
-    find_package(Boost 1.59 OPTIONAL_COMPONENTS context stacktrace_backtrace stacktrace_addr2line)
+    find_package(Boost 1.59 OPTIONAL_COMPONENTS context stacktrace_addr2line)
   endif()
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -328,20 +327,20 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
     if (NOT minimal-bindings)
       message(STATUS "Looking for optional Boost components:")
       set(Boost_FOUND 1) # These components are optionals
+
       if (HAVE_STD_STACKTRACE)
-        message (STATUS "  stacktrace: found the std implementation from C++23. Activating human-readable stack traces.")
-      elseif(Boost_STACKTRACE_BACKTRACE_FOUND)
-        message (STATUS "  stacktrace: found the fast 'backtrace' implementation. Activating human-readable stack traces.")
-        set(HAVE_BOOST_STACKTRACE_BACKTRACE 1)
+        message (STATUS "  stacktrace: found the std implementation from C++23.")
+      endif()
+      if (Boost_STACKTRACE_ADDR2LINE_FOUND)
+        message (STATUS "  stacktrace: found the slow 'addr2line' implementation.")
+        set(HAVE_BOOST_STACKTRACE_ADDR2LINE 1)
       else()
-        set(HAVE_BOOST_STACKTRACE_BACKTRACE 0)
-        if (Boost_STACKTRACE_ADDR2LINE_FOUND)
-          message (STATUS "  stacktrace: found the slow 'addr2line' implementation. Activating human-readable stack traces.")
-          set(HAVE_BOOST_STACKTRACE_ADDR2LINE 1)
-        else()
-          message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev to display the stacktraces.")
-          set(HAVE_BOOST_STACKTRACE_ADDR2LINE 0)
-        endif()
+        set(HAVE_BOOST_STACKTRACE_ADDR2LINE 0)
+      endif()
+      if (HAVE_STD_STACKTRACE OR HAVE_BOOST_STACKTRACE_ADDR2LINE)
+        message (STATUS "    => Activating human-readable stack traces.")
+      else()
+        message (STATUS "  stacktrace: MISSING. Install libboost-stacktrace-dev or use a C++23 compiler to display the stacktraces.")
       endif()
 
       if(Boost_CONTEXT_FOUND)
@@ -421,6 +420,7 @@ endif()
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 CHECK_INCLUDE_FILE("pthread_np.h" HAVE_PTHREAD_NP_H) # for pthread_setaffinity_np() on FreeBSD
+CHECK_INCLUDE_FILE("execinfo.h" HAVE_EXECINFO_H) # for gcc's backtraces
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_REQUIRED_DEFINITIONS "-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
@@ -459,6 +459,34 @@ endif()
 
 if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
   message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option.")
+endif()
+
+if(enable_smemory)
+  if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler, or configure cmake with --enable-smemory=OFF")
+  endif()
+
+  find_package(LLVM CONFIG)
+  if(NOT LLVM_FOUND)
+    message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with --enable-smemory=OFF")
+  endif()
+  include(AddLLVM)
+
+  add_llvm_library(smemory_pass
+    MODULE      src/mc/smemory/pass/smemory_pass.cpp
+    DEPENDS     intrinsics_gen
+    PLUGIN_TOOL opt
+    PARTIAL_SOURCES_INTENDED
+  )
+  set_property(TARGET smemory_pass
+              APPEND PROPERTY INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIRS}")
+
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in ${CMAKE_BINARY_DIR}/mclang @ONLY)
+  execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
+  install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang
+          DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+
+  message(STATUS "Enabling the MC memory interceptor as requested.")
 endif()
 
 if(enable_smpi)

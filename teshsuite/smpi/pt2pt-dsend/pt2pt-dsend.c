@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This program simply does a very small exchange to test whether using SIMIX dsend to model the eager mode works */
+/* This program simply does a very small exchange to test whether dsend() decently models the eager mode */
 #include <stdint.h>
 #include <stdio.h>
 #include <mpi.h>

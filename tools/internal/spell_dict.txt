@@ -84,8 +84,6 @@ simcalls
 SimDag
 simgrid
 SimGrid
-simix
-SIMIX
 sizeof
 SMPI
 smpi

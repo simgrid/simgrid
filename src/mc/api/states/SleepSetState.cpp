@@ -14,8 +14,8 @@ namespace simgrid::mc {
 
 SleepSetState::SleepSetState(RemoteApp& remote_app) : State(remote_app) {}
 
-SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
-                             std::shared_ptr<Transition> incoming_transition, bool set_actor_status)
+SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition,
+                             bool set_actor_status)
     : State(remote_app, parent_state, incoming_transition, set_actor_status)
 {
   /* Copy the sleep set and eventually removes things from it: */
@@ -24,10 +24,10 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
    * it is not explored*/
   for (size_t i = 0; i < static_cast<SleepSetState*>(parent_state.get())->opened_.size(); i++) {
     auto const& transition = static_cast<SleepSetState*>(parent_state.get())->opened_[i];
-    XBT_DEBUG("At state #%ld, transition <Actor %ld: %s> is contained in parent opened", get_num(), transition->aid_,
+    XBT_DEBUG("At state #%lu, transition <Actor %ld: %s> is contained in parent opened", get_num(), transition->aid_,
               transition->to_string().c_str());
     if (not get_transition_in()->depends(transition.get())) {
-      XBT_DEBUG("sleep set @ state #%ld: transition <Actor %ld: %s> added from parent opened set", get_num(),
+      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent opened set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
@@ -37,7 +37,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
 
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
     if (not get_transition_in()->depends(transition.get())) {
-      XBT_DEBUG("sleep set @ state #%ld: transition <Actor %ld: %s> added from parent sleep set", get_num(),
+      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent sleep set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
@@ -51,11 +51,11 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state,
 
 void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
 {
-  XBT_DEBUG("Adding arbitraty transition in state #%ld", get_num());
+  XBT_DEBUG("Adding arbitraty transition in state #%lu", get_num());
   if (sleep_set_.empty() and Exploration::can_go_one_way()) {
     XBT_DEBUG("Asking for one way");
     xbt_assert(next_transition() == -1,
-               "State #%ld already has something to explore, why are we adding an arbitrary transition there?",
+               "State #%lu already has something to explore, why are we adding an arbitrary transition there?",
                get_num());
     remote_app.go_one_way();
     aid_t aid = remote_app.get_aid_of_next_transition();
@@ -69,7 +69,7 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
   }
 }
 
-void SleepSetState::sleep_add_and_mark(std::shared_ptr<Transition> transition)
+void SleepSetState::sleep_add_and_mark(TransitionPtr transition)
 {
   XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
             transition->to_string().c_str());

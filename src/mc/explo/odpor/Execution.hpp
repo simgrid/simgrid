@@ -36,7 +36,7 @@ using epoch = std::pair<aid_t, long>;
  * actor `j`
  */
 class Event {
-  std::pair<std::shared_ptr<Transition>, ClockVector> contents_;
+  std::pair<TransitionPtr, ClockVector> contents_;
 
   std::unordered_map<void*, epoch> last_write_;
 
@@ -48,9 +48,9 @@ public:
   Event(Event&&)                 = default;
   Event(const Event&)            = default;
   Event& operator=(const Event&) = default;
-  explicit Event(std::pair<std::shared_ptr<Transition>, ClockVector> pair) : contents_(std::move(pair)) {}
+  explicit Event(std::pair<TransitionPtr, ClockVector> pair) : contents_(std::move(pair)) {}
 
-  std::shared_ptr<Transition> get_transition() const { return std::get<0>(contents_); }
+  TransitionPtr get_transition() const { return std::get<0>(contents_); }
   const ClockVector& get_clock_vector() const { return std::get<1>(contents_); }
 
   bool has_race_been_computed() const { return race_considered_; }
@@ -107,6 +107,13 @@ private:
   std::vector<Event> contents_;
   std::vector<std::vector<EventHandle>> skip_list_ = {{}};
   Execution(std::vector<Event>&& contents) : contents_(std::move(contents)) {}
+
+  /** @brief returns the eventhandle corresponding to:
+   *  - the previous action made by actor if it exists
+   *  - else, the action that created the actor if it exists
+   *  - -1 if none of the above exist
+   */
+  EventHandle find_pre_event_of_aid(aid_t actor);
 
   static PartialExecution preallocated_partial_execution_;
 
@@ -259,7 +266,7 @@ public:
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
    */
-  static bool is_independent_with_execution_of(const PartialExecution& w, std::shared_ptr<Transition> next_E_p);
+  static bool is_independent_with_execution_of(const PartialExecution& w, TransitionPtr next_E_p);
 
   /**
    * @brief Determines the event associated with the given handle `handle`
@@ -388,7 +395,7 @@ public:
    * notation of [1]) `E.proc(t)` where `proc(t)` is the
    * actor which executed transition `t`.
    */
-  void push_transition(std::shared_ptr<Transition>, bool are_we_restoring_execution = false);
+  void push_transition(TransitionPtr, bool are_we_restoring_execution = false);
 
   /**
    * @brief Shorten the execution by one step
@@ -409,7 +416,7 @@ public:
    * @brief Returns wether a given transition is in WI(v)
    *
    */
-  static bool is_in_weak_initial_of(Transition*, const PartialExecution&);
+  static bool is_in_weak_initial_of(TransitionPtr, const PartialExecution&);
 
   /**
    * @brief Computes wether the sequence without the unlock can fire the wait
