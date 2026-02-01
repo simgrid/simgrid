@@ -220,9 +220,11 @@ int sthread_close(int fd)
 {
   auto it = fd_to_vfile.find(fd);
   if (it == fd_to_vfile.end()) {
-    XBT_ERROR("Cannot close fd %d which does not seem to be a virtualized one.", fd);
-    errno = ENOENT;
-    return -1;
+    // That's maybe a socket instead of a file. So ask the OS to close it for itself
+    sthread_disable();
+    int res = close(fd);
+    sthread_enable();
+    return res;
   }
 
   fd_to_vfile.erase(it);
