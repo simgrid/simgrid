@@ -481,9 +481,11 @@ if(enable_smemory)
   set_property(TARGET smemory_pass
               APPEND PROPERTY INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIRS}")
 
-  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in ${CMAKE_BINARY_DIR}/mclang @ONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
   execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
-  install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang
+  execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang++)
+  install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
           DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
   message(STATUS "Enabling the MC memory interceptor as requested.")

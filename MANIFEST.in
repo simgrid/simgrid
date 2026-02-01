@@ -2586,6 +2586,7 @@ include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/mc_protocol.h
+include src/mc/smemory/mclang++.in
 include src/mc/smemory/mclang.in
 include src/mc/smemory/pass/smemory_pass.cpp
 include src/mc/smemory/runtime/smemory_observer.cpp

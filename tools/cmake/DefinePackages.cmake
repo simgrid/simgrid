@@ -31,6 +31,7 @@ set(EXTRA_DIST
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/mc/smemory/mclang.in
+  src/mc/smemory/mclang++.in
   src/mc/smemory/pass/smemory_pass.cpp
 
   src/simgrid/sg_config.hpp
