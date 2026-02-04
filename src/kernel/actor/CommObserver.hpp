@@ -27,8 +27,8 @@ class CommIsendSimcall final : public DelayedSimcallObserver<void> {
   size_t src_buff_size_;
   void* match_data_;
   bool detached_;
-  activity::CommImpl* comm_ = {};
-  int tag_                  = {};
+  activity::CommImpl* comm_ = nullptr;
+  int tag_                  = 0;
 
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   std::function<void(void*)> clean_fun_; // used to free the synchro in case of problem after a detached send
@@ -83,8 +83,8 @@ class CommIrecvSimcall final : public DelayedSimcallObserver<void> {
   size_t* dst_buff_size_;
   void* match_data_;
   double rate_;
-  activity::CommImpl* comm_ = {};
-  int tag_                  = {};
+  activity::CommImpl* comm_ = nullptr;
+  int tag_                  = 0;
 
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   std::function<void(activity::CommImpl*, void*, size_t)> copy_data_fun_; // used to copy data if not default one
@@ -124,7 +124,7 @@ public:
 class IprobeSimcall final : public SimcallObserver {
   activity::MailboxImpl* mbox_;
   s4u::Mailbox::IprobeKind kind_;
-  int tag_ = {};
+  int tag_ = 0;
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   void* match_data_; // Actually, that's the smpi request
 
@@ -141,7 +141,7 @@ public:
 class MessIputSimcall final : public SimcallObserver {
   activity::MessageQueueImpl* queue_;
   void* payload_;
-  activity::MessImpl* mess_ = {};
+  activity::MessImpl* mess_ = nullptr;
   bool detached_;
   std::function<void(void*)> clean_fun_; // used to free the synchro in case of problem after a detached send
 
@@ -171,7 +171,7 @@ class MessIgetSimcall final : public SimcallObserver {
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;
   void* payload_;
-  activity::MessImpl* mess_ = {};
+  activity::MessImpl* mess_ = nullptr;
 
 public:
   MessIgetSimcall(ActorImpl* actor, activity::MessageQueueImpl* queue, unsigned char* dst_buff, size_t* dst_buff_size,
