@@ -14,10 +14,6 @@ RUN set -x && apt-get --allow-releaseinfo-change update && \
     cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_INSTALL_PREFIX=/usr/ -Dminimal-bindings=ON -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install && \
     echo "XX SimGrid installed" && \
-    git clone --depth=1 https://gitlab.inria.fr/simgrid/llvm-instru.git /source/llvm-instru.git && \
-    cd /source/llvm-instru.git && cmake -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_INSTALL_PREFIX=/usr/ . && make install && \
-    cp /usr/lib/sharedmemmm.so /usr/lib/x86_64-linux-gnu/ && \
-    echo "XX Instru installed" && \
     cd / && rm -rf source &&  \
     apt remove -y cmake cmake-data git gdb llvm-19-dev krb5-locales fakeroot openssh-client manpages mount && apt autoremove -y && apt autoclean && apt clean && \
     dpkg --purge $(dpkg --list | grep '^rc'|cut -f3 -d' ') && \
