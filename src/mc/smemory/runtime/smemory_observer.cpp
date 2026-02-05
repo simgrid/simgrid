@@ -12,11 +12,19 @@ void create_memory_write(void*);
 void create_memory_read(void*);
 void create_memory_access(MemOpType, void*);
 
+static bool instrument = true;
+
 void create_memory_access(MemOpType type, void* where)
 {
+  // Break the recursion: we don't want to instrument the instrumenter
+  if (not instrument)
+    return;
+
+  instrument                                = false;
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (issuer && issuer->get_memory_access())
     issuer->get_memory_access()->record_memory_access(type, where);
+  instrument = true;
 }
 
 /* Write operations */
