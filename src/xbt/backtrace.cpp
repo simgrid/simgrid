@@ -11,6 +11,7 @@
 #include <cstring>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
+#include <sys/wait.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
@@ -220,7 +221,7 @@ public:
           close(pipes[0]);
           close(1);
           res = dup2(pipes[1], 1);
-          xbt_assert(res == 0, "dup2() failed (error: %s). " ERRMSG, strerror(errno));
+          xbt_assert(res >= 0, "dup2() failed (error: %s). " ERRMSG, strerror(errno));
           close(pipes[1]);
           execvp("addr2line", (char* const*)argv);
           xbt_die("Failed to exec addr2line (error: %s). " ERRMSG, strerror(errno));
@@ -234,6 +235,7 @@ public:
             ss << buffer;
           }
           close(pipes[0]);
+          waitpid(pid, nullptr, 0);
         }
       }
       sthread_enable();
