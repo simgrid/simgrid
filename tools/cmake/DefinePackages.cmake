@@ -760,9 +760,9 @@ if(enable_smpi)
 endif()
 
 if(enable_smemory)
-  set(simgrid_sources  ${simgrid_sources}  ${SMEMORY_SRC})
+  set(STHREAD_SRC  ${STHREAD_SRC}  ${SMEMORY_SRC})
 else()
-  set(EXTRA_DIST       ${EXTRA_DIST}       ${SMEMORY_SRC})
+  set(EXTRA_DIST   ${EXTRA_DIST}   ${SMEMORY_SRC})
 endif()
 
 if(SIMGRID_HAVE_MC)

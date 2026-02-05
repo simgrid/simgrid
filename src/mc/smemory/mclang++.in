@@ -1,2 +1,2 @@
 #! /bin/sh
-@CMAKE_CXX_COMPILER@ -Wno-unused-command-line-argument "-fpass-plugin=@CMAKE_INSTALL_FULL_LIBDIR@/smemory_pass.so" -lsimgrid $@
+@CMAKE_CXX_COMPILER@ -Wno-unused-command-line-argument "-fpass-plugin=@CMAKE_INSTALL_FULL_LIBDIR@/smemory_pass.so" -lsthread $@
