@@ -81,7 +81,7 @@ struct EventDataRace : public std::exception {
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
 {
-  XBT_VERB("Updating epoch wiht %lu memory accesses", contents_.first->get_mem_op().size());
+  XBT_VERB("Updating epoch with %lu memory accesses", contents_.first->get_mem_op().size());
   last_write_      = prev_event.last_write_;
   aid_t event_aid_ = contents_.first->aid_;
 

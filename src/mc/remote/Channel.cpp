@@ -124,7 +124,9 @@ int Channel::send(const void* message, size_t size)
     int done = ::send(this->socket_, pos, todo, 0);
     if (done == -1) {
       if (errno != EINTR) {
-        XBT_ERROR("Channel::send failure: %s", strerror(errno));
+        XBT_ERROR("Channel::send failure: %s (pid: %d)", strerror(errno), (int)getpid());
+        if (XBT_LOG_ISENABLED(mc_channel, xbt_log_priority_error))
+          xbt_backtrace_display_current();
         return errno;
       }
       continue;

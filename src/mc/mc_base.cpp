@@ -52,8 +52,10 @@ static bool has_been_warned = false;
 bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
   if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
-    XBT_CRITICAL("WARNING: the checker seems to be behaving as an application. If you are trying to verify McSimGrid "
-                 "itself that's fine. Else, that's probably a bug");
+    XBT_CRITICAL(
+        "WARNING: the checker (pid: %d) seems to be behaving as an application. If you are trying to verify McSimGrid "
+        "itself that's fine. Otherwise, this is probably a bug that you want to report.",
+        (int)getpid());
     has_been_warned = true;
   }
   // Now, we are in the client app, no need for remote memory reading.
@@ -75,8 +77,10 @@ bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 bool request_is_visible(const kernel::actor::Simcall* req)
 {
   if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
-    XBT_CRITICAL("WARNING: the checker seems to be behaving as an application. If you are trying to verify McSimGrid "
-                 "itself that's fine. Else, that's probably a bug");
+    XBT_CRITICAL(
+        "WARNING: the checker (pid: %d) seems to be behaving as an application. If you are trying to verify McSimGrid "
+        "itself that's fine. Otherwise, this is probably a bug that you want to report.",
+        (int)getpid());
     has_been_warned = true;
   }
 
