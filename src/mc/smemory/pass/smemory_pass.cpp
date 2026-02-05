@@ -148,25 +148,21 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
       if (t->isIntegerTy()) {
         // outs() << "   is integer\n";
         if (t->isIntegerTy(32)) {
-          //  outs() << "   is integer 32 \n";
           MCwriteFunc = module->getOrInsertFunction(MCWRITE4V, funcTy);
         }
         if (t->isIntegerTy(64)) {
-          //    outs() << "   is integer 64 \n";
           MCwriteFunc = module->getOrInsertFunction(MCWRITE8V, funcTy);
         }
         if (not(t->isIntegerTy(32) || t->isIntegerTy(64))) {
-          errs() << "Unknown integer type: " << t->getIntegerBitWidth() << " -- skipping\n";
+          errs() << "Unknown integer type: i" << t->getIntegerBitWidth() << " -- skipping\n";
           continue;
         }
       }
 
       if (t->isFloatTy()) {
-        // outs() << "   is float\n";
         MCwriteFunc = module->getOrInsertFunction(MCWRITEFV, funcTy);
       }
       if (t->isDoubleTy()) {
-        // outs() << "   is double\n";
         MCwriteFunc = module->getOrInsertFunction(MCWRITEDV, funcTy);
       }
 
@@ -192,7 +188,7 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
         //           MCwriteFunc = module->getOrInsertFunction( MCWRITE8, funcTy );
         //       }
         //       if( not ( pt->isIntegerTy( 32 ) || pt->isIntegerTy( 64 ) ) ) {
-        //           errs() << "Unknown integer ptr type: " << pt->getIntegerBitWidth() <<  " -- skipping\n";
+        //           errs() << "Unknown integer ptr type: p" << pt->getIntegerBitWidth() <<  " -- skipping\n";
         //       }
         //   }
 
@@ -210,9 +206,8 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
         //   }
       }
 
-      // outs() << "***Creating a new call***\n";
-      // auto newcall = builder.CreateCall( MCwriteFunc, addresses );
-      // outs() <<  "      Generated call: " << *newcall << "\n";
+      if (MCwriteFunc)
+        builder.CreateCall(MCwriteFunc, addresses);
     }
 
     /* Reads */
@@ -257,30 +252,24 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
       // Value types
       // Load always takes a pointer
 
-      // outs() << "type   " << *t << "\n";
-
       if (t->isIntegerTy()) {
         // outs() << "   is integer\n";
         if (t->isIntegerTy(32)) {
-          //  outs() << "   is integer 32 \n";
           MCreadFunc = module->getOrInsertFunction(MCREAD4V, funcTy);
         }
         if (t->isIntegerTy(64)) {
-          // outs() << "   is integer 64 \n";
           MCreadFunc = module->getOrInsertFunction(MCREAD8V, funcTy);
         }
         if (not(t->isIntegerTy(32) || t->isIntegerTy(64))) {
-          errs() << "Unknown integer type: " << t->getIntegerBitWidth() << " -- skipping\n";
+          errs() << "Unknown integer type: i" << t->getIntegerBitWidth() << " -- skipping\n";
           continue;
         }
       }
 
       if (t->isFloatTy()) {
-        // outs() << "   is float\n";
         MCreadFunc = module->getOrInsertFunction(MCREADFV, funcTy);
       }
       if (t->isDoubleTy()) {
-        // outs() << "   is double\n";
         MCreadFunc = module->getOrInsertFunction(MCREADDV, funcTy);
       }
 
@@ -322,15 +311,14 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
         //   }
       }
       // outs() << "***Creating a new read call***\n";
-      // auto newcall = builder.CreateCall( MCreadFunc, addresses );
-      // outs() <<  "      Generated call: " << *newcall << "\n";
+      if (MCreadFunc)
+        builder.CreateCall(MCreadFunc, addresses);
     }
-
+    // reads.front()->getModule()->dump();
     return true;
   }
 
-  /* Run the pass
-   */
+  /* Run the pass */
   PreservedAnalyses run(Module& M, ModuleAnalysisManager& MPM)
   {
 
