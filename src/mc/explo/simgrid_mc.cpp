@@ -69,6 +69,7 @@ int main(int argc, char** argv)
         params.push_back(argv[i]);
       i++;
     }
+    params.push_back(nullptr);
 
     // Honor sthread
 #ifdef STHREAD_PATH /* only on Linux for now */
@@ -81,7 +82,7 @@ int main(int argc, char** argv)
 
     /* Actually exec the child */
     execvp(params[0], params.data());
-    perror("Error while starting the replay:");
+    perror("Error while starting the replay");
     std::cerr << "Please make sure that the binary exists and is executable. The command line was:\n  ";
     for (auto* p : params)
       std::cerr << " '" << p << "'";
