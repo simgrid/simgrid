@@ -9,6 +9,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/remote/Channel.hpp"
+#include "xbt/backtrace.hpp"
 #include "xbt/utility.hpp"
 #include <boost/intrusive/list.hpp>
 #include <cstdio>
@@ -39,7 +40,7 @@ class XBT_PUBLIC MemoryAccessImpl : public ActivityImpl {
   // the user when the race is finally detected.
   // This has to be static since the actor can die before we detect the corresponding race
   // vecotr[aid is key] -> Map location -> vector[round is key] -> <Read, Write> data
-  static std::vector<std::unordered_map<void*, std::vector<std::pair<std::string, std::string>>>> saved_accesses_;
+  static std::vector<std::unordered_map<void*, std::vector<std::pair<xbt::Backtrace, xbt::Backtrace>>>> saved_accesses_;
 
   unsigned long curr_round_ = 0;
 

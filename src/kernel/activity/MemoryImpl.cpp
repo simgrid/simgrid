@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_smo, kernel, "Mailbox implementation");
 
 namespace simgrid::kernel::activity {
 
-std::vector<std::unordered_map<void*, std::vector<std::pair<std::string, std::string>>>>
+std::vector<std::unordered_map<void*, std::vector<std::pair<xbt::Backtrace, xbt::Backtrace>>>>
     MemoryAccessImpl::saved_accesses_ = {};
 
 MemoryAccessImpl::MemoryAccessImpl(actor::ActorImpl* issuer) : issuer_(issuer) {}
@@ -26,9 +26,12 @@ void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
   // If we are in replay mode, save every backtrace for memory accesses so we
   // can display them in case of a datarace
   if (MC_record_replay_is_active()) {
-    xbt::Backtrace backtrace;
-    XBT_VERB("[AID:=%ld] %s for location %p in round %lu\n%s", issuer_->get_pid(),
-             type == MemOpType::READ ? "READ" : "WRITE", where, curr_round_, backtrace.resolve().c_str());
+
+    if (XBT_LOG_ISENABLED(ker_smo, xbt_log_priority_debug)) {
+      xbt::Backtrace backtrace;
+      XBT_VERB("[AID:=%ld] %s for location %p in round %lu\n%s", issuer_->get_pid(),
+               type == MemOpType::READ ? "READ" : "WRITE", where, curr_round_, backtrace.resolve().c_str());
+    }
 
     auto aid = issuer_->get_pid();
     xbt_assert(aid >= 0);
@@ -39,9 +42,9 @@ void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
       saved_accesses_[aid][where].resize(curr_round_ + 1);
     }
     if (type == MemOpType::READ) {
-      saved_accesses_[aid][where][curr_round_].first = backtrace.resolve();
+      saved_accesses_[aid][where][curr_round_].first.reset();
     } else
-      saved_accesses_[aid][where][curr_round_].second = backtrace.resolve();
+      saved_accesses_[aid][where][curr_round_].second.reset();
   }
 }
 
@@ -67,8 +70,8 @@ std::string MemoryAccessImpl::get_info_from_access(aid_t aid, unsigned long roun
 
   auto where_to_find = saved_accesses_[aid][mem_op.get_location()][round];
   if (mem_op.get_type() == MemOpType::READ)
-    return where_to_find.first;
+    return where_to_find.first.resolve();
   else
-    return where_to_find.second;
+    return where_to_find.second.resolve();
 }
 } // namespace simgrid::kernel::activity

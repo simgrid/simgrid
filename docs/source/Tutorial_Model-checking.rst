@@ -694,7 +694,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a datarace at location 0x561ce34d004c between actor 2 and 3 after the follwing execution:
+         [0.000000] [mc_explo/INFO] Found a datarace at location 0x561ce34d004c between actor 2 and 3 after the following execution:
          [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
          [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
          [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()
@@ -713,7 +713,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the follwing execution:
+         [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the following execution:
          [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
          [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
          [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()

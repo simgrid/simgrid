@@ -249,7 +249,7 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::report_data_race(const McDataRace& e)
 {
-  XBT_INFO("Found a datarace at location %p between actor %ld and %ld after the follwing execution:", e.location_,
+  XBT_INFO("Found a datarace at location %p between actor %ld and %ld after the following execution:", e.location_,
            e.first_mem_op_.first, e.second_mem_op_.first);
   for (auto const& frame : Exploration::get_instance()->get_textual_trace())
     XBT_INFO("  %s", frame.c_str());
