@@ -31,7 +31,10 @@ class Backtrace {
 public:
   std::shared_ptr<BacktraceImpl> impl_;
   Backtrace();
-  /** @brief Translate the backtrace in a human friendly form, unmangled with source code locations. */
+  /** Change the backtrace location to the current location (fast operation) */
+  void reset();
+  /** @brief Translate the backtrace in a human friendly form, unmangled with source code locations. (slow operation,
+   * don't do this if you never display the trace) */
   std::string resolve() const;
   /** @brief Display the resolved backtrace on stderr */
   void display() const;

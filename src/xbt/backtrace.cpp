@@ -258,6 +258,11 @@ public:
 
 Backtrace::Backtrace() : impl_(std::make_shared<BacktraceImpl>()) {}
 
+void Backtrace::reset()
+{
+  impl_ = std::make_shared<BacktraceImpl>();
+}
+
 std::string Backtrace::resolve() const
 {
   return impl_->resolve();
