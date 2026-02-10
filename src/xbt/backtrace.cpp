@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 
 #include <cstring>
+#include <memory>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <sys/wait.h>
@@ -76,13 +77,12 @@ class BacktraceImpl {
 
 #endif
 #if HAVE_BOOST_STACKTRACE_ADDR2LINE
-  const boost::stacktrace::stacktrace stacktrace_boost;
+  std::unique_ptr<boost::stacktrace::stacktrace> stacktrace_boost = nullptr;
 #endif
 #if HAVE_EXECINFO_H
 #define BT_BUF_SIZE 32
   size_t nptrs;
   void* buffer[BT_BUF_SIZE];
-
 #endif
 
 public:
@@ -95,6 +95,10 @@ public:
 #if HAVE_EXECINFO_H
     if (cfg_stacktrace_kind == "gcc" || cfg_stacktrace_kind == "addr2line")
       nptrs = backtrace(buffer, BT_BUF_SIZE);
+#endif
+#if HAVE_BOOST_STACKTRACE_ADDR2LINE
+    if (cfg_stacktrace_kind == "boost")
+      stacktrace_boost = std::make_unique<boost::stacktrace::stacktrace>();
 #endif
   }
 
@@ -152,7 +156,7 @@ public:
     if (cfg_stacktrace_kind == "boost") {
       bool problem = false;
       sthread_disable();
-      for (boost::stacktrace::frame const& frame : stacktrace_boost) {
+      for (boost::stacktrace::frame const& frame : *stacktrace_boost) {
         std::stringstream frame_loc;
         frame_loc << frame.source_file() << ":" << frame.source_line();
         std::string frame_name = frame.name();
@@ -256,7 +260,7 @@ public:
   }
 };
 
-Backtrace::Backtrace() : impl_(std::make_shared<BacktraceImpl>()) {}
+Backtrace::Backtrace(bool capture) : impl_(capture ? std::make_shared<BacktraceImpl>() : nullptr) {}
 
 void Backtrace::reset()
 {

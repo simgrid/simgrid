@@ -30,7 +30,7 @@ class BacktraceImpl;
 class Backtrace {
 public:
   std::shared_ptr<BacktraceImpl> impl_;
-  Backtrace();
+  Backtrace(bool capture = true);
   /** Change the backtrace location to the current location (fast operation) */
   void reset();
   /** @brief Translate the backtrace in a human friendly form, unmangled with source code locations. (slow operation,

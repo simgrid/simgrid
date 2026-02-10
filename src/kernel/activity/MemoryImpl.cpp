@@ -39,7 +39,7 @@ void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
       saved_accesses_.resize(aid + 1);
 
     if (saved_accesses_[aid][where].size() <= curr_round_) {
-      saved_accesses_[aid][where].resize(curr_round_ + 1);
+      saved_accesses_[aid][where].resize(curr_round_ + 1, {xbt::Backtrace(false), xbt::Backtrace(false)});
     }
     if (type == MemOpType::READ) {
       saved_accesses_[aid][where][curr_round_].first.reset();
