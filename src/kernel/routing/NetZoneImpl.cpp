@@ -539,11 +539,29 @@ void NetZoneImpl::get_interzone_route(const NetPoint* netpoint, NetPoint* gatewa
     if (gateway_to_netpoint) {
       // get the route from the parent zone to the child zone, and insert it at the end of the list
       gateway->get_englobing_zone()->get_local_route(gateway, current, &route, latency);
+
+      // If the route has no destination gateway but current is a netzone, infer it from the zone's default gateway
+      if (route.gw_dst_ == nullptr && current->is_netzone()) {
+        route.gw_dst_ = (*it)->get_gateway();
+        XBT_DEBUG("Inferred destination gateway '%s' for netzone '%s'", route.gw_dst_->get_cname(),
+                  current->get_cname());
+      }
+
       gateway = route.gw_dst_;
       links.insert(links.end(), route.link_list_.begin(), route.link_list_.end());
     } else {
       // get the route from the child zone to the parent zone, and insert it at the beginning of the list
       gateway->get_englobing_zone()->get_local_route(current, gateway, &route, latency);
+
+      // If the route has no source gateway but current is a netzone, infer it from the zone's default gateway
+      if (route.gw_src_ == nullptr && current->is_netzone()) {
+        route.gw_src_ = (*it)->get_gateway();
+        XBT_DEBUG("Inferred source gateway '%s' (in zone '%s') for netzone '%s'",
+                  route.gw_src_->get_cname(),
+                  route.gw_src_->get_englobing_zone()->get_cname(),
+                  current->get_cname());
+      }
+
       gateway = route.gw_src_;
       links.insert(links.begin(), route.link_list_.rbegin(), route.link_list_.rend());
     }
@@ -730,6 +748,10 @@ void NetZoneImpl::seal()
   // for zone with a single host, this host is its own default gateway
   if (gateways_.empty() && hosts_.size() == 1)
     gateways_["default"] = hosts_.begin()->second->get_iface()->get_netpoint();
+
+  // for zone with no hosts but a single vertex that is a router, that router becomes the default gateway
+  if (gateways_.empty() && hosts_.empty() && vertices_.size() == 1 && vertices_[0]->is_router())
+    gateways_["default"] = vertices_[0];
 
   /* seals sub-netzones and hosts */
   for (auto* host : get_all_hosts()) {

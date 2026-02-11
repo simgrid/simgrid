@@ -471,7 +471,8 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
     cluster->router_id = cluster->prefix + cluster->id + "_router" + cluster->suffix;
-  zone->add_router(cluster->router_id);
+  auto* router = zone->add_router(cluster->router_id);
+  zone->set_gateway(router);
 
   simgrid::kernel::routing::on_cluster_creation(*cluster);
 }
