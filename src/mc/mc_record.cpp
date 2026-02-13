@@ -97,13 +97,13 @@ void RecordTrace::replay() const
       XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.second, e.first_mem_op_.first,
                 e.second_mem_op_.second, e.second_mem_op_.first);
 
-      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s", e.first_mem_op_.first,
+      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s\n", e.first_mem_op_.first,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
                    e.first_mem_op_.first, e.first_mem_op_.second,
                    kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_))
                    .c_str());
 
-      XBT_INFO("Second operation was a %s made by actor %ld:\n%s",
+      XBT_INFO("Second operation was a %s made by actor %ld:\n%s\n",
                e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.first,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
                    e.second_mem_op_.first, e.second_mem_op_.second,

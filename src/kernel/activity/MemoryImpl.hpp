@@ -33,7 +33,7 @@ public:
 class XBT_PUBLIC MemoryAccessImpl : public ActivityImpl {
   actor::ActorImpl* issuer_ = nullptr;
 
-  // Memorry accesses made by the actor
+  // Memory accesses made by the actor
   std::vector<activity::MemoryAccess> memory_accesses_;
 
   // Used to save backtrace in replay mode. This is mandatory if we want to display them for

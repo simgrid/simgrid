@@ -147,8 +147,8 @@ public:
           break;
       }
       if (problem)
-        XBT_CERROR(root, "Some stack frames could not be symbolized. You may want to use the slow but robust addrline "
-                         "stacktraces with --cfg=debug/stacktrace:boost");
+        XBT_CERROR(root, "Some stack frames could not be symbolized. You may want to use the slow but robust addr2line "
+                         "stacktraces with --cfg=debug/stacktrace:addr2line");
     }
 #endif
 
