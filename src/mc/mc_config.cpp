@@ -8,7 +8,11 @@
 #include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.h"
 #include "xbt/config.hpp"
+#include <boost/algorithm/string.hpp>
+#include <exception>
 #include <simgrid/modelchecker.h>
+#include <string>
+#include <vector>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
@@ -58,6 +62,24 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
       if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
                 " 'dpor', 'sdpor', 'odpor', or 'udpor'");
+    }};
+
+std::vector<void*> cfg_mc_watch_addresses;
+static simgrid::config::Flag<std::string> _cfg_mc_watch{
+    "model-check/watch", "List of addresses to watch during exploration, comma-separated.", "",
+    [](std::string_view value) {
+      std::vector<std::string> result;
+      if (value.empty())
+        return;
+      try {
+        boost::algorithm::split(result, value, boost::is_any_of(","));
+        for (const auto& s : result) {
+          void* addr = (void*)std::stoul(s, 0, 16);
+          cfg_mc_watch_addresses.push_back(addr);
+        }
+      } catch (const std::exception& e) {
+        throw std::string("Invalid value for model-check/watch: ") + e.what();
+      }
     }};
 
 simgrid::config::Flag<int> _sg_mc_cached_states_interval{

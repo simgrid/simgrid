@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "MemoryImpl.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/asserts.h"
 #include "xbt/backtrace.hpp"
@@ -22,6 +23,18 @@ void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
 {
 
   memory_accesses_.emplace_back(type, where);
+  bool watched = false;
+  for (void* a : cfg_mc_watch_addresses) {
+    if (a == where) {
+      watched = 1;
+      break;
+    }
+  }
+  if (watched) {
+    XBT_INFO("%s access by actor %ld on the watched variable %p", type == MemOpType::READ ? "READ" : "WRITE",
+             issuer_->get_pid(), where);
+    xbt_backtrace_display_current();
+  }
 
   // If we are in replay mode, save every backtrace for memory accesses so we
   // can display them in case of a datarace

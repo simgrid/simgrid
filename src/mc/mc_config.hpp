@@ -41,5 +41,6 @@ extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_cached_states_interval;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_nofork;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_search_critical_transition;
 extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_soft_timeout;
+extern XBT_PUBLIC std::vector<void*> cfg_mc_watch_addresses;
 
 #endif
