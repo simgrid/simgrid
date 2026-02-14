@@ -152,7 +152,6 @@ public:
 class XBT_PRIVATE ParallelizedExplorer : public Exploration {
 
 private:
-  ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
   mutex_channel<StatePtr> opened_heads_;

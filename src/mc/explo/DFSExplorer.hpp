@@ -28,7 +28,6 @@ using EventHandle = uint32_t;
 class XBT_PRIVATE DFSExplorer : public Exploration {
 protected:
   std::unique_ptr<Reduction> reduction_algo_;
-  ReductionMode reduction_mode_;
   stack_t* stack_;
   bool is_execution_descending = true;
 

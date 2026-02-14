@@ -105,6 +105,8 @@ public:
       return -1;
     return S->back()->next_transition_guided().first;
   }
+
+  ReductionMode get_kind() const override { return ReductionMode::sdpor; }
 };
 
 } // namespace simgrid::mc

@@ -59,6 +59,8 @@ public:
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition) override;
 
   aid_t next_to_explore(odpor::Execution& E, stack_t* S) override;
+
+  ReductionMode get_kind() const override { return ReductionMode::dpor; }
 };
 
 } // namespace simgrid::mc

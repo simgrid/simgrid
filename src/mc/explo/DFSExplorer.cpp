@@ -72,7 +72,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   auto state = state_stack.back();
 
   // If we use a state containing a sleep state, display it during debug
-  if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose) && reduction_mode_ != ReductionMode::none) {
+  if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose) && reduction_algo_->get_kind() != ReductionMode::none) {
     auto sleep_state = static_cast<SleepSetState*>(state.get());
     if (not sleep_state->get_sleep_set().empty()) {
       XBT_DEBUG("Sleep set actually containing:");
@@ -150,11 +150,12 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
 
   // Backtrack if we reached the maximum depth
   if (state_stack.size() > (std::size_t)_sg_mc_max_depth) {
-    if (reduction_mode_ == ReductionMode::dpor) {
+    if (reduction_algo_->get_kind() == ReductionMode::dpor) {
       XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
                 _sg_mc_max_depth.get());
       XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
-    } else if (reduction_mode_ == ReductionMode::sdpor || reduction_mode_ == ReductionMode::odpor) {
+    } else if (reduction_algo_->get_kind() == ReductionMode::sdpor ||
+               reduction_algo_->get_kind() == ReductionMode::odpor) {
       XBT_WARN("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
                "when stopping at a fixed depth /!\\",
                _sg_mc_max_depth.get());
@@ -228,7 +229,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
 void DFSExplorer::run()
 {
-  XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
+  XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_algo_->get_kind()));
 
   auto initial_state = reduction_algo_->state_create(get_remote_app());
   on_state_creation_signal(initial_state.get(), get_remote_app());
@@ -247,36 +248,33 @@ void DFSExplorer::run()
   log_state();
 }
 
-DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode)
-    : Exploration(std::move(remote_app)), reduction_mode_(mode)
+DFSExplorer::DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode) : Exploration(std::move(remote_app))
 {
 
-  if (reduction_mode_ == ReductionMode::dpor)
+  if (mode == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
-  else if (reduction_mode_ == ReductionMode::sdpor)
+  else if (mode == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor)
+  else if (mode == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
-               to_c_str(reduction_mode_));
+    xbt_assert(mode == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer", to_c_str(mode));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration(), reduction_mode_(mode)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration()
 {
   Exploration::initialize_remote_app(args);
 
-  if (reduction_mode_ == ReductionMode::dpor)
+  if (mode == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
-  else if (reduction_mode_ == ReductionMode::sdpor)
+  else if (mode == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor)
+  else if (mode == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
   else {
-    //  xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer",
-    //           to_c_str(reduction_mode_));
+    xbt_assert(mode == ReductionMode::none, "Reduction mode %s not supported yet by DFS explorer", to_c_str(mode));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 }

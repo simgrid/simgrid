@@ -302,7 +302,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 void ParallelizedExplorer::run()
 {
   XBT_INFO("Start a Parallel exploration with %d threads. Reduction is: %s.", number_of_threads,
-           to_c_str(reduction_mode_));
+           to_c_str(reduction_algo_->get_kind()));
 
   one_way_disabled_ = true;
 
@@ -364,16 +364,14 @@ ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, Reduc
 
   Exploration::initialize_remote_app(args);
 
-  reduction_mode_ = mode;
-  if (reduction_mode_ == ReductionMode::dpor)
+  if (mode == ReductionMode::dpor)
     reduction_algo_ = std::make_unique<DPOR>();
-  else if (reduction_mode_ == ReductionMode::sdpor)
+  else if (mode == ReductionMode::sdpor)
     reduction_algo_ = std::make_unique<SDPOR>();
-  else if (reduction_mode_ == ReductionMode::odpor)
+  else if (mode == ReductionMode::odpor)
     reduction_algo_ = std::make_unique<ODPOR>();
   else {
-    xbt_assert(reduction_mode_ == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer",
-               to_c_str(reduction_mode_));
+    xbt_assert(mode == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer", to_c_str(mode));
     reduction_algo_ = std::make_unique<NoReduction>();
   }
 

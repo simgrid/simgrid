@@ -25,7 +25,6 @@ namespace simgrid::mc {
 
 class XBT_PRIVATE BeFSExplorer : public Exploration {
 private:
-  ReductionMode reduction_mode_;
   std::unique_ptr<Reduction> reduction_algo_;
 
   // For statistics

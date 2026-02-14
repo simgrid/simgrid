@@ -7,6 +7,7 @@
 #define SIMGRID_MC_REDUCTION_HPP
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/mc_config.hpp"
 #include <memory>
 
 namespace simgrid::mc {
@@ -66,6 +67,8 @@ public:
   // Ask the reduction to consider one action from a given state
   //   this is required to handle so called soft-locked states
   virtual void consider_best(StatePtr state);
+
+  constexpr virtual ReductionMode get_kind() const = 0;
 };
 
 } // namespace simgrid::mc

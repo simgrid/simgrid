@@ -37,6 +37,8 @@ public:
   StatePtr state_create(RemoteApp& remote_app, StatePtr parent_state, TransitionPtr incoming_transition) override;
   void on_backtrack(State* s) override;
   void consider_best(StatePtr state) override;
+
+  ReductionMode get_kind() const override { return ReductionMode::odpor; }
 };
 
 } // namespace simgrid::mc
