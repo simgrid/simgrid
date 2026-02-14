@@ -8,31 +8,16 @@
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
-#include "src/mc/explo/reduction/DPOR.hpp"
-#include "src/mc/explo/reduction/NoReduction.hpp"
-#include "src/mc/explo/reduction/ODPOR.hpp"
-#include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_record.hpp"
-#include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
-#include "xbt/string.hpp"
-#include "xbt/sysdep.h"
 
-#include <cassert>
-#include <cstdio>
-
-#include <algorithm>
 #include <memory>
 #include <string>
-#include <unordered_set>
-#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(
     mc_ct, mc,

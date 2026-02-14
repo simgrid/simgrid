@@ -22,17 +22,10 @@
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
-#include "xbt/string.hpp"
-#include "xbt/sysdep.h"
 
-#include <cassert>
-#include <cstdio>
-
-#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");

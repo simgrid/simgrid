@@ -8,8 +8,6 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_exit.hpp"
-#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
@@ -24,20 +22,11 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
-#include "xbt/string.hpp"
-#include "xbt/sysdep.h"
 
-#include <cassert>
-#include <climits>
-#include <cstdio>
-
-#include <algorithm>
 #include <filesystem>
-#include <limits>
 #include <memory>
 #include <string>
 #include <unistd.h>
-#include <unordered_set>
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_befs, mc, "BeFS exploration algorithm of the model-checker");

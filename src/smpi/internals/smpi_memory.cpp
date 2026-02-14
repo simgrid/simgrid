@@ -10,12 +10,6 @@
 #include "src/xbt/memory_map.hpp"
 
 #include <algorithm>
-#include <cerrno>
-#include <climits>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <deque>
 #include <fcntl.h>
 #include <sys/mman.h>

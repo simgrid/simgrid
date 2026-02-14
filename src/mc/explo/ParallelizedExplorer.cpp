@@ -21,9 +21,6 @@
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 
-#include <cassert>
-#include <cstdio>
-
 #include <algorithm>
 #include <exception>
 #include <functional>
