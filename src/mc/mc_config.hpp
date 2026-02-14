@@ -13,7 +13,7 @@
 namespace simgrid::mc {
 XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor, sdpor, odpor, udpor);
 XBT_DECLARE_ENUM_CLASS(ModelCheckingMode, NONE, APP_SIDE, CHECKER_SIDE, REPLAY);
-ReductionMode get_model_checking_reduction(); // "model-check/reduction" == "DPOR"
+XBT_PUBLIC ReductionMode get_model_checking_reduction();
 XBT_PUBLIC ModelCheckingMode get_model_checking_mode();
 XBT_PUBLIC void set_model_checking_mode(ModelCheckingMode mode);
 }; // namespace simgrid::mc

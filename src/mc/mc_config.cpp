@@ -56,13 +56,29 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
       _mc_cfg_cb_check("value to enable/disable timeout for wait requests", not MC_record_replay_is_active());
     }};
 
+static simgrid::mc::ReductionMode cfg_mc_reduction_value;
 static simgrid::config::Flag<std::string> cfg_mc_reduction{
     "model-check/reduction", "Specify the kind of exploration reduction (none, DPOR, ODPOR or UDPOR)", "dpor",
     [](std::string_view value) {
-      if (value != "none" && value != "dpor" && value != "sdpor" && value != "odpor" && value != "udpor")
+      if (value == "none") {
+        cfg_mc_reduction_value = simgrid::mc::ReductionMode::none;
+      } else if (value == "dpor") {
+        cfg_mc_reduction_value = simgrid::mc::ReductionMode::dpor;
+      } else if (value == "sdpor") {
+        cfg_mc_reduction_value = simgrid::mc::ReductionMode::sdpor;
+      } else if (value == "odpor") {
+        cfg_mc_reduction_value = simgrid::mc::ReductionMode::odpor;
+      } else if (value == "udpor") {
+        cfg_mc_reduction_value = simgrid::mc::ReductionMode::udpor;
+      } else {
         xbt_die("configuration option 'model-check/reduction' must be one of the following: "
                 " 'dpor', 'sdpor', 'odpor', or 'udpor'");
+      }
     }};
+simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
+{
+  return cfg_mc_reduction_value;
+}
 
 std::vector<void*> cfg_mc_watch_addresses;
 static simgrid::config::Flag<std::string> _cfg_mc_watch{
@@ -198,21 +214,3 @@ simgrid::config::Flag<int> _sg_mc_soft_timeout{
     {"model-check/soft-timeout"},
     "If the exploration lasts more than this timeout (in seconds), gracefully exit at the next backtracking point.",
     -1};
-
-simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
-{
-  if (cfg_mc_reduction.get() == "none") {
-    return ReductionMode::none;
-  } else if (cfg_mc_reduction.get() == "dpor") {
-    return ReductionMode::dpor;
-  } else if (cfg_mc_reduction.get() == "sdpor") {
-    return ReductionMode::sdpor;
-  } else if (cfg_mc_reduction.get() == "odpor") {
-    return ReductionMode::odpor;
-  } else if (cfg_mc_reduction.get() == "udpor") {
-    return ReductionMode::udpor;
-  } else {
-    XBT_INFO("Unknown reduction mode: defaulting to no reduction");
-    return ReductionMode::none;
-  }
-}
