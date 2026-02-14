@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/ParallelizedExplorer.hpp"
 #include "src/mc/api/states/WutState.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
@@ -101,7 +102,7 @@ void ParallelizedExplorer::TreeHandler(StatePtr initial_state)
 
     std::vector<StatePtr> new_opened;
     remaining_todo +=
-        reduction_algo_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
+        reduction_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
     XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
@@ -112,7 +113,7 @@ void ParallelizedExplorer::TreeHandler(StatePtr initial_state)
 
     if (to_apply->get_last_explored_state() != nullptr)
       to_apply->get_last_explored_state()->mark_to_delete();
-    reduction_algo_->delete_race_update(to_apply);
+    reduction_->delete_race_update(to_apply);
 
     State::garbage_collect();
     traces_count++;
@@ -302,11 +303,11 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 void ParallelizedExplorer::run()
 {
   XBT_INFO("Start a Parallel exploration with %d threads. Reduction is: %s.", number_of_threads,
-           to_c_str(reduction_algo_->get_kind()));
+           to_c_str(reduction_->get_kind()));
 
   one_way_disabled_ = true;
 
-  auto initial_state = reduction_algo_->state_create(get_remote_app());
+  auto initial_state = reduction_->state_create(get_remote_app());
 
   one_way_disabled_ = false;
 
@@ -321,7 +322,7 @@ void ParallelizedExplorer::run()
     local_explorers_.emplace_back(std::make_shared<ThreadLocalExplorer>(args_));
     local_explorers_[i]->opened_heads   = &opened_heads_;
     local_explorers_[i]->races_list     = &races_list_;
-    local_explorers_[i]->reduction_algo = reduction_algo_.get();
+    local_explorers_[i]->reduction_algo = reduction_.get();
   }
 
   // Create the explorers
@@ -358,29 +359,22 @@ void ParallelizedExplorer::run()
   XBT_INFO("Parallel exploration ended. %lu explored traces overall", total_traces);
 }
 
-ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode)
-    : Exploration(), args_(args)
+ParallelizedExplorer::ParallelizedExplorer(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction)
+    : ReductedExplorer(std::move(reduction)), args_(args)
 {
-
   Exploration::initialize_remote_app(args);
 
-  if (mode == ReductionMode::dpor)
-    reduction_algo_ = std::make_unique<DPOR>();
-  else if (mode == ReductionMode::sdpor)
-    reduction_algo_ = std::make_unique<SDPOR>();
-  else if (mode == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<ODPOR>();
-  else {
-    xbt_assert(mode == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer", to_c_str(mode));
-    reduction_algo_ = std::make_unique<NoReduction>();
-  }
-
-  XBT_DEBUG("**************************************************");
+  xbt_assert(reduction_ != nullptr,
+             "You must provide a reduction to the Parallel exploration, even ReductionMode::none");
+  auto mode = reduction_->get_kind();
+  xbt_assert(mode == ReductionMode::dpor || mode == ReductionMode::sdpor || mode == ReductionMode::odpor ||
+                 mode == ReductionMode::none,
+             "Reduction mode %s not supported yet by Parallel explorer", to_c_str(mode));
 }
 
-Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode)
+Exploration* create_parallelized_exploration(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction)
 {
-  return new ParallelizedExplorer(args, mode);
+  return new ParallelizedExplorer(args, std::move(reduction));
 }
 
 } // namespace simgrid::mc

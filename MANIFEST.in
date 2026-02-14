@@ -2521,6 +2521,7 @@ include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
 include src/mc/explo/ParallelizedExplorer.cpp
 include src/mc/explo/ParallelizedExplorer.hpp
+include src/mc/explo/ReductedExplorer.hpp
 include src/mc/explo/UdporChecker.cpp
 include src/mc/explo/UdporChecker.hpp
 include src/mc/explo/odpor/ClockVector_test.cpp

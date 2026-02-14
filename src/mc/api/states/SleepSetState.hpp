@@ -12,7 +12,7 @@
 
 namespace simgrid::mc {
 
-class XBT_PRIVATE SleepSetState : public State {
+class XBT_PUBLIC SleepSetState : public State {
 protected:
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new

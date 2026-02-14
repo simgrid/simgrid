@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/Strategy.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_record.hpp"
@@ -196,11 +197,13 @@ public:
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode);
-XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction);
+XBT_PUBLIC Exploration* create_befs_exploration(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction);
+XBT_PUBLIC Exploration* create_parallelized_exploration(const std::vector<char*>& args,
+                                                        std::unique_ptr<Reduction> reduction);
 
-XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode);
+XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args,
+                                                                 std::unique_ptr<Reduction> reduction);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);
 
 } // namespace simgrid::mc

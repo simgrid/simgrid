@@ -9,6 +9,7 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
@@ -23,15 +24,13 @@
 
 namespace simgrid::mc {
 
-class XBT_PRIVATE BeFSExplorer : public Exploration {
+class XBT_PRIVATE BeFSExplorer : public ReductedExplorer {
 private:
-  std::unique_ptr<Reduction> reduction_algo_;
-
   // For statistics
   unsigned long explored_traces_ = 0;
 
 public:
-  explicit BeFSExplorer(const std::vector<char*>& args, ReductionMode mode);
+  explicit BeFSExplorer(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction);
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;

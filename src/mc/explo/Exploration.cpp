@@ -9,6 +9,7 @@
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
@@ -135,9 +136,12 @@ std::vector<std::string> Exploration::get_textual_trace(int max_elements)
 void Exploration::run_critical_exploration_on_need(ExitStatus error)
 {
   if (_sg_mc_max_errors == 0 && _sg_mc_search_critical_transition && not is_looking_for_critical) {
+    ReductedExplorer* re_this = dynamic_cast<ReductedExplorer*>(this);
+    xbt_assert(re_this != nullptr,
+               "Cannot start the critical exploration on a reduction-less exploration (ie, on UDPOR)");
     is_looking_for_critical = true;
     stack_t stack           = get_stack();
-    CriticalTransitionExplorer explorer(std::move(remote_app_), get_model_checking_reduction(), &stack);
+    CriticalTransitionExplorer explorer(std::move(remote_app_), std::move(re_this->reduction_), &stack);
 
     // This will be executed after the first (and only) critical exploration:
     // we raise the same error, so the checker can return the correct failure code in the end

@@ -5,6 +5,7 @@
 
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/explo/DFSExplorer.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -14,6 +15,7 @@
 
 #include <cstdint>
 #include <inttypes.h>
+#include <memory>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
 
@@ -322,14 +324,15 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
   }
 }
 
-Exploration* create_communication_determinism_checker(const std::vector<char*>& args, ReductionMode mode)
+Exploration* create_communication_determinism_checker(const std::vector<char*>& args,
+                                                      std::unique_ptr<Reduction> reduction)
 {
   CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
   StateCommDet::EXTENSION_ID     = simgrid::mc::State::extension_create<StateCommDet>();
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto* base      = new DFSExplorer(args, mode);
+  auto* base      = new DFSExplorer(args, std::move(reduction));
   auto* extension = new CommDetExtension(*base);
 
   DFSExplorer::on_exploration_start([extension](RemoteApp const&) {

@@ -10,6 +10,7 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
@@ -149,11 +150,9 @@ public:
   mutex_channel<Reduction::RaceUpdate*>* races_list;
 };
 
-class XBT_PRIVATE ParallelizedExplorer : public Exploration {
+class XBT_PRIVATE ParallelizedExplorer : public ReductedExplorer {
 
 private:
-  std::unique_ptr<Reduction> reduction_algo_;
-
   mutex_channel<StatePtr> opened_heads_;
   mutex_channel<Reduction::RaceUpdate*> races_list_;
 
@@ -166,7 +165,7 @@ private:
   int number_of_threads = _sg_mc_parallel_thread;
 
 public:
-  explicit ParallelizedExplorer(const std::vector<char*>& args, ReductionMode mode);
+  explicit ParallelizedExplorer(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction);
   void run() override;
   RecordTrace get_record_trace() override;
   void TreeHandler(StatePtr initial_state);

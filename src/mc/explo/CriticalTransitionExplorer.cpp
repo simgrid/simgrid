@@ -8,6 +8,7 @@
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -66,7 +67,7 @@ void CriticalTransitionExplorer::run()
   // Let's do the exploration one more time so we finalize exploring it
   // In particular, this allows ODPOR to cleanup its things
   if (stack_->back()->get_transition_out() == nullptr) {
-    reduction_algo_->on_backtrack(stack_->back().get());
+    reduction_->on_backtrack(stack_->back().get());
     stack_->pop_back();
     execution_seq_.remove_last_event();
   }
@@ -92,7 +93,7 @@ void CriticalTransitionExplorer::run()
                current_candidate->to_string(true).c_str());
       return;
     }
-    reduction_algo_->on_backtrack(stack_->back().get());
+    reduction_->on_backtrack(stack_->back().get());
     stack_->pop_back();
     execution_seq_.remove_last_event();
   }
@@ -107,11 +108,11 @@ void CriticalTransitionExplorer::run()
   return;
 }
 
-CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode,
-                                                       stack_t* stack)
-    : DFSExplorer(std::move(remote_app), mode)
+CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app,
+                                                       std::unique_ptr<Reduction> reduction, stack_t* stack)
+    : DFSExplorer(std::move(remote_app), std::move(reduction))
 {
-  stack_               = stack;
+  stack_ = stack;
   for (auto const& state : get_stack())
     initial_bugged_stack.emplace_back(state, state->get_transition_out());
   run();

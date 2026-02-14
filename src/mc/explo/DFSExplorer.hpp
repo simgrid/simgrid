@@ -9,6 +9,7 @@
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/mc_config.hpp"
@@ -25,9 +26,8 @@ namespace simgrid::mc {
 
 using EventHandle = uint32_t;
 
-class XBT_PRIVATE DFSExplorer : public Exploration {
+class XBT_PRIVATE DFSExplorer : public ReductedExplorer {
 protected:
-  std::unique_ptr<Reduction> reduction_algo_;
   stack_t* stack_;
   bool is_execution_descending = true;
 
@@ -37,9 +37,9 @@ private:
 
 public:
   // Used for the critical transition explorer
-  explicit DFSExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode);
+  explicit DFSExplorer(std::unique_ptr<RemoteApp> remote_app, std::unique_ptr<Reduction> reduction);
 
-  explicit DFSExplorer(const std::vector<char*>& args, ReductionMode mode);
+  explicit DFSExplorer(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction);
   void run() override;
   RecordTrace get_record_trace() override;
   void log_state() override;

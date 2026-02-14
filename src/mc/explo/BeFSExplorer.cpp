@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/BeFSExplorer.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/mc_config.hpp"
@@ -81,10 +82,10 @@ void BeFSExplorer::log_state() // override
 
 void BeFSExplorer::run()
 {
-  XBT_INFO("Start a BeFS exploration. Reduction is: %s.", to_c_str(reduction_algo_->get_kind()));
+  XBT_INFO("Start a BeFS exploration. Reduction is: %s.", to_c_str(reduction_->get_kind()));
   on_exploration_start_signal(get_remote_app());
 
-  auto initial_state = reduction_algo_->state_create(get_remote_app());
+  auto initial_state = reduction_->state_create(get_remote_app());
 
   XBT_DEBUG("**************************************************");
 
@@ -123,7 +124,7 @@ void BeFSExplorer::run()
     // Search for the next transition
     // next_transition returns a pair<aid_t, int>
     // in case we want to consider multiple states (eg. during backtrack)
-    const aid_t next = reduction_algo_->next_to_explore(execution_seq_, &stack_);
+    const aid_t next = reduction_->next_to_explore(execution_seq_, &stack_);
 
     if (next < 0) {
 
@@ -135,10 +136,9 @@ void BeFSExplorer::run()
 
       if (state->get_actor_count() == 0) {
         // Compute the race when reaching a leaf, and apply them immediately
-        Reduction::RaceUpdate* todo_updates =
-            reduction_algo_->races_computation(execution_seq_, &stack_, &opened_states_);
-        reduction_algo_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
-        reduction_algo_->delete_race_update(todo_updates);
+        Reduction::RaceUpdate* todo_updates = reduction_->races_computation(execution_seq_, &stack_, &opened_states_);
+        reduction_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
+        reduction_->delete_race_update(todo_updates);
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality
@@ -176,7 +176,7 @@ void BeFSExplorer::run()
     }
 
     // If we use a state containing a sleep state, display it during debug
-    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose) && reduction_algo_->get_kind() != ReductionMode::none) {
+    if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_verbose) && reduction_->get_kind() != ReductionMode::none) {
       auto sleep_state = static_cast<SleepSetState*>(state);
       if (not sleep_state->get_sleep_set().empty()) {
         XBT_VERB("Sleep set actually containing:");
@@ -200,7 +200,7 @@ void BeFSExplorer::run()
              state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = reduction_algo_->state_create(get_remote_app(), state, executed_transition);
+    auto next_state = reduction_->state_create(get_remote_app(), state, executed_transition);
 
     if (_sg_mc_cached_states_interval > 0 && next_state->get_num() % _sg_mc_cached_states_interval == 0) {
       static unsigned max_files = sysconf(_SC_OPEN_MAX);
@@ -294,25 +294,20 @@ void BeFSExplorer::backtrack()
   State::garbage_collect();
 }
 
-BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, ReductionMode mode) : Exploration()
+BeFSExplorer::BeFSExplorer(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction)
+    : ReductedExplorer(std::move(reduction))
 {
   Exploration::initialize_remote_app(args);
 
-  if (mode == ReductionMode::dpor)
-    reduction_algo_ = std::make_unique<DPOR>();
-  else if (mode == ReductionMode::sdpor)
-    reduction_algo_ = std::make_unique<SDPOR>();
-  else if (mode == ReductionMode::odpor)
-    reduction_algo_ = std::make_unique<ODPOR>();
-  else {
-    xbt_assert(mode == ReductionMode::none, "Reduction mode %s not supported yet by BeFS explorer", to_c_str(mode));
-    reduction_algo_ = std::make_unique<NoReduction>();
-  }
+  auto mode = reduction_->get_kind();
+  xbt_assert(mode == ReductionMode::dpor || mode == ReductionMode::sdpor || mode == ReductionMode::odpor ||
+                 mode == ReductionMode::none,
+             "Reduction mode %s not supported yet by BeFS explorer", to_c_str(mode));
 }
 
-Exploration* create_befs_exploration(const std::vector<char*>& args, ReductionMode mode)
+Exploration* create_befs_exploration(const std::vector<char*>& args, std::unique_ptr<Reduction> reduction)
 {
-  return new BeFSExplorer(args, mode);
+  return new BeFSExplorer(args, std::move(reduction));
 }
 
 } // namespace simgrid::mc

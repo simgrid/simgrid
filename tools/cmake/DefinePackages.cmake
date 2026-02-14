@@ -531,17 +531,18 @@ set(MC_SRC_STATELESS
   src/mc/api/Strategy.cpp
   src/mc/api/Strategy.hpp
   
+  src/mc/explo/BeFSExplorer.cpp
+  src/mc/explo/BeFSExplorer.hpp
+  src/mc/explo/CommunicationDeterminismChecker.cpp
   src/mc/explo/CriticalTransitionExplorer.cpp
   src/mc/explo/CriticalTransitionExplorer.hpp
   src/mc/explo/DFSExplorer.cpp
   src/mc/explo/DFSExplorer.hpp
   src/mc/explo/Exploration.cpp
   src/mc/explo/Exploration.hpp
-  src/mc/explo/CommunicationDeterminismChecker.cpp
   src/mc/explo/ParallelizedExplorer.cpp
   src/mc/explo/ParallelizedExplorer.hpp
-  src/mc/explo/BeFSExplorer.cpp
-  src/mc/explo/BeFSExplorer.hpp
+  src/mc/explo/ReductedExplorer.hpp
 
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp

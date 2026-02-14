@@ -40,7 +40,8 @@ private:
   void log_end_exploration();
 
 public:
-  explicit CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app, ReductionMode mode, stack_t* stack);
+  explicit CriticalTransitionExplorer(std::unique_ptr<RemoteApp> remote_app, std::unique_ptr<Reduction> reduction,
+                                      stack_t* stack);
   void run() override;
 };
 

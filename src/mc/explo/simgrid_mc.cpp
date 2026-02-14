@@ -5,12 +5,18 @@
 
 #include "src/internal_config.h"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/reduction/DPOR.hpp"
+#include "src/mc/explo/reduction/NoReduction.hpp"
+#include "src/mc/explo/reduction/ODPOR.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
+#include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"
+#include <algorithm>
 #include <string>
 
 #if HAVE_SMPI
@@ -106,18 +112,41 @@ int main(int argc, char** argv)
   simgrid::xbt::install_exception_handler();
 
   std::unique_ptr<Exploration> explo;
+  std::unique_ptr<Reduction> reduction;
+  switch (get_model_checking_reduction()) {
+    case simgrid::mc::ReductionMode::dpor:
+      reduction = std::make_unique<DPOR>();
+      break;
+    case ReductionMode::none:
+      reduction = std::make_unique<NoReduction>();
+      break;
+    case ReductionMode::sdpor:
+      reduction = std::make_unique<SDPOR>();
+      break;
+    case ReductionMode::odpor:
+      reduction = std::make_unique<ODPOR>();
+      break;
+
+    case ReductionMode::udpor: /* This is a specific checker */
+      xbt_assert(!_sg_mc_comms_determinism && !_sg_mc_send_determinism,
+                 "UDPOR cannot be activated with communication determinism.");
+      xbt_assert(_sg_mc_explore_algo != "DFS" && _sg_mc_explore_algo != "parallel" && _sg_mc_explore_algo != "BeFS",
+                 "UDPOR cannot be activated with the %s exploration algorithm.", _sg_mc_explore_algo.get().c_str());
+      break;
+  }
+  // XBT_CRITICAL("Reduction is %s -> %s", to_c_str(get_model_checking_reduction()), reduction == nullptr ? "UDPOR?":
+  // to_c_str(reduction->get_kind()));
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    explo = std::unique_ptr<Exploration>(
-        create_communication_determinism_checker(argv_copy, get_model_checking_reduction()));
+    explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, std::move(reduction)));
   else if (get_model_checking_reduction() == ReductionMode::udpor)
     explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
   else if (_sg_mc_explore_algo == "DFS")
-    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, get_model_checking_reduction()));
+    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, std::move(reduction)));
   else if (_sg_mc_explore_algo == "parallel")
-    explo = std::unique_ptr<Exploration>(create_parallelized_exploration(argv_copy, get_model_checking_reduction()));
+    explo = std::unique_ptr<Exploration>(create_parallelized_exploration(argv_copy, std::move(reduction)));
   else
-    explo = std::unique_ptr<Exploration>(create_befs_exploration(argv_copy, get_model_checking_reduction()));
+    explo = std::unique_ptr<Exploration>(create_befs_exploration(argv_copy, std::move(reduction)));
 
   ExitStatus status;
   try {
