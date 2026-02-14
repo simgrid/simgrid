@@ -15,7 +15,6 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"

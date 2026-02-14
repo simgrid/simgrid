@@ -602,7 +602,6 @@ set(MC_SRC_STATELESS
   src/mc/mc_environ.h
   src/mc/mc_exit.hpp
   src/mc/mc_forward.hpp
-  src/mc/mc_private.hpp
   src/mc/mc_record.cpp
 
   src/mc/explo/reduction/Reduction.cpp

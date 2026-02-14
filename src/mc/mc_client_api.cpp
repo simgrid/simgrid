@@ -3,12 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/modelchecker.h"
 #include "simgrid/simcall.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_private.hpp"
-#include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "xbt/asserts.h"

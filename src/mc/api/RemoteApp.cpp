@@ -10,7 +10,6 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
-#include "src/mc/mc_private.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"

@@ -2575,7 +2575,6 @@ include src/mc/mc_exit.hpp
 include src/mc/mc_forward.hpp
 include src/mc/mc_global.cpp
 include src/mc/mc_mmu.hpp
-include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
 include src/mc/mc_replay.hpp
