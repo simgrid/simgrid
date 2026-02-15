@@ -281,14 +281,16 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
 }
 
 void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
-                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug)
+                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug,
+                                void* location)
 {
   long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
 
   s_mc_message_replay_t replay_msg = {};
-  replay_msg.type  = MessageType::REPLAY;
-  replay_msg.length                = msg_length;
+  replay_msg.type                  = MessageType::REPLAY;
   replay_msg.debug                 = debug;
+  replay_msg.watch                 = location;
+  replay_msg.length                = msg_length;
 
   unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
   unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);

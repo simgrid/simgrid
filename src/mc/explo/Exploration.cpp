@@ -218,7 +218,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 
   throw McWarning(ExitStatus::SAFETY);
 }
-void Exploration::debug_replay()
+void Exploration::debug_replay(void* location)
 {
   std::deque<std::pair<aid_t, int>> recipe;
   std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
@@ -246,7 +246,7 @@ void Exploration::debug_replay()
               return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
             }).c_str());
 
-  get_remote_app().replay_sequence(recipe, recipe_needing_actor_status, true);
+  get_remote_app().replay_sequence(recipe, recipe_needing_actor_status, true, location);
 }
 void Exploration::check_deadlock()
 {
@@ -293,7 +293,11 @@ void Exploration::report_data_race(const McDataRace& e)
            "--cfg=model-check/replay:'%s'",
            Exploration::get_instance()->get_record_trace().to_string().c_str());
   Exploration::get_instance()->log_state();
-  get_remote_app().finalize_app(true);
+
+  if (_sg_mc_autoreplay)
+    debug_replay(e.location_);
+  else
+    get_remote_app().finalize_app(true);
 }
 
 bool Exploration::empty()

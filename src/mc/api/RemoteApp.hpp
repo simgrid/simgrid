@@ -76,10 +76,12 @@ public:
    *  be replayed and asked for actor status.
    *
    *  If debug is true, the application is requested to display all debug info during the replay.
+   *  If location is provided, this is watched during the replay.
    *
    *  @note: this call should be followed by |to_replay_and_actor_status| calls to get_actors_status. */
   void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay,
-                       std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug = false);
+                       std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug = false,
+                       void* location = nullptr);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   aid_t get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }

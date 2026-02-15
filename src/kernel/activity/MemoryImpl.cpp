@@ -24,7 +24,7 @@ void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
 
   memory_accesses_.emplace_back(type, where);
   bool watched = false;
-  for (void* a : cfg_mc_watch_addresses) {
+  for (void* a : get_mc_watch_addresses()) {
     if (a == where) {
       watched = 1;
       break;

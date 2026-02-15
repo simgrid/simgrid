@@ -82,7 +82,11 @@ simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
   return cfg_mc_reduction_value;
 }
 
-std::vector<void*> cfg_mc_watch_addresses;
+std::vector<void*>& get_mc_watch_addresses()
+{
+  static std::vector<void*> addresses;
+  return addresses;
+}
 static simgrid::config::Flag<std::string> _cfg_mc_watch{
     "model-check/watch", "List of addresses to watch during exploration, comma-separated.", "",
     [](std::string_view value) {
@@ -93,7 +97,7 @@ static simgrid::config::Flag<std::string> _cfg_mc_watch{
         boost::algorithm::split(result, value, boost::is_any_of(","));
         for (const auto& s : result) {
           void* addr = (void*)std::stoul(s, 0, 16);
-          cfg_mc_watch_addresses.push_back(addr);
+          get_mc_watch_addresses().push_back(addr);
         }
       } catch (const std::exception& e) {
         throw std::string("Invalid value for model-check/watch: ") + e.what();
