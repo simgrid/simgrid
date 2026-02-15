@@ -35,7 +35,7 @@ public:
   ~RecordTrace()                  = default;
 
   /** Build a trace that can be replayed from a string representation */
-  explicit RecordTrace(const char* data);
+  explicit RecordTrace(const std::string& path_string);
   /** Make a string representation that can later be used to create a new trace */
   std::string to_string() const;
 

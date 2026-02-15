@@ -138,6 +138,15 @@ void RecordTrace::replay() const
 void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(kernel::actor::ActorImpl::get_maxpid());
+  simgrid::mc::RecordTrace trace(path_string);
+  trace.replay();
+  for (auto* item : trace.transitions_)
+    delete item;
+  simgrid::mc::processes_time.clear();
+}
+
+simgrid::mc::RecordTrace::RecordTrace(const std::string& path_string)
+{
   std::string data = "";
   // FIXME: once we are in C++20, use -  starts_with() instead of this trick
   if (path_string.rfind("FILE:", 0) != std::string::npos) {
@@ -151,20 +160,12 @@ void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 
   } else
     data = path_string;
-  simgrid::mc::RecordTrace trace(data.c_str());
-  trace.replay();
-  for (auto* item : trace.transitions_)
-    delete item;
-  simgrid::mc::processes_time.clear();
-}
 
-simgrid::mc::RecordTrace::RecordTrace(const char* data)
-{
-  XBT_INFO("path=%s", data);
-  if (data == nullptr || data[0] == '\0')
+  XBT_INFO("path=%s", data.c_str());
+  if (data.empty())
     throw std::invalid_argument("Could not parse record path");
 
-  const char* current = data;
+  const char* current = data.c_str();
   while (*current) {
     long aid;
     int times_considered = 0;
