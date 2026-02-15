@@ -250,7 +250,7 @@ public:
         // https://stackoverflow.com/questions/11579509/wrong-line-numbers-from-addr2line
         // Try to modify it if it's a pure address. TODO: also handle the cases where pre+1 contains something like
         // "pthread_mutex_lock+0x24"
-        char buffer[256];
+        char buffer[256] = {0};
         try {
           // fprintf(stderr, "%s | %s\n", strings[j], pre+1);
           long addr = std::stol(pre + 1, 0, 16);
@@ -258,7 +258,7 @@ public:
             addr--;
           sprintf(buffer, "%p", (void*)addr);
         } catch (const std::invalid_argument&) {
-          strcat(buffer, pre + 1);
+          strcpy(buffer, pre + 1);
         }
 
         int pipes[2];
@@ -284,8 +284,12 @@ public:
           bool first = true;
           while ((res = read(pipes[0], &buffer, 2047)) > 0) {
             buffer[res] = '\0';
-            if (strcmp(buffer, "?? ??:0\n") == 0)
+            if (strcmp(buffer, "?? ??:0\n") == 0) {
               problem = true;
+              *pre    = ' ';
+              *post   = '\0';
+              sprintf(buffer, "addr2line --basenames -Cfpe %s\n", strings[j]);
+            }
             if (strstr(buffer, " sthread_impl.cpp:") == nullptr) {
               if (first)
                 ss << "  ";
