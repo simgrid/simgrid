@@ -35,7 +35,7 @@ private:
   void handle_deadlock_check(const s_mc_message_int_t* msg);
   void send_executed_transition(kernel::actor::ActorImpl* actor, bool want_transition);
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message);
-  void handle_replay(const s_mc_message_int_t* msg);
+  void handle_replay(const s_mc_message_replay_t* msg);
   void handle_one_way(const s_mc_message_one_way_t* msg);
   void handle_finalize(const s_mc_message_int_t* msg);
   void handle_fork(const s_mc_message_fork_t* msg);

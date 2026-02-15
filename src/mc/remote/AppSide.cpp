@@ -13,6 +13,7 @@
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
+#include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
@@ -140,10 +141,12 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   send_executed_transition(actor, message->want_transition);
 }
 
-void AppSide::handle_replay(const s_mc_message_int_t* msg)
+void AppSide::handle_replay(const s_mc_message_replay_t* msg)
 {
   XBT_DEBUG("Starting to handle the replay");
-  unsigned replay_size = msg->value;
+  unsigned replay_size = msg->length;
+  if (msg->debug)
+    simgrid_mc_replay_show_backtraces = true;
 
   auto [more_aid, aids] = channel_.receive(sizeof(unsigned char) * replay_size);
   if (not more_aid)
@@ -165,12 +168,19 @@ void AppSide::handle_replay(const s_mc_message_int_t* msg)
 
     XBT_VERB("MC asked to replay %ld(nb_times=%d)", aid, times_considered);
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
-    xbt_assert(actor != nullptr, "Invalid pid %ld", aid);
+    xbt_assert(actor != nullptr, "Invalid pid %ld at depth %u of replay", aid, i);
     xbt_assert((actor->simcall_.observer_ == nullptr &&
                 actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
                    (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
                "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
                actor->simcall_.observer_->to_string().c_str());
+
+    if (msg->debug) {
+      XBT_INFO("***********************************************************************************");
+      XBT_INFO("* Path chunk #%u '%ld/%i' Actor %s: %s", i, aid, times_considered, actor->get_cname(),
+               actor->simcall_.observer_->to_string().c_str());
+      XBT_INFO("***********************************************************************************");
+    }
 
     actor->simcall_handle(times_considered);
     simgrid::mc::execute_actors();
@@ -494,8 +504,8 @@ void AppSide::handle_messages()
         break;
 
       case MessageType::REPLAY:
-        received = channel_.receive(sizeof(s_mc_message_int_t));
-        handle_replay((s_mc_message_int_t*)received.second);
+        received = channel_.receive(sizeof(s_mc_message_replay_t));
+        handle_replay((s_mc_message_replay_t*)received.second);
         break;
 
       case MessageType::GO_ONE_WAY:

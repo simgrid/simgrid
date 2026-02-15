@@ -50,6 +50,8 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
       simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::REPLAY);
       MC_record_path() = value;
     }};
+simgrid::config::Flag<bool> _sg_mc_autoreplay{
+    "model-check/autoreplay", "Directly replay the execution leading to the detected problem (off by default)", false};
 
 simgrid::config::Flag<bool> _sg_mc_timeout{
     "model-check/timeout", "Whether to enable timeouts for wait requests", false, [](bool) {

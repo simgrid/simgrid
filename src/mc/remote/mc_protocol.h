@@ -49,6 +49,11 @@ struct s_mc_message_int_t {
   simgrid::mc::MessageType type;
   uint64_t value;
 };
+struct s_mc_message_replay_t {
+  simgrid::mc::MessageType type;
+  uint64_t length;
+  bool debug;
+};
 
 /* Client->Server */
 

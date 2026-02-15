@@ -130,12 +130,11 @@ int main(int argc, char** argv)
     case ReductionMode::udpor: /* This is a specific checker */
       xbt_assert(!_sg_mc_comms_determinism && !_sg_mc_send_determinism,
                  "UDPOR cannot be activated with communication determinism.");
-      xbt_assert(_sg_mc_explore_algo != "DFS" && _sg_mc_explore_algo != "parallel" && _sg_mc_explore_algo != "BeFS",
+      /* Only DFS (the default value) is accepted with UDPOR */
+      xbt_assert(_sg_mc_explore_algo != "parallel" && _sg_mc_explore_algo != "BeFS",
                  "UDPOR cannot be activated with the %s exploration algorithm.", _sg_mc_explore_algo.get().c_str());
       break;
   }
-  // XBT_CRITICAL("Reduction is %s -> %s", to_c_str(get_model_checking_reduction()), reduction == nullptr ? "UDPOR?":
-  // to_c_str(reduction->get_kind()));
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, std::move(reduction)));

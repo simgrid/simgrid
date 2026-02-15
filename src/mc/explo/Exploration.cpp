@@ -218,6 +218,36 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 
   throw McWarning(ExitStatus::SAFETY);
 }
+void Exploration::debug_replay()
+{
+  std::deque<std::pair<aid_t, int>> recipe;
+  std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
+  auto* state       = get_stack().back().get();
+  State* root_state = nullptr;
+  for (; state != nullptr; state = state->get_parent_state()) {
+    if (state->get_transition_in() != nullptr) { // The root has no transition_in
+      xbt_assert(state->has_been_initialized());
+
+      recipe.push_front({state->get_transition_in()->aid_, state->get_transition_in()->times_considered_});
+    } else
+      root_state = state;
+  }
+  for (unsigned i = 0; i < recipe.size(); i++) {
+    xbt_assert(recipe[i].first > 0, "Transition of depth %u is about actor %ld", i, recipe[i].first);
+    xbt_assert(recipe[i].second >= 0, "Transition of depth %u is played %d times", i, recipe[i].second);
+  }
+
+  /* restart from the root */
+  get_remote_app().restore_checker_side(nullptr, true);
+  on_restore_state_signal(*root_state, get_remote_app());
+
+  XBT_DEBUG("Sending sequence for a replay (without actor_status): %s",
+            std::accumulate(recipe.begin(), recipe.end(), std::string(), [](std::string a, auto b) {
+              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
+            }).c_str());
+
+  get_remote_app().replay_sequence(recipe, recipe_needing_actor_status, true);
+}
 void Exploration::check_deadlock()
 {
   if (get_remote_app().check_deadlock()) {
@@ -226,6 +256,9 @@ void Exploration::check_deadlock()
     // keep going, we want a correct trace!
     if (is_looking_for_critical)
       return;
+
+    if (_sg_mc_autoreplay)
+      debug_replay();
 
     errors_++;
     run_critical_exploration_on_need(ExitStatus::DEADLOCK);
