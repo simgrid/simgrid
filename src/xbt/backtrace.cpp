@@ -8,10 +8,14 @@
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <cstring>
 #include <memory>
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
+#include <stdexcept>
+#include <string>
 #include <sys/wait.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/string.hpp>
@@ -68,6 +72,24 @@ simgrid::config::Flag<std::string> cfg_stacktrace_kind{
         {"addr2line", "Manual implementation using gcc and addr2line (very robust provided that addr2line works)."},
 #endif
         {"none", "No backtrace."}}};
+
+static std::vector<std::string> cfg_stacktrace_ignored_elements;
+static simgrid::config::Flag<std::string> cfg_stacktrace_ignore{
+    "debug/stacktrace/ignore",
+    "Comma-separated list of object files to ignore while displaying the stacktraces (addr2line only)", "",
+    [](std::string_view value) {
+      std::vector<std::string> result;
+      if (value.empty())
+        return;
+      try {
+        boost::algorithm::split(result, value, boost::is_any_of(","));
+        for (const auto& s : result) {
+          cfg_stacktrace_ignored_elements.push_back(s);
+        }
+      } catch (const std::exception& e) {
+        throw std::string("Invalid value for debug/stacktrace/ignore: ") + e.what();
+      }
+    }};
 
 namespace simgrid::xbt {
 
@@ -185,7 +207,7 @@ public:
         if (pre != nullptr && post != nullptr) { // We can pretty print
           *pre  = ' ';
           *post = '\0';
-          ss << "  addr2line -Cfpe " << strings[j] << "\n";
+          ss << "  addr2line --basenames -Cfpe " << strings[j] << "\n";
         } else { // The output format changed, do not pretty print
           problem = true;
           ss << "  " << strings[j] << "\n";
@@ -207,12 +229,37 @@ public:
   "The 'addr2line' stacktrace backed is unusable. Try the raw gcc stacktraces with --cfg=debug/stacktrace:gcc"
 
       sthread_disable();
+      bool problem = false;
       for (size_t j = 0; j < nptrs; j++) {
+        bool ignored_line = false;
+        for (auto const& ignored : cfg_stacktrace_ignored_elements) {
+          if (strstr(strings[j], ignored.c_str()) != nullptr) {
+            ignored_line = true;
+            break;
+          }
+        }
+        if (ignored_line)
+          continue;
+
         char* pre  = strchr(strings[j], '(');
         char* post = strrchr(strings[j], ')');
         xbt_assert(pre != nullptr && post != nullptr, "The output format changed. " ERRMSG);
         *pre  = '\0';
         *post = '\0';
+        // The address points to the instruction after the current one
+        // https://stackoverflow.com/questions/11579509/wrong-line-numbers-from-addr2line
+        // Try to modify it if it's a pure address. TODO: also handle the cases where pre+1 contains something like
+        // "pthread_mutex_lock+0x24"
+        char buffer[256];
+        try {
+          // fprintf(stderr, "%s | %s\n", strings[j], pre+1);
+          long addr = std::stol(pre + 1, 0, 16);
+          if (addr > 0)
+            addr--;
+          sprintf(buffer, "%p", (void*)addr);
+        } catch (const std::invalid_argument&) {
+          strcat(buffer, pre + 1);
+        }
 
         int pipes[2];
         int res = pipe(pipes);
@@ -220,7 +267,8 @@ public:
         int pid = fork();
         xbt_assert(pid >= 0, "Fork failed (error: %s). " ERRMSG, strerror(errno));
         if (pid == 0) { // child
-          const char* argv[5] = {"addr2line", "-Cfpe", strings[j], pre + 1, (char*)NULL};
+          setenv("LC_ALL", "C", 1);
+          const char* argv[] = {"addr2line", "--basenames", "-Cfpe", strings[j], buffer, (char*)NULL};
 
           close(pipes[0]);
           close(1);
@@ -231,20 +279,28 @@ public:
           xbt_die("Failed to exec addr2line (error: %s). " ERRMSG, strerror(errno));
         } else { // parent
           close(pipes[1]);
-          char buffer[1024];
+          char buffer[2048];
           int res;
-          ss << "  ";
-          while ((res = read(pipes[0], &buffer, 1024)) > 0) {
+          bool first = true;
+          while ((res = read(pipes[0], &buffer, 2047)) > 0) {
             buffer[res] = '\0';
-            ss << buffer;
+            if (strcmp(buffer, "?? ??:0\n") == 0)
+              problem = true;
+            if (strstr(buffer, " sthread_impl.cpp:") == nullptr) {
+              if (first)
+                ss << "  ";
+              first = false;
+              ss << buffer;
+            }
           }
           close(pipes[0]);
           waitpid(pid, nullptr, 0);
         }
       }
       sthread_enable();
-      ss << "If some frame symbols are not shown in this trace, compile with '-fno-omit-frame-pointer -rdynamic' "
-            "and/or use --cfg=debug/stacktrace:gcc and figure the missing elements manually.";
+      if (problem)
+        ss << "Some frame symbols could not be converted. Compile with '-fno-omit-frame-pointer -rdynamic' "
+              "and/or use --cfg=debug/stacktrace:gcc instead.\n";
 
 #undef ERRMSG
       free(strings);
