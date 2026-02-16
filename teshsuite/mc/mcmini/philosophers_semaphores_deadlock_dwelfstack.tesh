@@ -1,0 +1,403 @@
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so --cfg=model-check/autoreplay:ON ${bindir:=.}/mcmini/mcmini-philosophers_semaphores_deadlock 3 0 --cfg=debug/stacktrace:dwelf --cfg=debug/stacktrace/ignore:/libsimgrid.so
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/autoreplay' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace' to 'dwelf'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace/ignore' to '/libsimgrid.so'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace' to 'dwelf'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace/ignore' to '/libsimgrid.so'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 4 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_WAIT(semaphore: 0, capacity: 2, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 1)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall SEM_WAIT(semaphore: 0, capacity: 1, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;2;2;2;2;3;3;3;2;3;4;4;4;3;4;4'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 629 unique states visited; 30 explored traces (506 transition replays, 1099 states visited overall)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #0 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #1 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #2 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #3 '2/0' Actor thread 1: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #4 '2/0' Actor thread 1: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #5 '2/0' Actor thread 1: MUTEX_ASYNC_LOCK(mutex_id:0 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #6 '2/0' Actor thread 1: MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #7 '3/0' Actor thread 2: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #8 '3/0' Actor thread 2: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #9 '3/0' Actor thread 2: MUTEX_ASYNC_LOCK(mutex_id:1 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #10 '2/0' Actor thread 1: MUTEX_ASYNC_LOCK(mutex_id:1 owner:3)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #11 '3/0' Actor thread 2: MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #12 '4/0' Actor thread 3: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #13 '4/0' Actor thread 3: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #14 '4/0' Actor thread 3: MUTEX_ASYNC_LOCK(mutex_id:2 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #15 '3/0' Actor thread 2: MUTEX_ASYNC_LOCK(mutex_id:2 owner:4)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #16 '4/0' Actor thread 3: MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #17 '4/0' Actor thread 3: MUTEX_ASYNC_LOCK(mutex_id:0 owner:2)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 2, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 1)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 1, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 4 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/exploration-algo:BeFS --cfg=model-check/autoreplay:ON --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-philosophers_semaphores_deadlock 3 0 --cfg=debug/stacktrace:dwelf --cfg=debug/stacktrace/ignore:/libsimgrid.so
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/autoreplay' to 'ON'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace' to 'dwelf'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace/ignore' to '/libsimgrid.so'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace' to 'dwelf'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'debug/stacktrace/ignore' to '/libsimgrid.so'
+> [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: dpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 4 actors are still active, awaiting something. Here is their status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (main thread@Lilibeth) simcall ActorJoin(pid:2)
+> [0.000000] [ker_engine/INFO]  - pid 2 (thread 1@Lilibeth) simcall MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [ker_engine/INFO]  - pid 3 (thread 2@Lilibeth) simcall MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [ker_engine/INFO]  - pid 4 (thread 3@Lilibeth) simcall MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_global/INFO]   Actor 1 in simcall ActorCreate(child 4)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall SEM_WAIT(semaphore: 0, capacity: 2, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 1)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall SEM_WAIT(semaphore: 0, capacity: 1, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 3 in simcall MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_global/INFO]   Actor 4 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;1;2;2;2;2;3;3;3;2;3;4;4;4;3;4;4'
+> [0.000000] [mc_befs/INFO] BeFS exploration ended. 629 unique states visited; 30 explored traces (506 transition replays, 1099 states visited overall)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #0 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #1 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #2 '1/0' Actor main thread: ActorCreate(-1)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor main thread):
+>   #0 sthread_create() at std_function.h:243 in libsthread.so
+>   #1 pthread_create() at sthread.c:203 in libsthread.so
+>   #2 main() at philosophers_semaphores_deadlock.c:74 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #3 '2/0' Actor thread 1: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #4 '2/0' Actor thread 1: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #5 '2/0' Actor thread 1: MUTEX_ASYNC_LOCK(mutex_id:0 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #6 '2/0' Actor thread 1: MUTEX_WAIT(mutex_id:0 owner:2)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #7 '3/0' Actor thread 2: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #8 '3/0' Actor thread 2: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #9 '3/0' Actor thread 2: MUTEX_ASYNC_LOCK(mutex_id:1 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #10 '2/0' Actor thread 1: MUTEX_ASYNC_LOCK(mutex_id:1 owner:3)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 1):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #11 '3/0' Actor thread 2: MUTEX_WAIT(mutex_id:1 owner:3)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #12 '4/0' Actor thread 3: SEM_ASYNC_LOCK(sem_id:0)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #13 '4/0' Actor thread 3: SEM_WAIT(sem_id:0 granted)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sem_wait() at sthread.c:259 in libsthread.so
+>   #1 philosopher_doit() at philosophers_semaphores_deadlock.c:37 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #14 '4/0' Actor thread 3: MUTEX_ASYNC_LOCK(mutex_id:2 owner:none)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #15 '3/0' Actor thread 2: MUTEX_ASYNC_LOCK(mutex_id:2 owner:4)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 2):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #16 '4/0' Actor thread 3: MUTEX_WAIT(mutex_id:2 owner:4)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:38 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> [0.000000] [mc_client/INFO] * Path chunk #17 '4/0' Actor thread 3: MUTEX_ASYNC_LOCK(mutex_id:0 owner:2)
+> [0.000000] [mc_client/INFO] ***********************************************************************************
+> Backtrace (displayed in actor thread 3):
+>   #0 sthread_mutex_lock() at sthread_impl.cpp:0 in libsthread.so
+>   #1 pthread_mutex_lock() at sthread.c:231 in libsthread.so
+>   #2 philosopher_doit() at philosophers_semaphores_deadlock.c:40 in mcmini-philosophers_semaphores_deadlock
+> 
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in  ==> simcall: ActorCreate(child 4)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 2, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_WAIT(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 1)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 1, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 2 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in  ==> simcall: MUTEX_WAIT(mutex: 1, owner: 3)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: SEM_WAIT(semaphore: 0, capacity: 0, granted: yes)
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 3 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_WAIT(mutex: 2, owner: 4)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 4 in  ==> simcall: MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 4 ==> simcall: MUTEX_ASYNC_LOCK(mutex: 2, owner: 4)

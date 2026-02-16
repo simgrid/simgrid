@@ -853,6 +853,7 @@ include teshsuite/mc/mcmini/philosophers_mutex_ok.c
 include teshsuite/mc/mcmini/philosophers_mutex_ok.tesh
 include teshsuite/mc/mcmini/philosophers_semaphores_deadlock.c
 include teshsuite/mc/mcmini/philosophers_semaphores_deadlock.tesh
+include teshsuite/mc/mcmini/philosophers_semaphores_deadlock_dwelfstack.tesh
 include teshsuite/mc/mcmini/philosophers_semaphores_ok.c
 include teshsuite/mc/mcmini/philosophers_semaphores_ok.tesh
 include teshsuite/mc/mcmini/producer_consumer_deadlock.c
@@ -2941,6 +2942,8 @@ include tools/cmake/Java.cmake
 include tools/cmake/MaintainerMode.cmake
 include tools/cmake/MakeLib.cmake
 include tools/cmake/Modules/FindGraphviz.cmake
+include tools/cmake/Modules/FindLibdw.cmake
+include tools/cmake/Modules/FindLibelf.cmake
 include tools/cmake/Modules/FindNS3.cmake
 include tools/cmake/Modules/FindPAPI.cmake
 include tools/cmake/Modules/FindValgrind.cmake

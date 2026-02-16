@@ -15,8 +15,10 @@
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <stdexcept>
+#include <string.h>
 #include <string>
 #include <sys/wait.h>
+#include <unistd.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
@@ -39,6 +41,97 @@
 #include <execinfo.h>
 #endif
 
+#if HAVE_DWELF_STACKTRACE
+#include <elfutils/libdw.h>
+#include <elfutils/libdwfl.h>
+
+struct DwelfResolved {
+  std::string module;
+  std::string module_short;
+  std::string func;
+  std::string location;
+};
+
+static Dwfl* dwelf_handle = nullptr;
+static std::unordered_map<Dwarf_Addr, DwelfResolved> dwelf_cache;
+
+static const Dwfl_Callbacks callbacks = {.find_elf        = dwfl_linux_proc_find_elf,
+                                         .find_debuginfo  = dwfl_standard_find_debuginfo,
+                                         .section_address = dwfl_offline_section_address,
+                                         .debuginfo_path  = nullptr};
+static void dwelf_init()
+{
+  if (dwelf_handle)
+    return;
+
+  dwelf_handle = dwfl_begin(&callbacks);
+  xbt_assert(dwelf_handle != nullptr, "Failed to init dwfl: %s", dwfl_errmsg(dwfl_errno()));
+
+  int ret = dwfl_linux_proc_report(dwelf_handle, getpid());
+  if (ret != 0)
+    xbt_die("Failed to feed process pid:%d into dwfl. ret: %d, Error: %s", getpid(), ret, dwfl_errmsg(dwfl_errno()));
+
+  dwfl_report_end(dwelf_handle, nullptr, nullptr);
+}
+
+static const DwelfResolved& dwelf_resolve_addr(Dwarf_Addr addr)
+{
+  auto it = dwelf_cache.find(addr);
+  if (it != dwelf_cache.end())
+    return it->second;
+
+  DwelfResolved r;
+  r.func     = "??";
+  r.location = "??:0";
+
+  Dwfl_Module* mod = dwfl_addrmodule(dwelf_handle, addr);
+  if (mod == nullptr) {
+    // Try to reload the process, just in case there was a recent dlopen
+    int ret = dwfl_linux_proc_report(dwelf_handle, getpid());
+    if (ret != 0)
+      xbt_die("Failed to feed process pid:%d into dwfl. ret: %d, Error: %s", getpid(), ret, dwfl_errmsg(dwfl_errno()));
+    dwfl_report_end(dwelf_handle, nullptr, nullptr);
+
+    if (mod) // Found the module and reloaded it -- we need to invalidate all addresses
+      dwelf_cache.clear();
+  }
+  if (mod) {
+    const char* path = dwfl_module_info(mod, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    if (path) {
+      r.module        = path;
+      const char* sep = strrchr(path, '/');
+      r.module_short  = sep == nullptr ? path : sep + 1;
+      if (strncmp(r.module_short.c_str(), "libsthread.so", strlen("libsthread.so")) == 0)
+        r.module_short = "libsthread.so";
+      if (strncmp(r.module_short.c_str(), "libsimgrid.so", strlen("libsimgrid.so")) == 0)
+        r.module_short = "libsimgrid.so";
+    }
+    const char* func = dwfl_module_addrname(mod, addr);
+    if (func) {
+      r.func = boost::core::demangle(func);
+      if (r.func.find('(') == r.func.npos)
+        r.func += "()";
+    }
+
+    int column           = 0;
+    Dwfl_Line* dwfl_line = dwfl_getsrc(dwelf_handle, addr);
+    if (dwfl_line) {
+      int line;
+      const char* file = dwfl_lineinfo(dwfl_line, nullptr, &line, &column, nullptr, nullptr);
+      if (file) {
+        const char* sep = strrchr(file, '/');
+        std::stringstream frame_loc;
+        frame_loc << (sep ? sep + 1 : file) << ":" << line;
+        r.location = frame_loc.str();
+      }
+    }
+  }
+
+  auto res = dwelf_cache.emplace(addr, std::move(r));
+  return res.first->second;
+}
+#endif
+
 /** @brief show the backtrace of the current point (lovely while debugging) */
 void xbt_backtrace_display_current()
 {
@@ -46,7 +139,7 @@ void xbt_backtrace_display_current()
 }
 
 simgrid::config::Flag<bool> cfg_fullstdstack{"debug/fullstack",
-                                             "Whether the std::stacktrace should be displayed completely. The default "
+                                             "Whether the std::stacktrace should be displayed completely. The "
                                              "value 'no' requests the stack to be trimed for user comfort.",
                                              true};
 
@@ -55,6 +148,8 @@ simgrid::config::Flag<std::string> cfg_stacktrace_kind{
     "System to use to generate the stacktraces",
 #if HAVE_STD_STACKTRACE
     "c++23",
+#elif HAVE_DWELF_STACKTRACE
+    "dwelf",
 #elif HAVE_BOOST_STACKTRACE_ADDR2LINE
     "boost",
 #else
@@ -63,6 +158,9 @@ simgrid::config::Flag<std::string> cfg_stacktrace_kind{
     {
 #if HAVE_STD_STACKTRACE
         {"c++23", "Standard implementation from C++23 (fast but sometimes fails with sthread)."},
+#endif
+#if HAVE_DWELF_STACKTRACE
+        {"dwelf", "Ad-hoc implementation with libdw and libelf (recommended when using sthread)."},
 #endif
 #if HAVE_BOOST_STACKTRACE_ADDR2LINE
         {"boost", "Boost implementation based on addr2line (slow but robust and portable)."},
@@ -101,7 +199,7 @@ class BacktraceImpl {
 #if HAVE_BOOST_STACKTRACE_ADDR2LINE
   std::unique_ptr<boost::stacktrace::stacktrace> stacktrace_boost = nullptr;
 #endif
-#if HAVE_EXECINFO_H
+#if HAVE_EXECINFO_H || HAVE_DWELF_STACKTRACE
 #define BT_BUF_SIZE 32
   size_t nptrs;
   void* buffer[BT_BUF_SIZE];
@@ -116,6 +214,10 @@ public:
 #endif
 #if HAVE_EXECINFO_H
     if (cfg_stacktrace_kind == "gcc" || cfg_stacktrace_kind == "addr2line")
+      nptrs = backtrace(buffer, BT_BUF_SIZE);
+#endif
+#if HAVE_DWELF_STACKTRACE
+    if (cfg_stacktrace_kind == "dwelf")
       nptrs = backtrace(buffer, BT_BUF_SIZE);
 #endif
 #if HAVE_BOOST_STACKTRACE_ADDR2LINE
@@ -193,6 +295,53 @@ public:
         XBT_CERROR(root, "Some stack frames could not be symbolized. You may want to use the hardcore addr2line "
                          "stacktraces with --cfg=debug/stacktrace:addr2line");
     }
+#endif
+
+#ifdef HAVE_DWELF_STACKTRACE
+    if (cfg_stacktrace_kind == "dwelf") {
+      sthread_disable();
+      dwelf_init();
+
+      unsigned begin = 0;
+      unsigned end   = nptrs;
+      for (unsigned i = 0; i < nptrs; i++) {
+        // The address points to the instruction after the current one, so use addr -1
+        // https://stackoverflow.com/questions/11579509/wrong-line-numbers-from-addr2line
+
+        Dwarf_Addr addr        = (Dwarf_Addr)((long)buffer[i] - 1);
+        const DwelfResolved& r = dwelf_resolve_addr(addr);
+        if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()")
+          begin = i + 1;
+      }
+      for (unsigned i = nptrs - 1; i > 0; i--) {
+        Dwarf_Addr addr        = (Dwarf_Addr)buffer[i];
+        const DwelfResolved& r = dwelf_resolve_addr(addr);
+        if (r.func == "main()")
+          end = i + 1;
+
+        if (r.func == "smx_ctx_wrapper()" || r.func == "std::function<void ()>::operator()() const" ||
+            r.func == "std::_Function_handler<void (), std::_Bind<sthread_create::$_0 (void* (*)(void*), void*)> "
+                      ">::_M_invoke(std::_Any_data const&)")
+          end = i;
+      }
+      int frame_count = 0;
+      for (unsigned i = begin; i < end; ++i) {
+        Dwarf_Addr addr        = (Dwarf_Addr)buffer[i];
+        const DwelfResolved& r = dwelf_resolve_addr(addr);
+        bool ignored_line      = false;
+        for (auto const& ignored : cfg_stacktrace_ignored_elements) {
+          if (strstr(r.module.c_str(), ignored.c_str()) != nullptr) {
+            ignored_line = true;
+            break;
+          }
+        }
+        if (ignored_line)
+          continue;
+
+        ss << "  #" << frame_count++ << " " << r.func << " at " << r.location << " in " << r.module_short << "\n";
+      }
+    }
+    sthread_enable();
 #endif
 
 #if HAVE_EXECINFO_H

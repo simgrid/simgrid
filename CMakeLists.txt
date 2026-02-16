@@ -369,6 +369,17 @@ mark_as_advanced(Boost_INCLUDE_DIR)
 mark_as_advanced(Boost_STACKTRACE_ADDR2LINE_LIB)
 mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 
+find_package(Libdw)
+find_package(Libelf)
+set(HAVE_DWELF_STACKTRACE 0)
+if(Libdw_FOUND AND Libelf_FOUND)
+  message(STATUS "libdw and libelf found, activating the dwelf stacktrace implementation.")
+  set(HAVE_DWELF_STACKTRACE 1)
+else()
+  message(STATUS "Missing dependencies for the dwelf stacktrace implementation. Run `apt install libdw-dev` to get them.")
+endif()
+
+
 ## Can we build the Java bindings?
 set(SIMGRID_HAVE_JAVA 0) # by default, nope
 set(merge_java_in_libsimgrid 0) # by default, nope
