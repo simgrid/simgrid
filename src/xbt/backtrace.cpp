@@ -297,7 +297,7 @@ public:
     }
 #endif
 
-#ifdef HAVE_DWELF_STACKTRACE
+#if HAVE_DWELF_STACKTRACE
     if (cfg_stacktrace_kind == "dwelf") {
       sthread_disable();
       dwelf_init();
