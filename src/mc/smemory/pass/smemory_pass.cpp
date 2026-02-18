@@ -21,28 +21,6 @@
 using namespace llvm;
 
 namespace {
-//__mcsimgrid_read4(void*whereto, void*wherefrom)
-//__mcsimgrid_write4(void*whereto, void*wherefrom)
-
-#define MCWRITE4V "__mcsimgrid_write4v"
-#define MCWRITE8V "__mcsimgrid_write8v"
-#define MCWRITEFV "__mcsimgrid_writefv"
-#define MCWRITEDV "__mcsimgrid_writedv"
-
-#define MCWRITE4 "__mcsimgrid_write4"
-#define MCWRITE8 "__mcsimgrid_write8"
-#define MCWRITEF "__mcsimgrid_writef"
-#define MCWRITED "__mcsimgrid_writed"
-
-#define MCREAD4V "__mcsimgrid_read4v"
-#define MCREAD8V "__mcsimgrid_read8v"
-#define MCREADFV "__mcsimgrid_readfv"
-#define MCREADDV "__mcsimgrid_readdv"
-
-#define MCREAD4 "__mcsimgrid_read4"
-#define MCREAD8 "__mcsimgrid_read8"
-#define MCREADF "__mcsimgrid_readf"
-#define MCREADD "__mcsimgrid_readd"
 
 struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
 
@@ -105,75 +83,49 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
       // outs() << "Instrument " << rr->getOpcodeName() << "\n";
       // outs() << "      Source code: " << *rr << "\n";
 
-      FunctionCallee MCwriteFunc;
-      SmallVector<Value*, 2> addresses;
-      //  There are two arguments to the store instruction: a value to store and an address
-      //
-
-      /* Build a function that will return a void */
-
-      Type* retTy = Type::getVoidTy(context);
-      SmallVector<Type*, 2> argsTy;
-
-      for (Use& u : rr->operands()) {
-        /* Use the operand's type */
-        Type* t = u->getType();
-        argsTy.push_back(t);
-
-        // outs() << "operand " << u->getName() << " type " << *(u->getType()) << "\n";
-
-        /* And push its value */
-        addresses.push_back(u);
-      }
-
-      // Insert the new call before the actual store
-      FunctionType* funcTy = FunctionType::get(retTy, argsTy, false);
-
-      /* the first operand is the "from" field
-         it is either a value or a pointer
-         the second operand is the "to" field
-         it is a pointer
-         therefore, the type of the first operand determines the function to insert */
-
+      // Write instruction have two arguments: a value to store and an address
+      //   The first, value, is the "from" field it is either a value or a pointer
+      //   The second, pointer, is the "to" field
+      // We keep only the address, and add the size (in bits)
+      // TODO: do we need to mark the first one as a read when it's a pointer?
       if (rr->getNumOperands() != 2) {
-        errs() << "Wrong number of operands -- skipping\n";
+        errs() << "Wrong number of operands (expected 2 got " << rr->getNumOperands() << ") -- skipping\n";
         continue;
       }
 
+      // Build the call we need to insert before the actual store
+      Type* retTy = Type::getVoidTy(context);
+      SmallVector<Type*, 2> argsTy{rr->getOperand(1)->getType(), Type::getInt8Ty(context)};
+      FunctionType* funcTy       = FunctionType::get(retTy, argsTy, false);
+      FunctionCallee MCwriteFunc = module->getOrInsertFunction("__mcsimgrid_write", funcTy);
+      ;
+
+      // Compute the operands of the inserted call
+      SmallVector<Value*, 2> addresses; // The rewritten operands
+      addresses.push_back(rr->getOperand(1));
+      unsigned char touchedSize = 0; // wanna be second operand, once we know its value
+
       Type* t = rr->getOperand(0)->getType();
-      // Value types
 
       // outs() << "type   " << *t << "\n";
 
+      // Value types
       if (t->isIntegerTy()) {
-        // outs() << "   is integer\n";
-        if (t->isIntegerTy(32)) {
-          MCwriteFunc = module->getOrInsertFunction(MCWRITE4V, funcTy);
-        }
-        if (t->isIntegerTy(64)) {
-          MCwriteFunc = module->getOrInsertFunction(MCWRITE8V, funcTy);
-        }
-        if (not(t->isIntegerTy(32) || t->isIntegerTy(64))) {
-          errs() << "Unknown integer type: i" << t->getIntegerBitWidth() << " -- skipping\n";
-          continue;
-        }
+        touchedSize = t->getIntegerBitWidth();
       }
-
       if (t->isFloatTy()) {
-        MCwriteFunc = module->getOrInsertFunction(MCWRITEFV, funcTy);
+        touchedSize = sizeof(float) * 8;
       }
       if (t->isDoubleTy()) {
-        MCwriteFunc = module->getOrInsertFunction(MCWRITEDV, funcTy);
+        touchedSize = sizeof(double) * 8;
       }
 
       // Pointer types
 
       if (t->isPointerTy()) {
         //	  outs() << "oh ca va bien là les pointeurs\n";
-        MCwriteFunc = module->getOrInsertFunction(MCWRITE4, funcTy);
+        touchedSize = sizeof(void*) * 8;
 
-        // errs() << "   well, a pointer -- skipping\n";
-        // continue;
         // Type* pt = llvm::dyn_cast<llvm::PointerType>(t)->getContainedType(0);
         // outs() << "Pointed type   " << *pt << "\n";
 
@@ -206,9 +158,15 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
         //   }
       }
 
-      if (MCwriteFunc)
+      addresses.push_back(ConstantInt::get(Type::getInt8Ty(context), touchedSize));
+      if (addresses.size() != 2) {
+        fprintf(stderr, "Got %lu params instead of 2\n", addresses.size());
+        abort();
+      }
+      if (touchedSize > 0)
         builder.CreateCall(MCwriteFunc, addresses);
     }
+    // writes.front()->getModule()->dump();
 
     /* Reads */
 
@@ -217,67 +175,45 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
       auto& context = rr->getContext();
       auto module   = rr->getModule();
 
-      FunctionCallee MCreadFunc;
-      SmallVector<Value*, 1> addresses;
-
-      /* Build a function that will return a void */
-      Type* retTy = Type::getVoidTy(context);
-      SmallVector<Type*, 1> argsTy;
-
       // outs() << "Instrument " << rr->getOpcodeName() << "\n";
       // outs() << "      Source code: " << *rr << "\n";
 
-      for (Use& u : rr->operands()) {
-        /* Use the operand's type */
-        argsTy.push_back(u->getType());
-
-        /* And push its value */
-        addresses.push_back(u);
-      }
-
-      // Insert the new call before the actual store
-      FunctionType* funcTy = FunctionType::get(retTy, argsTy, false);
-
-      /* Only one type is interesting
-       */
+      // Load instruction have only one argument: an address from where the read is made
       if (rr->getNumOperands() != 1) {
         errs() << "Wrong number of operands -- skipping\n";
         continue;
       }
 
-      // outs() << "Nb of operands: " << rr->getNumOperands() << "\n";
+      // Build the call we need to insert before the actual read
+      Type* retTy = Type::getVoidTy(context);
+      SmallVector<Type*, 2> argsTy{rr->getOperand(0)->getType(), Type::getInt8Ty(context)};
+      FunctionType* funcTy      = FunctionType::get(retTy, argsTy, false);
+      FunctionCallee MCreadFunc = module->getOrInsertFunction("__mcsimgrid_read", funcTy);
+
+      // Compute the operands of the inserted call
+      SmallVector<Value*, 2> addresses; // The rewritten operands
+      addresses.push_back(rr->getOperand(0));
+      unsigned char touchedSize = 0; // wanna be second operand, once we know its value
 
       Type* t = rr->getType();
 
       // Value types
       // Load always takes a pointer
-
       if (t->isIntegerTy()) {
-        // outs() << "   is integer\n";
-        if (t->isIntegerTy(32)) {
-          MCreadFunc = module->getOrInsertFunction(MCREAD4V, funcTy);
-        }
-        if (t->isIntegerTy(64)) {
-          MCreadFunc = module->getOrInsertFunction(MCREAD8V, funcTy);
-        }
-        if (not(t->isIntegerTy(32) || t->isIntegerTy(64))) {
-          errs() << "Unknown integer type: i" << t->getIntegerBitWidth() << " -- skipping\n";
-          continue;
-        }
+        touchedSize = t->getIntegerBitWidth();
       }
-
       if (t->isFloatTy()) {
-        MCreadFunc = module->getOrInsertFunction(MCREADFV, funcTy);
+        touchedSize = sizeof(float) * 8;
       }
       if (t->isDoubleTy()) {
-        MCreadFunc = module->getOrInsertFunction(MCREADDV, funcTy);
+        touchedSize = sizeof(double) * 8;
       }
 
       // Pointer types
 
       if (t->isPointerTy()) {
         //	  outs() << "oh ca va bien là les pointeurs\n";
-        MCreadFunc = module->getOrInsertFunction(MCREAD4, funcTy);
+        touchedSize = sizeof(void*) * 8;
 
         // Type* pt = llvm::dyn_cast<llvm::PointerType>(t)->getContainedType(0);
         //   outs() << "Pointed type   " << *pt << "\n";
@@ -311,7 +247,12 @@ struct SharedMemPass : public PassInfoMixin<SharedMemPass> {
         //   }
       }
       // outs() << "***Creating a new read call***\n";
-      if (MCreadFunc)
+      addresses.push_back(ConstantInt::get(Type::getInt8Ty(context), touchedSize));
+      if (addresses.size() != 2) {
+        fprintf(stderr, "Got %lu params instead of 2\n", addresses.size());
+        abort();
+      }
+      if (touchedSize > 0)
         builder.CreateCall(MCreadFunc, addresses);
     }
     // reads.front()->getModule()->dump();

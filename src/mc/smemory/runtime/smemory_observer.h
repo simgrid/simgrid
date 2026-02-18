@@ -7,28 +7,7 @@
 
 /* Write operations = store */
 
-// Values: write from a to b, a is a value and b is a pointer
-extern "C" void __mcsimgrid_write4v(int32_t a, int32_t* b);
-extern "C" void __mcsimgrid_write8v(int64_t a, int64_t* b);
-extern "C" void __mcsimgrid_writefv(float a, float* b);
-extern "C" void __mcsimgrid_writedv(double a, double* b);
-
-// Pointers: write from a to b, a and b are pointers
-extern "C" void __mcsimgrid_write4(int32_t* a, int32_t* b);
-extern "C" void __mcsimgrid_write8(int64_t* a, int64_t* b);
-extern "C" void __mcsimgrid_writef(float* a, float* b);
-extern "C" void __mcsimgrid_writed(double* a, double* b);
-
-/* Read operations = load */
-
-// Pointers
-extern "C" void __mcsimgrid_read4v(int32_t* a);
-extern "C" void __mcsimgrid_read8v(int64_t* a);
-extern "C" void __mcsimgrid_readfv(float* a);
-extern "C" void __mcsimgrid_readdv(double* a);
-
-// Pointers to pointers
-extern "C" void __mcsimgrid_read4(int32_t** a);
-extern "C" void __mcsimgrid_read8(int64_t** a);
-extern "C" void __mcsimgrid_readf(float** a);
-extern "C" void __mcsimgrid_readd(double** a);
+extern "C" void __mcsimgrid_write(void* where, unsigned char size);
+extern "C" void __mcsimgrid_read(void* where, unsigned char size);
+extern "C" void __mcsimgrid_copy(void* from, void* to, unsigned char size);
+extern "C" void __mcsimgrid_deref(void* where, unsigned char size);
