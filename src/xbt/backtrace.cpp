@@ -271,8 +271,8 @@ public:
           break;
       }
       if (problem)
-        XBT_CERROR(root, "Some stack frames could not be symbolized. You may want to use the slow but robust addr2line "
-                         "stacktraces with --cfg=debug/stacktrace:addr2line");
+        XBT_CERROR(root, "Some stack frames could not be symbolized. You may want to use --cfg=debug/stacktrace:dwelf "
+                         "(install libdw to get it) or --cfg=debug/stacktrace:addr2line (robust but ultra slow)");
     }
 #endif
 
