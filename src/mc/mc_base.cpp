@@ -5,14 +5,11 @@
 
 #include "src/mc/mc_base.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 
 #include "src/mc/mc.h"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
 bool simgrid_mc_replay_show_backtraces = false;
@@ -82,6 +79,12 @@ bool request_is_visible(const kernel::actor::Simcall* req)
         "itself that's fine. Otherwise, this is probably a bug that you want to report.",
         (int)getpid());
     has_been_warned = true;
+
+    auto name = simgrid::s4u::Engine::get_instance()->get_context_factory_name();
+    xbt_assert(
+        strcmp(name, "thread") == 0,
+        "Checking McSimGrid will only work when it runs on pthread, not %s. Please add --cfg=contexts/factory:thread",
+        name);
   }
 
   if (req->observer_ == nullptr)
