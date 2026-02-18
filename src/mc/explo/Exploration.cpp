@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/Exploration.hpp"
 #include "simgrid/forward.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "src/mc/api/Strategy.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
@@ -24,6 +25,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <utility>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_explo, mc, "Generic exploration algorithm of the model-checker");
 
@@ -116,8 +118,12 @@ static const char* signal_name(int status)
   }
 }
 
-std::vector<std::string> Exploration::get_textual_trace(int max_elements)
+std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
 {
+  std::vector<int> actor_epoch;
+  if (race != nullptr)
+    actor_epoch.resize(s4u::Engine::get_instance()->get_actor_max_pid() + 1);
+
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {
     auto const& call_location = transition->get_call_location();
@@ -126,9 +132,31 @@ std::vector<std::string> Exploration::get_textual_trace(int max_elements)
                                          transition->to_string().c_str()));
     else
       trace.push_back(xbt::string_printf("Actor %ld in simcall %s", transition->aid_, transition->to_string().c_str()));
-    max_elements--;
-    if (max_elements == 0)
-      break;
+
+    if (race != nullptr) {
+      if (transition->aid_ == race->first_mem_op_.first) {
+        if (race->first_mem_op_.second == 0 && actor_epoch[transition->aid_] == 0)
+          trace.back().append(
+              xbt::string_printf("     <== racy WRITE on %p by actor %ld between its creation and this operation",
+                                 race->location_, race->first_mem_op_.first));
+        actor_epoch[transition->aid_]++;
+        if (actor_epoch[transition->aid_] == race->first_mem_op_.second)
+          trace.back().append(
+              xbt::string_printf("     <== racy WRITE on %p right after this operation", race->location_));
+      }
+      if (transition->aid_ == race->second_mem_op_.first) {
+        if (race->second_mem_op_.second == 0 && actor_epoch[transition->aid_] == 0)
+          trace.back().append(
+              xbt::string_printf("     <== racy %s on %p by actor %ld between its creation and this operation",
+                                 race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", race->location_,
+                                 race->second_mem_op_.first));
+        actor_epoch[transition->aid_]++;
+        if (actor_epoch[transition->aid_] == race->second_mem_op_.second)
+          trace.back().append(xbt::string_printf("     <== racy %s on %p right after this operation",
+                                                 race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE",
+                                                 race->location_));
+      }
+    }
   }
   return trace;
 }
@@ -285,9 +313,10 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::report_data_race(const McDataRace& e)
 {
-  XBT_INFO("Found a datarace at location %p between actor %ld and %ld after the following execution:", e.location_,
-           e.first_mem_op_.first, e.second_mem_op_.first);
-  for (auto const& frame : Exploration::get_instance()->get_textual_trace())
+  XBT_INFO("Found a datarace at location %p between actor %ld (epoch %ld) and %ld (epoch %ld) after the following "
+           "execution:",
+           e.location_, e.first_mem_op_.first, e.first_mem_op_.second, e.second_mem_op_.first, e.second_mem_op_.second);
+  for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
     XBT_INFO("  %s", frame.c_str());
   XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
            "--cfg=model-check/replay:'%s'",
