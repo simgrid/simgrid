@@ -64,7 +64,8 @@ void Transition::deserialize_memory_operations(mc::Channel& channel)
   for (unsigned long i = 0; i < nb_of_ops; i++) {
     MemOpType type = channel.unpack<MemOpType>();
     void* location = channel.unpack<void*>();
-    memory_operations_.emplace_back(type, location);
+    unsigned char size = channel.unpack<unsigned char>();
+    memory_operations_.emplace_back(type, location, size);
   }
 
   XBT_DEBUG("Created a memory operation vector for the new transition");

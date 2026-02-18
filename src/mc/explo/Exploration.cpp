@@ -136,25 +136,25 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
     if (race != nullptr) {
       if (transition->aid_ == race->first_mem_op_.first) {
         if (race->first_mem_op_.second == 0 && actor_epoch[transition->aid_] == 0)
-          trace.back().append(
-              xbt::string_printf("     <== racy WRITE on %p by actor %ld between its creation and this operation",
-                                 race->location_, race->first_mem_op_.first));
+          trace.back().append(xbt::string_printf(
+              "     <== racy WRITE of size %ub on %p by actor %ld between its creation and this operation",
+              race->sizes_[0], race->location_, race->first_mem_op_.first));
         actor_epoch[transition->aid_]++;
         if (actor_epoch[transition->aid_] == race->first_mem_op_.second)
-          trace.back().append(
-              xbt::string_printf("     <== racy WRITE on %p right after this operation", race->location_));
+          trace.back().append(xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation",
+                                                 race->sizes_[0], race->location_));
       }
       if (transition->aid_ == race->second_mem_op_.first) {
         if (race->second_mem_op_.second == 0 && actor_epoch[transition->aid_] == 0)
-          trace.back().append(
-              xbt::string_printf("     <== racy %s on %p by actor %ld between its creation and this operation",
-                                 race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", race->location_,
-                                 race->second_mem_op_.first));
+          trace.back().append(xbt::string_printf(
+              "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
+              race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", race->sizes_[1], race->location_,
+              race->second_mem_op_.first));
         actor_epoch[transition->aid_]++;
         if (actor_epoch[transition->aid_] == race->second_mem_op_.second)
-          trace.back().append(xbt::string_printf("     <== racy %s on %p right after this operation",
+          trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
                                                  race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE",
-                                                 race->location_));
+                                                 race->sizes_[1], race->location_));
       }
     }
   }
@@ -313,9 +313,9 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::report_data_race(const McDataRace& e)
 {
-  XBT_INFO("Found a datarace at location %p between actor %ld (epoch %ld) and %ld (epoch %ld) after the following "
+  XBT_INFO("Found a datarace at location %p between actor %ld and actor %ld after the following "
            "execution:",
-           e.location_, e.first_mem_op_.first, e.first_mem_op_.second, e.second_mem_op_.first, e.second_mem_op_.second);
+           e.location_, e.first_mem_op_.first, e.second_mem_op_.first);
   for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
     XBT_INFO("  %s", frame.c_str());
   XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "

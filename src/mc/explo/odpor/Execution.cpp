@@ -64,13 +64,17 @@ void Event::initialize_epoch()
 
 struct EventDataRace : public std::exception {
   void* location_;
+  const unsigned char size1_;
+  const unsigned char size2_;
   const MemOpType first_mem_op_;
   const MemOpType second_mem_op_;
   const EventHandle first_event_;
   const EventHandle second_event_;
-  explicit EventDataRace(void* location, MemOpType first_mem_op, MemOpType second_mem_op, EventHandle first_event,
-                         EventHandle second_event)
+  explicit EventDataRace(void* location, const unsigned char size1, const unsigned char size2, MemOpType first_mem_op,
+                         MemOpType second_mem_op, EventHandle first_event, EventHandle second_event)
       : location_(location)
+      , size1_(size1)
+      , size2_(size2)
       , first_mem_op_(first_mem_op)
       , second_mem_op_(second_mem_op)
       , first_event_(first_event)
@@ -99,7 +103,8 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
         if (clock >= prev_clock.get(aid).value()) {
-          throw EventDataRace(location, MemOpType::WRITE, MemOpType::READ, clock + 1,
+          // TODO: We need to retrieve the size of the first access
+          throw EventDataRace(location, rw.get_size(), rw.get_size(), MemOpType::WRITE, MemOpType::READ, clock + 1,
                               this->contents_.second.get(event_aid_).value());
           // +1 is here to find the right transition in replay mode
         }
@@ -110,7 +115,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
         if (clock >= prev_clock.get(aid).value())
-          throw EventDataRace(location, MemOpType::WRITE, MemOpType::WRITE, clock + 1,
+          throw EventDataRace(location, rw.get_size(), rw.get_size(), MemOpType::WRITE, MemOpType::WRITE, clock + 1,
                               this->contents_.second.get(event_aid_).value());
         // +1 is here to find the right transition in replay mode
       }
@@ -198,7 +203,8 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
       long second_op = std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
                                      [&](auto event) { return event.get_transition()->aid_ == second_aid; });
 
-      throw McDataRace({first_aid, first_op}, {second_aid, second_op}, dr.location_, dr.second_mem_op_);
+      throw McDataRace({first_aid, first_op}, {second_aid, second_op}, dr.location_, dr.size1_, dr.size2_,
+                       dr.second_mem_op_);
     }
   }
 }

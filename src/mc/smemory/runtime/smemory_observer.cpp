@@ -19,7 +19,7 @@ void create_memory_access(MemOpType type, void* where, unsigned char size)
   instrument                                = false;
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (issuer && issuer->get_memory_access())
-    issuer->get_memory_access()->record_memory_access(type, where);
+    issuer->get_memory_access()->record_memory_access(type, where, size);
   instrument = true;
 }
 

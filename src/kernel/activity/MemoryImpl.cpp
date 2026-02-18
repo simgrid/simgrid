@@ -19,10 +19,9 @@ std::vector<std::unordered_map<void*, std::vector<std::pair<xbt::Backtrace, xbt:
 
 MemoryAccessImpl::MemoryAccessImpl(actor::ActorImpl* issuer) : issuer_(issuer) {}
 
-void MemoryAccessImpl::record_memory_access(MemOpType type, void* where)
+void MemoryAccessImpl::record_memory_access(MemOpType type, void* where, unsigned char size)
 {
-
-  memory_accesses_.emplace_back(type, where);
+  memory_accesses_.emplace_back(type, where, size);
   bool watched = false;
   for (void* a : get_mc_watch_addresses()) {
     if (a == where) {
@@ -68,6 +67,7 @@ void MemoryAccessImpl::serialize(mc::Channel& channel)
   for (auto mem : memory_accesses_) {
     channel.pack<MemOpType>(mem.get_type());
     channel.pack<void*>(mem.get_location());
+    channel.pack<unsigned char>(mem.get_size());
   }
 
   memory_accesses_.clear();

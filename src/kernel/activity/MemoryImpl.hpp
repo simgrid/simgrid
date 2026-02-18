@@ -23,11 +23,13 @@ namespace simgrid::kernel::activity {
 class MemoryAccess {
   MemOpType type_;
   void* where_;
+  unsigned char size_;
 
 public:
-  MemoryAccess(MemOpType type, void* where) : type_(type), where_(where){};
+  MemoryAccess(MemOpType type, void* where, unsigned char size) : type_(type), where_(where), size_(size) {};
   void* get_location() const { return where_; }
   MemOpType get_type() const { return type_; }
+  unsigned char get_size() const { return size_; }
 };
 
 class XBT_PUBLIC MemoryAccessImpl : public ActivityImpl {
@@ -48,7 +50,7 @@ public:
   MemoryAccessImpl(actor::ActorImpl* issuer);
 
   // Called by the user code
-  void record_memory_access(MemOpType type, void* where);
+  void record_memory_access(MemOpType type, void* where, unsigned char size);
 
   actor::ActorImpl* get_issuer() const { return issuer_; }
 

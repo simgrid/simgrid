@@ -34,13 +34,17 @@ struct McDataRace : public std::exception {
   const odpor::epoch second_mem_op_;
   MemOpType second_mem_type_;
   void* location_;
-  explicit McDataRace(odpor::epoch first_mem_op, odpor::epoch second_mem_op, void* location, MemOpType second_mem_type)
+  unsigned char sizes_[2];
+  explicit McDataRace(odpor::epoch first_mem_op, odpor::epoch second_mem_op, void* location, unsigned char size1,
+                      unsigned char size2, MemOpType second_mem_type)
       : value(ExitStatus::DATA_RACE)
       , first_mem_op_(first_mem_op)
       , second_mem_op_(second_mem_op)
       , second_mem_type_(second_mem_type)
       , location_(location)
   {
+    sizes_[0] = size1;
+    sizes_[1] = size2;
   }
 };
 

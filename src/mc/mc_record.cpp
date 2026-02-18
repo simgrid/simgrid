@@ -100,14 +100,14 @@ void RecordTrace::replay() const
       XBT_INFO("First operation was a WRITE made by actor %ld:\n%s\n", e.first_mem_op_.first,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
                    e.first_mem_op_.first, e.first_mem_op_.second,
-                   kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_))
+                   kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_, e.sizes_[0]))
                    .c_str());
 
       XBT_INFO("Second operation was a %s made by actor %ld:\n%s\n",
                e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.first,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
                    e.second_mem_op_.first, e.second_mem_op_.second,
-                   kernel::activity::MemoryAccess(e.second_mem_type_, e.location_))
+                   kernel::activity::MemoryAccess(e.second_mem_type_, e.location_, e.sizes_[1]))
                    .c_str());
 
       abort();
