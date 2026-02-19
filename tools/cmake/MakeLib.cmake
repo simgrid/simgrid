@@ -73,10 +73,6 @@ if (HAVE_STD_STACKTRACE)
   target_link_libraries(simgrid stdc++exp stdc++)
 endif()
 
-if(HAVE_DWELF_STACKTRACE)
-  target_link_libraries(simgrid dw elf)
-endif()
-
 if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
   target_link_libraries(simgrid ${Boost_STACKTRACE_ADDR2LINE_LIBRARY})
 endif()
