@@ -382,50 +382,49 @@ endif()
 
 
 ## Can we build the Java bindings?
-set(SIMGRID_HAVE_JAVA 0) # by default, nope
-set(merge_java_in_libsimgrid 0) # by default, nope
-if((NOT DEFINED enable_java) OR enable_java)
-  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
+if((NOT DEFINED enable_java) OR enable_java)  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
   # https://stackoverflow.com/a/51764145/1756334
   set(JAVA_AWT_LIBRARY NotNeeded)
   set(JAVA_JVM_LIBRARY NotNeeded)
   set(JAVA_AWT_INCLUDE_PATH "/usr/include")
 
   find_package(JNI)
+  find_package(Java 1.8 COMPONENTS Runtime Development)
+  if (NOT (${JNI_FOUND}))
+    set(default_enable_java OFF)
+    message(STATUS "JNI not found, thus disabling Java.")
+  elseif(NOT ${Java_FOUND})
+    set(default_enable_java OFF)
+    message(status "Java not found (need at least Java 8) thus disabled.")
+  else() # We have both Java and JNI
+    set(default_enable_java ON)
+  endif()
+endif()
+
+option(enable_java "Whether the Java bindings are activated." ${default_enable_java}) # ON by default if dependencies are met
+
+set(SIMGRID_HAVE_JAVA 0) # by default, nope
+set(merge_java_in_libsimgrid 0) # by default, nope
+if(enable_java)
   if (NOT ${JNI_FOUND})
-    if(enable_java)
-      message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
-    else()
-      message(STATUS "JNI not found, thus disabling Java.")
-    endif()
-
-  else()
-   find_package(Java 1.8 COMPONENTS Runtime Development)
-   if (NOT ${Java_FOUND})
-     if(enable_java)
-       message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
-     else()
-       message(status "Java not found (need at least Java 8) thus disabled.")
-     endif()
-    else() # We have both Java and JNI
-      message(STATUS "Java version: ${Java_VERSION_STRING}")
-      message(STATUS "Java compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}")
-      message(STATUS "Java: JNI include dirs: ${JNI_INCLUDE_DIRS}")
-      set(SIMGRID_HAVE_JAVA 1)
+    message(FATAL_ERROR "JNI not found. Please install it, or disable the 'enable_java' option.")
+  elseif (NOT ${Java_FOUND})
+    message(FATAL_ERROR "Java not found (need at least Java 8). Please install the JDK, or disable the 'enable_java' option.")
+  else() # We have both Java and JNI
+    message(STATUS "Java version: ${Java_VERSION_STRING}")
+    message(STATUS "Java compiler: ${Java_JAVAC_EXECUTABLE}; Runtime: ${Java_JAVA_EXECUTABLE}")
+    message(STATUS "Java: JNI include dirs: ${JNI_INCLUDE_DIRS}")
+    set(SIMGRID_HAVE_JAVA 1)
       
-      # Determines whether the C++ code of the java library shall be merged in libsimgrid or not.
-      # This must be the case on FreeBSD as we often miss exceptions thrown from another library.
-      # Doing so on Apple alleviate some RPATH madness, in particular when the lib is included in the jar.
-      if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
-        set(merge_java_in_libsimgrid 1)
-      else()
-        set(merge_java_in_libsimgrid 0)
-      endif()
-
+    # Determines whether the C++ code of the java library shall be merged in libsimgrid or not.
+    # This must be the case on FreeBSD as we often miss exceptions thrown from another library.
+    # Doing so on Apple alleviate some RPATH madness, in particular when the lib is included in the jar.
+    if(APPLE OR ("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD"))
+      set(merge_java_in_libsimgrid 1)
+    else()
+      set(merge_java_in_libsimgrid 0)
     endif()
   endif()
-else()
-  message(STATUS "Java disabled by user request (remove -Denable_java=${enable_java} if it's not what you want).")
 endif()
 
 # Checks for header libraries functions.
