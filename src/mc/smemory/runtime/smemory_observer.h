@@ -5,8 +5,6 @@
 
 #include <stdint.h>
 
-/* Write operations = store */
-
 extern "C" void __mcsimgrid_write(void* where, unsigned char size);
 extern "C" void __mcsimgrid_read(void* where, unsigned char size);
 extern "C" void __mcsimgrid_copy(void* from, void* to, unsigned char size);

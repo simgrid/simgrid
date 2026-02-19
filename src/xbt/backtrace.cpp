@@ -310,7 +310,8 @@ public:
 
         Dwarf_Addr addr        = (Dwarf_Addr)((long)buffer[i] - 1);
         const DwelfResolved& r = dwelf_resolve_addr(addr);
-        if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()")
+        if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()" ||
+            r.func == "__mcsimgrid_write()" || r.func == "__mcsimgrid_read()")
           begin = i + 1;
       }
       for (unsigned i = nptrs - 1; i > 0; i--) {
