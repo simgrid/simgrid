@@ -31,6 +31,7 @@ if (enable_msg)
   message(FATAL_ERROR "MSG was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need MSG.")
 endif()
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
+option(enable_lib_in_sthread "Whether libsimgrid is bundled directly in the libsthread file" off)
 
 option(minimal-bindings      "Whether to compile the Python bindings libraries with the minimal dependency set" off)
 mark_as_advanced(minimal-bindings)

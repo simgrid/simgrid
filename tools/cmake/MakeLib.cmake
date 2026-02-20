@@ -31,11 +31,20 @@ set_property(TARGET simgrid
 add_dependencies(simgrid maintainer_files)
 
 if(${enable_sthread})
-  add_library(sthread SHARED ${STHREAD_SRC})
+  # git grep 'dlsym(RTLD_NEXT'|sed 's/.*dlsym(RTLD_NEXT, "//'|sed 's/");/;/'|tr '\n' ' '|sed 's/$/\n/'
+
+  if (enable_lib_in_sthread)
+    add_library(sthread SHARED ${STHREAD_SRC} ${simgrid_sources})
+    set_target_properties(sthread PROPERTIES LINK_DEPENDS ${CMAKE_HOME_DIRECTORY}/tools/sthread_linker_script.txt)
+    target_link_options(sthread PRIVATE -Wl,--version-script=${CMAKE_HOME_DIRECTORY}/tools/sthread_linker_script.txt)
+#    target_link_options(sthread PRIVATE -Wl,--version-script=${CMAKE_HOME_DIRECTORY}/export-symbols.txt)
+  else()
+    add_library(sthread SHARED ${STHREAD_SRC})
+    target_link_libraries(sthread simgrid)
+  endif()
   set_target_properties(sthread PROPERTIES VERSION ${libsimgrid_version})
   set_property(TARGET sthread
                 APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-  target_link_libraries(sthread simgrid)
   set(STHREAD_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/libsthread.so")
 else()
   set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
@@ -70,7 +79,7 @@ endif()
 
 if (HAVE_STD_STACKTRACE)
   # Listing specifically stdc++ is needed at least on MUSL when compiling C code against libsimgrid, as GCC does not provide stdc++ by default
-  target_link_libraries(simgrid stdc++exp stdc++)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++exp -lstdc++")
 endif()
 
 if (HAVE_BOOST_ADDR2LINE_BACKTRACE)
@@ -179,6 +188,9 @@ endif()
 mark_as_advanced(GCCLIBATOMIC_LIBRARY)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
+if (enable_lib_in_sthread)
+  target_link_libraries(sthread ${SIMGRID_DEP})
+endif()
 
 # Dependencies from maintainer mode
 ###################################
