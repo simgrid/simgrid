@@ -40,6 +40,7 @@ public:
   Channel(Channel const&) = delete;
   Channel& operator=(Channel const&) = delete;
 
+  size_t get_out_free_size() { return MC_MESSAGE_LENGTH - buffer_out_size_; }
   // Send
   int send(const void* message, size_t size);
   int send(MessageType type)

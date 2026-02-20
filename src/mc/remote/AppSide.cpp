@@ -21,7 +21,6 @@
 #include "xbt/sysdep.h"
 #include <algorithm>
 #include <cstddef>
-#include <sstream>
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -102,13 +101,15 @@ void AppSide::handle_deadlock_check(const s_mc_message_int_t* request)
 
 void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool want_transition)
 {
-  s_mc_message_simcall_execute_answer_t answer{};
+  s_mc_message_simcall_execute_answer_t answer;
+  memset(&answer, 0, sizeof(s_mc_message_simcall_execute_answer_t));
   answer.type = MessageType::SIMCALL_EXECUTE_REPLY;
   answer.aid  = actor->get_pid();
   channel_.pack(answer);
 
   if (want_transition) {
     if (actor->simcall_.observer_ != nullptr) {
+      XBT_DEBUG("Serialize a %s", actor->simcall_.observer_->to_string().c_str());
       actor->simcall_.observer_->serialize(channel_);
       actor->recorded_memory_accesses_->serialize(channel_);
     } else {

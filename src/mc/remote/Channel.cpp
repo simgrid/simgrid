@@ -67,6 +67,7 @@ Channel::~Channel()
 template <> void Channel::pack<std::string>(std::string str)
 {
   XBT_DEBUG("Pack string (size: %lu; ctn: '%s')", str.length(), str.c_str());
+  xbt_assert(str.length() < std::numeric_limits<unsigned short>::max());
   pack<unsigned short>((unsigned short)str.length());
   pack(str.data(), str.length() + 1);
 }
@@ -88,6 +89,10 @@ template <> std::string Channel::unpack<std::string>(std::function<void(void)> c
 
 void Channel::pack(const void* message, size_t size)
 {
+  xbt_assert(
+      buffer_out_size_ + size < MC_MESSAGE_LENGTH,
+      "The buffer used to communicate between the MC and the application is full. Try increasing MC_MESSAGE_LENGTH, or "
+      "implement a better buffer that can send its data when it's full even if it's not a complete message.");
   memcpy(buffer_out_ + buffer_out_size_, message, size);
   buffer_out_size_ += size;
 }
