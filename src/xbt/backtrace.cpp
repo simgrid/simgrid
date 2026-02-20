@@ -146,10 +146,10 @@ simgrid::config::Flag<bool> cfg_fullstdstack{"debug/fullstack",
 simgrid::config::Flag<std::string> cfg_stacktrace_kind{
     "debug/stacktrace",
     "System to use to generate the stacktraces",
-#if HAVE_STD_STACKTRACE
-    "c++23",
-#elif HAVE_DWELF_STACKTRACE
+#if HAVE_DWELF_STACKTRACE
     "dwelf",
+#elif HAVE_STD_STACKTRACE
+    "c++23",
 #elif HAVE_BOOST_STACKTRACE_ADDR2LINE
     "boost",
 #else
