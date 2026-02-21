@@ -89,10 +89,10 @@ template <> std::string Channel::unpack<std::string>(std::function<void(void)> c
 
 void Channel::pack(const void* message, size_t size)
 {
-  xbt_assert(
-      buffer_out_size_ + size < MC_MESSAGE_LENGTH,
-      "The buffer used to communicate between the MC and the application is full. Try increasing MC_MESSAGE_LENGTH, or "
-      "implement a better buffer that can send its data when it's full even if it's not a complete message.");
+  if (buffer_out_size_ + size >= MC_MESSAGE_LENGTH)
+    send();
+  xbt_assert(buffer_out_size_ + size < MC_MESSAGE_LENGTH,
+             "The buffer used to communicate between the MC and the application is full. Flushing it did not work.");
   memcpy(buffer_out_ + buffer_out_size_, message, size);
   buffer_out_size_ += size;
 }
@@ -163,6 +163,7 @@ std::pair<bool, void*> Channel::receive(size_t size)
             to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))), size, buffer_in_next_, buffer_in_size_);
   buffer_in_next_ += size;
   buffer_in_size_ -= size;
+  /* Try avoiding wrapping the buffer. Move back to 0 as soon as it's empty */
   if (buffer_in_size_ == 0)
     buffer_in_next_ = 0;
 
