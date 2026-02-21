@@ -11,7 +11,7 @@ coverage:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-coverage gcovr build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y python3-coverage gcovr build-essential ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - mkdir build ; cd build
   - cmake -GNinja  -Denable_python=ON -Denable_ns3=ON -Denable_java=ON  -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" 
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
@@ -202,7 +202,7 @@ debian-clang:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y build-essential ninja-build clang gfortran libgcc-14-dev llvm-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y build-essential ninja-build clang gfortran libgcc-14-dev llvm-dev cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - rm -rf CMakeFiles CMakeCache.txt
   - cmake -GNinja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang  -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -226,7 +226,7 @@ debian-stable:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -247,7 +247,7 @@ debian-oldstable:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -272,7 +272,7 @@ ubuntu22-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - apt -y clean && apt -y autoclean
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
@@ -296,7 +296,7 @@ ubuntu24-release:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
@@ -317,7 +317,7 @@ ubuntu-rolling:
     - large  # Inria infra
   script:
   - apt-get --allow-releaseinfo-change update
-  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev
+  - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
