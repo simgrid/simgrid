@@ -312,8 +312,6 @@ public:
         const DwelfResolved& r = dwelf_resolve_addr(addr);
         if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()" ||
             r.func == "__mcsimgrid_write()" || r.func == "__mcsimgrid_read()" ||
-            // The lambda of sthread_create have complex names, that depend on the compiler
-            // r.func.find("std::_Bind<sthread_create::{lambda(auto") ||
             // TODO: starts_with in C++20 instead of rfind
             r.func.rfind("sthread_", 0) != std::string::npos)
           begin = i + 1;
@@ -325,10 +323,9 @@ public:
           end = i + 1;
 
         if (r.func == "smx_ctx_wrapper()" || r.func == "std::function<void ()>::operator()() const" ||
-            r.func == "std::_Function_handler<void (), std::_Bind<sthread_create::$_0 (void* (*)(void*), void*)> "
-                      ">::_M_invoke(std::_Any_data const&)" ||
-            r.func == "auto sthread_create::{lambda(auto:1*, auto:2*)#1}::operator()<void* (void*), void>(void* "
-                      "(*)(void*), void*) const")
+            // The lambda of sthread_create have complex names, that depend on the compiler
+            (r.func.rfind("auto sthread_create::{lambda(auto", 0) != std::string::npos) ||
+            (r.func.find("std::_Bind<sthread_create::") != std::string::npos && i > begin))
           end = i;
       }
       int frame_count = 0;
