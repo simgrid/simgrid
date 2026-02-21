@@ -311,7 +311,13 @@ public:
         Dwarf_Addr addr        = (Dwarf_Addr)((long)buffer[i] - 1);
         const DwelfResolved& r = dwelf_resolve_addr(addr);
         if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()" ||
-            r.func == "__mcsimgrid_write()" || r.func == "__mcsimgrid_read()")
+            r.func == "__mcsimgrid_write()" || r.func == "__mcsimgrid_read()" ||
+            r.func ==
+                "boost::intrusive_ptr<simgrid::s4u::Actor> "
+                "simgrid::s4u::Host::add_actor<std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* "
+                "(*)(void*), void*)> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > "
+                "const&, std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(void*), void*)>)" ||
+            r.func.starts_with("sthread_"))
           begin = i + 1;
       }
       for (unsigned i = nptrs - 1; i > 0; i--) {
@@ -322,7 +328,9 @@ public:
 
         if (r.func == "smx_ctx_wrapper()" || r.func == "std::function<void ()>::operator()() const" ||
             r.func == "std::_Function_handler<void (), std::_Bind<sthread_create::$_0 (void* (*)(void*), void*)> "
-                      ">::_M_invoke(std::_Any_data const&)")
+                      ">::_M_invoke(std::_Any_data const&)" ||
+            r.func == "auto sthread_create::{lambda(auto:1*, auto:2*)#1}::operator()<void* (void*), void>(void* "
+                      "(*)(void*), void*) const")
           end = i;
       }
       int frame_count = 0;
@@ -339,7 +347,10 @@ public:
         if (ignored_line)
           continue;
 
-        ss << "  #" << frame_count++ << " " << r.func << " at " << r.location << " in " << r.module_short << "\n";
+        ss << "  #" << frame_count++ << " " << r.func;
+        if (not xbt_log_no_loc)
+          ss << " at " << r.location;
+        ss << " in " << r.module_short << "\n";
       }
     }
     sthread_enable();
