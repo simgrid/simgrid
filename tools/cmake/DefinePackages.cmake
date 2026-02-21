@@ -1082,6 +1082,7 @@ set(CMAKE_SOURCE_FILES
   MANIFEST.in
   MANIFEST.in.in
   setup.py
+  tools/sthread_linker_script.txt
   tools/cmake/CTestConfig.cmake
   tools/cmake/CTestCustom.cmake
   tools/cmake/DefinePackages.cmake

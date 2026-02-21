@@ -2970,4 +2970,5 @@ include tools/stack-cleaner/cc
 include tools/stack-cleaner/clean-stack-filter
 include tools/stack-cleaner/compiler-wrapper
 include tools/stack-cleaner/fortran
+include tools/sthread_linker_script.txt
 include tools/tesh/CMakeLists.txt
