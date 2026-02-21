@@ -312,12 +312,10 @@ public:
         const DwelfResolved& r = dwelf_resolve_addr(addr);
         if (r.func == "simgrid::xbt::Backtrace::Backtrace(bool)" || r.func == "xbt_backtrace_display_current()" ||
             r.func == "__mcsimgrid_write()" || r.func == "__mcsimgrid_read()" ||
-            r.func ==
-                "boost::intrusive_ptr<simgrid::s4u::Actor> "
-                "simgrid::s4u::Host::add_actor<std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* "
-                "(*)(void*), void*)> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > "
-                "const&, std::_Bind<sthread_create::{lambda(auto:1*, auto:2*)#1} (void* (*)(void*), void*)>)" ||
-            r.func.starts_with("sthread_"))
+            // The lambda of sthread_create have complex names, that depend on the compiler
+            // r.func.find("std::_Bind<sthread_create::{lambda(auto") ||
+            // TODO: starts_with in C++20 instead of rfind
+            r.func.rfind("sthread_", 0) != std::string::npos)
           begin = i + 1;
       }
       for (unsigned i = nptrs - 1; i > 0; i--) {
