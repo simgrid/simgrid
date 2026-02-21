@@ -16,9 +16,9 @@
 #include <alloca.h>
 #endif
 
-#include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <limits>
 #include <string>
 #include <sys/socket.h>
 #include <sys/types.h>
