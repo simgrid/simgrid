@@ -5,19 +5,23 @@
 
 #include "smemory_observer.h"
 #include "src/kernel/activity/MemoryImpl.hpp"
+#include "src/sthread/sthread.h"
+#include "xbt/log.h"
 
-void create_memory_access(MemOpType, void*, unsigned char size);
-
-static bool instrument = true;
-
-void create_memory_access(MemOpType type, void* where, unsigned char size)
+static void create_memory_access(MemOpType type, void* where, unsigned char size)
 {
+  static bool instrument = true;
+
   // Break the recursion: we don't want to instrument the instrumenter
   if (not instrument)
     return;
 
-  instrument                                = false;
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  // Do not track data on a stack, there is no datarace there
+  if (smemory_is_on_stack(where))
+    return;
+
+  instrument   = false;
+  auto* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (issuer && issuer->get_memory_access())
     issuer->get_memory_access()->record_memory_access(type, where, size);
   instrument = true;

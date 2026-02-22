@@ -13,6 +13,8 @@
 #cmakedefine01 SIMGRID_HAVE_MALLOCATOR
 /* Was the model-checking compiled in? */
 #cmakedefine01 SIMGRID_HAVE_MC
+/* Was the memory-interception compiled in? */
+#cmakedefine01 SIMGRID_HAVE_SMEMORY
 /* Was the ns-3 support compiled in? */
 #cmakedefine01 SIMGRID_HAVE_NS3
 #cmakedefine NS3_MINOR_VERSION @NS3_MINOR_VERSION@

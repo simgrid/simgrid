@@ -499,6 +499,7 @@ if(enable_smemory)
   install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
           DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
+  set(SIMGRID_HAVE_SMEMORY 1)
   message(STATUS "Enabling the MC memory interceptor as requested.")
 endif()
 

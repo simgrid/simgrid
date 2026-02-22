@@ -5,7 +5,12 @@
 
 #include <stdint.h>
 
-extern "C" void __mcsimgrid_write(void* where, unsigned char size);
-extern "C" void __mcsimgrid_read(void* where, unsigned char size);
-extern "C" void __mcsimgrid_copy(void* from, void* to, unsigned char size);
-extern "C" void __mcsimgrid_deref(void* where, unsigned char size);
+extern "C" {
+void __mcsimgrid_write(void* where, unsigned char size);
+void __mcsimgrid_read(void* where, unsigned char size);
+void __mcsimgrid_copy(void* from, void* to, unsigned char size);
+void __mcsimgrid_deref(void* where, unsigned char size);
+bool smemory_is_on_stack(void* ptr);
+void smemory_add_stack(void* begin, void* end);
+void smemory_remove_stack(void* begin, void* end);
+};

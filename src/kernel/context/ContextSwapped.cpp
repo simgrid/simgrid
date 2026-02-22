@@ -8,6 +8,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/smemory/runtime/smemory_observer.h"
 #include "src/sthread/sthread.h"
 #include "src/xbt/parmap.hpp"
 
@@ -101,6 +102,9 @@ SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* a
       this->stack_ = static_cast<unsigned char*>(xbt_malloc0(actor->get_stacksize()));
     }
 
+#if SIMGRID_HAVE_SMEMORY
+    smemory_add_stack(this->stack_, this->stack_ + actor->get_stacksize());
+#endif
 #if HAVE_VALGRIND_H
     if (RUNNING_ON_VALGRIND)
       this->valgrind_stack_id_ = VALGRIND_STACK_REGISTER(this->stack_, this->stack_ + actor->get_stacksize());
@@ -124,6 +128,9 @@ SwappedContext::~SwappedContext()
   if (stack_ == nullptr) // maestro has no extra stack
     return;
 
+#if SIMGRID_HAVE_SMEMORY
+  smemory_remove_stack(this->stack_, this->stack_ + get_actor()->get_stacksize());
+#endif
 #if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
   __tsan_destroy_fiber(tsan_fiber_);
 #endif

@@ -15,12 +15,11 @@
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/mc_protocol.h"
+#include "src/mc/smemory/runtime/smemory_observer.h"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 #include "xbt/sysdep.h"
-#include <algorithm>
-#include <cstddef>
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -29,8 +28,10 @@
 #include "xbt/str.h"
 #include <simgrid/modelchecker.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cinttypes>
+#include <cstddef>
 #include <cstdio> // setvbuf
 #include <cstdlib>
 #include <memory>
