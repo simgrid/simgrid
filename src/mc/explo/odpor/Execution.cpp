@@ -93,10 +93,8 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
     auto location   = rw.get_location();
     auto prev_write = last_write_.find(location);
 
-    if (prev_write != last_write_.end() and prev_write->second.first == event_aid_) {
-      continue; // We just found an op that happened in the same transition, just after a previous write
-      // Obviously, those are not in race
-    }
+    xbt_assert(prev_write == last_write_.end() or prev_write->second.first != event_aid_,
+               "Found two transitions from the same actor in a given epoch.");
 
     if (rw.get_type() == MemOpType::READ) {
 
