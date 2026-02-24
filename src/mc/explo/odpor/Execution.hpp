@@ -26,7 +26,10 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w);
 std::string one_string_textual_trace(const PartialExecution& w);
 
 // Data structure to implement FastTrack algorithm (see [Flanagan'09])
-using epoch = std::pair<aid_t, long>;
+struct epoch {
+  aid_t aid;
+  long epoch;
+};
 
 /**
  * @brief The occurrence of a transition in an execution

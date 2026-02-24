@@ -94,19 +94,19 @@ void RecordTrace::replay() const
     } catch (const McDataRace& e) {
       XBT_INFO("Found a datarace at location %p", e.location_);
       // Printing the epoch is not very interesting for the user
-      XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.second, e.first_mem_op_.first,
-                e.second_mem_op_.second, e.second_mem_op_.first);
+      XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.epoch, e.first_mem_op_.aid, e.second_mem_op_.epoch,
+                e.second_mem_op_.aid);
 
-      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s\n", e.first_mem_op_.first,
+      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s\n", e.first_mem_op_.aid,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
-                   e.first_mem_op_.first, e.first_mem_op_.second,
+                   e.first_mem_op_.aid, e.first_mem_op_.epoch,
                    kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_, e.sizes_[0]))
                    .c_str());
 
       XBT_INFO("Second operation was a %s made by actor %ld:\n%s\n",
-               e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.first,
+               e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.aid,
                kernel::activity::MemoryAccessImpl::get_info_from_access(
-                   e.second_mem_op_.first, e.second_mem_op_.second,
+                   e.second_mem_op_.aid, e.second_mem_op_.epoch,
                    kernel::activity::MemoryAccess(e.second_mem_type_, e.location_, e.sizes_[1]))
                    .c_str());
 

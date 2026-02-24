@@ -93,7 +93,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
     auto location   = rw.get_location();
     auto prev_write = last_write_.find(location);
 
-    xbt_assert(prev_write == last_write_.end() or prev_write->second.first != event_aid_,
+    xbt_assert(prev_write == last_write_.end() or prev_write->second.aid != event_aid_,
                "Found two transitions from the same actor in a given epoch.");
 
     if (rw.get_type() == MemOpType::READ) {
