@@ -354,8 +354,13 @@ UdpTraceClient=0*/
 
   s4u::Engine::on_platform_created_cb([]() {
     /* Create the ns3 topology based on routing strategy */
+#if NS3_MINOR_VERSION < 47
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
+#else
+    ns3::GlobalRouteManager<Ipv4Manager>::BuildGlobalRoutingDatabase();
+    ns3::GlobalRouteManager<Ipv4Manager>::InitializeRoutes();
+#endif
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
   routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
