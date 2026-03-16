@@ -328,11 +328,15 @@ int sthread_cond_signal(sthread_cond_t* cond)
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
-               "pthread_cond_signal(). The signal could get lost.",
+               "pthread_cond_signal(). The signal could get lost, see "
+               "https://stackoverflow.com/questions/38147825/"
+               "shared-atomic-variable-is-not-properly-published-if-it-is-not-modified-under-mut",
                cond);
     else if (owner != simgrid::s4u::Actor::self())
       XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
-               "calling pthread_cond_signal(). The signal could get lost.",
+               "calling pthread_cond_signal(). The signal could get lost, see "
+               "https://stackoverflow.com/questions/38147825/"
+               "shared-atomic-variable-is-not-properly-published-if-it-is-not-modified-under-mut",
                cond, owner->get_cname());
   }
 
@@ -351,11 +355,15 @@ int sthread_cond_broadcast(sthread_cond_t* cond)
     auto* owner = static_cast<sg4::Mutex*>(cond->mutex)->get_owner();
     if (owner == nullptr)
       XBT_WARN("The mutex associated to condition %p is not currently owned by anyone when calling "
-               "pthread_cond_broadcast(). The signal could get lost.",
+               "pthread_cond_broadcast(). The signal could get lost, see "
+               "https://stackoverflow.com/questions/38147825/"
+               "shared-atomic-variable-is-not-properly-published-if-it-is-not-modified-under-mut",
                cond);
     else if (owner != simgrid::s4u::Actor::self())
       XBT_WARN("The mutex associated to condition %p is currently owned by %s, not by the thread currently calling "
-               "calling pthread_cond_broadcast(). The signal could get lost.",
+               "calling pthread_cond_broadcast(). The signal could get lost, see "
+               "https://stackoverflow.com/questions/38147825/"
+               "shared-atomic-variable-is-not-properly-published-if-it-is-not-modified-under-mut",
                cond, owner->get_cname());
   }
 
