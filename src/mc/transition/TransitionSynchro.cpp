@@ -137,9 +137,16 @@ bool MutexTransition::depends(const Transition* o) const
   if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_UNLOCK)
     return false;
 
-  // An async_lock is behaving as a mutex_unlock, so it muste have the same behavior regarding Mutex Wait
-  if (type_ == Type::MUTEX_WAIT && o->type_ == Type::CONDVAR_ASYNC_LOCK)
-    return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+  // A condvar_async_lock is behaving as a mutex_unlock, so it must have the same behavior regarding Mutex Wait
+  if (o->type_ == Type::CONDVAR_ASYNC_LOCK) {
+    if (type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_UNLOCK || type_ == Type::MUTEX_TRYLOCK)
+      return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+  }
+  // A condvar_wait is behaving as a mutex_async_lock
+  if (o->type_ == Type::CONDVAR_WAIT) {
+    if (type_ == Type::MUTEX_ASYNC_LOCK || type_ == Type::MUTEX_TRYLOCK)
+      return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+  }
 
   // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
   // Since it's the last rule in this file, we can use the contrapositive version of the theorem
@@ -323,6 +330,13 @@ bool MutexTransition::reversible_race(const Transition* other, const odpor::Exec
   }
 
   switch (other->type_) {
+    case Type::CONDVAR_WAIT:
+      xbt_assert(static_cast<const CondvarTransition*>(other)->get_mutex() == mutex_);
+      return true;
+    case Type::CONDVAR_ASYNC_LOCK:
+      xbt_assert(type_ == Type::MUTEX_WAIT or type_ == Type::MUTEX_UNLOCK or type_ == Type::MUTEX_TRYLOCK);
+      return false;
+
     case Type::MUTEX_ASYNC_LOCK:
       return true; // MutexAsyncLock is always enabled
     case Type::MUTEX_TEST:
@@ -338,7 +352,7 @@ bool MutexTransition::reversible_race(const Transition* other, const odpor::Exec
       // Not reversible
       return false;
     default:
-      xbt_die("Unexpected transition type %s", to_c_str(type_));
+      xbt_die("Unexpected transition type %s", to_c_str(other->type_));
   }
 }
 
@@ -387,7 +401,9 @@ bool CondvarTransition::depends(const Transition* o) const
   if ((type_ == Type::CONDVAR_BROADCAST || type_ == Type::CONDVAR_SIGNAL) && o->type_ == Type::CONDVAR_WAIT)
     return condvar_ == static_cast<const CondvarTransition*>(o)->condvar_;
 
-  // Wait is independent with itself
+  // Wait is dependent with itself because it inserts a mutex_async_lock
+  if (type_ == Type::CONDVAR_WAIT && o->type_ == Type::CONDVAR_WAIT)
+    return mutex_ == static_cast<const CondvarTransition*>(o)->mutex_;
 
   // Independent with transitions that are neither Condvar nor Mutex related
   return false;
@@ -492,7 +508,15 @@ bool CondvarTransition::reversible_race(const Transition* other, const odpor::Ex
     case Type::CONDVAR_ASYNC_LOCK:
       switch (other->type_) {
         case Transition::Type::MUTEX_WAIT:
+        case Transition::Type::MUTEX_UNLOCK:
           return false;
+        case Transition::Type::MUTEX_TRYLOCK:
+          return true;
+
+        case Transition::Type::CONDVAR_ASYNC_LOCK: {
+          auto ocv = static_cast<const CondvarTransition*>(other);
+          return (condvar_ == ocv->condvar_) && (mutex_ != ocv->mutex_);
+        }
         case Transition::Type::CONDVAR_BROADCAST:
         case Transition::Type::CONDVAR_SIGNAL:
           return true;
@@ -511,7 +535,8 @@ bool CondvarTransition::reversible_race(const Transition* other, const odpor::Ex
       // if wait can be executed in the first place, then broadcast and signal don't impact it
     case Type::CONDVAR_WAIT:
       xbt_assert(other->type_ == Transition::Type::CONDVAR_BROADCAST or
-                 other->type_ == Transition::Type::CONDVAR_SIGNAL);
+                 other->type_ == Transition::Type::CONDVAR_SIGNAL or other->type_ == Transition::Type::CONDVAR_WAIT or
+                 other->type_ == Transition::Type::MUTEX_ASYNC_LOCK or other->type_ == Transition::Type::MUTEX_TRYLOCK);
       return true;
 
     default:

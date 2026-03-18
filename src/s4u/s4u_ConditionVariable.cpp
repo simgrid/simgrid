@@ -35,7 +35,10 @@ static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::Conditio
              "Cannot wait on a condvar with a mutex (id %u) owned by another actor (id %ld)", mutex->get_id(),
              mutex->get_owner()->get_pid());
 
-  if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
+  if (MC_is_active() || MC_record_replay_is_active()) {
+
+    // Split in 3 simcalls for transition persistency:
+    //   CV_async_lock + CV_wait(which does a mutex_async_lock) + mutex_wait
 
     kernel::actor::ConditionVariableObserver lock_observer{issuer, mc::Transition::Type::CONDVAR_ASYNC_LOCK, pimpl,
                                                            mutex, timeout};
@@ -44,11 +47,20 @@ static bool do_wait(kernel::actor::ActorImpl* issuer, kernel::activity::Conditio
 
     kernel::actor::ConditionVariableObserver wait_observer{issuer, mc::Transition::Type::CONDVAR_WAIT,
                                                            acquisition.get(), timeout};
+
+    /* Second simcall */
+    kernel::activity::MutexAcquisitionImplPtr mut_acqui;
     bool res = kernel::actor::simcall_blocking(
-        [issuer, &acquisition, timeout] { acquisition->wait_for(issuer, timeout); }, &wait_observer);
+        [issuer, &acquisition, &mut_acqui, timeout] {
+          acquisition->wait_for(issuer, timeout);
+          mut_acqui = acquisition->get_mutex()->lock_async(issuer);
+        },
+        &wait_observer);
 
     /* get back the mutex after the wait */
-    mutex->get_iface().lock();
+    kernel::actor::MutexAcquisitionObserver wait_mut_observer{issuer, mc::Transition::Type::MUTEX_WAIT, mut_acqui.get(),
+                                                              -1};
+    kernel::actor::simcall_blocking([issuer, &mut_acqui] { mut_acqui->wait_for(issuer, -1); }, &wait_mut_observer);
 
     return res;
 
