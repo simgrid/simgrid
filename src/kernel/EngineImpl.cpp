@@ -273,16 +273,18 @@ void EngineImpl::shutdown()
     return;
   s4u::Engine::shutdown_ongoing_ = true;
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
-#if HAVE_SMPI
   if (not instance_->actor_list_.empty()) {
+#if HAVE_SMPI
     if (smpi_process() && smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
+#else
+    if (false) {
+#endif
     } else {
       fprintf(stderr, "Process called exit when leaving - Skipping cleanups\n");
       return;
     }
   }
-#endif
 
   if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
