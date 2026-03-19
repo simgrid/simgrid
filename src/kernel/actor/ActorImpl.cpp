@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/forward.h"
-#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -45,7 +44,6 @@ ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
 {
   simcall_.issuer_ = this;
   stacksize_       = context::Context::stack_size;
-  recorded_memory_accesses_ = activity::MemoryAccessImplPtr(new activity::MemoryAccessImpl(this));
 }
 
 ActorImpl::~ActorImpl()

@@ -306,8 +306,6 @@ set(KERNEL_SRC
   src/kernel/activity/IoImpl.hpp
   src/kernel/activity/MailboxImpl.cpp
   src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/MemoryImpl.cpp
-  src/kernel/activity/MemoryImpl.hpp
   src/kernel/activity/MessImpl.cpp
   src/kernel/activity/MessImpl.hpp
   src/kernel/activity/MessageQueueImpl.cpp
@@ -515,6 +513,8 @@ set(MC_SRC_BASE
   src/mc/mc_replay.hpp
 
   src/mc/smemory/runtime/smemory_memorymaps.cpp
+  src/mc/smemory/MemoryAccessTracker.cpp
+  src/mc/smemory/MemoryAccessTracker.hpp
 
   src/mc/transition/Transition.cpp
   src/mc/remote/Channel.cpp
@@ -527,7 +527,6 @@ set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
-  src/mc/api/MemOp.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
   src/mc/api/Strategy.cpp

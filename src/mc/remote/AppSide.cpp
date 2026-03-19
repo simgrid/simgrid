@@ -112,7 +112,7 @@ void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool wan
     if (actor->simcall_.observer_ != nullptr) {
       XBT_DEBUG("Serialize a %s", actor->simcall_.observer_->to_string().c_str());
       actor->simcall_.observer_->serialize(channel_);
-      actor->recorded_memory_accesses_->serialize(channel_);
+      actor->get_memory_tracker()->serialize(channel_);
     } else {
       channel_.pack(mc::Transition::Type::UNKNOWN);
     }

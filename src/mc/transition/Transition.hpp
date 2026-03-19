@@ -7,14 +7,13 @@
 #define SIMGRID_MC_TRANSITION_HPP
 
 #include "simgrid/forward.h" // aid_t
-#include "src/mc/api/MemOp.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "xbt/ex.h"
+#include "src/mc/smemory/MemoryAccessTracker.hpp"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
+#include <atomic>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <cstdint>
-#include <sstream>
 #include <string>
 
 namespace simgrid::mc {
@@ -38,7 +37,7 @@ class Transition {
   /* Global statistics */
   static std::atomic_ulong executed_transitions_;
 
-  std::vector<MemOp> memory_operations_;
+  smemory::MemoryAccessTracker memory_tracker_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
@@ -75,7 +74,7 @@ public:
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::string call_location_ = "";
 
-  std::vector<MemOp> get_mem_op() { return memory_operations_; }
+  smemory::MemoryAccessTracker& get_memory_tracker() { return memory_tracker_; }
 
   /* Which transition was executed for this simcall
    *
@@ -145,7 +144,7 @@ public:
   /* Returns the total amount of transitions replayed so far while backtracing (for statistics) */
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
 
-  void deserialize_memory_operations(mc::Channel& channel);
+  void deserialize_memory_tracker(mc::Channel& channel);
 };
 
 /** Make a new transition from serialized description */

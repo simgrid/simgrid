@@ -6,8 +6,6 @@
 #include "src/mc/mc_record.hpp"
 #include "simgrid/forward.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_base.hpp"
@@ -33,11 +31,11 @@ static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Chann
 {
 
   actor->simcall_.observer_->serialize(app_side);
-  actor->recorded_memory_accesses_->serialize(app_side);
+  actor->get_memory_tracker()->serialize(app_side);
   xbt_assert(app_side.send() == 0, "Could not send response: %s", strerror(errno));
 
   auto* t = deserialize_transition(actor->get_pid(), actor->get_restart_count(), checker_side);
-  t->deserialize_memory_operations(checker_side);
+  t->deserialize_memory_tracker(checker_side);
 
   return t;
 }
@@ -97,18 +95,10 @@ void RecordTrace::replay() const
       XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.epoch, e.first_mem_op_.aid, e.second_mem_op_.epoch,
                 e.second_mem_op_.aid);
 
-      XBT_INFO("First operation was a WRITE made by actor %ld:\n%s\n", e.first_mem_op_.aid,
-               kernel::activity::MemoryAccessImpl::get_info_from_access(
-                   e.first_mem_op_.aid, e.first_mem_op_.epoch,
-                   kernel::activity::MemoryAccess(MemOpType::WRITE, e.location_, e.sizes_[0]))
-                   .c_str());
+      XBT_INFO("First operation was a WRITE made by actor %ld", e.first_mem_op_.aid);
 
-      XBT_INFO("Second operation was a %s made by actor %ld:\n%s\n",
-               e.second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", e.second_mem_op_.aid,
-               kernel::activity::MemoryAccessImpl::get_info_from_access(
-                   e.second_mem_op_.aid, e.second_mem_op_.epoch,
-                   kernel::activity::MemoryAccess(e.second_mem_type_, e.location_, e.sizes_[1]))
-                   .c_str());
+      XBT_INFO("Second operation was a %s made by actor %ld",
+               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.second_mem_op_.aid);
 
       abort();
     }

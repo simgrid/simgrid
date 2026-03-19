@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
-#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/State.hpp"
@@ -14,12 +13,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActor.hpp"
-#include "src/mc/transition/TransitionSynchro.hpp"
-#include "xbt/asserts.h"
-#include "xbt/backtrace.hpp"
-#include "xbt/config.hpp"
-#include "xbt/log.h"
-#include "xbt/string.hpp"
+
 #include <algorithm>
 #include <exception>
 #include <iterator>
@@ -57,21 +51,22 @@ std::string one_string_textual_trace(const PartialExecution& w)
 void Event::initialize_epoch()
 {
   aid_t event_aid_ = contents_.first->aid_;
-  for (auto rw : contents_.first->get_mem_op())
-    if (rw.get_type() == MemOpType::WRITE)
-      last_write_[rw.get_location()] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+  for (auto [location, size, kind] : contents_.first->get_memory_tracker())
+    if (kind == smemory::MemOpType::Write)
+      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
 }
 
 struct EventDataRace : public std::exception {
   void* location_;
   const unsigned char size1_;
   const unsigned char size2_;
-  const MemOpType first_mem_op_;
-  const MemOpType second_mem_op_;
+  const smemory::MemOpType first_mem_op_;
+  const smemory::MemOpType second_mem_op_;
   const EventHandle first_event_;
   const EventHandle second_event_;
-  explicit EventDataRace(void* location, const unsigned char size1, const unsigned char size2, MemOpType first_mem_op,
-                         MemOpType second_mem_op, EventHandle first_event, EventHandle second_event)
+  explicit EventDataRace(void* location, const unsigned char size1, const unsigned char size2,
+                         smemory::MemOpType first_mem_op, smemory::MemOpType second_mem_op, EventHandle first_event,
+                         EventHandle second_event)
       : location_(location)
       , size1_(size1)
       , size2_(size2)
@@ -85,24 +80,23 @@ struct EventDataRace : public std::exception {
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
 {
-  XBT_VERB("Updating epoch with %lu memory accesses", contents_.first->get_mem_op().size());
+  XBT_VERB("Updating epoch");
   last_write_      = prev_event.last_write_;
   aid_t event_aid_ = contents_.first->aid_;
 
-  for (auto rw : contents_.first->get_mem_op()) {
-    auto location   = rw.get_location();
+  for (auto [location, size, kind] : contents_.first->get_memory_tracker()) {
     auto prev_write = last_write_.find(location);
 
     xbt_assert(prev_write == last_write_.end() or prev_write->second.aid != event_aid_,
                "Found two transitions from the same actor in a given epoch.");
 
-    if (rw.get_type() == MemOpType::READ) {
+    if (kind == smemory::MemOpType::Read) {
 
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
         if (clock >= prev_clock.get(aid).value()) {
           // TODO: We need to retrieve the size of the first access
-          throw EventDataRace(location, rw.get_size(), rw.get_size(), MemOpType::WRITE, MemOpType::READ, clock + 1,
+          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read, clock + 1,
                               this->contents_.second.get(event_aid_).value());
           // +1 is here to find the right transition in replay mode
         }
@@ -113,7 +107,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
       if (prev_write != last_write_.end()) {
         auto [aid, clock] = prev_write->second;
         if (clock >= prev_clock.get(aid).value())
-          throw EventDataRace(location, rw.get_size(), rw.get_size(), MemOpType::WRITE, MemOpType::WRITE, clock + 1,
+          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write, clock + 1,
                               this->contents_.second.get(event_aid_).value());
         // +1 is here to find the right transition in replay mode
       }

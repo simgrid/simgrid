@@ -148,12 +148,12 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
         if (race->second_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0)
           trace.back().append(xbt::string_printf(
               "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
-              race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE", race->sizes_[1], race->location_,
+              race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1], race->location_,
               race->second_mem_op_.aid));
         actor_epoch[transition->aid_]++;
         if (actor_epoch[transition->aid_] == race->second_mem_op_.epoch)
           trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
-                                                 race->second_mem_type_ == MemOpType::READ ? "READ" : "WRITE",
+                                                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
                                                  race->sizes_[1], race->location_));
       }
     }

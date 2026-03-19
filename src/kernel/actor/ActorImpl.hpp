@@ -10,6 +10,7 @@
 #include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Actor.hpp"
 #include "src/kernel/actor/Simcall.hpp"
+#include "src/mc/smemory/MemoryAccessTracker.hpp"
 #include "xbt/PropertyHolder.hpp"
 
 #include <atomic>
@@ -104,7 +105,7 @@ public:
   std::exception_ptr exception_;
   bool suspended_ = false;
 
-  activity::MemoryAccessImplPtr recorded_memory_accesses_;
+  mc::smemory::MemoryAccessTracker memory_accesses_tracker_;
   /* the activities on which the actor is currently blocked with a wait(). There is more than one e.g. in a wait_any() */
   std::vector<activity::ActivityImplPtr> waiting_synchros_; 
   /* the activities linked to that actor. They are canceled when it dies, suspend/resumed when it is */
@@ -130,7 +131,7 @@ public:
       delete actor;
   }
 
-  simgrid::kernel::activity::MemoryAccessImpl* get_memory_access() { return recorded_memory_accesses_.get(); }
+  simgrid::mc::smemory::MemoryAccessTracker* get_memory_tracker() { return &memory_accesses_tracker_; }
 
   /* S4U/implem interfaces */
 private:

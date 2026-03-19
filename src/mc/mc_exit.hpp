@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_EXIT_HPP
 #define SIMGRID_MC_EXIT_HPP
 #include "simgrid/forward.h"
-#include "src/kernel/activity/MemoryImpl.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "xbt/base.h"
 #include <exception>
@@ -32,11 +31,11 @@ struct McDataRace : public std::exception {
   const ExitStatus value;
   const odpor::epoch first_mem_op_;
   const odpor::epoch second_mem_op_;
-  MemOpType second_mem_type_;
+  smemory::MemOpType second_mem_type_;
   void* location_;
   unsigned char sizes_[2];
   explicit McDataRace(odpor::epoch first_mem_op, odpor::epoch second_mem_op, void* location, unsigned char size1,
-                      unsigned char size2, MemOpType second_mem_type)
+                      unsigned char size2, smemory::MemOpType second_mem_type)
       : value(ExitStatus::DATA_RACE)
       , first_mem_op_(first_mem_op)
       , second_mem_op_(second_mem_op)
