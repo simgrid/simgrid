@@ -28,7 +28,7 @@ void MemoryAccessTracker::create_memory_access(MemOpType type, void* where, unsi
     uintptr_t page_index = addr >> page_shift_;
 
     uintptr_t page_base = page_index << page_shift_;
-    uintptr_t page_end  = page_base + PAGE_SIZE;
+    uintptr_t page_end  = page_base + page_size_;
 
     // The end of what can be written to a single page from what needs to be marked
     uintptr_t limit = (end < page_end) ? end : page_end;
@@ -78,7 +78,7 @@ bool MemoryAccessTracker::was_marked(void* where, MemOpType type) const
   if (it == pages_.end())
     return false;
 
-  uintptr_t offset = addr & PAGE_MASK;
+  uintptr_t offset = addr & page_mask_;
   uintptr_t bucket = offset >> bucket_shift_;
   uintptr_t word   = bucket >> 6;
   uintptr_t bit    = bucket & 63;
@@ -175,7 +175,7 @@ void MemoryAccessTracker::unused_interval_around(uintptr_t addr, uintptr_t& begi
     sort_pages();
 
   const uintptr_t page_index  = addr >> page_shift_;
-  const uintptr_t page_offset = addr & PAGE_MASK;
+  const uintptr_t page_offset = addr & page_mask_;
   const uintptr_t bucket      = page_offset >> bucket_shift_;
 
   const uintptr_t page_base = page_index << page_shift_;

@@ -42,8 +42,8 @@ XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 class MemoryAccessTracker {
 private:
   static constexpr uintptr_t page_shift_ = 12;                  // 12 gives 4k per page
-  static constexpr uintptr_t PAGE_SIZE   = 1ULL << page_shift_; /* 4096 bytes */
-  static constexpr uintptr_t PAGE_MASK   = PAGE_SIZE - 1;
+  static constexpr uintptr_t page_size_  = 1ULL << page_shift_; /* 4096 bytes */
+  static constexpr uintptr_t page_mask_  = page_size_ - 1;
 
   constexpr static uintptr_t granularity_ = 4;
   static_assert(granularity_ != 0 && ((granularity_ & (granularity_ - 1)) == 0),
@@ -51,7 +51,7 @@ private:
 
   constexpr static uintptr_t bucket_shift_     = __builtin_ctz(granularity_); // log2 (number of trailing 0-bits in x)
   constexpr static uintptr_t word_shift_       = bucket_shift_ + 6;
-  constexpr static uintptr_t buckets_per_page_ = PAGE_SIZE >> bucket_shift_;
+  constexpr static uintptr_t buckets_per_page_ = page_size_ >> bucket_shift_;
   constexpr static uintptr_t words_per_page_   = buckets_per_page_ / 64;
 
   static_assert(buckets_per_page_ % 64 == 0,
