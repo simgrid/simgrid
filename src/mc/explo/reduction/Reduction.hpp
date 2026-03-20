@@ -6,8 +6,10 @@
 #ifndef SIMGRID_MC_REDUCTION_HPP
 #define SIMGRID_MC_REDUCTION_HPP
 
+#include "src/mc/api/states/State.hpp" // instanciation of StatePtr
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/mc_config.hpp"
+
 #include <memory>
 
 namespace simgrid::mc {
