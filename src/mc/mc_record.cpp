@@ -17,6 +17,7 @@
 #include <cstring>
 #include <fstream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <sys/socket.h>

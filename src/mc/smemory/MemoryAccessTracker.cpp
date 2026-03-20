@@ -8,7 +8,7 @@
 #include "xbt/log.h"
 
 #include <cstdint>
-#include <optional>
+#include <limits>
 
 XBT_LOG_NEW_SUBCATEGORY(smemory, mc, "Tracking memory accesses");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");

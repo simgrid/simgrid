@@ -13,6 +13,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/remote/Channel.hpp"
+#include <sstream>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_waittest, mc_observer,
