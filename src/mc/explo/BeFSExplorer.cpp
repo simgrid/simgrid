@@ -37,6 +37,9 @@ RecordTrace BeFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
 
+  if (stack_.empty())
+    return res;
+
   if (const auto trans = stack_.back()->get_transition_out(); trans != nullptr)
     res.push_back(trans.get());
   for (const auto* state = stack_.back().get(); state != nullptr; state = state->get_parent_state())
