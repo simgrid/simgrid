@@ -467,10 +467,15 @@ public:
     }
 #endif
 
-    if (ss.str() == "" && cfg_stacktrace_kind != "none")
-      return "The backtrace returned an empty string. You may want to use --cfg:debug/fullstack:yes to get ride "
-             "of the stack trimming logic. If it helps, please report this bug (including a full stack obtained with "
-             "the additional config flag).";
+    if (ss.str() == "" && cfg_stacktrace_kind != "none") {
+      if (cfg_fullstdstack)
+        return "The backtrace returned an empty string despite the fact that --cfg:debug/fullstack:yes was used. I'm "
+               "out of clue.";
+      else
+        return "The backtrace returned an empty string. You may want to use --cfg:debug/fullstack:yes to get ride "
+               "of the stack trimming logic. If it helps, please report this bug (including a full stack obtained with "
+               "the additional config flag).";
+    }
 
     return ss.str();
   }

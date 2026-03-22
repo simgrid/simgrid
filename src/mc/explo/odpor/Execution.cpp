@@ -48,14 +48,6 @@ std::string one_string_textual_trace(const PartialExecution& w)
   return res;
 }
 
-void Event::initialize_epoch()
-{
-  aid_t event_aid_ = contents_.first->aid_;
-  for (auto [location, size, kind] : contents_.first->get_memory_tracker())
-    if (kind == smemory::MemOpType::Write)
-      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
-}
-
 struct EventDataRace : public std::exception {
   void* location_;
   const unsigned char size1_;
@@ -78,6 +70,14 @@ struct EventDataRace : public std::exception {
   }
 };
 
+void Event::initialize_epoch()
+{
+  aid_t event_aid_ = contents_.first->aid_;
+  for (auto [location, size, kind] : contents_.first->get_memory_tracker())
+    if (kind == smemory::MemOpType::Write)
+      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+}
+
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
 {
   XBT_VERB("Updating epoch");
@@ -88,7 +88,8 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
     auto prev_write = last_write_.find(location);
 
     xbt_assert(prev_write == last_write_.end() or prev_write->second.aid != event_aid_,
-               "Found two transitions from the same actor in a given epoch.");
+               "Found two transitions from the same actor in a given epoch. Location: %p, aid %ld", prev_write->first,
+               event_aid_);
 
     if (kind == smemory::MemOpType::Read) {
 
