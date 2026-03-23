@@ -435,6 +435,7 @@ void xbt_log_control_set(const char *control_string)
 
   /* Special handling of no_loc request, which asks for any file localization to be omitted (for tesh runs) */
   if (strcmp(control_string, "no_loc") == 0) {
+    XBT_VERB("Hide code locations");
     xbt_log_no_loc = 1;
     return;
   }

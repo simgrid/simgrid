@@ -1,8 +1,19 @@
+###
+### Our own tests
 
-foreach(x random-bug mutex-handling)
+set(plusplus_directory smemory)
+set(plusplus_ext c)
 
+foreach(x random-bug mutex-handling plusplus)
+
+  if(NOT DEFINED ${x}_directory)
+    set(${x}_directory ${x})
+  endif()
+  if(NOT DEFINED ${x}_ext)
+    set(${x}_ext cpp)
+  endif()
   if(NOT DEFINED ${x}_sources)
-    set(${x}_sources ${x}/${x}.cpp)
+    set(${x}_sources ${${x}_directory}/${x}.${${x}_ext})
   endif()
 
   if(NOT DEFINED ${x}_disable)
@@ -14,13 +25,15 @@ foreach(x random-bug mutex-handling)
     add_dependencies(tests-mc ${x})
   endif()
 
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${${x}_directory}/${x}.tesh)
 
   foreach(file ${${x}_sources})
     set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
   endforeach()
 
   unset(${x}_sources)
+  unset(${x}_directory)
+  unset(${x}_ext)
   unset(${x}_disable)
 
 endforeach()
@@ -37,6 +50,9 @@ IF(SIMGRID_HAVE_MC)
   ADD_TESH(tesh-mc-without-mutex-handling-dpor --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/mutex-handling --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/mutex-handling without-mutex-handling.tesh --cfg=model-check/reduction:dpor)
   ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
 ENDIF()
+if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_SMEMORY)
+  ADD_TESH(mc-mem-plusplus --setenv bindir=${CMAKE_BINARY_DIR} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/smemory plusplus.tesh)
+ENDIF()
 
 if(enable_coverage)
   ADD_TEST(cover-mc-mutex-handling ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling/mutex-handling ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml)
@@ -48,6 +64,9 @@ if(enable_memcheck)
     set(_${example}_disable 1)
   endforeach()
 endif()
+
+###
+### McMini tests
 
 foreach(x
             simple_barrier_ok              simple_barrier_deadlock

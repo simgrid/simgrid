@@ -914,6 +914,8 @@ include teshsuite/mc/mutex-handling/without-mutex-handling.tesh
 include teshsuite/mc/random-bug/random-bug-replay.tesh
 include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
+include teshsuite/mc/smemory/plusplus.c
+include teshsuite/mc/smemory/plusplus.tesh
 include teshsuite/models/cloud-sharing/cloud-sharing.cpp
 include teshsuite/models/cloud-sharing/cloud-sharing.tesh
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw-bmf.tesh
