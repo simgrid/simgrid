@@ -87,9 +87,8 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
   for (auto [location, size, kind] : contents_.first->get_memory_tracker()) {
     auto prev_write = last_write_.find(location);
 
-    xbt_assert(prev_write == last_write_.end() or prev_write->second.aid != event_aid_,
-               "Found two transitions from the same actor in a given epoch. Location: %p, aid %ld", prev_write->first,
-               event_aid_);
+    if (prev_write != last_write_.end() and prev_write->second.aid == event_aid_)
+      continue; // Cannot race with myself
 
     if (kind == smemory::MemOpType::Read) {
 
