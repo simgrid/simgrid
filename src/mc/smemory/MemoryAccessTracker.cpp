@@ -169,107 +169,79 @@ std::optional<uintptr_t> MemoryAccessTracker::Page::find_next_marked_bucket(uint
 
   return std::nullopt;
 }
-void MemoryAccessTracker::unused_interval_around(uintptr_t addr, uintptr_t& begin, uintptr_t& end, MemOpType kind)
+
+std::pair<uintptr_t, uintptr_t> MemoryAccessTracker::expand_around_memory_chunk(uintptr_t addr, size_t size,
+                                                                                MemOpType kind)
 {
+  xbt_assert((addr & (granularity_ - 1)) == 0, "addr must be on a bucket boundary");
+  xbt_assert(((addr + size) & (granularity_ - 1)) == 0, "addr+size must be on a bucket boundary");
+
   if (sorted_pages_dirty_)
     sort_pages();
 
-  const uintptr_t page_index  = addr >> page_shift_;
-  const uintptr_t page_offset = addr & page_mask_;
-  const uintptr_t bucket      = page_offset >> bucket_shift_;
+  const uintptr_t first_page   = addr >> page_shift_;
+  const uintptr_t first_bucket = (addr & page_mask_) >> bucket_shift_;
+  const uintptr_t last_addr    = addr + size - 1;
+  const uintptr_t last_page    = last_addr >> page_shift_;
+  const uintptr_t last_bucket  = (last_addr & page_mask_) >> bucket_shift_;
 
-  const uintptr_t page_base = page_index << page_shift_;
+  uintptr_t begin = 0;
+  uintptr_t end   = std::numeric_limits<uintptr_t>::max();
 
-  begin = 0;
-  end   = std::numeric_limits<uintptr_t>::max();
+  auto it_first = std::lower_bound(sorted_pages_.begin(), sorted_pages_.end(), first_page);
+  auto it_last  = (first_page == last_page) ? it_first : std::lower_bound(it_first, sorted_pages_.end(), last_page);
 
-  // Locate insertion point
-  auto it = std::lower_bound(sorted_pages_.begin(), sorted_pages_.end(), page_index);
+  // ── SEARCH LEFT ─────────────────────────────────────────────────────────────
 
-  // Check whether current page exists
-  const Page* current_page = nullptr;
+  auto left_it = it_first;
 
-  if (it != sorted_pages_.end() && *it == page_index)
-    current_page = &pages_.at(page_index);
+  // 1) inside the current page, to the left of first_bucket
 
-  // If current bucket is marked, return an empty interval
-  if (current_page) {
-    auto marked = current_page->find_prev_marked_bucket(bucket, kind);
-    if (marked.has_value() && marked.value() == bucket) {
-      begin = addr;
-      end   = addr;
-      return;
+  if (left_it != sorted_pages_.end() && *left_it == first_page) { // Only search the first page if it exists
+    if (first_bucket > 0) {                                       // Something to search
+
+      if (auto found = pages_.at(first_page).find_prev_marked_bucket(first_bucket - 1, kind)) {
+        // begin must be the left boundary of the marked bucket
+        begin = (first_page << page_shift_) + ((*found + 1) << bucket_shift_);
+      }
     }
   }
 
-  // SEARCH 'BEGIN' TO THE LEFT
-  // ==========================
-
-  // 1) inside current page
-  if (current_page && bucket > 0) {
-    auto prev = current_page->find_prev_marked_bucket(bucket - 1, kind);
-    if (prev.has_value()) {
-      uintptr_t marked_bucket = prev.value();
-      begin                   = page_base + ((marked_bucket + 1) << bucket_shift_);
-    }
-  }
-
-  // 2) across previous pages
+  // 2) across the previous pages, starting at the page end
   if (begin == 0) {
-    auto left_it = it;
+    auto left_it = it_first;
     while (left_it != sorted_pages_.begin()) {
       --left_it;
-      const Page& page = pages_.at(*left_it);
-
-      if (not page.has_mark(kind))
-        continue;
-
-      auto last = page.find_prev_marked_bucket(buckets_per_page_ - 1, kind);
-      if (last.has_value()) {
-        uintptr_t marked_bucket = last.value();
-        begin                   = (*left_it << page_shift_) + ((marked_bucket + 1) << bucket_shift_);
+      auto last_marked = pages_.at(*left_it).find_prev_marked_bucket(buckets_per_page_ - 1, kind);
+      if (last_marked.has_value()) {
+        begin = (*left_it << page_shift_) + ((last_marked.value() + 1) << bucket_shift_);
         break;
       }
     }
   }
 
-  // SEARCH 'END' TO THE RIGHT
-  // =========================
-
-  // 1) inside current page
-  if (current_page && bucket + 1 < buckets_per_page_) {
-    auto next = current_page->find_next_marked_bucket(bucket + 1, kind);
-    if (next.has_value()) {
-      uintptr_t marked_bucket = next.value();
-      end                     = page_base + (marked_bucket << bucket_shift_) - 1;
-    }
+  // ── SEARCH RIGHT ────────────────────────────────────────────────────────────
+  // 1) inside the current page, to the right of last_bucklet
+  if (last_bucket + 1 < buckets_per_page_ && it_last != sorted_pages_.end() && *it_last == last_page) {
+    auto next = pages_.at(last_page).find_next_marked_bucket(last_bucket + 1, kind);
+    if (next.has_value())
+      end = (last_page << page_shift_) + (next.value() << bucket_shift_) - 1;
   }
 
-  // 2) across following pages
+  // 2) across the following pages, starting at the page beginning
   if (end == std::numeric_limits<uintptr_t>::max()) {
-    auto right_it = it;
-
+    auto right_it = (it_last != sorted_pages_.end() && *it_last == last_page) ? std::next(it_last) : it_last;
     while (right_it != sorted_pages_.end()) {
-      if (current_page != nullptr)
-        right_it++;
-
-      if (right_it == sorted_pages_.end())
-        break;
-
-      const Page& page = pages_.at(*right_it);
-
-      if (not page.has_mark(kind))
-        continue;
-
-      auto first = page.find_next_marked_bucket(0, kind);
-      if (first.has_value()) {
-        uintptr_t marked_bucket = first.value();
-        end                     = (*right_it << page_shift_) + (marked_bucket << bucket_shift_) - 1;
+      auto first_marked = pages_.at(*right_it).find_next_marked_bucket(0, kind);
+      if (first_marked.has_value()) {
+        end = (*right_it << page_shift_) + (first_marked.value() << bucket_shift_) - 1;
         break;
       }
+      ++right_it;
     }
   }
-  XBT_DEBUG("Done. Begin: %lu; End: %lu", begin, end);
+
+  return {begin, end};
 }
 
 void MemoryAccessTracker::serialize(Channel& channel)

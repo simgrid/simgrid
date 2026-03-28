@@ -447,127 +447,251 @@ TEST_CASE("find_prev_marked_bucket - read vs write separation", "[page]")
   REQUIRE(res.value() == 15);
 }
 
-TEST_CASE("unused_interval - no pages at all")
-{
-  MemoryAccessTracker tracker;
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(1000, begin, end, MemOpType::Write);
-
-  REQUIRE(begin == 0);
-  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
-}
-
-TEST_CASE("unused_interval - single marked bucket")
+TEST_CASE("expand_around_memory_chunk - single marked bucket: Exactly the marked bucket (that is ignored)")
 {
   MemoryAccessTracker tracker;
 
   uintptr_t addr = 0x2000;
   tracker.create_memory_access(MemOpType::Write, (void*)addr, 4);
 
-  uintptr_t begin, end;
-  tracker.unused_interval_around(addr + 16 * tracker.get_bucket_size(), begin, end, MemOpType::Write);
-
-  REQUIRE(begin > addr);
-  REQUIRE(end > addr);
-}
-
-TEST_CASE("unused_interval - bucket itself marked")
-{
-  MemoryAccessTracker tracker;
-
-  uintptr_t addr = 0x3000;
-  tracker.create_memory_access(MemOpType::Write, (void*)addr, 4);
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(addr, begin, end, MemOpType::Write);
-
-  REQUIRE(begin == addr);
-  REQUIRE(end == addr);
-}
-
-TEST_CASE("unused_interval - across two pages")
-{
-  MemoryAccessTracker tracker;
-
-  uintptr_t page0 = 0x4000;
-  uintptr_t page1 = page0 + 4096;
-
-  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + 100), 4);
-  tracker.create_memory_access(MemOpType::Write, (void*)(page1 + 200), 4);
-
-  uintptr_t mid = page0 + 3000;
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(mid, begin, end, MemOpType::Write);
-
-  REQUIRE(begin > page0 + 100);
-  REQUIRE(end < page1 + 200);
-}
-
-TEST_CASE("unused_interval - read vs write separation")
-{
-  MemoryAccessTracker tracker;
-
-  uintptr_t addr = 0x6000;
-  tracker.create_memory_access(MemOpType::Read, (void*)addr, 4);
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(addr + 8, begin, end, MemOpType::Write);
-
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr, 4, MemOpType::Write);
   REQUIRE(begin == 0);
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("unused_interval - query below first used page")
+TEST_CASE("expand_around_memory_chunk - no pages at all")
 {
   MemoryAccessTracker tracker;
-
-  uintptr_t used_page = 0x4000;
-  tracker.create_memory_access(MemOpType::Write, (void*)(used_page + 128), 4);
-
-  uintptr_t query = 0x1000; // page below
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(query, begin, end, MemOpType::Write);
-
+  auto [begin, end] = tracker.expand_around_memory_chunk(1000, 4, MemOpType::Write);
   REQUIRE(begin == 0);
-  REQUIRE(end < used_page + 128);
-}
-
-TEST_CASE("unused_interval - query above last used page")
-{
-  MemoryAccessTracker tracker;
-
-  uintptr_t used_page = 0x4000;
-  tracker.create_memory_access(MemOpType::Write, (void*)(used_page + 128), 4);
-
-  uintptr_t query = used_page + 3 * 4096; // page above
-
-  uintptr_t begin, end;
-  tracker.unused_interval_around(query, begin, end, MemOpType::Write);
-
-  REQUIRE(begin > used_page + 128);
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("unused_interval - unused page between two used pages")
+TEST_CASE("expand_around_memory_chunk - query before the marked bucket")
 {
   MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x2000;
 
-  uintptr_t page0 = 0x4000;
-  uintptr_t page2 = page0 + 2 * 4096;
-  uintptr_t page1 = page0 + 4096; // unused middle page
+  tracker.create_memory_access(MemOpType::Write, (void*)addr, bucket_size);
 
-  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + 100), 4);
+  // Mark is at addr: bucket = 0 on its page.
+  // Right expansion hits bucket 0 → end = addr + 0*bucket_size - 1 = addr - 1
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr - 16 * bucket_size, 2 * bucket_size, MemOpType::Write);
+  REQUIRE(begin == 0);
+  REQUIRE(end == addr - 1);
+}
 
-  tracker.create_memory_access(MemOpType::Write, (void*)(page2 + 200), 4);
+TEST_CASE("expand_around_memory_chunk - query after the marked bucket")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x2000;
 
-  uintptr_t query = page1 + 500; // inside unused middle page
+  // Mark covers buckets 0..3
+  tracker.create_memory_access(MemOpType::Write, (void*)addr, 4 * bucket_size);
 
-  uintptr_t begin, end;
-  tracker.unused_interval_around(query, begin, end, MemOpType::Write);
+  // Left expansion hits bucket 3 → begin = addr + (3+1)*bucket_size
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr + 16 * bucket_size, 2 * bucket_size, MemOpType::Write);
+  REQUIRE(begin == addr + 4 * bucket_size);
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
 
-  REQUIRE(begin > page0 + 100);
-  REQUIRE(end < page2 + 200);
+TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the right")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t page0       = 0x4000;
+  const uintptr_t page1       = page0 + 4096;
+
+  // left mark:  offset 100, bucket = 100/bucket_size, aligned down to bucket boundary
+  // right mark: offset 200 on page1, bucket = 200/bucket_size
+  const uintptr_t left_mark_offset  = (100 / bucket_size) * bucket_size; // bucket-aligned
+  const uintptr_t right_mark_offset = (200 / bucket_size) * bucket_size;
+  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + left_mark_offset), bucket_size);
+  tracker.create_memory_access(MemOpType::Write, (void*)(page1 + right_mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(page0 + 3000, 100, MemOpType::Write);
+
+  // begin = page0 + (left_bucket + 1) * bucket_size
+  REQUIRE(begin == page0 + left_mark_offset + bucket_size);
+  // end   = page1 + right_bucket * bucket_size - 1
+  REQUIRE(end == page1 + right_mark_offset - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the left")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t page0       = 0x4000;
+  const uintptr_t page1       = page0 + 4096;
+
+  const uintptr_t left_mark_offset  = (100 / bucket_size) * bucket_size;
+  const uintptr_t right_mark_offset = (200 / bucket_size) * bucket_size;
+  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + left_mark_offset), bucket_size);
+  tracker.create_memory_access(MemOpType::Write, (void*)(page1 + right_mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(page1 + 100, 100, MemOpType::Write);
+
+  REQUIRE(begin == page0 + left_mark_offset + bucket_size);
+  REQUIRE(end == page1 + right_mark_offset - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - searched interval spans across 2 pages")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t page0       = 0x4000;
+  const uintptr_t page1       = page0 + 4096;
+
+  const uintptr_t left_mark_offset  = (100 / bucket_size) * bucket_size;
+  const uintptr_t right_mark_offset = (200 / bucket_size) * bucket_size;
+  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + left_mark_offset), bucket_size);
+  tracker.create_memory_access(MemOpType::Write, (void*)(page1 + right_mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(page0 + 3096, 1100, MemOpType::Write);
+
+  REQUIRE(begin == page0 + left_mark_offset + bucket_size);
+  REQUIRE(end == page1 + right_mark_offset - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - read mark does not block write expansion")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x6000;
+
+  tracker.create_memory_access(MemOpType::Read, (void*)addr, bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr + 8 * bucket_size, bucket_size, MemOpType::Write);
+  REQUIRE(begin == 0);
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
+
+TEST_CASE("expand_around_memory_chunk - write mark does not block read expansion")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x6000;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)addr, bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr + 8 * bucket_size, bucket_size, MemOpType::Read);
+  REQUIRE(begin == 0);
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
+
+TEST_CASE("expand_around_memory_chunk - query below first used page")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t used_page   = 0x4000;
+  const uintptr_t mark_offset = (128 / bucket_size) * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(used_page + mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(0x1000, bucket_size, MemOpType::Write);
+  REQUIRE(begin == 0);
+  REQUIRE(end == used_page + mark_offset - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - query above last used page")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t used_page   = 0x4000;
+  const uintptr_t mark_offset = (128 / bucket_size) * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(used_page + mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(used_page + 3 * 4096, bucket_size, MemOpType::Write);
+  REQUIRE(begin == used_page + mark_offset + bucket_size);
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
+
+TEST_CASE("expand_around_memory_chunk - unused page between two used pages")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size       = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t page0             = 0x4000;
+  const uintptr_t page2             = page0 + 2 * 4096;
+  const uintptr_t left_mark_offset  = (100 / bucket_size) * bucket_size;
+  const uintptr_t right_mark_offset = (200 / bucket_size) * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(page0 + left_mark_offset), bucket_size);
+  tracker.create_memory_access(MemOpType::Write, (void*)(page2 + right_mark_offset), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(page0 + 4096 + 500, bucket_size, MemOpType::Write);
+  REQUIRE(begin == page0 + left_mark_offset + bucket_size);
+  REQUIRE(end == page2 + right_mark_offset - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - addr at page start, mark on same page to the right")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t page        = 0x3000;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(page + 32 * bucket_size), bucket_size);
+
+  // first_bucket == 0: nothing to search left on this page
+  auto [begin, end] = tracker.expand_around_memory_chunk(page, bucket_size, MemOpType::Write);
+  REQUIRE(begin == 0);
+  REQUIRE(end == page + 32 * bucket_size - 1);
+}
+
+TEST_CASE("expand_around_memory_chunk - chunk ends at page boundary, mark on same page to the left")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size      = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t buckets_per_page = 4096 / bucket_size;
+  const uintptr_t page             = 0x3000;
+  const uintptr_t last_bucket_addr = page + (buckets_per_page - 1) * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(page + 32 * bucket_size), bucket_size);
+
+  // last_bucket+1 == buckets_per_page: nothing to search right on this page, no next pages
+  auto [begin, end] = tracker.expand_around_memory_chunk(last_bucket_addr, bucket_size, MemOpType::Write);
+  REQUIRE(begin == page + 33 * bucket_size);
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
+
+TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the left")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x2000 + 10 * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(addr - bucket_size), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr, bucket_size, MemOpType::Write);
+  REQUIRE(begin == addr); // left expansion blocked immediately
+  REQUIRE(end == std::numeric_limits<uintptr_t>::max());
+}
+
+TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the right")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x2000 + 10 * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(addr + bucket_size), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr, bucket_size, MemOpType::Write);
+  REQUIRE(begin == 0);
+  REQUIRE(end == addr + bucket_size - 1); // right expansion blocked immediately
+}
+
+TEST_CASE("expand_around_memory_chunk - marks on both sides, same page")
+{
+  MemoryAccessTracker tracker;
+  const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
+  const uintptr_t addr        = 0x2000 + 20 * bucket_size;
+
+  tracker.create_memory_access(MemOpType::Write, (void*)(addr - 5 * bucket_size), bucket_size);
+  tracker.create_memory_access(MemOpType::Write, (void*)(addr + 5 * bucket_size), bucket_size);
+
+  auto [begin, end] = tracker.expand_around_memory_chunk(addr, bucket_size, MemOpType::Write);
+  REQUIRE(begin == addr - 4 * bucket_size);
+  REQUIRE(end == addr + 5 * bucket_size - 1);
 }

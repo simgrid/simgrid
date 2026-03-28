@@ -41,7 +41,7 @@ XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 
 class MemoryAccessTracker {
 private:
-  static constexpr uintptr_t page_shift_ = 12;                  // 12 gives 4k per page
+  static constexpr uintptr_t page_shift_ = 12;                  // 12 gives 4k per page -- assumed by the tests
   static constexpr uintptr_t page_size_  = 1ULL << page_shift_; /* 4096 bytes */
   static constexpr uintptr_t page_mask_  = page_size_ - 1;
 
@@ -61,14 +61,6 @@ private:
     std::vector<uint64_t> read_bits  = std::vector<uint64_t>(words_per_page_, 0);
     std::vector<uint64_t> write_bits = std::vector<uint64_t>(words_per_page_, 0);
 
-    bool has_mark(MemOpType type) const
-    {
-      auto& bits = type == MemOpType::Read ? read_bits : write_bits;
-      for (uintptr_t i = 0; i < words_per_page_; ++i)
-        if (bits[i] != 0)
-          return true;
-      return false;
-    };
     void mark_bucket(uintptr_t bucket, MemOpType type);
     std::optional<uintptr_t> find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
     std::optional<uintptr_t> find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
@@ -96,9 +88,18 @@ public:
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
   constexpr static size_t get_bucket_size() { return granularity_; }
-  // Search begin, the maximal value so that begin is unmarked and begin-1 is marked
-  // Respectively, end is the minimal value so that end is unmarked and end+1 is marked
-  void unused_interval_around(uintptr_t addr, uintptr_t& begin, uintptr_t& end, MemOpType kind);
+
+  // Returns the maximal interval [begin, end] containing [addr, addr+size-1]
+  // that does not drool into any other marked bucket of the same kind.
+  //
+  // In other words, begin is the left-most byte to the left of addr that is not marked while
+  // end is the right-most byte to the right of (addr+size-1) that is not marked.
+  //
+  // The bytes within [addr; addr+size-1] are not even tested.
+  //
+  // Preconditions:
+  //   * (addr) and (addr+size-1) are both aligned on the granularity
+  std::pair<uintptr_t, uintptr_t> expand_around_memory_chunk(uintptr_t addr, size_t size, MemOpType kind);
 
   // ============================================================
   //                    Serialization
