@@ -15,6 +15,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/smemory/MemoryAccessTracker.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
@@ -135,10 +136,16 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
 
     if (race != nullptr) {
       if (transition->aid_ == race->first_mem_op_.aid) {
-        if (race->first_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0)
-          trace.back().append(xbt::string_printf(
-              "     <== racy WRITE of size %ub on %p by actor %ld between its creation and this operation",
-              race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->first_mem_op_.aid));
+        if (race->first_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0) {
+          if (smemory::MemoryAccessTracker::is_coalescing())
+            trace.back().append(xbt::string_printf(
+                "     <== racy WRITE of size %ub on %p by actor %ld between its creation and this operation",
+                race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->first_mem_op_.aid));
+          else
+            trace.back().append(
+                xbt::string_printf("     <== racy WRITE on %p by actor %ld between its creation and this operation",
+                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->first_mem_op_.aid));
+        }
         actor_epoch[transition->aid_]++;
         if (actor_epoch[transition->aid_] == race->first_mem_op_.epoch)
           trace.back().append(xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation",
@@ -146,11 +153,18 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
                                                  xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_));
       }
       if (transition->aid_ == race->second_mem_op_.aid) {
-        if (race->second_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0)
-          trace.back().append(xbt::string_printf(
-              "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
-              race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-              xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.aid));
+        if (race->second_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0) {
+          if (smemory::MemoryAccessTracker::is_coalescing())
+            trace.back().append(xbt::string_printf(
+                "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
+                race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
+                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.aid));
+          else
+            trace.back().append(
+                xbt::string_printf("     <== racy %s on %p by actor %ld between its creation and this operation",
+                                   race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.aid));
+        }
         actor_epoch[transition->aid_]++;
         if (actor_epoch[transition->aid_] == race->second_mem_op_.epoch)
           trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",

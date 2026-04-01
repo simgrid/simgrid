@@ -45,7 +45,7 @@ private:
   static constexpr uintptr_t page_size_  = 1ULL << page_shift_; /* 4096 bytes */
   static constexpr uintptr_t page_mask_  = page_size_ - 1;
 
-  constexpr static uintptr_t granularity_ = 4;
+  constexpr static uintptr_t granularity_ = 1;
   static_assert(granularity_ != 0 && ((granularity_ & (granularity_ - 1)) == 0),
                 "MemoryAccessTracker::granularity must be power of two.");
 
@@ -56,6 +56,10 @@ private:
 
   static_assert(buckets_per_page_ % 64 == 0,
                 "4096/granularity must be multiple of 64 (because words of the bitfield are uint64_t)");
+
+  // Whether all bytes of a memory area shall be marked and whether adjacent bytes shall be considered as a single
+  // (larger) access
+  static constexpr bool coalescing_ = false;
 
   struct Page {
     std::vector<uint64_t> read_bits  = std::vector<uint64_t>(words_per_page_, 0);
@@ -88,6 +92,7 @@ public:
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
   constexpr static size_t get_bucket_size() { return granularity_; }
+  constexpr static bool is_coalescing() { return coalescing_; }
 
   // Returns the maximal interval [begin, end] containing [addr, addr+size-1]
   // that does not drool into any other marked bucket of the same kind.

@@ -12,7 +12,7 @@
 
 using namespace simgrid::mc::smemory;
 
-TEST_CASE("MemoryAccessTracker: one read")
+TEST_CASE("MemoryAccessTracker: one read", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0); // Addresses on the stack are ignored
@@ -27,7 +27,7 @@ TEST_CASE("MemoryAccessTracker: one read")
   REQUIRE(tracker.was_written(buffer.data() + tracker.get_bucket_size() + 1) == false);
 }
 
-TEST_CASE("MemoryAccessTracker: one write")
+TEST_CASE("MemoryAccessTracker: one write", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0);
@@ -42,7 +42,7 @@ TEST_CASE("MemoryAccessTracker: one write")
   REQUIRE(tracker.was_written(buffer.data() + tracker.get_bucket_size() + 1) == false);
 }
 
-TEST_CASE("MemoryAccessTracker: write + read")
+TEST_CASE("MemoryAccessTracker: write + read", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0);
@@ -54,7 +54,7 @@ TEST_CASE("MemoryAccessTracker: write + read")
   REQUIRE(tracker.was_written(buffer.data()) == true);
 }
 
-TEST_CASE("MemoryAccessTracker: several bytes of the same bucket")
+TEST_CASE("MemoryAccessTracker: several bytes of the same bucket", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0);
@@ -73,7 +73,7 @@ TEST_CASE("MemoryAccessTracker: several bytes of the same bucket")
   REQUIRE(tracker.was_read(buffer.data() + 2 * MemoryAccessTracker::get_bucket_size()) == false);
 }
 
-TEST_CASE("MemoryAccessTracker: access accross two words")
+TEST_CASE("MemoryAccessTracker: access accross two words", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   constexpr size_t word_bytes = 64 * MemoryAccessTracker::get_bucket_size(); // 64 buckets * 4 bytes
@@ -86,15 +86,15 @@ TEST_CASE("MemoryAccessTracker: access accross two words")
   // Check word 0
   REQUIRE(tracker.was_read(buffer.data() + word_bytes - 9) == false);
   REQUIRE(tracker.was_read(buffer.data() + word_bytes - 8) == true);
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes - 1) == true);
+  REQUIRE(tracker.was_read(buffer.data() + word_bytes - 1) == MemoryAccessTracker::is_coalescing());
 
   // check word 1
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes) == true);
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes + 7) == true);
+  REQUIRE(tracker.was_read(buffer.data() + word_bytes) == MemoryAccessTracker::is_coalescing());
+  REQUIRE(tracker.was_read(buffer.data() + word_bytes + 7) == MemoryAccessTracker::is_coalescing());
   REQUIRE(tracker.was_read(buffer.data() + word_bytes + 8) == false);
 }
 
-TEST_CASE("MemoryAccessTracker: accross page boundary")
+TEST_CASE("MemoryAccessTracker: accross page boundary", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
 
@@ -104,15 +104,16 @@ TEST_CASE("MemoryAccessTracker: accross page boundary")
   // This write ends exactly at the end of the page
   tracker.create_memory_access(MemOpType::Write, buffer.data() + page_size - 8, 8);
 
-  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) == true);
+  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) == MemoryAccessTracker::is_coalescing());
   REQUIRE(tracker.was_written(buffer.data() + page_size) == false);
 
   // Accross the page boundary
   tracker.create_memory_access(MemOpType::Write, buffer.data() + page_size - 4, 8);
 
-  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) == true);
-  REQUIRE(tracker.was_written(buffer.data() + page_size) == true);
-  REQUIRE(tracker.was_written(buffer.data() + page_size + 3) == true);
+  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) ==
+          (MemoryAccessTracker::is_coalescing() || MemoryAccessTracker::get_bucket_size() >= 4));
+  REQUIRE(tracker.was_written(buffer.data() + page_size) == MemoryAccessTracker::is_coalescing());
+  REQUIRE(tracker.was_written(buffer.data() + page_size + 3) == MemoryAccessTracker::is_coalescing());
   REQUIRE(tracker.was_written(buffer.data() + page_size + 4) == false);
 }
 
@@ -125,7 +126,7 @@ static std::vector<bool>& make_result(MemoryAccessTracker& tracker, char* base, 
   return result;
 }
 
-TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads")
+TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0);
@@ -156,7 +157,7 @@ TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads")
       UNSCOPED_INFO("Value " << i << " is: read=" << tracker.was_read(buffer.data() + i)
                              << " ; write=" << tracker.was_written(buffer.data() + i));
       result.push_back(tracker.was_read(buffer.data() + i));
-      expected.push_back(true);
+      expected.push_back(i < MemoryAccessTracker::get_bucket_size() || MemoryAccessTracker::is_coalescing());
     }
 
     REQUIRE_THAT(result, Catch::Matchers::Equals(expected));
@@ -175,8 +176,16 @@ TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads")
                                    << " ; write=" << tracker.was_written(buffer.data() + i));
       result_reads.push_back(tracker.was_read(buffer.data() + i));
       result_writes.push_back(tracker.was_written(buffer.data() + i));
-      expected_reads.push_back(i < 4 ? true : false);  // write dominates
-      expected_writes.push_back(i < 4 ? false : true); // Only wrote on the first part
+      if (MemoryAccessTracker::is_coalescing()) {
+        expected_reads.push_back(i < 4 ? true : false);  // write dominates
+        expected_writes.push_back(i < 4 ? false : true); // Only wrote on the first part
+      } else {
+        expected_reads.push_back(i < MemoryAccessTracker::get_bucket_size() ? true : false); // write dominates
+        expected_writes.push_back(i < 4 ? false
+                                        : (i - 4 < MemoryAccessTracker::get_bucket_size()
+                                               ? true
+                                               : false)); // Only wrote on the first part, but a whole bucklet
+      }
     }
     REQUIRE_THAT(expected_reads, Catch::Matchers::Equals(result_reads));
     REQUIRE_THAT(expected_writes, Catch::Matchers::Equals(result_writes));
@@ -185,7 +194,7 @@ TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads")
 
 // ============ Iterator ================
 
-TEST_CASE("Iterator: reads in a single page")
+TEST_CASE("Iterator: reads in a single page", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker; // granularité 4 bytes
   std::vector<char> buffer(16, 0);
@@ -199,14 +208,17 @@ TEST_CASE("Iterator: reads in a single page")
 
   auto [addr, size, type] = *it;
   REQUIRE(addr == (void*)buffer.data());
-  REQUIRE(size == 8);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size == 8);
+  else
+    REQUIRE(size == std::min<size_t>(8, MemoryAccessTracker::get_bucket_size()));
   REQUIRE(type == MemOpType::Read);
 
   ++it;
   REQUIRE(it == end); // only one chunk
 }
 
-TEST_CASE("Iterator: writes in a single page")
+TEST_CASE("Iterator: writes in a single page", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(16, 0);
@@ -217,11 +229,14 @@ TEST_CASE("Iterator: writes in a single page")
   auto [addr, size, type] = *it;
 
   REQUIRE(addr == buffer.data());
-  REQUIRE(size == 8);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size == 8);
+  else
+    REQUIRE(size == std::min<size_t>(8, MemoryAccessTracker::get_bucket_size()));
   REQUIRE(type == MemOpType::Write);
 }
 
-TEST_CASE("Iterator: reads and then writes")
+TEST_CASE("Iterator: reads and then writes", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(16, 0);
@@ -234,13 +249,19 @@ TEST_CASE("Iterator: reads and then writes")
   auto [addr1, size1, type1] = *it;
   REQUIRE(addr1 == buffer.data());
   REQUIRE(type1 == MemOpType::Read);
-  REQUIRE(size1 == 4);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size1 == 4);
+  else
+    REQUIRE(size1 == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
 
   // Second chunk
   ++it;
   auto [addr2, size2, type2] = *it;
   REQUIRE(addr2 == buffer.data() + 4);
-  REQUIRE(size2 == 4);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size2 == 4);
+  else
+    REQUIRE(size2 == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
   REQUIRE(type2 == MemOpType::Write);
 
   // No more chunks
@@ -248,7 +269,7 @@ TEST_CASE("Iterator: reads and then writes")
   REQUIRE(it == tracker.end());
 }
 
-TEST_CASE("Iterator: contiguity within page")
+TEST_CASE("Iterator: contiguity within page", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker tracker;
   std::vector<char> buffer(32, 0);
@@ -260,8 +281,63 @@ TEST_CASE("Iterator: contiguity within page")
   auto it                 = tracker.begin();
   auto [addr, size, type] = *it;
   REQUIRE(addr == (void*)buffer.data());
-  REQUIRE(size == 8); // both chunks were merged
   REQUIRE(type == MemOpType::Write);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size == 8); // both chunks were merged
+  else {
+    REQUIRE(size == std::min<size_t>(4, MemoryAccessTracker::get_bucket_size()));
+    ++it;
+    REQUIRE(it != tracker.end()); // not merged
+
+    std::tie(addr, size, type) = *it;
+    REQUIRE(addr == (void*)(buffer.data() + 4));
+    REQUIRE(size == std::min<size_t>(4, MemoryAccessTracker::get_bucket_size()));
+    REQUIRE(type == MemOpType::Write);
+  }
+
+  // No more chunks
+  ++it;
+  REQUIRE(it == tracker.end());
+}
+
+TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessTracker]")
+{
+  MemoryAccessTracker tracker;
+
+  // Simulate variables instead of using real ones to avoid ASLR and alignment issues
+  tracker.create_memory_access(MemOpType::Write, (void*)0x4000, 4); // Simulate an integer
+  tracker.create_memory_access(MemOpType::Write, (void*)0x4004, 1); // Simulate a char
+  tracker.create_memory_access(MemOpType::Write, (void*)0x4005, 1);
+
+  auto it                 = tracker.begin();
+  auto [addr, size, type] = *it;
+  REQUIRE(addr == (void*)0x4000);
+  REQUIRE(type == MemOpType::Write);
+  if (MemoryAccessTracker::is_coalescing())
+    REQUIRE(size == 6); // chunks were merged
+  else {
+    REQUIRE(size == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
+    ++it;
+    if (4 >= MemoryAccessTracker::get_bucket_size()) { // Not all variables fall into the same bucklet
+      REQUIRE(it != tracker.end());                    // not merged
+
+      std::tie(addr, size, type) = *it;
+      REQUIRE(addr == (void*)0x4004);
+      REQUIRE(size == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
+      REQUIRE(type == MemOpType::Write);
+      ++it;
+
+      if (MemoryAccessTracker::get_bucket_size() == 1) { // The two chars do not fall into the same bucklet
+        REQUIRE(it != tracker.end());                    // not merged
+
+        std::tie(addr, size, type) = *it;
+        REQUIRE(addr == (void*)0x4005);
+        REQUIRE(size == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
+        REQUIRE(type == MemOpType::Write);
+        ++it;
+      }
+    }
+  }
 
   // No more chunks
   ++it;
@@ -270,7 +346,7 @@ TEST_CASE("Iterator: contiguity within page")
 
 // ============ Page::find_prev_marked_bucket() and Page::find_next_marked_bucket() ================
 
-TEST_CASE("find_*_marked_bucket - no bucket marked", "[page]")
+TEST_CASE("find_*_marked_bucket - no bucket marked", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
 
@@ -281,7 +357,7 @@ TEST_CASE("find_*_marked_bucket - no bucket marked", "[page]")
   REQUIRE_FALSE(res.has_value());
 }
 
-TEST_CASE("find_*_marked_bucket - single bucket exact match", "[page]")
+TEST_CASE("find_*_marked_bucket - single bucket exact match", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(5, MemOpType::Write);
@@ -295,7 +371,7 @@ TEST_CASE("find_*_marked_bucket - single bucket exact match", "[page]")
   REQUIRE(res.value() == 5);
 }
 
-TEST_CASE("find_*_marked_bucket - single bucket before/after start -> found", "[page]")
+TEST_CASE("find_*_marked_bucket - single bucket before/after start -> found", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(5, MemOpType::Write);
@@ -309,7 +385,7 @@ TEST_CASE("find_*_marked_bucket - single bucket before/after start -> found", "[
   REQUIRE(res.value() == 5);
 }
 
-TEST_CASE("find_prev_marked_bucket - single bucket after/before start -> not found", "[page]")
+TEST_CASE("find_prev_marked_bucket - single bucket after/before start -> not found", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(20, MemOpType::Write);
@@ -321,7 +397,7 @@ TEST_CASE("find_prev_marked_bucket - single bucket after/before start -> not fou
   REQUIRE_FALSE(res.has_value());
 }
 
-TEST_CASE("find_*_marked_bucket - multiple buckets same word", "[page]")
+TEST_CASE("find_*_marked_bucket - multiple buckets same word", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(3, MemOpType::Write);
@@ -344,7 +420,7 @@ TEST_CASE("find_*_marked_bucket - multiple buckets same word", "[page]")
   REQUIRE(res.value() == 12);
 }
 
-TEST_CASE("find_*_marked_bucket - bucket at word boundary 63", "[page]")
+TEST_CASE("find_*_marked_bucket - bucket at word boundary 63", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(63, MemOpType::Write);
@@ -361,7 +437,7 @@ TEST_CASE("find_*_marked_bucket - bucket at word boundary 63", "[page]")
   res = page.find_next_marked_bucket(62, MemOpType::Write);
   REQUIRE(res.value() == 63);
 }
-TEST_CASE("find_next_marked_bucket - boundary 64", "[page]")
+TEST_CASE("find_next_marked_bucket - boundary 64", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(64, MemOpType::Write);
@@ -378,7 +454,7 @@ TEST_CASE("find_next_marked_bucket - boundary 64", "[page]")
   REQUIRE(res.value() == 64);
 }
 
-TEST_CASE("find_prev_marked_bucket - across words", "[page]")
+TEST_CASE("find_prev_marked_bucket - across words", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(10, MemOpType::Write);
@@ -393,7 +469,7 @@ TEST_CASE("find_prev_marked_bucket - across words", "[page]")
   REQUIRE(res.value() == 10);
 }
 
-TEST_CASE("find_prev_marked_bucket - first bucket of page", "[page]")
+TEST_CASE("find_prev_marked_bucket - first bucket of page", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(0, MemOpType::Write);
@@ -408,7 +484,7 @@ TEST_CASE("find_prev_marked_bucket - first bucket of page", "[page]")
   REQUIRE(res.value() == 0);
 }
 
-TEST_CASE("find_next_marked_bucket - last bucket of page", "[page]")
+TEST_CASE("find_next_marked_bucket - last bucket of page", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   uintptr_t last = MemoryAccessTracker::buckets_per_page_ - 1;
@@ -420,7 +496,7 @@ TEST_CASE("find_next_marked_bucket - last bucket of page", "[page]")
   REQUIRE(res.value() == last);
 }
 
-TEST_CASE("find_prev_marked_bucket - start_bucket = 0 no match", "[page]")
+TEST_CASE("find_prev_marked_bucket - start_bucket = 0 no match", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(10, MemOpType::Write);
@@ -429,7 +505,7 @@ TEST_CASE("find_prev_marked_bucket - start_bucket = 0 no match", "[page]")
   REQUIRE_FALSE(res.has_value());
 }
 
-TEST_CASE("find_prev_marked_bucket - read vs write separation", "[page]")
+TEST_CASE("find_prev_marked_bucket - read vs write separation", "[MemoryAccessTracker]")
 {
   MemoryAccessTracker::Page page;
   page.mark_bucket(15, MemOpType::Read);
@@ -447,8 +523,12 @@ TEST_CASE("find_prev_marked_bucket - read vs write separation", "[page]")
   REQUIRE(res.value() == 15);
 }
 
-TEST_CASE("expand_around_memory_chunk - single marked bucket: Exactly the marked bucket (that is ignored)")
+TEST_CASE("expand_around_memory_chunk - single marked bucket: Exactly the marked bucket (that is ignored)",
+          "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
 
   uintptr_t addr = 0x2000;
@@ -459,16 +539,22 @@ TEST_CASE("expand_around_memory_chunk - single marked bucket: Exactly the marked
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - no pages at all")
+TEST_CASE("expand_around_memory_chunk - no pages at all", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   auto [begin, end] = tracker.expand_around_memory_chunk(1000, 4, MemOpType::Write);
   REQUIRE(begin == 0);
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - query before the marked bucket")
+TEST_CASE("expand_around_memory_chunk - query before the marked bucket", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x2000;
@@ -482,8 +568,11 @@ TEST_CASE("expand_around_memory_chunk - query before the marked bucket")
   REQUIRE(end == addr - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - query after the marked bucket")
+TEST_CASE("expand_around_memory_chunk - query after the marked bucket", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x2000;
@@ -497,8 +586,11 @@ TEST_CASE("expand_around_memory_chunk - query after the marked bucket")
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the right")
+TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the right", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t page0       = 0x4000;
@@ -519,8 +611,11 @@ TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the right")
   REQUIRE(end == page1 + right_mark_offset - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the left")
+TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the left", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t page0       = 0x4000;
@@ -537,8 +632,11 @@ TEST_CASE("expand_around_memory_chunk - crossing a page boundary to the left")
   REQUIRE(end == page1 + right_mark_offset - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - searched interval spans across 2 pages")
+TEST_CASE("expand_around_memory_chunk - searched interval spans across 2 pages", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t page0       = 0x4000;
@@ -555,8 +653,11 @@ TEST_CASE("expand_around_memory_chunk - searched interval spans across 2 pages")
   REQUIRE(end == page1 + right_mark_offset - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - read mark does not block write expansion")
+TEST_CASE("expand_around_memory_chunk - read mark does not block write expansion", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x6000;
@@ -568,8 +669,11 @@ TEST_CASE("expand_around_memory_chunk - read mark does not block write expansion
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - write mark does not block read expansion")
+TEST_CASE("expand_around_memory_chunk - write mark does not block read expansion", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x6000;
@@ -581,8 +685,11 @@ TEST_CASE("expand_around_memory_chunk - write mark does not block read expansion
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - query below first used page")
+TEST_CASE("expand_around_memory_chunk - query below first used page", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t used_page   = 0x4000;
@@ -595,8 +702,11 @@ TEST_CASE("expand_around_memory_chunk - query below first used page")
   REQUIRE(end == used_page + mark_offset - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - query above last used page")
+TEST_CASE("expand_around_memory_chunk - query above last used page", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t used_page   = 0x4000;
@@ -609,8 +719,11 @@ TEST_CASE("expand_around_memory_chunk - query above last used page")
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - unused page between two used pages")
+TEST_CASE("expand_around_memory_chunk - unused page between two used pages", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size       = MemoryAccessTracker::get_bucket_size();
   const uintptr_t page0             = 0x4000;
@@ -626,8 +739,11 @@ TEST_CASE("expand_around_memory_chunk - unused page between two used pages")
   REQUIRE(end == page2 + right_mark_offset - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - addr at page start, mark on same page to the right")
+TEST_CASE("expand_around_memory_chunk - addr at page start, mark on same page to the right", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t page        = 0x3000;
@@ -640,8 +756,12 @@ TEST_CASE("expand_around_memory_chunk - addr at page start, mark on same page to
   REQUIRE(end == page + 32 * bucket_size - 1);
 }
 
-TEST_CASE("expand_around_memory_chunk - chunk ends at page boundary, mark on same page to the left")
+TEST_CASE("expand_around_memory_chunk - chunk ends at page boundary, mark on same page to the left",
+          "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size      = MemoryAccessTracker::get_bucket_size();
   const uintptr_t buckets_per_page = 4096 / bucket_size;
@@ -656,8 +776,11 @@ TEST_CASE("expand_around_memory_chunk - chunk ends at page boundary, mark on sam
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the left")
+TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the left", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x2000 + 10 * bucket_size;
@@ -669,8 +792,11 @@ TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the left")
   REQUIRE(end == std::numeric_limits<uintptr_t>::max());
 }
 
-TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the right")
+TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the right", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x2000 + 10 * bucket_size;
@@ -682,8 +808,11 @@ TEST_CASE("expand_around_memory_chunk - mark immediately adjacent to the right")
   REQUIRE(end == addr + bucket_size - 1); // right expansion blocked immediately
 }
 
-TEST_CASE("expand_around_memory_chunk - marks on both sides, same page")
+TEST_CASE("expand_around_memory_chunk - marks on both sides, same page", "[MemoryAccessTracker]")
 {
+  if (not MemoryAccessTracker::is_coalescing())
+    return; // Testing expand_around_memory_chunk() makes no sense when the MemoryAccessTracker is not coalescing.
+
   MemoryAccessTracker tracker;
   const uintptr_t bucket_size = MemoryAccessTracker::get_bucket_size();
   const uintptr_t addr        = 0x2000 + 20 * bucket_size;

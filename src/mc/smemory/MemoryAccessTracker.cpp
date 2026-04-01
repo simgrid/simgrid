@@ -17,11 +17,33 @@ namespace simgrid::mc::smemory {
 
 void MemoryAccessTracker::create_memory_access(MemOpType type, void* where, unsigned char size)
 {
-  XBT_DEBUG("Marking %u bytes at %p as %s", size, where, to_c_str(type));
-
   // Save the memory access to the bitmap
   uintptr_t addr = reinterpret_cast<uintptr_t>(where);
-  uintptr_t end  = addr + size;
+  uintptr_t end  = addr + size; // ignored when coalescing
+
+  if (not coalescing_) {
+    XBT_DEBUG("Marking the first byte of memory at %p as %s", where, to_c_str(type));
+    uintptr_t page_index = addr >> page_shift_;
+    uintptr_t page_base  = page_index << page_shift_;
+    uintptr_t offset     = addr - page_base;
+    if (pages_.find(page_index) == pages_.end())
+      sorted_pages_dirty_ = true;
+    Page& page = pages_.try_emplace(page_index).first->second;
+
+    uintptr_t first_bucket = offset >> bucket_shift_;
+    uintptr_t word_index   = first_bucket >> 6;
+    uintptr_t first_bit    = first_bucket & 63;
+    uint64_t mask          = 1ULL << first_bit;
+
+    if (type == MemOpType::Write)
+      page.write_bits[word_index] |= mask;
+    else
+      page.read_bits[word_index] |= mask;
+
+    return;
+  }
+
+  XBT_DEBUG("Marking %u bytes at %p as %s", size, where, to_c_str(type));
 
   while (addr < end) {
 
@@ -175,6 +197,8 @@ std::pair<uintptr_t, uintptr_t> MemoryAccessTracker::expand_around_memory_chunk(
 {
   xbt_assert((addr & (granularity_ - 1)) == 0, "addr must be on a bucket boundary");
   xbt_assert(((addr + size) & (granularity_ - 1)) == 0, "addr+size must be on a bucket boundary");
+  xbt_assert(coalescing_, "expand_around_memory_chunk() does not work when the MemoryAccessTracker is not coalescing "
+                          "adjacent memory accesses");
 
   if (sorted_pages_dirty_)
     sort_pages();
@@ -278,6 +302,9 @@ void MemoryAccessTracker::deserialize(Channel& channel)
 
 void MemoryAccessTracker::iterator::advance()
 {
+  if (parent_ == nullptr) // don't advance beyond end()
+    return;
+
   while (page_pos_ < parent_->sorted_pages_.size()) {
 
     uintptr_t page_index = parent_->sorted_pages_[page_pos_];
@@ -300,24 +327,29 @@ void MemoryAccessTracker::iterator::advance()
         uintptr_t start_bucket = bucket_pos_;
         uintptr_t base_addr    = (page_index << page_shift_) + (start_bucket << parent_->bucket_shift_);
 
-        // Merge contiguous bits together in our answer
         uintptr_t count = 0;
-        while (bucket_pos_ < parent_->buckets_per_page_) {
+        if (coalescing_) {
+          // Merge contiguous bits together in our answer
+          while (bucket_pos_ < parent_->buckets_per_page_) {
 
-          word = bucket_pos_ >> 6;
-          bit  = bucket_pos_ & 63;
-          mask = 1ULL << bit;
+            word = bucket_pos_ >> 6;
+            bit  = bucket_pos_ & 63;
+            mask = 1ULL << bit;
 
-          bool w = page.write_bits[word] & mask;
-          bool r = page.read_bits[word] & mask;
+            bool w = page.write_bits[word] & mask;
+            bool r = page.read_bits[word] & mask;
 
-          if ((type == MemOpType::Write && w) || (type == MemOpType::Read && r && not w)) {
-            // If we're still within the same chunk, advance the bucket.
-            bucket_pos_++;
-            count++;
-          } else
-            // Found the end of the chunk; bucket_pos is now one step too far, ready for the next call to advance()
-            break;
+            if ((type == MemOpType::Write && w) || (type == MemOpType::Read && r && not w)) {
+              // If we're still within the same chunk, advance the bucket.
+              bucket_pos_++;
+              count++;
+            } else
+              // Found the end of the chunk; bucket_pos is now one step too far, ready for the next call to advance()
+              break;
+          }
+        } else {
+          bucket_pos_++;
+          count = 1;
         }
 
         current_ = std::make_tuple(reinterpret_cast<void*>(base_addr), count * parent_->granularity_, type);
