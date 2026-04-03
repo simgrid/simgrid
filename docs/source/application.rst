@@ -20,7 +20,7 @@ virtually executes on the simulated platform. You can express this
 application using one of the following interfaces. It is even possible
 to mix several interfaces in the same simulation.
 
- - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++ or Python)
+ - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C/C++, Python or Java)
  - :ref:`Simulating existing MPI programs with the SMPI toolsuite <SMPI_doc>`
    (in C, C++, or Fortran)
  - In some cases, you may want to replay an execution trace in the simulator. This

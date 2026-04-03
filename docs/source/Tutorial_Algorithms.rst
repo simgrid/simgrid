@@ -65,6 +65,7 @@ are proposed to let you discover some of the SimGrid features, hands
 on the keyboard. This practical session will be given in C++ or Python,
 which you are supposed to know beforehand.
 
+.. TODO:: Add the Java version to this tutorial. Drop us an email if you would like to read it, so that we raise this issue in our TODO list.
 
 Discover the Master/Workers
 ---------------------------

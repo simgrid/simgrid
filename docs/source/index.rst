@@ -28,8 +28,8 @@ assess these systems.
 Technically speaking, SimGrid is a library. It is neither a graphical
 interface nor a command-line simulator running user scripts. The
 interaction with SimGrid is done by writing programs with the exposed
-functions to build your own simulator. This can be done in C/C++ or Python,
-on Linux, Mac OSX or Windows (using the WSL).
+functions to build your own simulator. This can be done in C/C++, Python or Java,
+on Linux, Mac OSX, FreeBSD or Windows (using the WSL).
 
 SimGrid is a Free Software distributed under the LGPL-2.1-only license. You are
 welcome to use, study, share and improve it, provided that your version is as

@@ -39,7 +39,7 @@ Anatomy of a project that uses SimGrid
 
 Any project that uses SimGrid as its simulation framework comprises the following components:
 
- - An **application**. An application consists of one or more processes that can either implement distributed algorithms described using a simple API (either in C++, Python or
+ - An **application**. An application consists of one or more processes that can either implement distributed algorithms described using a simple API (either in C++, Python, Java or
    C) or be part of a full-featured real  parallel application implemented with, for example, the MPI standard :ref:`(more info) <application>`.
 
  - A **simulated platform**. This is a description (in either XML or C++) of a distributed system's hardware (compute nodes, network links,
@@ -72,7 +72,7 @@ which is the best way to achieved high simulation accuracy. Please refer to the 
 Using SimGrid in practice
 -------------------------
 
-SimGrid is versatile and can be used in many ways, but the most typical setup is to specify your algorithm as a C++ or Python
+SimGrid is versatile and can be used in many ways, but the most typical setup is to specify your algorithm as a C++, Java or Python
 program using our API, along with one of the provided XML platform files as shown in the **first tutorial** on
 :ref:`usecase_simalgo`. If your application is already written in MPI, then you are in luck because SimGrid comes with MPI support, 
 as explained in our **second tutorial** on :ref:`usecase_smpi`. The **third tutorial** is on

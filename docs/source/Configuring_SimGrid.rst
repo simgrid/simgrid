@@ -775,15 +775,18 @@ sparsly explored trees where no memory can be reclaimed.
 
 .. _cfg=model-check/no-fork:
 
-Verifying Python or multitheaded codes
-......................................
+Verifying Python/Java or multitheaded codes
+...........................................
 
 By default, the model checker relies on system forks to speed-up the exploration but POSIX forbids the use of this system call
 in multithreaded applications. So, you cannot verify an application with :ref:`cfg=contexts/factory` set to ``thread``. Since
-our Python bindings unfortunately require the threaded contexts, this makes it impossible to use forks to speed up the
-verification of Python programs. In this case, use ``--cfg=model-check/no-fork:1`` to go for the slow exploration without forks.
-With this option, a brand new python interpreter will be started when the model checker needs to rollback the application to
-explore another execution branch. This is slow, and will only work if your application is perfectly reproducible.
+our Python and Java bindings unfortunately require the threaded contexts, this makes it impossible to use forks to speed up the
+verification of Python and Java programs. In this case, use ``--cfg=model-check/no-fork:on`` to go for the somewhat slower
+exploration without forks. With this option, a brand new Python interpreter or JVM will be started when the model checker needs
+to rollback the application to explore another execution branch. This is a bit slower, but actually the restart operation is not
+the most time consuming step. Using the fork system call to avoid initialization is merely an optimisation, not a game changer.
+The biggest problem comes from the fact that fully restarting the application will only work if your code is perfectly
+reproducible.
 
 .. _cfg=model-check/setenv:
 
