@@ -20,9 +20,12 @@ virtually executes on the simulated platform. You can express this
 application using one of the following interfaces. It is even possible
 to mix several interfaces in the same simulation.
 
- - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C/C++, Python or Java)
+ - :ref:`Describing Algorithms with the S4U interface <S4U_doc>` (in C++, Python, Java or C)
  - :ref:`Simulating existing MPI programs with the SMPI toolsuite <SMPI_doc>`
    (in C, C++, or Fortran)
+ - Multi-threaded applications can be run on top of SimGrid using an interception tool called sthread. It intercepts calls to
+   the pthread library to run them within the simulated world instead, which is very handy when you use our model checker.
+   Please refer to the first lab of the :ref:`usecase_modelchecking` tutorial for more information.
  - In some cases, you may want to replay an execution trace in the simulator. This
    trace lists the events of your application or of your workload, and
    your application is decomposed as a list of event handlers that are
@@ -31,11 +34,6 @@ to mix several interfaces in the same simulation.
    MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
- - A prototypal tool is intended to allow the modification of any existing
-   application so that it can run on top of SimGrid. This project,
-   called `Remote-SimGrid
-   <https://framagit.org/simgrid/remote-simgrid>`_, is somewhat
-   experimental but should be already usable.
 
 As you can see, SimGrid is very modular and can be used in many
 ways. We are working to improve it along two main directions. First,
@@ -44,7 +42,7 @@ users can invent the specific API or DSL they need for their usage. We
 call this project BYOS: Build Your Own Simulator.
 
 Executing existing applications within the simulator is another
-long-term goal. SMPI and Remote-SimGrid already allow you to execute some
+long-term goal. SMPI and sthread already allow you to execute some
 applications, but our long term goal would be to allow for the execution
 of any legacy application, with absolutely no modification. We call it
 SimOS, even if it will not become usable before several years of
