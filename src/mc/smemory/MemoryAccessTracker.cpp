@@ -273,7 +273,16 @@ void MemoryAccessTracker::serialize(Channel& channel)
   unsigned int page_count = pages_.size();
   channel.pack<unsigned int>(page_count);
 
-  XBT_DEBUG("Serialize a transition with %u pages", page_count);
+  if (XBT_LOG_ISENABLED(smem_mark, xbt_log_priority_verbose)) {
+    unsigned long hit_count = 0;
+    auto iter               = begin();
+    while (iter != end()) {
+      hit_count++;
+      ++iter;
+    }
+    XBT_VERB("Serialize a transition with %u pages, each of size %lu (%lu accesses in this tracker)", page_count,
+             words_per_page_ * sizeof(uint64_t) * 2, hit_count);
+  }
   for (auto& [addr, page] : pages_) {
     channel.pack<uintptr_t>(addr);
     for (unsigned wit = 0; wit < words_per_page_; wit++)
@@ -281,6 +290,9 @@ void MemoryAccessTracker::serialize(Channel& channel)
     for (unsigned rit = 0; rit < words_per_page_; rit++)
       channel.pack<uint64_t>(page.read_bits[rit]);
   }
+  pages_.clear();
+  sorted_pages_.clear();
+  sorted_pages_dirty_ = true;
 }
 void MemoryAccessTracker::deserialize(Channel& channel)
 {
