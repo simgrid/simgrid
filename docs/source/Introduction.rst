@@ -50,20 +50,15 @@ Any project that uses SimGrid as its simulation framework comprises the followin
    deployed on the platform must be described.  This is done by specifying which process is mapped onto which machine :ref:`(more
    info) <scenario>`.
 
- - **Platform models**. SimGrid implements models that describe how the simulated platform reacts to the simulated activities performed my
-  application processes.  SimGrid provides a range of documented models,
-  which the user can select and configure for their particular use case.  A
-  big selling point of SimGrid, which sets it apart from its competitors,
-  is that it can accurately model the network contention that results from
-  concurrent communications. :ref:`(more info) <models>`.
+ - **Platform models**. SimGrid implements models that describe how the simulated platform reacts to the simulated activities
+   performed by application processes.  SimGrid provides a range of documented models, which the user can select and configure
+   for their particular use case.  A big selling point of SimGrid, which sets it apart from its competitors, is that it can
+   accurately model the network contention that results from concurrent communications :ref:`(more info) <models>`, provided
+   that the user correctly `. :ref:`calibrates <models_calibration>` these models.
 
-
-The above components are put together to run a **simulation experiment**
-that produces **outcomes** (logs, visualization, statistics) that help
-users answer their research and development **question**. These outcomes
-typically include a timeline of the application execution and information
-about its energy consumption.  
-
+The above components are put together to run a **simulation experiment** that produces **outcomes** (logs, visualization,
+statistics) that help users answer their research and development **question**. These outcomes typically include a timeline of
+the application execution and information about its energy consumption.
 
 We work hard to make SimGrid easy to use, but you should not blindly trust your results and always strive to validate
 the simulation outcomes. Assessing the realism of these outcomes will lead you to better :ref:`calibrate the models <models_calibration>`,
