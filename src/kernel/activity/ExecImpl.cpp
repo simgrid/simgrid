@@ -81,13 +81,13 @@ ExecImpl* ExecImpl::start()
   set_state(State::RUNNING);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (get_hosts().size() == 1) {
-      xbt_assert(not flops_amounts_.empty(), "Cannot start Exec: no flops_amount defined.");
+      double flops_amount = flops_amounts_.empty() ? 0. : flops_amounts_[0];
       if (thread_count_ == 1) {
-        model_action_ = get_host()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
+        model_action_ = get_host()->get_cpu()->execution_start(flops_amount, bound_);
         model_action_->set_sharing_penalty(sharing_penalty_);
       } else {
         auto host_model = get_host()->get_netpoint()->get_englobing_zone()->get_host_model();
-        model_action_   = host_model->execute_thread(get_host(), flops_amounts_.front(), thread_count_);
+        model_action_   = host_model->execute_thread(get_host(), flops_amount, thread_count_);
       }
       model_action_->set_category(get_tracing_category());
     } else {
