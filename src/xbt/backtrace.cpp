@@ -412,7 +412,7 @@ public:
           long addr = std::stol(pre + 1, 0, 16);
           if (addr > 0)
             addr--;
-          sprintf(buffer, "%p", (void*)addr);
+          snprintf(buffer, 256, "%p", (void*)addr);
         } catch (const std::invalid_argument&) {
           strcpy(buffer, pre + 1);
         }
@@ -444,7 +444,7 @@ public:
               problem = true;
               *pre    = ' ';
               *post   = '\0';
-              sprintf(buffer, "addr2line --basenames -Cfpe %s\n", strings[j]);
+              snprintf(buffer, 2048, "addr2line --basenames -Cfpe %s\n", strings[j]);
             }
             if (strstr(buffer, " sthread_impl.cpp:") == nullptr) {
               if (first)
