@@ -23,7 +23,7 @@ void smemory_add_stack(void* begin, void* end)
 {
   auto elem = std::make_pair(reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end));
   for (auto reg : stacks_)
-    xbt_assert(reg.second < elem.first || reg.first > elem.second,
+    xbt_assert(reg.second <= elem.first || reg.first >= elem.second,
                "Newly added stack [%zu;%zu] intersects with previously added stack [%zu;%zu]", elem.first, elem.second,
                reg.first, reg.second);
   stacks_.push_back(elem);
