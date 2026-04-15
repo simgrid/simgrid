@@ -33,6 +33,7 @@ jobs:
         run: |
           brew install llvm boost eigen pybind11 ninja
           sudo xcode-select -s /Applications/Xcode_16.3.app
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix llvm)" >> $GITHUB_ENV
       - name: build
         run: |
           mkdir build ; cd build
