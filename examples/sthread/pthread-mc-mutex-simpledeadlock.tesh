@@ -4,7 +4,7 @@
 
 # This test raises a deadlock, thus the return code of 2
 ! expect return 2
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} ${bindir:=.}/pthread-mutex-simpledeadlock
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > All threads are started.
 > The thread 0 is terminating.
@@ -51,7 +51,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 # The return code of a replay is not modified
 ! expect return 0
 ! timeout 500
-! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+! setenv LD_PRELOAD=${libsthread}
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/pthread-mutex-simpledeadlock --cfg=model-check/replay:'1;1;2;2;3;2;3;3' --log=no_loc
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/replay' to '1;1;2;2;3;2;3;3'
 > [0.000000] [mc_record/INFO] path=1;1;2;2;3;2;3;3

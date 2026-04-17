@@ -1,4 +1,4 @@
-$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libdir:=.}/libsthread.so ./sdisk-basic --log=sthread_disk.thres:verbose --log=root.fmt:[%c:%p]%e%m%n
+$ env ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS LD_PRELOAD=${libsthread} ./sdisk-basic --log=sthread_disk.thres:verbose --log=root.fmt:[%c:%p]%e%m%n
 > == TEST: basic open/close ==
 > [sthread_disk:VERBOSE] open(/tmp/sthread_test_disk_API.tmp, flags:O_CREAT, mode:S_IWUSR) -> 1000
 > open() ok. fd=1000

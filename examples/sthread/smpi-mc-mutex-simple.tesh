@@ -8,7 +8,7 @@
 # Musl gives the output in another order compared to glibc
 ! output sort
 ! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
-! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+! setenv LD_PRELOAD=${libsthread}
 $ ${bindir:=.}/../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=sthread.thres:debug --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simple ${extraparam}
 > sthread intercepts pthreads in your SMPI application.
 > [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 1

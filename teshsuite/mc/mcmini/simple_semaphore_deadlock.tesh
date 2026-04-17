@@ -2,7 +2,7 @@
 ! ignore .*LD_PRELOAD.*
 
 ! expect return 2
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --log=mc_ct.:verbose --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_semaphore_deadlock --log=no_loc
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --log=mc_ct.:verbose --cfg=model-check/setenv:LD_PRELOAD=${libsthread} ${bindir:=.}/mcmini/mcmini-simple_semaphore_deadlock --log=no_loc
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_global/INFO] **************************
@@ -69,7 +69,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-chec
 > [0.000000] [mc_ct/INFO] Found the critical transition: Actor 3 ==> simcall: SEM_ASYNC_LOCK(semaphore: 0, capacity: 0)
 
 ! expect return 2
-$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --log=mc_ct.:verbose  --cfg=model-check/exploration-algo:BeFS --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/mcmini/mcmini-simple_semaphore_deadlock --log=no_loc
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor --log=mc_ct.:verbose  --cfg=model-check/exploration-algo:BeFS --cfg=model-check/setenv:LD_PRELOAD=${libsthread} ${bindir:=.}/mcmini/mcmini-simple_semaphore_deadlock --log=no_loc
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/reduction' to 'odpor'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/exploration-algo' to 'BeFS'
 > [0.000000] [mc_befs/INFO] Start a BeFS exploration. Reduction is: odpor.

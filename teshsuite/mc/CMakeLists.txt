@@ -105,12 +105,12 @@ foreach(x
     target_link_libraries(mcmini-${x}  PRIVATE Threads::Threads)
     add_dependencies(tests-mc mcmini-${x})
 
-    ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
+    ADD_TESH(mc-mini-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} --setenv "libsthread=$<TARGET_FILE:sthread>" ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/${x}.tesh)
   endif()
 endforeach()
 
 if(${enable_sthread} AND ${enable_testsuite_McMini} AND SIMGRID_HAVE_MC AND HAVE_DWELF_STACKTRACE)
-  ADD_TESH(mc-mini-philosophers_semaphores_deadlock_dwelfstack --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/philosophers_semaphores_deadlock_dwelfstack.tesh)
+  ADD_TESH(mc-mini-philosophers_semaphores_deadlock_dwelfstack --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} --setenv "libsthread=$<TARGET_FILE:sthread>" ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/philosophers_semaphores_deadlock_dwelfstack.tesh)
 endif()
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mcmini/philosophers_semaphores_deadlock_dwelfstack.tesh)
 
@@ -135,7 +135,7 @@ foreach(x      dispatcher mpat multiprodcon pi poke)
     target_link_libraries(dpu-${x}  PRIVATE Threads::Threads PUBLIC m)
     add_dependencies(tests-mc dpu-${x})
 
-    ADD_TESH(dpu-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
+    ADD_TESH(dpu-${x} --setenv libdir=${CMAKE_BINARY_DIR}/lib --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} --setenv "libsthread=$<TARGET_FILE:sthread>" ${CMAKE_CURRENT_SOURCE_DIR}/dpu/${x}.tesh)
   endif()
 endforeach()
 if(${enable_testsuite_dpu} AND (NOT ${enable_sthread}))

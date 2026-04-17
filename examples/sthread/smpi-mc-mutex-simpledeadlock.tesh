@@ -5,7 +5,7 @@
 # Ignore the line reporting the command-line when the process fails
 ! ignore .*cfg=contexts/factory:.*
 
-#$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsthread.so ${bindir:=.}/pthread-mutex-simpledeadlock
+#$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} ${bindir:=.}/pthread-mutex-simpledeadlock
 
 # These lines are displayed more often in no-fork mode, so ignore all occurence of them
 ! ignore .*Create thread 1
@@ -16,7 +16,7 @@
 # This test raises a deadlock, thus the return code of 2
 ! expect return 2
 ! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
-! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+! setenv LD_PRELOAD=${libsthread}
 $ ${bindir:=.}/../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=sthread.thres:debug --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simpledeadlock ${extraparam}
 > sthread intercepts pthreads in your SMPI application.
 > [Tremblay:0:(1) 0.000000] [sthread/VERBOSE] Create thread 1
@@ -97,7 +97,7 @@ $ ${bindir:=.}/../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/si
 ! expect return 0
 ! timeout 500
 ! setenv ASAN_OPTIONS=verify_asan_link_order=0:$ASAN_OPTIONS
-! setenv LD_PRELOAD=${libdir:=.}/libsthread.so
+! setenv LD_PRELOAD=${libsthread}
 $ ${bindir:=.}/../../smpi_script/bin/smpirun --cfg=model-check/replay:'1;1;6;6;7;6;7;7' --log=no_loc -hostfile ${srcdir:=.}/../../teshsuite/smpi/hostfile -platform ${platfdir:=.}/small_platform.xml --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 5 ${bindir:=.}/smpi-mutex-simpledeadlock
 > sthread intercepts pthreads in your SMPI application.
 > [0.000000] [mc_record/INFO] path=1;1;6;6;7;6;7;7
