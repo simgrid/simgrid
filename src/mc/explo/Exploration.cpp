@@ -135,38 +135,42 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
       trace.push_back(xbt::string_printf("Actor %ld in simcall %s", transition->aid_, transition->to_string().c_str()));
 
     if (race != nullptr) {
-      if (transition->aid_ == race->first_mem_op_.aid) {
-        if (race->first_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0) {
+      if (transition->aid_ == simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)) {
+        if (simgrid::mc::odpor::epoch_get_clock(race->first_mem_op_) == 0 && actor_epoch[transition->aid_] == 0) {
           if (smemory::MemoryAccessTracker::is_coalescing())
             trace.back().append(xbt::string_printf(
                 "     <== racy WRITE of size %ub on %p by actor %ld between its creation and this operation",
-                race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->first_mem_op_.aid));
+                race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
+                simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)));
           else
             trace.back().append(
                 xbt::string_printf("     <== racy WRITE on %p by actor %ld between its creation and this operation",
-                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->first_mem_op_.aid));
+                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
+                                   simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)));
         }
         actor_epoch[transition->aid_]++;
-        if (actor_epoch[transition->aid_] == race->first_mem_op_.epoch)
+        if (actor_epoch[transition->aid_] == simgrid::mc::odpor::epoch_get_clock(race->first_mem_op_))
           trace.back().append(xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation",
                                                  race->sizes_[0],
                                                  xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_));
       }
-      if (transition->aid_ == race->second_mem_op_.aid) {
-        if (race->second_mem_op_.epoch == 0 && actor_epoch[transition->aid_] == 0) {
+      if (transition->aid_ == simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)) {
+        if (simgrid::mc::odpor::epoch_get_clock(race->second_mem_op_) == 0 && actor_epoch[transition->aid_] == 0) {
           if (smemory::MemoryAccessTracker::is_coalescing())
             trace.back().append(xbt::string_printf(
                 "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.aid));
+                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
+                simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)));
           else
             trace.back().append(
                 xbt::string_printf("     <== racy %s on %p by actor %ld between its creation and this operation",
                                    race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.aid));
+                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
+                                   simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)));
         }
         actor_epoch[transition->aid_]++;
-        if (actor_epoch[transition->aid_] == race->second_mem_op_.epoch)
+        if (actor_epoch[transition->aid_] == simgrid::mc::odpor::epoch_get_clock(race->second_mem_op_))
           trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
                                                  race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
                                                  race->sizes_[1],
@@ -331,7 +335,8 @@ void Exploration::report_data_race(const McDataRace& e)
 {
   XBT_INFO("Found a datarace at location %p between actor %ld and actor %ld after the following "
            "execution:",
-           xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_, e.first_mem_op_.aid, e.second_mem_op_.aid);
+           xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_, simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_),
+           simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_));
   for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
     XBT_INFO("  %s", frame.c_str());
   XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "

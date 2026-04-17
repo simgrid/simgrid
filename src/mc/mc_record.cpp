@@ -93,13 +93,16 @@ void RecordTrace::replay() const
     } catch (const McDataRace& e) {
       XBT_INFO("Found a datarace at location %p", xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_);
       // Printing the epoch is not very interesting for the user
-      XBT_DEBUG("Race between %ld@%ld and %ld@%ld", e.first_mem_op_.epoch, e.first_mem_op_.aid, e.second_mem_op_.epoch,
-                e.second_mem_op_.aid);
+      XBT_DEBUG(
+          "Race between actor %ld at step %d and actor %ld at step %d",
+          simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_), simgrid::mc::odpor::epoch_get_clock(e.first_mem_op_),
+          simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_), simgrid::mc::odpor::epoch_get_clock(e.second_mem_op_));
 
-      XBT_INFO("First operation was a WRITE made by actor %ld", e.first_mem_op_.aid);
+      XBT_INFO("First operation was a WRITE made by actor %ld", simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_));
 
       XBT_INFO("Second operation was a %s made by actor %ld",
-               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.second_mem_op_.aid);
+               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+               simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_));
 
       abort();
     }

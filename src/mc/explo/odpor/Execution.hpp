@@ -12,6 +12,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
 
+#include <cstdint>
 #include <list>
 #include <map>
 #include <optional>
@@ -26,10 +27,31 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w);
 std::string one_string_textual_trace(const PartialExecution& w);
 
 // Data structure to implement FastTrack algorithm (see [Flanagan'09])
-struct epoch {
-  aid_t aid;
-  long epoch;
-};
+// Layout: [ AID (10 bits) | CLOCK (22 bits) ]
+//          31          22   21             0
+using epoch_t                  = uint32_t;
+const auto EPOCH_AID_BITSIZE   = 10;
+const auto EPOCH_CLOCK_BITSIZE = 22;
+static_assert(EPOCH_AID_BITSIZE + EPOCH_CLOCK_BITSIZE == 32,
+              "In an epoch, the area of AID and the one of CLOCK must sum to 32");
+static constexpr uint32_t EPOCH_CLOCK_MASK = (1u << EPOCH_CLOCK_BITSIZE) - 1;
+static constexpr uint32_t EPOCH_AID_MASK   = (1u << EPOCH_AID_BITSIZE) - 1;
+
+static inline uint32_t epoch_new(aid_t aid, int clock)
+{
+  return ((static_cast<uint32_t>(aid) & EPOCH_AID_MASK) << EPOCH_CLOCK_BITSIZE) |
+         (static_cast<uint32_t>(clock) & EPOCH_CLOCK_MASK);
+}
+
+static inline aid_t epoch_get_aid(uint32_t epoch)
+{
+  return static_cast<aid_t>((epoch >> EPOCH_CLOCK_BITSIZE) & EPOCH_AID_MASK);
+}
+
+static inline int epoch_get_clock(uint32_t epoch)
+{
+  return static_cast<int>(epoch & EPOCH_CLOCK_MASK);
+}
 
 /**
  * @brief The occurrence of a transition in an execution
@@ -41,7 +63,7 @@ struct epoch {
 class Event {
   std::pair<TransitionPtr, ClockVector> contents_;
 
-  std::unordered_map<void*, epoch> last_write_;
+  std::unordered_map<void*, epoch_t> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;

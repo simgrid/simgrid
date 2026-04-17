@@ -75,7 +75,7 @@ void Event::initialize_epoch()
   aid_t event_aid_ = contents_.first->aid_;
   for (auto [location, size, kind] : contents_.first->get_memory_tracker())
     if (kind == smemory::MemOpType::Write)
-      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+      last_write_[location] = epoch_new(event_aid_, contents_.second.get(event_aid_).value() - 1);
 }
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
@@ -87,13 +87,14 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
   for (auto [location, size, kind] : contents_.first->get_memory_tracker()) {
     auto prev_write = last_write_.find(location);
 
-    if (prev_write != last_write_.end() and prev_write->second.aid == event_aid_)
+    if (prev_write != last_write_.end() and epoch_get_aid(prev_write->second) == event_aid_)
       continue; // Cannot race with myself
 
     if (kind == smemory::MemOpType::Read) {
 
       if (prev_write != last_write_.end()) {
-        auto [aid, clock] = prev_write->second;
+        auto aid   = epoch_get_aid(prev_write->second);
+        auto clock = epoch_get_clock(prev_write->second);
         if (clock >= prev_clock.get(aid).value()) {
           // TODO: We need to retrieve the size of the first access
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read, clock + 1,
@@ -105,7 +106,8 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
     } else {
 
       if (prev_write != last_write_.end()) {
-        auto [aid, clock] = prev_write->second;
+        auto aid   = epoch_get_aid(prev_write->second);
+        auto clock = epoch_get_clock(prev_write->second);
         if (clock >= prev_clock.get(aid).value())
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write, clock + 1,
                               this->contents_.second.get(event_aid_).value());
@@ -115,7 +117,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
       // Record the new write as it happened juste before this transition
       // the -1 is here because we receive reads and writes AFTER the transition while
       // in reality it happened BEFORE
-      last_write_[location] = {event_aid_, contents_.second.get(event_aid_).value() - 1};
+      last_write_[location] = epoch_new(event_aid_, contents_.second.get(event_aid_).value() - 1);
     }
   }
 }
@@ -195,8 +197,8 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
       long second_op = std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
                                      [&](auto event) { return event.get_transition()->aid_ == second_aid; });
 
-      throw McDataRace({first_aid, first_op}, {second_aid, second_op}, dr.location_, dr.size1_, dr.size2_,
-                       dr.second_mem_op_);
+      throw McDataRace(epoch_new(first_aid, first_op), epoch_new(second_aid, second_op), dr.location_, dr.size1_,
+                       dr.size2_, dr.second_mem_op_);
     }
   }
 }

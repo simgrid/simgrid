@@ -29,12 +29,12 @@ struct McError : public std::exception {
 
 struct McDataRace : public std::exception {
   const ExitStatus value;
-  const odpor::epoch first_mem_op_;
-  const odpor::epoch second_mem_op_;
+  const odpor::epoch_t first_mem_op_;
+  const odpor::epoch_t second_mem_op_;
   smemory::MemOpType second_mem_type_;
   void* location_;
   unsigned char sizes_[2];
-  explicit McDataRace(odpor::epoch first_mem_op, odpor::epoch second_mem_op, void* location, unsigned char size1,
+  explicit McDataRace(odpor::epoch_t first_mem_op, odpor::epoch_t second_mem_op, void* location, unsigned char size1,
                       unsigned char size2, smemory::MemOpType second_mem_type)
       : value(ExitStatus::DATA_RACE)
       , first_mem_op_(first_mem_op)
