@@ -29,7 +29,7 @@
 #  It also defines a SIMGRID_VERSION macro, that you can use to deal with API
 #    evolutions as follows:
 #
-#    #include <simgrid/version.h>
+#    #include <simgrid/simgrid_version.h>
 #    #if SIMGRID_VERSION < 31800
 #      (code to use if the installed version is lower than v3.18)
 #    #elif SIMGRID_VERSION < 31900
@@ -67,12 +67,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_path(SimGrid_INCLUDE_DIR
-  NAMES simgrid/config.h
-  NAMES simgrid/version.h
+  NAMES simgrid/simgrid_config.h
+  NAMES simgrid/simgrid_version.h
   PATHS ${SimGrid_PATH}/include ${SIMGRID_PATH}/include /opt/simgrid/include
 )
 if (NOT SimGrid_INCLUDE_DIR)
   # search under the old name
+  find_path(SimGrid_INCLUDE_DIR
+    NAMES simgrid/version.h
+    PATHS ${SimGrid_PATH}/include ${SIMGRID_PATH}/include /opt/simgrid/include
+  )
+endif()
+if (NOT SimGrid_INCLUDE_DIR)
+  # search under the very old name
   find_path(SimGrid_INCLUDE_DIR
     NAMES simgrid_config.h
     PATHS ${SimGrid_PATH}/include ${SIMGRID_PATH}/include /opt/simgrid/include
@@ -87,7 +94,11 @@ mark_as_advanced(SimGrid_LIBRARY)
 
 if (SimGrid_INCLUDE_DIR)
   set(SimGrid_VERSION_REGEX "^#define SIMGRID_VERSION_(MAJOR|MINOR|PATCH) ([0-9]+)$")
-  if (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/version.h")
+  if (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/simgrid_version.h")
+    file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid/simgrid_version.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
+  elseif (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/simgrid_config.h")
+    file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid/simgrid_config.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
+  elseif (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/version.h")
     file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid/version.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})
   elseif (EXISTS "${SimGrid_INCLUDE_DIR}/simgrid/config.h")
     file(STRINGS "${SimGrid_INCLUDE_DIR}/simgrid/config.h" SimGrid_VERSION_STRING REGEX ${SimGrid_VERSION_REGEX})

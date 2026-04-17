@@ -13,6 +13,10 @@ Model-Checker:
 Core:
  - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust.
 
+Maintenance and Software quality assurance:
+ - Rename "simgrid/version.h" into "simgrid/simgrid_version.h" to avoid name conflicts with other files available from the include path.
+ - Rename "simgrid/config.h" into "simgrid/simgrid_config.h" for the same reason.
+
 ----------------------------------------------------------------------------
 
 SimGrid (4.1) November 11. 2025

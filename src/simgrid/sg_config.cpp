@@ -6,7 +6,7 @@
 /* sg_config: configuration infrastructure for the simulation world         */
 
 #include <simgrid/instr.h>
-#include <simgrid/version.h>
+#include <simgrid/simgrid_version.h>
 #include <xbt/config.hpp>
 #include <xbt/file.hpp>
 

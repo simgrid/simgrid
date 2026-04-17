@@ -41,8 +41,8 @@ src/kernel/xml/simgrid_dtd.l
 [Ss]im[Gg]rid-*.tar.gz
 ### Generated files
 _*.c
-include/simgrid/config.h
-include/simgrid/version.h
+include/simgrid/simgrid_config.h
+include/simgrid/simgrid_version.h
 src/internal_config.h
 ### Cmake files
 CPackConfig.cmake

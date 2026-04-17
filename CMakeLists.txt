@@ -627,8 +627,8 @@ endforeach()
 
 set(generated_headers_to_install
   ${CMAKE_CURRENT_BINARY_DIR}/include/smpi/mpif.h
-  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/config.h
-  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/version.h
+  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/simgrid_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/simgrid_version.h
   )
 
 set(generated_headers  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h )
@@ -938,8 +938,8 @@ configure_file("${CMAKE_HOME_DIRECTORY}/src/internal_config.h.in"    "${CMAKE_BI
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid/version.h.in" "${CMAKE_BINARY_DIR}/include/simgrid/version.h.generated" @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid/config.h.in" "${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated" @ONLY IMMEDIATE)
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/internal_config.h.generated ${CMAKE_BINARY_DIR}/src/internal_config.h)
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/version.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/version.h)
-execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/config.h)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/version.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/simgrid_version.h)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid/simgrid_config.h)
 file(REMOVE ${CMAKE_BINARY_DIR}/src/internal_config.h.generated)
 file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid/config.h.generated)
 file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid/version.h.generated)
@@ -954,10 +954,10 @@ LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 10) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")
 endforeach()
-message("##########################################")
-message("####   Content of simgrid/config.h    ####")
-message("##########################################")
-file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/config.h config_output)
+message("##################################################")
+message("####   Content of simgrid/simgrid_config.h    ####")
+message("##################################################")
+file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid/simgrid_config.h config_output)
 LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 -1) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")

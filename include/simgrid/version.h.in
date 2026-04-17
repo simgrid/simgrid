@@ -1,4 +1,5 @@
-/* src/simgrid/version.h - internal versioning info                        */
+/* src/simgrid/simgrid_version.h - internal versioning info                 */
+/* Somewhat redundent name, but version.h could conflict in the INCLUDEPATH */
 
 /* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 
