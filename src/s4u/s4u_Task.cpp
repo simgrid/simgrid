@@ -57,7 +57,7 @@ void Task::receive(Task* source)
   }
 }
 
-/** @param instance The Taks instance to complete.
+/** @param instance The Task instance to complete.
  *  @brief Task instance routine when finishing an execution of an instance.
  *  @note The dispatcher instance enqueues a firing for the next instance.
  *        The collector instance triggers the on_completion signals and sends tokens to successors.

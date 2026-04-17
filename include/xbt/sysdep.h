@@ -13,7 +13,7 @@
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
-#include <simgrid/config.h>
+#include <simgrid/simgrid_config.h>
 
 #include <string.h>
 #include <stdlib.h>
