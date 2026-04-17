@@ -2173,6 +2173,7 @@ include include/simgrid/barrier.h
 include include/simgrid/chrono.hpp
 include include/simgrid/comm.h
 include include/simgrid/cond.h
+include include/simgrid/config.h
 include include/simgrid/config.h.in
 include include/simgrid/disk.h
 include include/simgrid/engine.h
@@ -2238,6 +2239,7 @@ include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
 include include/simgrid/simcall.hpp
 include include/simgrid/simix.hpp
+include include/simgrid/version.h
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h

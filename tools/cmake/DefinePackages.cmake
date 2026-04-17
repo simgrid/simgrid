@@ -623,6 +623,7 @@ set(headers_to_install
   include/simgrid/activity_set.h
   include/simgrid/barrier.h
   include/simgrid/comm.h
+  include/simgrid/config.h
   include/simgrid/engine.h
   include/simgrid/exec.h
   include/simgrid/Exception.hpp
@@ -652,6 +653,7 @@ set(headers_to_install
   include/simgrid/cond.h
   include/simgrid/mutex.h
   include/simgrid/semaphore.h
+  include/simgrid/version.h
   include/simgrid/vm.h
   include/simgrid/zone.h
   include/simgrid/s4u/Activity.hpp

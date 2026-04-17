@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/transition/TransitionAny.hpp"
-#include "simgrid/config.h"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"

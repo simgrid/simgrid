@@ -8,9 +8,7 @@
 
 #include <ns3/node.h>
 #include <ns3/ptr.h>
-#include <simgrid/config.h>
 #include <simgrid/forward.h>
-#include <xbt/base.h>
 
 namespace simgrid {
 /** Returns the ns3 node from a SimGrid host */
