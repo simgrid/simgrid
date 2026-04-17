@@ -94,18 +94,6 @@ public:
   constexpr static size_t get_bucket_size() { return granularity_; }
   constexpr static bool is_coalescing() { return coalescing_; }
 
-  // Returns the maximal interval [begin, end] containing [addr, addr+size-1]
-  // that does not drool into any other marked bucket of the same kind.
-  //
-  // In other words, begin is the left-most byte to the left of addr that is not marked while
-  // end is the right-most byte to the right of (addr+size-1) that is not marked.
-  //
-  // The bytes within [addr; addr+size-1] are not even tested.
-  //
-  // Preconditions:
-  //   * (addr) and (addr+size-1) are both aligned on the granularity
-  std::pair<uintptr_t, uintptr_t> expand_around_memory_chunk(uintptr_t addr, size_t size, MemOpType kind);
-
   // ============================================================
   //                    Serialization
   // ============================================================
