@@ -48,11 +48,11 @@ class XBT_PUBLIC Task {
   std::map<std::string, std::deque<ActivityPtr>> current_activities_ = {
       {"instance_0", {}}, {"dispatcher", {}}, {"collector", {}}};
 
-  inline static xbt::signal<void(Task*)> on_start;
+  static xbt::signal<void(Task*)> on_start;
   xbt::signal<void(Task*)> on_this_start;
-  inline static xbt::signal<void(Task*)> on_completion;
+  static xbt::signal<void(Task*)> on_completion;
   xbt::signal<void(Task*)> on_this_completion;
-  inline static xbt::signal<void(Task*, const std::string&)> on_instance_completion;
+  static xbt::signal<void(Task*, const std::string&)> on_instance_completion;
   xbt::signal<void(Task*, const std::string&)> on_this_instance_completion;
 
 protected:

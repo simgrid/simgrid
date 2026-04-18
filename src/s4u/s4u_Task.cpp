@@ -23,6 +23,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Task, kernel, "Logging specific to the task plug
 
 namespace simgrid::s4u {
 
+xbt::signal<void(Task*)> Task::on_start;
+xbt::signal<void(Task*)> Task::on_completion;
+xbt::signal<void(Task*, const std::string&)> Task::on_instance_completion;
+
 Task::Task(const std::string& name) : name_(name) {}
 
 /** @param instance The Task instance to check.
