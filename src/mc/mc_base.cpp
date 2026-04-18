@@ -33,7 +33,27 @@ void execute_actors()
   XBT_DEBUG("all actors are done!");
 }
 
-static bool has_been_warned = false;
+static const char* warning_message =
+    "WARNING: the checker seems to be behaving as an application. To verify McSimGrid itself, you must:\n"
+    " * Compile sthread with `enable_lib_in_sthread` in cmake, to ensure that the SimGrid shipped with sthread\n"
+    "   does not interfere with the one living in the verified McSimGrid. This message shall disappear after that.\n"
+    " * The verified McSimGrid must run with the thread factory since the other context factories are not\n"
+    "   observed by McSimGrid, so the verifying McSimGrid will not see them.\n"
+    " * The verifying McSimGrid needs `no-fork`, as threaded applications cannot be verified without it.\n"
+    " * You will get a stack overflow if the verifying McSimGrid runs in DFS; use BeFS (and buy more memory).\n"
+    " * The verified McSimGrid can be compiled with mcclang to track dataraces (buy several tons of memory).\n"
+    " * Finally, the application verified by the verified McSimGrid shall be short and simple, but you want\n"
+    "   it to NOT to lead to an assertion failure, to test more behaviors in the verified McSimGrid.\n"
+    " * Make sure that the external application is not intercepted by sthread as follows\n"
+    "   `export STHREAD_IGNORE_BINARY=s4u-mc-centralized-mutex`\n"
+    "\nIn practice, you may want to run something such as:\n"
+    " lib_in_sthread_and_clang_build/bin/simgrid-mc --sthread --cfg=model-check/exploration-algo:BeFS \\\n"
+    "                                    --cfg=model-check/strategy:uniform --cfg=model-check/no-fork:on \\\n"
+    "  -- \\\n"
+    "  mcclang_build/bin/simgrid-mc --cfg=contexts/factory:thread --cfg=model-check/reduction:odpor \\\n"
+    "                     --cfg=model-check/exploration-algo:parallel --cfg=model-check/parallel-thread:2 \\\n"
+    "  -- \\\n"
+    "  path/to/s4u-mc-centralized-mutex path/to/small_platform.xml --log=root.t:critical";
 
 /** @brief returns if there this transition can proceed in a finite amount of time
  *
@@ -48,13 +68,8 @@ static bool has_been_warned = false;
  */
 bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
-  if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
-    XBT_CRITICAL(
-        "WARNING: the checker (pid: %d) seems to be behaving as an application. If you are trying to verify McSimGrid "
-        "itself that's fine. Otherwise, this is probably a bug that you want to report.",
-        (int)getpid());
-    has_been_warned = true;
-  }
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE, "%s", warning_message);
+
   // Now, we are in the client app, no need for remote memory reading.
   kernel::actor::Simcall* req = &actor->simcall_;
 
@@ -73,19 +88,7 @@ bool actor_is_enabled(kernel::actor::ActorImpl* actor)
  */
 bool request_is_visible(const kernel::actor::Simcall* req)
 {
-  if (get_model_checking_mode() == ModelCheckingMode::CHECKER_SIDE and not has_been_warned) {
-    XBT_CRITICAL(
-        "WARNING: the checker (pid: %d) seems to be behaving as an application. If you are trying to verify McSimGrid "
-        "itself that's fine. Otherwise, this is probably a bug that you want to report.",
-        (int)getpid());
-    has_been_warned = true;
-
-    auto name = simgrid::s4u::Engine::get_instance()->get_context_factory_name();
-    xbt_assert(
-        strcmp(name, "thread") == 0,
-        "Checking McSimGrid will only work when it runs on pthread, not %s. Please add --cfg=contexts/factory:thread",
-        name);
-  }
+  xbt_assert(get_model_checking_mode() != ModelCheckingMode::CHECKER_SIDE, "%s", warning_message);
 
   if (req->observer_ == nullptr)
     return false;
