@@ -152,6 +152,18 @@ constexpr unsigned SMPI_HUGE_PAGE_SIZE = 1U << 21;
 
 void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets, int nb_shared_blocks)
 {
+  void* mem = NULL;
+
+#if defined(__APPLE__) && defined(__MACH__)
+  xbt_die("smpi_shared_malloc_partial() is not implemented on MacOSX, and will probably never be. You should be using "
+          "Linux if you need such advanced features, or your patch is welcome if you need it on MacOSX.\n "
+          "The current implementation uses the fact that Linux is more permissive and allows to remap a segment as "
+          "SHARED even if that segment was previously mapped as PRIVATE. It should be possible to fix it to "
+          "never remap something that was previously mapped to make this code work on MacOSX too, but this code is "
+          "already very tricky. I would say that life is too short to port this code to MacOSX. It will probably "
+          "remain unchanged unless you provide a well tested patch yourself. I love to integrate well tested patches.");
+
+#else               /* Linux ? */
   std::string huge_page_mount_point = simgrid::config::get_value<std::string>("smpi/shared-malloc-hugepage");
   bool use_huge_page                = not huge_page_mount_point.empty();
 #ifndef MAP_HUGETLB /* If the system header don't define that mmap flag */
@@ -160,7 +172,6 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
 #endif
   smpi_shared_malloc_blocksize =
       static_cast<unsigned long>(simgrid::config::get_value<double>("smpi/shared-malloc-blocksize"));
-  void* mem;
   size_t allocated_size;
   if(use_huge_page) {
     xbt_assert(smpi_shared_malloc_blocksize == SMPI_HUGE_PAGE_SIZE,
@@ -300,6 +311,7 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
 
   XBT_DEBUG("global shared allocation, allocated_ptr %p - %p", allocated_ptr, (void*)(((uint64_t)allocated_ptr)+allocated_size));
   XBT_DEBUG("global shared allocation, returned_ptr  %p - %p", mem, (void*)(((uint64_t)mem)+size));
+#endif /* Linux only */
 
   return mem;
 }

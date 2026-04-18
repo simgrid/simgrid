@@ -13,10 +13,13 @@ if(enable_smpi)
   endforeach()
 
   foreach(x macro-shared auto-shared macro-partial-shared macro-partial-shared-communication )
-    add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
-    target_link_libraries(${x}  simgrid)
-    set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-    add_dependencies(tests ${x})
+    if(NOT APPLE)
+      # smpi_shared_malloc_partial() is not ported to MacOSX, see the comment in its code
+      add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
+      target_link_libraries(${x}  simgrid)
+      set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+      add_dependencies(tests ${x})
+    endif()
   endforeach()
 
   if(enable_smpi AND SMPI_FORTRAN)
