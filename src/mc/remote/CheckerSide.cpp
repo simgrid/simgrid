@@ -86,6 +86,11 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
     setenv(kv[0].c_str(), kv[1].c_str(), 1);
   }
 
+  /* Resets the signals that may have been intercepted within McSimGrid. MacOSX does not reset it upon fork()? */
+  std::signal(SIGINT, SIG_DFL);
+  std::signal(SIGSEGV, SIG_DFL);
+  std::signal(SIGBUS, SIG_DFL);
+
   /* And now, exec the child process */
   int i = 1;
   while (args[i] != nullptr && args[i][0] == '-')

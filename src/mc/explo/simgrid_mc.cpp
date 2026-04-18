@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     }
 #endif
 
-    /* Actually exec the child */
+    /* Actually exec the child (in replay mode) */
     execvp(params[0], params.data());
     perror("Error while starting the replay");
     std::cerr << "Please make sure that the binary exists and is executable. The command line was:\n  ";
