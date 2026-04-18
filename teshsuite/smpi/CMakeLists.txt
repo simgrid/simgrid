@@ -12,14 +12,21 @@ if(enable_smpi)
     add_dependencies(tests ${x})
   endforeach()
 
+  foreach(x macro-partial-shared macro-partial-shared-communication )
+    if(APPLE)
+      set(_${x}_disable)
+    endif()
+  endforeach()
+
   foreach(x macro-shared auto-shared macro-partial-shared macro-partial-shared-communication )
-    if(NOT APPLE)
+    if(NOT ${_${x}_disable})
       # smpi_shared_malloc_partial() is not ported to MacOSX, see the comment in its code
       add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
       target_link_libraries(${x}  simgrid)
       set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
       add_dependencies(tests ${x})
     endif()
+    unset(_${x}_disable)
   endforeach()
 
   if(enable_smpi AND SMPI_FORTRAN)
@@ -79,8 +86,10 @@ if(enable_smpi)
 
   ADD_TESH_FACTORIES(tesh-smpi-macro-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared/macro-shared.tesh)
   ADD_TESH_FACTORIES(tesh-smpi-auto-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/auto-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/auto-shared/auto-shared.tesh)
-  ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared/macro-partial-shared.tesh)
-  ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared-communication "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared-communication/macro-partial-shared-communication.tesh)
+  if (NOT APPLE)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared/macro-partial-shared.tesh)
+    ADD_TESH_FACTORIES(tesh-smpi-macro-partial-shared-communication "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-partial-shared-communication ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-partial-shared-communication/macro-partial-shared-communication.tesh)
+  endif()
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
