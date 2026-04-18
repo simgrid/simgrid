@@ -52,6 +52,7 @@ IF(SIMGRID_HAVE_MC)
 ENDIF()
 if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_SMEMORY)
   ADD_TESH(mc-mem-plusplus --setenv bindir=${CMAKE_BINARY_DIR} --setenv "smemory_pass=$<TARGET_FILE:smemory_pass>" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/smemory plusplus.tesh)
+  add_dependencies(tests-mc smemory_pass)
 ENDIF()
 
 if(enable_coverage)
