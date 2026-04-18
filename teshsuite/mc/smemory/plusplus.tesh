@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ clang -g -fpass-plugin=${bindir:=.}/lib/smemory_pass.so plusplus.c -L${bindir:=.}/lib -lsthread -o ${bindir:=.}/teshsuite/mc/plusplus/plusplus
+$ clang -g -fpass-plugin=${smemory_pass} plusplus.c -L${bindir:=.}/lib -lsthread -o ${bindir:=.}/teshsuite/mc/plusplus/plusplus
 > Successfully instrumented 9 read operations and 8 writes operations
 
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path

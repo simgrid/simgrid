@@ -51,7 +51,7 @@ IF(SIMGRID_HAVE_MC)
   ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
 ENDIF()
 if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_SMEMORY)
-  ADD_TESH(mc-mem-plusplus --setenv bindir=${CMAKE_BINARY_DIR} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/smemory plusplus.tesh)
+  ADD_TESH(mc-mem-plusplus --setenv bindir=${CMAKE_BINARY_DIR} --setenv "smemory_pass=$<TARGET_FILE:smemory_pass>" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/smemory plusplus.tesh)
 ENDIF()
 
 if(enable_coverage)
