@@ -468,6 +468,10 @@ if(enable_model-checking)
   SET(SIMGRID_HAVE_MC ON)
 endif()
 
+if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCHES "Linux")))
+  message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option in cmake.")
+endif()
+
 if (enable_smemory AND (NOT enable_sthread))
   message(FATAL_ERROR "smemory is useless without sthread. Please disable smemory or enable sthread in cmake.")
 endif()
