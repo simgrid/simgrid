@@ -10,7 +10,7 @@ jobs:
         matrix:
           config:
           - { name: "MacOS Intel", os: macos-26-intel,   cc: "clang", cxx: "clang++"} # Tahoe, release 2026 as the name says
-          - { name: "MacOS ARM",   os: macos-latest,     cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",   os: macos-26,         cc: "clang", cxx: "clang++"}
           - { name: "Linux ARM",   os: ubuntu-24.04-arm, cc: "gcc",   cxx: "g++"}
         fail-fast: false
     permissions:
@@ -32,7 +32,7 @@ jobs:
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |
           brew install llvm boost eigen pybind11 ninja
-          sudo xcode-select -s /Applications/Xcode_16.3.app
+          sudo xcode-select -s /Applications/Xcode_26.4.app
           echo "CMAKE_PREFIX_PATH=$(brew --prefix llvm)" >> $GITHUB_ENV
       - name: build
         run: |
