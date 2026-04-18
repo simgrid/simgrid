@@ -142,8 +142,10 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 #define ALIGN_UP(n, align) (((int64_t)(n) + (int64_t)(align) - 1) & -(int64_t)(align))
 #define ALIGN_DOWN(n, align) ((int64_t)(n) & -(int64_t)(align))
 
+#if !(defined(__APPLE__) && defined(__MACH__))
 constexpr unsigned SMPI_PAGE_SIZE      = 0x1000;
 constexpr unsigned SMPI_HUGE_PAGE_SIZE = 1U << 21;
+#endif
 
 /* Similar to smpi_shared_malloc, but only sharing the blocks described by shared_block_offsets.
  * This array contains the offsets (in bytes) of the block to share.
