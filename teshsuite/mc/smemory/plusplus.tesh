@@ -3,7 +3,7 @@
 ! output display
 $ find ../../.. -name "*smemory*"
 
-$ ${clang:=clang} -g -fpass-plugin=${smemory_pass} plusplus.c -L${bindir:=.}/lib -lsthread -o ${bindir:=.}/teshsuite/mc/plusplus/plusplus
+$ ${clang:=clang} -g -fpass-plugin=${smemory_pass} plusplus.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/plusplus/plusplus
 > Successfully instrumented 9 read operations and 8 writes operations
 
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
