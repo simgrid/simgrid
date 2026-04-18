@@ -188,7 +188,8 @@ EventSet ExtensionSetCalculator::partially_extend_CommWait(const Configuration& 
   // First, if `pre_event_a_C == std::nullopt`, then there is nothing to
   // do: `CommWait` will never be enabled in the empty configuration (at
   // least two actions must be executed before)
-  if (pre_event_a_C.has_value(); const auto* unwrapped_pre_event = pre_event_a_C.value()) {
+  if (pre_event_a_C.has_value()) {
+    const auto* unwrapped_pre_event = pre_event_a_C.value();
     // A necessary condition is that the issuer be present in
     // config({preEvt(a, C)}); otherwise, the `CommWait` could not
     // be enabled since the communication on which it waits would not
