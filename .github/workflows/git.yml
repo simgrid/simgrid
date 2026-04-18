@@ -10,7 +10,7 @@ jobs:
         matrix:
           config:
           - { name: "MacOS Intel", os: macos-26-intel,   cc: "clang", cxx: "clang++"} # Tahoe, release 2026 as the name says
-          - { name: "MacOS ARM",   os: macos-26,         cc: "clang", cxx: "clang++"}
+          - { name: "MacOS ARM",   os: macos-26,         cc: "clang", cxx: "clang++"} # clang compiler disregarded on mac, to align with LLVM-dev
           - { name: "Linux ARM",   os: ubuntu-24.04-arm, cc: "gcc",   cxx: "g++"}
         fail-fast: false
     permissions:
@@ -20,23 +20,27 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Init options
-        run: |
-          echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
-          echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
       - name: prepare for ubuntu
         if: matrix.config.name == 'Linux ARM'
         run: |
+          echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
+          echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
       - name: prepare for MacOS
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |
           brew install llvm boost eigen pybind11 ninja
-          sudo xcode-select -s /Applications/Xcode_26.4.app
-          echo "CMAKE_PREFIX_PATH=$(brew --prefix llvm)" >> $GITHUB_ENV
+          # sudo xcode-select -s /Applications/Xcode_26.4.app
+          echo 'PATH="/opt/homebrew/opt/llvm/bin:'$PATH'"'     >> $GITHUB_ENV
+          echo "LDFLAGS=-L/opt/homebrew/opt/llvm/lib"          >> $GITHUB_ENV
+          echo "CPPFLAGS=-I/opt/homebrew/opt/llvm/include"     >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(brew --prefix llvm)"       >> $GITHUB_ENV
+          echo "LLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm" >> $GITHUB_ENV
+          echo "CC=$(brew --prefix llvm)/bin/clang"            >> $GITHUB_ENV
+          echo "CXX=$(brew --prefix llvm)/bin/clang++"         >> $GITHUB_ENV
       - name: build
         run: |
-          mkdir build ; cd build
+          rm -rf build ; mkdir build ; cd build
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
                 -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \

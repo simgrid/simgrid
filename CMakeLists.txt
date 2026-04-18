@@ -478,7 +478,9 @@ if(enable_smemory)
   endif()
 
   find_package(LLVM CONFIG)
-  if(NOT LLVM_FOUND)
+  if(LLVM_FOUND)
+    message( STATUS "Found LLVM development kit. LLVM_INCLUDE_DIRS=${LLVM_INCLUDE_DIRS}; LLVM_DIR=${LLVM_DIR}")
+  else()
     message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with -Denable-smemory=OFF")
   endif()
   include(AddLLVM)
@@ -489,8 +491,9 @@ if(enable_smemory)
     PLUGIN_TOOL opt
     PARTIAL_SOURCES_INTENDED
   )
-  set_property(TARGET smemory_pass
-              APPEND PROPERTY INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIRS}")
+
+  target_include_directories(smemory_pass PRIVATE ${LLVM_INCLUDE_DIRS})
+  target_compile_definitions(smemory_pass PRIVATE ${LLVM_DEFINITIONS})
 
   configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
