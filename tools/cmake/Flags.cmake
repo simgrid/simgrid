@@ -140,6 +140,10 @@ if(enable_lto) # User wants LTO. Try if we can do that
       set(enable_lto ON)
     endif()
   endif()
+  # LTO seems to break the exception handling on macos/Intel, in particular when the exception is raised in a dynlib and catched in another
+  if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    set(enable_lto OFF)
+  endif()
 
   if(enable_lto)
     message(STATUS "LTO seems usable.")
