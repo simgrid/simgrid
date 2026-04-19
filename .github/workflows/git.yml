@@ -20,16 +20,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      - name: specify the compiler
+      - name: Set the compiler
         run: |
           echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
           echo "CXX=${{ matrix.config.cxx }}" >> $GITHUB_ENV
 
-      - name: prepare for ubuntu
+      - name: Prepare for ubuntu
         if: matrix.config.name == 'Linux ARM'
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
-      - name: prepare for MacOS
+      - name: Prepare for MacOS
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |
           brew install boost eigen pybind11
@@ -42,7 +42,7 @@ jobs:
           # echo "LLVM_DIR=$(brew --prefix llvm)/lib/cmake/llvm" >> $GITHUB_ENV
           # echo "CC=$(brew --prefix llvm)/bin/clang"            >> $GITHUB_ENV
           # echo "CXX=$(brew --prefix llvm)/bin/clang++"         >> $GITHUB_ENV
-      - name: build
+      - name: Configure cmake
         run: |
           rm -rf build ; mkdir build ; cd build
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
@@ -50,8 +50,15 @@ jobs:
                 -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
                 -Denable_testsuite_smpi_MPICH3=ON -Denable_smemory=OFF \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
-          ninja tests --verbose
-          ctest --output-on-failure -j$(nproc)
+      - name: Build the library
+        run: |
+          cd build && ninja simgrid simgrid-mc --verbose
+      - name: Build the tests
+        run: |
+          cd build && ninja tests --verbose
+      - name: Run the tests
+        run: |
+          cd build && ctest --output-on-failure -j$(nproc)
       - name: Send the failure message
         if: ${{ failure() }}
         uses: mattermost/action-mattermost-notify@master
