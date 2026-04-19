@@ -6,7 +6,9 @@
 #ifndef SIMGRID_PLUGINS_LOAD_H_
 #define SIMGRID_PLUGINS_LOAD_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
+#include <xbt/base.h>
 
 SG_BEGIN_DECL
 

@@ -1,5 +1,4 @@
-/* simgrid/simgrid_config.h - Results of the configure made visible to user code.   */
-/* Somewhat redundent name, but config.h could conflict in the INCLUDEPATH */
+/* simgrid/config.h - Results of the configure made visible to user code.   */
 
 /* Copyright (c) 2009-2025. The SimGrid Team. All rights reserved.          */
 

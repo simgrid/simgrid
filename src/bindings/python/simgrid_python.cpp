@@ -29,7 +29,7 @@
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/s4u/Task.hpp>
-#include <simgrid/simgrid_version.h>
+#include <simgrid/version.h>
 
 #include <algorithm>
 #include <memory>

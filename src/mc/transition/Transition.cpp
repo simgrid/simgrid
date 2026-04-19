@@ -8,7 +8,7 @@
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 #include <atomic>
-#include <simgrid/simgrid_config.h>
+#include <simgrid/config.h>
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/explo/Exploration.hpp"

@@ -6,7 +6,10 @@
 #ifndef SIMGRID_PLUGINS_FILE_SYSTEM_H_
 #define SIMGRID_PLUGINS_FILE_SYSTEM_H_
 
+#include <simgrid/config.h>
 #include <simgrid/forward.h>
+#include <xbt/base.h>
+#include <xbt/dict.h>
 
 #ifdef __cplusplus
 #include <xbt/Extendable.hpp>

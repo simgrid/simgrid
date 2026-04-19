@@ -8,7 +8,7 @@
 #include <xbt/asserts.hpp>
 #include <xbt/config.hpp>
 
-#include "simgrid/simgrid_config.h"
+#include "simgrid/config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/module.hpp"
