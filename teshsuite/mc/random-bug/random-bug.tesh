@@ -56,7 +56,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc
 > [  0.000000] (0:maestro@) Behavior: segv
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
-> Segmentation fault.
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) ** CRASH IN THE PROGRAM **
 > [  0.000000] (0:maestro@) **************************
@@ -131,7 +130,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning --log=no_loc --cfg=model-check/reduction:odpor
 > [  0.000000] (0:maestro@) Behavior: segv
 > [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: odpor.
-> Segmentation fault.
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) ** CRASH IN THE PROGRAM **
 > [  0.000000] (0:maestro@) **************************

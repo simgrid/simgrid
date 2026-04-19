@@ -60,6 +60,9 @@ int main(int argc, char* argv[])
             " to specify what to do when the error is found.");
   }
 
+  /* Disable any SIGSEGV signal handler, as macosx seems to keep the SimGrid one. */
+  std::signal(SIGSEGV, SIG_DFL);
+
   e.load_platform(argv[2]);
   e.host_by_name("Fafard")->add_actor("app", &app);
   e.run();
