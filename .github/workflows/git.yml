@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: specify the compiler
         run: |
           echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
@@ -32,7 +32,7 @@ jobs:
       - name: prepare for MacOS
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |
-          brew install boost eigen pybind11 ninja
+          brew install boost eigen pybind11
 
           # No need to install llvm as sthread does not work on that arch, so neither does smemory. Here is what was working in april 2026:
           # echo 'PATH="/opt/homebrew/opt/llvm/bin:'$PATH'"'     >> $GITHUB_ENV
@@ -50,7 +50,7 @@ jobs:
                 -Denable_testsuite_smpi_MBI=OFF -Denable_testsuite_McMini=ON \
                 -Denable_testsuite_smpi_MPICH3=ON -Denable_smemory=OFF \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
-          ninja tests
+          ninja tests --verbose
           ctest --output-on-failure -j$(nproc)
       - name: Send the failure message
         if: ${{ failure() }}
