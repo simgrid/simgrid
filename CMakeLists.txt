@@ -464,7 +464,7 @@ endif()
 SET(SIMGRID_HAVE_MC OFF)
 
 if(enable_model-checking)
-  message(STATUS "Enabling the stateless model-checking as requested.")
+  message(STATUS "Enabling the model-checking as requested.")
   SET(SIMGRID_HAVE_MC ON)
 endif()
 
@@ -472,42 +472,57 @@ if((DEFINED enable_sthread) AND enable_sthread AND (NOT ("${CMAKE_SYSTEM}" MATCH
   message(FATAL_ERROR "sthread can only be enabled on Linux for now. Please disable the 'enable_sthread' option in cmake.")
 endif()
 
-if (enable_smemory AND (NOT enable_sthread))
+if ((enable_smemory STREQUAL "ON") AND (NOT enable_sthread))
   message(FATAL_ERROR "smemory is useless without sthread. Please disable smemory or enable sthread in cmake.")
 endif()
 
-if(enable_smemory)
+if(NOT (enable_smemory STREQUAL "OFF"))
   if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler, or configure cmake with -Denable-smemory=OFF")
-  endif()
-
-  find_package(LLVM CONFIG)
-  if(LLVM_FOUND)
-    message( STATUS "Found LLVM development kit. LLVM_INCLUDE_DIRS=${LLVM_INCLUDE_DIRS}; LLVM_DIR=${LLVM_DIR}")
+    if(enable_smemory STREQUAL "ON")
+      message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler, or configure cmake with -Denable_smemory=OFF")
+    else()
+      message( STATUS "Do not enable smemory that requests clang++.")
+      set(enable_smemory "OFF")
+    endif()
   else()
-    message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with -Denable-smemory=OFF")
+    find_package(LLVM CONFIG)
   endif()
-  include(AddLLVM)
 
-  add_llvm_library(smemory_pass
-    MODULE      src/mc/smemory/pass/smemory_pass.cpp
-    DEPENDS     intrinsics_gen
-    PLUGIN_TOOL opt
-    PARTIAL_SOURCES_INTENDED
-  )
+  if(NOT LLVM_FOUND)
+    if(enable_smemory STREQUAL "ON")
+      message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with -Denable_smemory=OFF")
+    else()
+        message( STATUS "LLVM development kit not found. Do not enable smemory.")
+    endif()
+    set(enable_smemory "OFF")
 
-  target_include_directories(smemory_pass PRIVATE ${LLVM_INCLUDE_DIRS})
-  target_compile_definitions(smemory_pass PRIVATE ${LLVM_DEFINITIONS})
+  else()
+    message( STATUS "Found LLVM development kit. LLVM_INCLUDE_DIRS=${LLVM_INCLUDE_DIRS}; LLVM_DIR=${LLVM_DIR}")
 
-  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
-  configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
-  execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
-  execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang++)
-  install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
-          DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-
-  set(SIMGRID_HAVE_SMEMORY 1)
-  message(STATUS "Enabling the MC memory interceptor as requested.")
+    include(AddLLVM)
+  
+    add_llvm_library(smemory_pass
+      MODULE      src/mc/smemory/pass/smemory_pass.cpp
+      DEPENDS     intrinsics_gen
+      PLUGIN_TOOL opt
+      PARTIAL_SOURCES_INTENDED
+    )
+  
+    target_include_directories(smemory_pass PRIVATE ${LLVM_INCLUDE_DIRS})
+    target_compile_definitions(smemory_pass PRIVATE ${LLVM_DEFINITIONS})
+  
+    configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
+    configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
+    execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
+    execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang++)
+    install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
+            DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+  
+    set(SIMGRID_HAVE_SMEMORY 1)
+    message(STATUS "Enabling smemory (the MC memory interceptor).")
+  endif()
+else()
+  message(STATUS "Disabling smemory as requested.")
 endif()
 
 if(enable_smpi)
