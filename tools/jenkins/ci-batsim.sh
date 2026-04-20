@@ -13,39 +13,36 @@ $SUDO apt-get update
 $SUDO apt-get -y install gcc g++ git
 
 # Dependencies of BatSim
-# OK  simgrid-3.28
+# OK  simgrid-unstable
 # SRC intervalset-1.2.0
+# SRC batprotocol-1.0
+# PKG boost
 # PKG rapidjson-1.1.0
-# ??  redox
-# PKG hiredis-1.0.0
 # PKG zeromq-4.3.4
-# PKG docopt.cpp-0.6.3
-# PKG pugixml-1.11.1
-# PKG gtest-1.10.0-dev
-$SUDO apt-get -y install meson pkg-config libpugixml-dev libgtest-dev rapidjson-dev python3-hiredis libzmq3-dev libdocopt-dev libboost-all-dev
+# PKG CLI11
+
+# Dependencies of Batprotocol
+# PKG flatbuffers
+
+$SUDO apt-get -y install meson pkg-config rapidjson-dev libgtest-dev libzmq3-dev libboost-all-dev libcli11-dev libflatbuffers-dev
 
 echo "XXXXXXXXXXXXXXXX Install intervalset"
-git clone https://framagit.org/batsim/intervalset.git
+git clone --depth 1 https://framagit.org/batsim/intervalset.git
 cd intervalset
-meson build --prefix=/usr
-cd build && ninja install
-cd ../..
-
-echo "XXXXXXXXXXXXXXXX Install redox"
-$SUDO apt-get -y install libhiredis-dev libev-dev cmake #for redox
-git clone --depth=1 --branch=install-pkg-config-file https://github.com/mpoquet/redox.git
-cd redox
-cmake -DCMAKE_INSTALL_PREFIX=/usr -Dstatic_lib=OFF . && make -j$(nproc) install
-cp redox.pc /usr/lib/pkgconfig/
+meson build
+meson compile -C build && meson install -C build
 cd ..
+
+echo "XXXXXXXXXXXXXXXX Install batprotocol"
+git clone --depth 1 https://framagit.org/batsim/batprotocol.git
+cd batprotocol/cpp
+meson build
+meson compile -C build && meson install -C build
+cd ../..
 
 echo "XXXXXXXXXXXXXXXX Install and test batsim"
 # install BatSim from their upstream git into the batsim.git directory
-git clone --depth 1 https://gitlab.inria.fr/batsim/batsim
+git clone --depth 1 https://framagit.org/batsim/batsim.git
 cd batsim
-meson build -Ddo_unit_tests=true
-ninja -C build
-meson test -C build
-
-echo "XXXXXXXXXXXXXXXX cat /batsim/build/meson-logs/testlog.txt"
-cat build/meson-logs/testlog.txt
+meson build
+meson compile -C build

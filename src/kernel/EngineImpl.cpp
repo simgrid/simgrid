@@ -321,7 +321,7 @@ void EngineImpl::load_platform(const std::string& platf)
 {
   double start = xbt_os_time();
   if (boost::algorithm::ends_with(platf, ".so") || boost::algorithm::ends_with(platf, ".dylib")) {
-    void* handle = dlopen(platf.c_str(), RTLD_LAZY);
+    void* handle = dlopen(platf.c_str(), RTLD_LAZY | RTLD_NODELETE);
     xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
     platf_handle_           = std::unique_ptr<void, std::function<int(void*)>>(handle, dlclose);
     using load_fct_t = void (*)(const simgrid::s4u::Engine&);
