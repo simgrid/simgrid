@@ -38,6 +38,13 @@
 #      (code to use with SimGrid v3.19 or later)
 #    #endif
 #
+#  It defines the following cmake variables: SimGrid_VERSION_MAJOR,
+#    SimGrid_VERSION_MINOR and SimGrid_VERSION_PATCH. You can use it e.g. as:
+#
+#    if(SimGrid_VERSION_MAJOR LESS 4)
+#       # use pre v4.0 API
+#    endif()
+#
 #  Since SimGrid header files require C++17, we set CMAKE_CXX_STANDARD to 17.
 #    Change this variable in your own file if you need a later standard.
 
@@ -98,11 +105,14 @@ if (SimGrid_INCLUDE_DIR)
 
   # Concat the matches to MAJOR.MINOR.PATCH assuming they appear in this order
   foreach(match ${SimGrid_VERSION_STRING})
+    string(REGEX REPLACE ${SimGrid_VERSION_REGEX} "\\2" _ver_part ${match})
     if(SimGrid_VERSION)
-      set(SimGrid_VERSION "${SimGrid_VERSION}.")
+      set(SimGrid_VERSION "${SimGrid_VERSION}.${_ver_part}")
+    else()
+      set(SimGrid_VERSION "${_ver_part}")
     endif()
-    string(REGEX REPLACE ${SimGrid_VERSION_REGEX} "${SimGrid_VERSION}\\2" SimGrid_VERSION ${match})
-    set(SimGrid_VERSION_${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+    string(REGEX REPLACE ${SimGrid_VERSION_REGEX} "\\1" _ver_comp ${match})
+    set(SimGrid_VERSION_${_ver_comp} ${_ver_part})
   endforeach()
   unset(SimGrid_VERSION_STRING)
   unset(SimGrid_VERSION_REGEX)
