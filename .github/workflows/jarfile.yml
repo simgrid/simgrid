@@ -19,7 +19,7 @@ jobs:
           - { name: "Linux ARM",   os: ubuntu-24.04-arm, cc: "gcc",   cxx: "g++"}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
      # install dependencies
     - name: Init options
       run: |
@@ -64,7 +64,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Download all jars from ubuntu
         uses: actions/download-artifact@v4
       - name: Build final jar
