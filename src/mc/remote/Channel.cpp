@@ -82,7 +82,7 @@ template <> std::string Channel::unpack<std::string>(std::function<void(void)> c
       xbt_die("Remote died and no error handling callback provided");
     return std::string();
   }
-  std::string res(xbt_strdup((char*)got));
+  std::string res((char*)got);
   XBT_DEBUG("Received std::string %s", res.c_str());
   return res;
 }
