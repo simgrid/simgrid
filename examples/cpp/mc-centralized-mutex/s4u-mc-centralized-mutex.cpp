@@ -10,9 +10,11 @@
 /******************************************************************************/
 
 #include "simgrid/s4u.hpp"
+#include <cstring>
+#include <iostream>
 
-constexpr int AMOUNT_OF_CLIENTS = 4;
-constexpr int CS_PER_PROCESS    = 2;
+int AMOUNT_OF_CLIENTS = 4;
+int CS_PER_PROCESS    = 2;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
 namespace sg4 = simgrid::s4u;
@@ -86,13 +88,24 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
+  if (argc == 1 || (argc > 1 && (strcmp(argv[1], "-h") == 0))) {
+    std::cout << "USAGE:\nmc-centralized-mutex <platform file> <client count> <cs per process>\n";
+    exit(0);
+  }
   e.load_platform(argv[1]);
+  if (argc == 4) {
+    AMOUNT_OF_CLIENTS = atoi(argv[2]);
+    CS_PER_PROCESS    = atoi(argv[3]);
+  }
 
   e.host_by_name("Tremblay")->add_actor("coordinator", coordinator);
   e.host_by_name("Fafard")->add_actor("client",client);
-  e.host_by_name("Boivin")->add_actor("client", client);
-  e.host_by_name("Jacquelin")->add_actor("client", client);
-  e.host_by_name("Ginette")->add_actor("client", client);
+  if (AMOUNT_OF_CLIENTS > 1)
+    e.host_by_name("Boivin")->add_actor("client", client);
+  if (AMOUNT_OF_CLIENTS > 2)
+    e.host_by_name("Jacquelin")->add_actor("client", client);
+  for (int i = 3; i < AMOUNT_OF_CLIENTS; i++)
+    e.host_by_name("Ginette")->add_actor("client", client);
 
   e.run();
 
