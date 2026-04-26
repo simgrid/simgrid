@@ -892,7 +892,7 @@ verified checker with its environment. Observing the communications is probably 
 in the checker may be time-consuming), but this then poses practical challenges to ensure that all UNIX processes involved in
 the communication are properly enrolled in the simulation. These issues have been partially solved in other projects, such as
 remote-simgrid or TANSIV, but doing so in the context of the model-checker will certainly take months for somebody working
-full-time worker on it, and such a person has yet to be hired.
+full-time on it, and such a person has yet to be hired.
 
 Some of us claim that verifying the verifier could still work without observing the communication, provided that the
 verified checker is never forked in the middle, but always properly re-started from the start to explore other paths (i.e., using
@@ -913,7 +913,7 @@ logics yet. For now, our race detection algorithm assumes strict consistency whe
 to find some bugs in simple codes, this is probably not sufficient to find our bug.
 
 In summary, this is a lot of work before we can even try to verify our tool with itself. We are probably doomed to use other tools but
-hellgrind gets fooled by the atomic operations while the thread sanitizer TSan works but do not report anything useful (which is why we
+helgrind gets fooled by the atomic operations while the thread sanitizer TSan works but do not report anything useful (which is why we
 suspect that the bug may be related to tricky memory consistency issues).
 
 Version 4.2 (unreleased)
