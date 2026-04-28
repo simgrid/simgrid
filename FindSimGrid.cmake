@@ -139,7 +139,6 @@ if (SimGrid_FOUND)
 
   find_program(SMPIRUN smpirun
                HINTS ${SimGrid_PATH}/bin /opt/simgrid/bin)
-  #set(MPIEXEC_EXECUTABLE ${SMPIRUN} -platform /home/mquinson/Code/simgrid/examples/platforms/cluster_backbone.xml)
 
   MACRO(smpi_c_target NAME)
     target_compile_options(${NAME} PUBLIC "-include;smpi/smpi_helpers.h;-fPIC;-shared;-Wl,-z,defs")
