@@ -78,7 +78,7 @@ void Event::initialize_epoch()
       last_write_[location] = epoch_new(event_aid_, clock_vector_.get(event_aid_).value() - 1);
 }
 
-void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
+void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_event)
 {
   XBT_VERB("Updating epoch");
   last_write_      = prev_event.last_write_;

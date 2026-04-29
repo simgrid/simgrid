@@ -82,7 +82,7 @@ public:
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }
   void initialize_epoch();
-  void update_epoch_from(const ClockVector prev_clock, const Event prev_event);
+  void update_epoch_from(const ClockVector prev_clock, const Event& prev_event);
 };
 
 /**
