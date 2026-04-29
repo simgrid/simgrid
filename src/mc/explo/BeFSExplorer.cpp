@@ -155,8 +155,6 @@ void BeFSExplorer::run()
         state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
       }
 
-      Exploration::check_deadlock();
-
       this->backtrack();
       continue;
     }
