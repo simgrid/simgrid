@@ -23,12 +23,12 @@ std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, E
   if (limit == 0)
     return {};
 
+  auto next_transition_of_p = s->get_transition_in().get();
   for (EventHandle i = limit; i > 0; i--) {
-    auto past_transition      = S.get_transition_for_handle(i - 1);
-    auto next_transition_of_p = s->get_transition_in();
+    auto past_transition = S.get_transition_for_handle(i - 1);
 
-    if (past_transition->depends(next_transition_of_p.get()) &&
-        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p, limit))
+    if (past_transition->depends(next_transition_of_p) && past_transition->can_be_co_enabled(next_transition_of_p) &&
+        not S.happens_before_process(i - 1, p, limit))
       return i - 1;
   }
 
