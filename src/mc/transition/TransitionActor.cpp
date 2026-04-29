@@ -27,27 +27,6 @@ std::string ActorJoinTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorJoin(target %ld, %s)", target_, (timeout_ ? "timeout" : "no timeout"));
 }
-bool ActorJoinTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  // Joining is dependent with any transition whose
-  // actor is that of the `other` action. , Join i
-  if (other->aid_ == target_) {
-    return true;
-  }
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  // Otherwise, joining is indep with any other transitions:
-  // - It is only enabled once the target ends, and after this point it's enabled no matter what
-  // - Other joins don't affect it, and it does not impact on the enabledness of any other transition
-  return false;
-}
 
 bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
 {
@@ -88,19 +67,6 @@ std::string ActorExitTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorExit()");
 }
-bool ActorExitTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  // It is dependent with create and join, that are located before exit in the transition enum
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Otherwise, exiting is indep with any other transitions: it's equivalent to no-op
-  return false;
-}
 
 bool ActorExitTransition::can_be_co_enabled(const Transition* other) const
 {
@@ -130,15 +96,6 @@ std::string ActorSleepTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorSleep()");
 }
-bool ActorSleepTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  // Sleeping is indep with any other transitions: always enabled, not impacted by any transition
-  return false;
-}
 
 bool ActorSleepTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
                                            EventHandle this_handle, EventHandle other_handle) const
@@ -157,24 +114,6 @@ ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered,
 std::string ActorCreateTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("ActorCreate(child %ld)", child_);
-}
-bool ActorCreateTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  // Creation is dependent with any transition of the created actor (it's a local event to the created actor too)
-  if (other->aid_ == child_)
-    return true;
-
-  // Creations are dependent with each other, as they compete for the given PID to each childs, so the interleavings
-  // produce different results
-  if (other->type_ == type_)
-    return true;
-
-  // Otherwise, creation is indep with any other transitions
-  return false;
 }
 
 bool ActorCreateTransition::can_be_co_enabled(const Transition* other) const

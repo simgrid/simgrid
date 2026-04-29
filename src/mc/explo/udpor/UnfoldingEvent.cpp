@@ -154,7 +154,7 @@ bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) con
 
 bool UnfoldingEvent::is_dependent_with(const Transition* t) const
 {
-  return associated_transition->depends(t);
+  return associated_transition->dispatch_depends(t);
 }
 
 bool UnfoldingEvent::is_dependent_with(const UnfoldingEvent* other) const

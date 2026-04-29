@@ -34,19 +34,6 @@ std::string ObjectAccessTransition::to_string(bool verbose) const
   res += std::string(")");
   return res;
 }
-bool ObjectAccessTransition::depends(const Transition* o) const
-{
-  if (o->type_ < type_)
-    return o->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (o->aid_ == aid_)
-    return true;
-
-  if (o->type_ == Type::OBJECT_ACCESS) // dependent only if it's an access to the same object
-    return objaddr_ == static_cast<const ObjectAccessTransition*>(o)->objaddr_;
-  return false;
-}
 
 bool ObjectAccessTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
                                              EventHandle this_handle, EventHandle other_handle) const

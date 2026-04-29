@@ -26,7 +26,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
     auto const& transition = static_cast<SleepSetState*>(parent_state.get())->opened_[i];
     XBT_DEBUG("At state #%lu, transition <Actor %ld: %s> is contained in parent opened", get_num(), transition->aid_,
               transition->to_string().c_str());
-    if (not get_transition_in()->depends(transition.get())) {
+    if (not get_transition_in()->dispatch_depends(transition.get())) {
       XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent opened set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
@@ -36,7 +36,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
   }
 
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
-    if (not get_transition_in()->depends(transition.get())) {
+    if (not get_transition_in()->dispatch_depends(transition.get())) {
       XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent sleep set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);

@@ -161,7 +161,7 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
   for (const auto& events : this->skip_list_) {
     // Find the most recent event with which we are dependent
     for (auto event_it = events.crbegin(); event_it != events.crend(); ++event_it) {
-      if (contents_[*event_it].get_transition()->depends(t.get())) {
+      if (contents_[*event_it].get_transition()->dispatch_depends(t.get())) {
         // And update the clock to reflect this
         ClockVector::max_emplace_left(max_clock_vector, contents_[*event_it].get_clock_vector());
         break;
@@ -463,7 +463,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
   for (auto transition_it = v.begin(); transition_it != v.end(); ++transition_it) {
     const bool is_initial = std::none_of(v.begin(), transition_it, [&](const auto& transition_it_prime) {
-      return (*transition_it)->depends(transition_it_prime.get());
+      return (*transition_it)->dispatch_depends(transition_it_prime.get());
     });
     if (is_initial) {
       // If the sleep set already contains `q`, we're done:
@@ -502,7 +502,7 @@ bool Execution::is_in_weak_initial_of(TransitionPtr t, const PartialExecution& w
   for (const auto& w_i : w) {
     if (t->aid_ == w_i->aid_)
       return true;
-    if (w_i->depends(t.get()))
+    if (w_i->dispatch_depends(t.get()))
       return false;
   }
   return true;
@@ -516,7 +516,7 @@ bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p
       continue;
 
     for (auto w_j = w.begin(); w_j != w_i; w_j++) {
-      if ((*w_j)->depends((*w_i).get()))
+      if ((*w_j)->dispatch_depends((*w_i).get()))
         return false;
     }
 
@@ -529,7 +529,7 @@ bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p
 bool Execution::is_independent_with_execution_of(const PartialExecution& w, TransitionPtr next_E_p)
 {
   for (const auto& transition : w)
-    if (transition->depends(next_E_p.get()))
+    if (transition->dispatch_depends(next_E_p.get()))
       return false;
 
   return true;
@@ -660,7 +660,7 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
     if ((*b)->type_ == a->type_ && (*b)->aid_ == a->aid_)
       break;
 
-    if ((*b)->depends(a.get())) {
+    if ((*b)->dispatch_depends(a.get())) {
       XBT_DEBUG("The two execution are judge inequivalent because a-->b in the new one, where as b-->a in the old "
                 "one\na := Actor %ld: %s\nb := Actor %ld: %s",
                 a.get()->aid_, a.get()->to_string().c_str(), (*b)->aid_, (*b)->to_string().c_str());

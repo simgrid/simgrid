@@ -52,24 +52,6 @@ std::string CommWaitTransition::to_string(bool verbose) const
     return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s, comm=%u)", sender_, receiver_, mbox_,
                               (timeout_ ? "timeout" : "no timeout"), comm_);
 }
-bool CommWaitTransition::depends(const Transition* other) const
-{
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  if (other->type_ == Type::COMM_WAIT) {
-    const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-    if (timeout_ || wait->timeout_)
-      return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
-  }
-
-  return false; // Comm transitions are INDEP with non-comm transitions
-}
 
 bool CommWaitTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                          EventHandle other_handle) const
@@ -105,29 +87,6 @@ std::string CommTestTransition::to_string(bool verbose) const
   return xbt::string_printf("TestComm(from %ld to %ld, mbox=%u)", sender_, receiver_, mbox_);
 }
 
-bool CommTestTransition::depends(const Transition* other) const
-{
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  if (other->type_ == Type::COMM_TEST)
-    return false; // Test & Test are independent
-
-  if (other->type_ == Type::COMM_WAIT) {
-    if (static_cast<const CommWaitTransition*>(other)->timeout_)
-      return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
-
-    /* Wait & Test are independent */
-    return false;
-  }
-
-  return false; // Comm transitions are INDEP with non-comm transitions
-}
-
 bool CommTestTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                          EventHandle other_handle) const
 {
@@ -156,64 +115,6 @@ std::string CommRecvTransition::to_string(bool verbose) const
   else
     return xbt::string_printf("iRecv(mbox=%u, comm=%u, tag=%d))", mbox_, comm_, tag_);
 }
-bool CommRecvTransition::depends(const Transition* other) const
-{
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  if (other->type_ == Type::COMM_ASYNC_RECV)
-    return mbox_ == static_cast<const CommRecvTransition*>(other)->mbox_;
-
-  if (other->type_ == Type::COMM_ASYNC_SEND)
-    return false;
-
-  if (other->type_ == Type::COMM_IPROBE)
-    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
-
-  if (other->type_ == Type::COMM_TEST) {
-    const auto* test = static_cast<const CommTestTransition*>(other);
-
-    if (mbox_ != test->mbox_)
-      return false;
-
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
-      return false;
-
-    // If the test is checking a paired comm already, we're independent!
-    // If we happen to make up that pair, then we're dependent...
-    if (test->comm_ != comm_)
-      return false;
-
-    return true; // DEP with other send transitions
-  }
-
-  if (other->type_ == Type::COMM_WAIT) {
-    const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-    if (wait->timeout_)
-      return true;
-
-    if (mbox_ != wait->mbox_)
-      return false;
-
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-      return false;
-
-    // If the wait is waiting on a paired comm already, we're independent!
-    // If we happen to make up that pair, then we're dependent...
-    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
-      return false;
-
-    return true; // DEP with other wait transitions
-  }
-
-  return false; // Comm transitions are INDEP with non-comm transitions
-}
-
 bool CommRecvTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                          EventHandle other_handle) const
 {
@@ -258,64 +159,6 @@ std::string CommSendTransition::to_string(bool verbose) const
     return xbt::string_printf("iSend(mbox=%u, comm=%u, tag=%d)", mbox_, comm_, tag_);
 }
 
-bool CommSendTransition::depends(const Transition* other) const
-{
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  if (other->type_ == Type::COMM_ASYNC_SEND)
-    return mbox_ == static_cast<const CommSendTransition*>(other)->mbox_;
-
-  if (other->type_ == Type::COMM_ASYNC_RECV)
-    return false;
-
-  if (other->type_ == Type::COMM_IPROBE)
-    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
-
-  if (other->type_ == Type::COMM_TEST) {
-    const auto* test = static_cast<const CommTestTransition*>(other);
-
-    if (mbox_ != test->mbox_)
-      return false;
-
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_))
-      return false;
-
-    // If the test is checking a paired comm already, we're independent!
-    // If we happen to make up that pair, then we're dependent...
-    if (test->comm_ != comm_)
-      return false;
-
-    return true; // DEP with other test transitions
-  }
-
-  if (other->type_ == Type::COMM_WAIT) {
-    const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-    if (wait->timeout_)
-      return true;
-
-    if (mbox_ != wait->mbox_)
-      return false;
-
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-      return false;
-
-    // If the wait is waiting on a paired comm already, we're independent!
-    // If we happen to make up that pair, then we're dependent...
-    if ((aid_ != wait->aid_) && wait->comm_ != comm_)
-      return false;
-
-    return true; // DEP with other wait transitions
-  }
-
-  return false; // Comm transitions are INDEP with non-comm transitions
-}
-
 bool CommSendTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                          EventHandle other_handle) const
 {
@@ -358,21 +201,6 @@ std::string CommIprobeTransition::to_string(bool verbose) const
     return xbt::string_printf("iProbe(mbox=%u, %s)", mbox_, (is_sender_ ? "sender side" : "recv side"));
   else
     return xbt::string_printf("iProbe(mbox=%u, %s, tag=%d)", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
-}
-bool CommIprobeTransition::depends(const Transition* other) const
-{
-  if (other->type_ < type_)
-    return other->depends(this);
-
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-
-  if (other->type_ == Type::COMM_IPROBE)
-    return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
-
-  // Iprobe can't enable a wait and is independent with every non Recv nor Send transition
-  return false;
 }
 bool CommIprobeTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
                                            EventHandle this_handle, EventHandle other_handle) const

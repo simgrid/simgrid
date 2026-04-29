@@ -103,7 +103,12 @@ public:
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay(RemoteApp& app) const;
 
+  /* We ensure that all functions are properly inlined within dispatch_depends that does the real job.
+   * The virtual function still exists for the tests that define some mock transition types, of type_ UNKNOWN
+   */
   virtual bool depends(const Transition* other) const { return true; }
+
+  bool dispatch_depends(const Transition* other) const;
 
   /* Transitions can be co-enabled if there can exist a state in which one actor wants to do one of them
      and an other actor wants to do the other one */

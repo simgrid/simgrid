@@ -133,6 +133,92 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Chann
 #endif
 }
 
+/* This function exists so that the compiler can inline all calls to the depends() function thanks of the static_cast<>.
+ * There is no need for a dynamic dispatch with such a static_cast, so the function can be called directly. Since the
+ * depends() functions are in the header files, the compiler goes further and inlines them on need. */
+bool Transition::dispatch_depends(const Transition* other) const
+{
+#if SIMGRID_HAVE_MC
+  // Actions executed by the same actor are always dependent
+  if (other->aid_ == aid_)
+    return true;
+
+  // Enforce our comparison order
+  if (other->type_ < type_)
+    return other->dispatch_depends(this);
+
+  switch (type_) {
+    case Transition::Type::BARRIER_ASYNC_LOCK:
+    case Transition::Type::BARRIER_WAIT:
+      return static_cast<const BarrierTransition*>(this)->depends(other);
+
+    case Transition::Type::COMM_ASYNC_RECV:
+      return static_cast<const CommRecvTransition*>(this)->depends(other);
+    case Transition::Type::COMM_ASYNC_SEND:
+      return static_cast<const CommSendTransition*>(this)->depends(other);
+    case Transition::Type::COMM_IPROBE:
+      return static_cast<const CommIprobeTransition*>(this)->depends(other);
+    case Transition::Type::COMM_TEST:
+      return static_cast<const CommTestTransition*>(this)->depends(other);
+    case Transition::Type::COMM_WAIT:
+      return static_cast<const CommWaitTransition*>(this)->depends(other);
+
+    case Transition::Type::TESTANY:
+      return static_cast<const TestAnyTransition*>(this)->depends(other);
+    case Transition::Type::WAITANY:
+      return static_cast<const WaitAnyTransition*>(this)->depends(other);
+
+    case Transition::Type::RANDOM:
+      return static_cast<const RandomTransition*>(this)->depends(other);
+
+    case Transition::Type::MUTEX_TRYLOCK:
+    case Transition::Type::MUTEX_ASYNC_LOCK:
+    case Transition::Type::MUTEX_TEST:
+    case Transition::Type::MUTEX_WAIT:
+    case Transition::Type::MUTEX_UNLOCK:
+      return static_cast<const MutexTransition*>(this)->depends(other);
+
+    case Transition::Type::SEM_ASYNC_LOCK:
+    case Transition::Type::SEM_UNLOCK:
+    case Transition::Type::SEM_WAIT:
+      return static_cast<const SemaphoreTransition*>(this)->depends(other);
+
+    case Transition::Type::CONDVAR_ASYNC_LOCK:
+    case Transition::Type::CONDVAR_BROADCAST:
+    case Transition::Type::CONDVAR_SIGNAL:
+    case Transition::Type::CONDVAR_WAIT:
+      return static_cast<const CondvarTransition*>(this)->depends(other);
+
+    case Transition::Type::ACTOR_CREATE:
+      return static_cast<const ActorCreateTransition*>(this)->depends(other);
+    case Transition::Type::ACTOR_EXIT:
+      return static_cast<const ActorExitTransition*>(this)->depends(other);
+    case Transition::Type::ACTOR_JOIN:
+      return static_cast<const ActorJoinTransition*>(this)->depends(other);
+    case Transition::Type::ACTOR_SLEEP:
+      return static_cast<const ActorSleepTransition*>(this)->depends(other);
+
+    case Transition::Type::OBJECT_ACCESS:
+      return static_cast<const ObjectAccessTransition*>(this)->depends(other);
+
+    case Transition::Type::UNKNOWN:
+      return depends(other); // used for the tests
+
+    case Transition::Type::MUTEX_LOCK_NOMC:
+    case Transition::Type::SEM_LOCK_NOMC:
+    case Transition::Type::CONDVAR_NOMC:
+      xbt_die("We are not supposed to compute the dependency of the NOMC transitions (type is %d)", (int)type_);
+    default:
+      break;
+  }
+  xbt_die("Invalid transition type %d while computing the depends. Did you implement a new transition kind without "
+          "properly extending the checker?",
+          (int)type_);
+#else
+  xbt_die("Deserializing transitions is only interesting in MC mode.");
+#endif
+}
+
 // boost::intrusive_ptr<Transition> support:
 void intrusive_ptr_add_ref(Transition* transition)
 {

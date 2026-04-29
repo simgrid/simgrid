@@ -36,13 +36,6 @@ std::string TestAnyTransition::to_string(bool verbose) const
   res += " }";
   return res;
 }
-bool TestAnyTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-  return this->get_current_transition()->depends(other);
-}
 bool TestAnyTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                         EventHandle other_handle) const
 {
@@ -70,14 +63,6 @@ std::string WaitAnyTransition::to_string(bool verbose) const
   res += " } (times considered = " + std::to_string(times_considered_) + ")";
   return res;
 }
-bool WaitAnyTransition::depends(const Transition* other) const
-{
-  // Actions executed by the same actor are always dependent
-  if (other->aid_ == aid_)
-    return true;
-  return this->get_current_transition()->depends(other);
-}
-
 Transition* WaitAnyTransition::get_current_transition() const
 {
   int times_considered = times_considered_;

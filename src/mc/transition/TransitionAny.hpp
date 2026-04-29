@@ -21,7 +21,11 @@ class TestAnyTransition : public Transition {
 public:
   TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
-  bool depends(const Transition* other) const override;
+  bool depends(const Transition* other) const override
+  {
+    return this->get_current_transition()->dispatch_depends(other);
+  }
+
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 
@@ -41,7 +45,11 @@ class WaitAnyTransition : public Transition {
 public:
   WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
-  bool depends(const Transition* other) const override;
+  bool depends(const Transition* other) const override
+  {
+    return this->get_current_transition()->dispatch_depends(other);
+  }
+
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 

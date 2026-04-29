@@ -21,7 +21,13 @@ class ObjectAccessTransition : public Transition {
 public:
   ObjectAccessTransition(aid_t issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
-  bool depends(const Transition* other) const override;
+  bool depends(const Transition* other) const override
+  {
+    if (other->type_ == Type::OBJECT_ACCESS) // dependent only if it's an access to the same object
+      return objaddr_ == static_cast<const ObjectAccessTransition*>(other)->objaddr_;
+    return false;
+  }
+
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 };
