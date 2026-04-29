@@ -113,7 +113,7 @@ void BeFSExplorer::run()
               state->get_num(), state->count_todo(), opened_states_.size());
 
     // Backtrack if we reached the maximum depth
-    if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
+    if (ssize_t max = _sg_mc_max_depth; max > 0 && stack_.size() > (std::size_t)max) {
       XBT_WARN("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the reduction /!\\", _sg_mc_max_depth.get());
       XBT_WARN("/!\\ Any bug you may find are real, but not finding bug doesn't mean anything /!\\");
       XBT_WARN("/!\\ You should consider changing the depth limit with --cfg=model-check/max-depth /!\\");
