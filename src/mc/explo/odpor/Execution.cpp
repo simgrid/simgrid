@@ -245,9 +245,14 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
 {
   std::list<Execution::EventHandle> racing_events;
   std::list<Execution::EventHandle> candidates;
-  for (aid_t aid = 0; (unsigned)aid < get_event_with_handle(target).get_clock_vector().size(); aid++)
-    if (aid != get_actor_with_handle(target) and get_event_with_handle(target).get_clock_vector().get(aid).value() >= 0)
-      candidates.push_back(get_event_with_handle(target).get_clock_vector().get(aid).value());
+
+  const auto& evt    = get_event_with_handle(target);
+  const auto evt_aid = evt.get_transition()->aid_;
+  const auto& evt_cv = evt.get_clock_vector();
+
+  for (aid_t aid = 0; (unsigned)aid < evt_cv.size(); aid++)
+    if (aid != evt_aid and evt_cv.get(aid).value() >= 0)
+      candidates.push_back(evt_cv.get(aid).value());
 
   candidates.sort(std::greater<EventHandle>());
   candidates.unique();
@@ -256,7 +261,7 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
   // to fully determine if there exist a "event in the middle"
   Execution::EventHandle prev_on_actor;
   for (prev_on_actor = target - 1; prev_on_actor != std::numeric_limits<Execution::EventHandle>::max(); prev_on_actor--)
-    if (get_actor_with_handle(prev_on_actor) == get_actor_with_handle(target))
+    if (get_actor_with_handle(prev_on_actor) == evt_aid)
       break;
 
   bool disqualified;
