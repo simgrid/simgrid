@@ -72,19 +72,19 @@ struct EventDataRace : public std::exception {
 
 void Event::initialize_epoch()
 {
-  aid_t event_aid_ = contents_.first->aid_;
-  for (auto [location, size, kind] : contents_.first->get_memory_tracker())
+  aid_t event_aid_ = transition_->aid_;
+  for (auto [location, size, kind] : transition_->get_memory_tracker())
     if (kind == smemory::MemOpType::Write)
-      last_write_[location] = epoch_new(event_aid_, contents_.second.get(event_aid_).value() - 1);
+      last_write_[location] = epoch_new(event_aid_, clock_vector_.get(event_aid_).value() - 1);
 }
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_event)
 {
   XBT_VERB("Updating epoch");
   last_write_      = prev_event.last_write_;
-  aid_t event_aid_ = contents_.first->aid_;
+  aid_t event_aid_ = transition_->aid_;
 
-  for (auto [location, size, kind] : contents_.first->get_memory_tracker()) {
+  for (auto [location, size, kind] : transition_->get_memory_tracker()) {
     auto prev_write = last_write_.find(location);
 
     if (prev_write != last_write_.end() and epoch_get_aid(prev_write->second) == event_aid_)
@@ -98,7 +98,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
         if (clock >= prev_clock.get(aid).value()) {
           // TODO: We need to retrieve the size of the first access
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read, clock + 1,
-                              this->contents_.second.get(event_aid_).value());
+                              this->clock_vector_.get(event_aid_).value());
           // +1 is here to find the right transition in replay mode
         }
       }
@@ -110,14 +110,14 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event prev_eve
         auto clock = epoch_get_clock(prev_write->second);
         if (clock >= prev_clock.get(aid).value())
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write, clock + 1,
-                              this->contents_.second.get(event_aid_).value());
+                              this->clock_vector_.get(event_aid_).value());
         // +1 is here to find the right transition in replay mode
       }
 
       // Record the new write as it happened juste before this transition
       // the -1 is here because we receive reads and writes AFTER the transition while
       // in reality it happened BEFORE
-      last_write_[location] = epoch_new(event_aid_, contents_.second.get(event_aid_).value() - 1);
+      last_write_[location] = epoch_new(event_aid_, clock_vector_.get(event_aid_).value() - 1);
     }
   }
 }
@@ -141,7 +141,7 @@ EventHandle Execution::find_pre_event_of_aid(aid_t actor)
     if (contents_[handle].get_transition()->type_ != Transition::Type::ACTOR_CREATE)
       continue;
 
-    auto t = static_cast<ActorCreateTransition*>(contents_[handle].get_transition().get());
+    auto t = static_cast<ActorCreateTransition*>(contents_[handle].get_transition());
     if (t->get_child() != actor)
       continue;
 
@@ -169,7 +169,7 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event({t, std::move(max_clock_vector)}));
+  contents_.push_back(Event(t, std::move(max_clock_vector)));
   if (skip_list_.size() <= (unsigned)t->aid_)
     skip_list_.resize(t->aid_ + 1, {});
   EventHandle prev_event_of_aid = find_pre_event_of_aid(t->aid_);

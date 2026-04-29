@@ -22,7 +22,7 @@ namespace simgrid::mc {
 Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
   State* s = S->back().get();
-  // ODPOR only look for race on the maximal executions
+  // ODPOR only looks for race on the maximal executions
   if (s->has_enabled_actors())
     return new RaceUpdate();
 

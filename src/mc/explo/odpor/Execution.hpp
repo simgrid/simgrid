@@ -61,7 +61,8 @@ static inline int epoch_get_clock(uint32_t epoch)
  * actor `j`
  */
 class Event {
-  std::pair<TransitionPtr, ClockVector> contents_;
+  TransitionPtr transition_;
+  ClockVector clock_vector_;
 
   std::unordered_map<void*, epoch_t> last_write_;
 
@@ -73,10 +74,10 @@ public:
   Event(Event&&)                 = default;
   Event(const Event&)            = default;
   Event& operator=(const Event&) = default;
-  explicit Event(std::pair<TransitionPtr, ClockVector> pair) : contents_(std::move(pair)) {}
+  explicit Event(TransitionPtr transition, ClockVector vc) : transition_(transition), clock_vector_(vc) {}
 
-  TransitionPtr get_transition() const { return std::get<0>(contents_); }
-  const ClockVector& get_clock_vector() const { return std::get<1>(contents_); }
+  Transition* get_transition() const { return transition_.get(); }
+  const ClockVector& get_clock_vector() const { return clock_vector_; }
 
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }
@@ -308,7 +309,7 @@ public:
    */
   const Transition* get_transition_for_handle(EventHandle handle) const
   {
-    return get_event_with_handle(handle).get_transition().get();
+    return get_event_with_handle(handle).get_transition();
   }
 
   /**
