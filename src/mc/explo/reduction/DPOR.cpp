@@ -16,26 +16,27 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc_reduction, "Dynamic partial order re
 
 namespace simgrid::mc {
 
-std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, const State* s, aid_t p)
+std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, EventHandle limit, const State* s,
+                                                    aid_t p)
 {
 
-  if (S.size() == 0)
+  if (limit == 0)
     return {};
 
-  for (EventHandle i = S.size(); i > 0; i--) {
+  for (EventHandle i = limit; i > 0; i--) {
     auto past_transition      = S.get_transition_for_handle(i - 1);
     auto next_transition_of_p = s->get_transition_in();
 
     if (past_transition->depends(next_transition_of_p.get()) &&
-        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p))
+        past_transition->can_be_co_enabled(next_transition_of_p.get()) && not S.happens_before_process(i - 1, p, limit))
       return i - 1;
   }
 
   return {};
 }
 
-std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, stack_t* state_stack, aid_t p,
-                                                  EventHandle i)
+std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, EventHandle limit, stack_t* state_stack,
+                                                  aid_t p, EventHandle i)
 {
 
   XBT_DEBUG("Computing the ancestors of aid %ld before event %u", p, i);
@@ -49,8 +50,8 @@ std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, sta
       continue;
     }
 
-    for (EventHandle j = i + 1; j < S.size() - 1; j++) {
-      if (q == S.get_actor_with_handle(j) && S.happens_before_process(j, p)) {
+    for (EventHandle j = i + 1; j < limit - 1; j++) {
+      if (q == S.get_actor_with_handle(j) && S.happens_before_process(j, p, limit)) {
         E.insert(q);
         break;
       }
@@ -76,10 +77,9 @@ Reduction::RaceUpdate* DPOR::races_computation(odpor::Execution& E, stack_t* S, 
     StatePtr s = (*S)[i];
     // With persistency, we only need to test the race detection for the lastly taken proc
     aid_t proc                     = s->get_transition_in()->aid_;
-    odpor::Execution E_before_last = E.get_prefix_before(i - 1);
-    if (std::optional<EventHandle> opt_j = max_dependent_dpor(E_before_last, s.get(), proc); opt_j.has_value()) {
+    if (std::optional<EventHandle> opt_j = max_dependent_dpor(E, i - 1, s.get(), proc); opt_j.has_value()) {
       EventHandle j                       = opt_j.value();
-      std::unordered_set<aid_t> ancestors = compute_ancestors(E_before_last, S, proc, j);
+      std::unordered_set<aid_t> ancestors = compute_ancestors(E, i - 1, S, proc, j);
       // note: computing the whole set is necessary with guiding strategy
 
       updates->add_element((*S)[j], std::move(ancestors));

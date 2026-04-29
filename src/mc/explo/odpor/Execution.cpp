@@ -602,13 +602,13 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   return std::optional<PartialExecution>{std::move(preallocated_partial_execution_)};
 }
 
-bool Execution::happens_before_process(Execution::EventHandle e, aid_t p) const
+bool Execution::happens_before_process(Execution::EventHandle e, aid_t p, EventHandle limit) const
 {
 
   if (get_actor_with_handle(e) == p)
     return true;
 
-  for (EventHandle k = e + 1; k < contents_.size(); k++) {
+  for (EventHandle k = e + 1; k < limit; k++) {
     if (happens_before(e, k) && get_actor_with_handle(k) == p)
       return true;
   }

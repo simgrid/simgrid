@@ -24,9 +24,10 @@ class DPOR : public Reduction {
 
   /** Compute the eventual i of Godefroid algorithm, line 4
    *  Note that with persistency, we do not consider every p in "advance" but only the lastly taken p */
-  std::optional<EventHandle> max_dependent_dpor(const odpor::Execution& S, const State* s, aid_t p);
+  std::optional<EventHandle> max_dependent_dpor(const odpor::Execution& S, EventHandle limit, const State* s, aid_t p);
 
-  std::unordered_set<aid_t> compute_ancestors(const odpor::Execution& S, stack_t* state_stack, aid_t p, EventHandle i);
+  std::unordered_set<aid_t> compute_ancestors(const odpor::Execution& S, EventHandle limit, stack_t* state_stack,
+                                              aid_t p, EventHandle i);
 
 public:
   DPOR()           = default;

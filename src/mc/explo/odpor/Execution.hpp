@@ -409,9 +409,10 @@ public:
    *
    * `e --->_E p`
    *
-   * where `E` is this execution
+   * where `E` is this execution, limited to the handle `limit` (so that we don't have to copy the execution to explore
+   * only its prefix)
    */
-  bool happens_before_process(EventHandle e, aid_t p) const;
+  bool happens_before_process(EventHandle e, aid_t p, EventHandle limit) const;
 
   /**
    * @brief Extends the execution by one more step
