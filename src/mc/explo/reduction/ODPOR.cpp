@@ -43,7 +43,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
       continue;
 
     XBT_VERB("Computing reversible races of Event `%u`", e_prime);
-    for (const auto e : E.get_reversible_races_of(e_prime, S)) {
+    for (const auto e : E.get_reversible_races_of(e_prime)) {
       xbt_assert((*S)[e] != nullptr and (*S)[e_prime] != nullptr);
 
       XBT_DEBUG("... racing event `%u``", e);

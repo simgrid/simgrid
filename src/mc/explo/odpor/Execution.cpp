@@ -292,7 +292,7 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
   return racing_events;
 }
 
-std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle, stack_t* S) const
+std::list<Execution::EventHandle> Execution::get_reversible_races_of(EventHandle handle) const
 {
   std::list<EventHandle> reversible_races;
   const auto* this_transition = get_transition_for_handle(handle);

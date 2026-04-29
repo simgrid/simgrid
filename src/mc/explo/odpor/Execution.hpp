@@ -365,7 +365,7 @@ public:
    * @returns a set of event handles, each element of which is an event
    * in this execution which is in a *reversible race* with event `handle`
    */
-  std::list<EventHandle> get_reversible_races_of(EventHandle handle, stack_t* S) const;
+  std::list<EventHandle> get_reversible_races_of(EventHandle handle) const;
 
   /**
    * @brief Computes `pre(e, E)` as described in ODPOR [1]
