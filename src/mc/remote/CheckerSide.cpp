@@ -99,6 +99,16 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
   xbt_assert(args[i] != nullptr,
              "Unable to find a binary to exec on the command line. Did you only pass config flags?");
 
+  if (XBT_LOG_ISENABLED(mc_checkerside, xbt_log_priority_verbose)) {
+    std::string cmdline;
+    for (int j = i; args[j] != nullptr; j++) {
+      cmdline += args[j];
+      cmdline += " ";
+    }
+    char* env = getenv("LD_PRELOAD");
+    XBT_VERB("Start process %s (LD_PRELOAD=%s)", cmdline.c_str(), env);
+  }
+
   execvp(args[i], args.data() + i);
   XBT_CRITICAL("The model-checked process failed to exec(%s): %s.\n"
                "        Make sure that your binary exists on disk and is executable.",
@@ -153,6 +163,7 @@ CheckerSide::CheckerSide(const std::vector<char*>& args)
   xbt_assert(pid_ >= 0, "Could not fork application process");
 
   if (pid_ == 0) { // Child
+    channel_.reset_socket(-1); // Close any previous parent-side socket
     ::close(sockets[1]);
 
     run_child_process(sockets[0], args);

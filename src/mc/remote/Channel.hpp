@@ -86,7 +86,12 @@ public:
 
   // Socket handling
   int get_socket() const { return socket_; }
-  void reset_socket(int socket) { socket_ = socket; }
+  void reset_socket(int socket)
+  {
+    if (socket_ != -1)
+      close(socket_);
+    socket_ = socket;
+  }
 };
 
 template <> void Channel::pack<std::string>(std::string str);
