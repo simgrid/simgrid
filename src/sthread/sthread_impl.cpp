@@ -12,6 +12,8 @@
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/string.hpp"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <cerrno>
 #include <cstring>
 #include <err.h>
@@ -86,11 +88,34 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   if (not sthread_quiet) {
     fprintf(stderr,
-            "sthread is intercepting the execution of %s. If it's not what you want, export STHREAD_IGNORE_BINARY=%s\n",
-            argv[0], argv[0]);
+            "sthread is intercepting the execution of %s in process %d. If it's not what you want, export "
+            "STHREAD_IGNORE_BINARY=%s\n",
+            argv[0], getpid(), argv[0]);
   }
 
-  sg4::Engine e(&argc, argv);
+  /* If the variable STHREAD_ARGS is used, this is what is passed to the engine creation.
+   * It must be a space-separated list of parameters */
+  int args_argc;
+  char** engine_argv;
+  int* engine_argc;
+  auto myargs = getenv("STHREAD_ARGS");
+  if (myargs != nullptr) {
+    XBT_INFO("sthread is not using the parameters from the command line, but '%s' from STHREAD_ARGS", myargs);
+    std::vector<std::string> result;
+    boost::algorithm::split(result, myargs, boost::is_any_of(" "));
+    engine_argv    = (char**)malloc(sizeof(char*) * (result.size() + 2));
+    engine_argv[0] = xbt_strdup("sthread_command");
+    for (unsigned i = 0; i < result.size(); i++)
+      engine_argv[i + 1] = xbt_strdup(result[i].c_str());
+    engine_argv[result.size() + 1] = nullptr;
+    args_argc                      = result.size() + 1;
+    engine_argc                    = &args_argc;
+  } else {
+    engine_argv = argv;
+    engine_argc = &argc;
+  }
+  sg4::Engine e(engine_argc, engine_argv);
+
   auto* zone = e.get_netzone_root();
   lilibeth   = zone->add_host("Lilibeth", 1e15);
   zone->seal();
