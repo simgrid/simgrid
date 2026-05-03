@@ -47,7 +47,7 @@ void CriticalTransitionExplorer::log_stack()
       status = "  UNKNOWN";
     if (out_transition == nullptr)
       return; // We reached the last state of the stack and nothing is going out of it
-    XBT_INFO("  (%s) Actor %ld in %s ==> simcall: %s", status.c_str(), out_transition->aid_,
+    XBT_INFO("  (%s) Actor %d in %s ==> simcall: %s", status.c_str(), out_transition->aid_,
              out_transition->get_call_location().c_str(), out_transition->to_string(true).c_str());
     depth++;
   }
@@ -81,7 +81,7 @@ void CriticalTransitionExplorer::run()
     backtrack_to_state(stack_->back().get());
     is_execution_descending = true;
     try {
-      XBT_DEBUG("Running the DFS exploration from after transition Actor %ld : %s", current_candidate->aid_,
+      XBT_DEBUG("Running the DFS exploration from after transition Actor %d : %s", current_candidate->aid_,
                 current_candidate->to_string().c_str());
       XBT_DEBUG("Execution sequence <%s>", execution_seq_.get_one_string_textual_trace().c_str());
       DFSExplorer::explore(execution_seq_, *stack_);
@@ -89,7 +89,7 @@ void CriticalTransitionExplorer::run()
       xbt_assert(error.value == ExitStatus::SUCCESS);
       log_end_exploration();
       XBT_INFO("Found a correct execution of the programm!");
-      XBT_INFO("Found the critical transition: Actor %ld ==> simcall: %s", current_candidate->aid_,
+      XBT_INFO("Found the critical transition: Actor %d ==> simcall: %s", current_candidate->aid_,
                current_candidate->to_string(true).c_str());
       return;
     }
@@ -103,7 +103,7 @@ void CriticalTransitionExplorer::run()
     XBT_INFO("The critical transition explorer reached the beginning of the stack without finding a correct execution. "
              "The program may have no correct behavior.");
   auto critical_transition = stack_->back()->get_transition_out();
-  XBT_INFO("Found the critical transition: Actor %ld ==> simcall: %s", critical_transition->aid_,
+  XBT_INFO("Found the critical transition: Actor %d ==> simcall: %s", critical_transition->aid_,
            critical_transition->to_string(true).c_str());
   return;
 }

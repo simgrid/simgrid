@@ -282,7 +282,7 @@ static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec,
 
     if (cv_transition->aid_ == exec->get_actor_with_handle(cv_wait_handle)) {
       xbt_assert(cv_transition->type_ == Transition::Type::CONDVAR_ASYNC_LOCK,
-                 "A condvar wait is always preceeded by an async_lock right? (aid: %ld)", cv_transition->aid_);
+                 "A condvar wait is always preceeded by an async_lock right? (aid: %d)", cv_transition->aid_);
       lock_handle = e;
       break;
     }

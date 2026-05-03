@@ -74,7 +74,7 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr i
   traversal_ = std::make_shared<PostFixTraversal>(this);
 
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %lu ==> Actor %ld: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
                  incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -285,7 +285,7 @@ void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_a
   xbt_assert(previous_incoming_aid == incoming_transition_->aid_,
              "Update should only update the type of the exact transition type, not the actor. FixMe!");
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %lu ==> Actor %ld: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
                  incoming_transition_->to_string().c_str(), num_);
 }
 

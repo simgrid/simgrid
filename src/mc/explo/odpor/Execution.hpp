@@ -443,7 +443,7 @@ public:
    * @brief Returns wether a given transition is in WI(v)
    *
    */
-  static bool is_in_weak_initial_of(TransitionPtr, const PartialExecution&);
+  static bool is_in_weak_initial_of(Transition*, const PartialExecution&);
 
   /**
    * @brief Computes wether the sequence without the unlock can fire the wait

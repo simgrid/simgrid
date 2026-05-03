@@ -32,7 +32,7 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
 {
   std::vector<std::string> trace;
   for (const auto& t : w) {
-    auto a = xbt::string_printf("Actor %ld: %s", t->aid_, t->to_string(true).c_str());
+    auto a = xbt::string_printf("Actor %d: %s", t->aid_, t->to_string(true).c_str());
     trace.emplace_back(std::move(a));
   }
   return trace;
@@ -222,7 +222,7 @@ std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
   for (EventHandle e_i = 0; e_i != this->contents_.size(); e_i++) {
-    auto a = xbt::string_printf("Actor %ld: %s", contents_[e_i].get_transition()->aid_,
+    auto a = xbt::string_printf("Actor %d: %s", contents_[e_i].get_transition()->aid_,
                                 contents_[e_i].get_transition()->to_string(true).c_str());
 
     trace.emplace_back(std::move(a));
@@ -232,10 +232,10 @@ std::vector<std::string> Execution::get_textual_trace() const
 
 std::string Execution::get_one_string_textual_trace() const
 {
-  std::string trace = xbt::string_printf(";%ld", contents_[0].get_transition()->aid_).c_str();
+  std::string trace = xbt::string_printf(";%d", contents_[0].get_transition()->aid_).c_str();
 
   for (EventHandle e_i = 1; e_i != this->contents_.size(); e_i++) {
-    trace = trace + xbt::string_printf(";%ld", contents_[e_i].get_transition()->aid_).c_str();
+    trace = trace + xbt::string_printf(";%d", contents_[e_i].get_transition()->aid_).c_str();
   }
 
   return trace;
@@ -496,13 +496,13 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   return v;
 }
 
-bool Execution::is_in_weak_initial_of(TransitionPtr t, const PartialExecution& w)
+bool Execution::is_in_weak_initial_of(Transition* t, const PartialExecution& w)
 {
 
   for (const auto& w_i : w) {
     if (t->aid_ == w_i->aid_)
       return true;
-    if (w_i->dispatch_depends(t.get()))
+    if (w_i->dispatch_depends(t))
       return false;
   }
   return true;
@@ -662,7 +662,7 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
 
     if ((*b)->dispatch_depends(a.get())) {
       XBT_DEBUG("The two execution are judge inequivalent because a-->b in the new one, where as b-->a in the old "
-                "one\na := Actor %ld: %s\nb := Actor %ld: %s",
+                "one\na := Actor %d: %s\nb := Actor %d: %s",
                 a.get()->aid_, a.get()->to_string().c_str(), (*b)->aid_, (*b)->to_string().c_str());
       return false;
     }

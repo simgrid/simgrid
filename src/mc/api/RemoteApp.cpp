@@ -186,6 +186,8 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
       if (Exploration::need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;
         for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
+          xbt_assert(actor.aid < 256, "The model-checker assumes that no aid will ever be larger than 256. Change how "
+                                      "aid is stored in Transition.hpp to overcome this limitation");
           actor_transitions.emplace_back(
               deserialize_transition(actor.aid, times_considered, checker_side_->get_channel()));
         }

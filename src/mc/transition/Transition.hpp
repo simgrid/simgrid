@@ -14,6 +14,7 @@
 #include <atomic>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace simgrid::mc {
@@ -30,14 +31,12 @@ using EventHandle = uint32_t;
  */
 class Transition {
   // Support for the TransitionPtr datatype, aka boost::intrusive_ptr<Transition>
-  std::atomic_int_fast32_t refcount_{0};
+  std::atomic_uint_fast16_t refcount_{0};
   friend XBT_PUBLIC void intrusive_ptr_add_ref(Transition* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(Transition* activity);
 
   /* Global statistics */
   static std::atomic_ulong executed_transitions_;
-
-  smemory::MemoryAccessTracker memory_tracker_;
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
@@ -69,12 +68,22 @@ public:
       UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
-  aid_t aid_ = 0;
+  unsigned char aid_ = 0;
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
-  std::string call_location_ = "";
+  std::unique_ptr<std::string> call_location_;
+  static const std::string empty_string; // Trick to return an empty string when no call_location was provided
 
-  smemory::MemoryAccessTracker& get_memory_tracker() { return memory_tracker_; }
+private:
+  std::unique_ptr<smemory::MemoryAccessTracker> memory_tracker_ = nullptr;
+
+public:
+  smemory::MemoryAccessTracker& get_memory_tracker()
+  {
+    if (memory_tracker_ == nullptr)
+      memory_tracker_ = std::make_unique<smemory::MemoryAccessTracker>();
+    return *memory_tracker_;
+  }
 
   /* Which transition was executed for this simcall
    *
@@ -84,7 +93,7 @@ public:
    *
    * * random can produce different values.
    */
-  int times_considered_ = 0;
+  unsigned short times_considered_ = 0;
 
   Transition() = default;
   Transition(Type type, aid_t issuer, int times_considered)
@@ -98,7 +107,10 @@ public:
   /** Returns something like >>label = "desc", color = c<< to describe the transition in dot format */
   virtual std::string dot_string() const;
 
-  std::string const& get_call_location() const { return call_location_; }
+  std::string const& get_call_location() const
+  {
+    return call_location_ == nullptr ? empty_string : *call_location_.get();
+  }
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay(RemoteApp& app) const;

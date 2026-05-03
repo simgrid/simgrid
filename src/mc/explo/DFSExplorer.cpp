@@ -91,7 +91,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   try {
     executed_transition = state->execute_next(next_actor, get_remote_app());
     on_transition_execute_signal(executed_transition.get(), get_remote_app());
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_,
+    XBT_VERB("Executed %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_,
              executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
     next_state = reduction_->state_create(get_remote_app(), state, executed_transition);
@@ -103,7 +103,7 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     // If an error is reached while executing the transition ...
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
       auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
-      XBT_DEBUG("An error occured while executing %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves)",
+      XBT_DEBUG("An error occured while executing %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves)",
                 transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
                 state->get_num(), state->count_todo());
     }

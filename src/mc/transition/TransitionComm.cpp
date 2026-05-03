@@ -38,10 +38,10 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, mc::C
   sender_        = channel.unpack<aid_t>();
   receiver_      = channel.unpack<aid_t>();
   mbox_          = channel.unpack<unsigned>();
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 
   XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s",
-            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, call_location_.c_str());
+            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, call_location_->c_str());
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
@@ -78,9 +78,9 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, mc::C
   sender_        = channel.unpack<aid_t>();
   receiver_      = channel.unpack<aid_t>();
   mbox_          = channel.unpack<unsigned>();
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
   XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s", comm_, sender_, receiver_, mbox_,
-            call_location_.c_str());
+            call_location_->c_str());
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
@@ -104,9 +104,9 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, mc::C
   comm_          = channel.unpack<unsigned>();
   mbox_          = channel.unpack<unsigned>();
   tag_           = channel.unpack<int>();
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 
-  XBT_DEBUG("CommRecvTransition comm:%u, mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
+  XBT_DEBUG("CommRecvTransition comm:%u, mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_->c_str());
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
@@ -147,9 +147,9 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, mc::C
   comm_          = channel.unpack<unsigned>();
   mbox_          = channel.unpack<unsigned>();
   tag_           = channel.unpack<int>();
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 
-  XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_.c_str());
+  XBT_DEBUG("SendTransition comm:%u mbox:%u tag:%d call_loc:%s", comm_, mbox_, tag_, call_location_->c_str());
 }
 std::string CommSendTransition::to_string(bool verbose) const
 {

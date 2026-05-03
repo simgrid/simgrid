@@ -61,7 +61,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
 
     const auto& next_E_p = state->get_transition_in();
 
-    XBT_DEBUG("... considering state after transition Actor %ld:%s as a candidate", next_E_p->aid_,
+    XBT_DEBUG("... considering state after transition Actor %d:%s as a candidate", next_E_p->aid_,
               next_E_p->to_string().c_str());
 
     // Is `p in `I_[E](w)`?
@@ -117,7 +117,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   auto tran_it           = w.begin();
 
   parent_state = current_state;
-  XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
+  XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_, current_state->get_num());
   current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
 
   // We need to mark the option of the first state as TODO in order to take this branch at some point
@@ -130,7 +130,7 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
 
   for (; tran_it != w.end(); tran_it++) {
     parent_state = current_state;
-    XBT_DEBUG("Creating state after actor %ld in parent state %lu", (*tran_it)->aid_, current_state->get_num());
+    XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_, current_state->get_num());
     current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
 

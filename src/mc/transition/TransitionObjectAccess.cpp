@@ -6,6 +6,7 @@
 #include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "src/mc/remote/Channel.hpp"
 #include "xbt/asserts.h"
+#include <memory>
 #include <xbt/string.hpp>
 
 namespace simgrid::mc {
@@ -13,24 +14,25 @@ namespace simgrid::mc {
 ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::OBJECT_ACCESS, issuer, times_considered)
 {
-  access_type_ = static_cast<simgrid::mc::ObjectAccessType>(channel.unpack<short>());
-  objaddr_     = channel.unpack<void*>();
-  objname_     = channel.unpack<std::string>();
-  file_        = channel.unpack<std::string>();
-  line_        = channel.unpack<int>();
+  data_               = std::make_unique<data>();
+  data_->access_type_ = static_cast<simgrid::mc::ObjectAccessType>(channel.unpack<short>());
+  data_->objaddr_     = channel.unpack<void*>();
+  data_->objname_     = channel.unpack<std::string>();
+  data_->file_        = channel.unpack<std::string>();
+  data_->line_        = channel.unpack<int>();
 }
 std::string ObjectAccessTransition::to_string(bool verbose) const
 {
   std::string res;
-  if (access_type_ == ObjectAccessType::ENTER)
+  if (data_->access_type_ == ObjectAccessType::ENTER)
     res = std::string("BeginObjectAccess(");
-  else if (access_type_ == ObjectAccessType::EXIT)
+  else if (data_->access_type_ == ObjectAccessType::EXIT)
     res = std::string("EndObjectAccess(");
   else
     res = std::string("ObjectAccess(");
-  res += objname_;
+  res += data_->objname_;
   if (not xbt_log_no_loc)
-    res += std::string(" @ ") + file_ + ":" + std::to_string(line_);
+    res += std::string(" @ ") + data_->file_ + ":" + std::to_string(data_->line_);
   res += std::string(")");
   return res;
 }

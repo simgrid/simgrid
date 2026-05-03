@@ -25,6 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_transition, mc, "Logging specific to MC trans
 namespace simgrid::mc {
 std::atomic_ulong Transition::executed_transitions_ = 0;
 std::atomic_ulong Transition::replayed_transitions_ = 0;
+const std::string Transition::empty_string          = "";
 
 // Do not move this to the header, to ensure that we have a vtable for Transition
 Transition::~Transition() = default;
@@ -40,7 +41,7 @@ std::string Transition::dot_string() const
                                                        "lightblue", "tan"}};
   const char* color = colors[(aid_ - 1) % colors.size()];
 
-  return xbt::string_printf("label = \"[(%ld)] %s\", color = %s, fontcolor = %s", aid_, Transition::to_c_str(type_),
+  return xbt::string_printf("label = \"[(%d)] %s\", color = %s, fontcolor = %s", aid_, Transition::to_c_str(type_),
                             color, color);
 }
 void Transition::replay(RemoteApp& app) const
@@ -54,7 +55,7 @@ void Transition::replay(RemoteApp& app) const
 
 void Transition::deserialize_memory_tracker(mc::Channel& channel)
 {
-  memory_tracker_.deserialize(channel);
+  get_memory_tracker().deserialize(channel);
 
   XBT_DEBUG("Created a memory access tracker for the new transition");
 }

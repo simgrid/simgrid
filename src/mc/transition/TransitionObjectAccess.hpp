@@ -7,16 +7,20 @@
 #define SIMGRID_MC_TRANSITION_OBJECT_ACCESS_HPP
 
 #include "src/mc/transition/Transition.hpp"
+#include <memory>
 
 namespace simgrid::mc {
 XBT_DECLARE_ENUM_CLASS(ObjectAccessType, ENTER, EXIT, BOTH);
 
 class ObjectAccessTransition : public Transition {
-  ObjectAccessType access_type_;
-  void* objaddr_;
-  std::string objname_;
-  std::string file_;
-  int line_;
+  struct data {
+    ObjectAccessType access_type_;
+    void* objaddr_;
+    std::string objname_;
+    std::string file_;
+    int line_;
+  };
+  std::unique_ptr<data> data_;
 
 public:
   ObjectAccessTransition(aid_t issuer, int times_considered, mc::Channel& channel);
@@ -24,7 +28,7 @@ public:
   bool depends(const Transition* other) const override
   {
     if (other->type_ == Type::OBJECT_ACCESS) // dependent only if it's an access to the same object
-      return objaddr_ == static_cast<const ObjectAccessTransition*>(other)->objaddr_;
+      return data_->objaddr_ == static_cast<const ObjectAccessTransition*>(other)->data_->objaddr_;
     return false;
   }
 

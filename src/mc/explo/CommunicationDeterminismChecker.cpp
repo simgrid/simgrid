@@ -266,7 +266,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
     pattern->tag       = recv->get_tag();
   }
 
-  XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %ld (comm: %" PRIxPTR ")", pattern.get(),
+  XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %d (comm: %" PRIxPTR ")", pattern.get(),
             (int)pattern->type, transition->aid_, pattern->comm_addr);
   incomplete_communications_pattern[transition->aid_].push_back(pattern.release());
 }
@@ -286,7 +286,7 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
   comm_pattern->dst_proc = transition->get_receiver();
   comm_pattern->mbox     = transition->get_mailbox();
 
-  XBT_DEBUG("Remove incomplete comm pattern for actor %ld at cursor %zd", transition->aid_,
+  XBT_DEBUG("Remove incomplete comm pattern for actor %d at cursor %zd", transition->aid_,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
   incomplete_pattern.erase(current_comm_pattern);
 

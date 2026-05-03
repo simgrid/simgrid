@@ -129,10 +129,10 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
   for (auto const& transition : get_record_trace()) {
     auto const& call_location = transition->get_call_location();
     if (not call_location.empty())
-      trace.push_back(xbt::string_printf("Actor %ld in %s ==> simcall: %s", transition->aid_, call_location.c_str(),
+      trace.push_back(xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_, call_location.c_str(),
                                          transition->to_string().c_str()));
     else
-      trace.push_back(xbt::string_printf("Actor %ld in simcall %s", transition->aid_, transition->to_string().c_str()));
+      trace.push_back(xbt::string_printf("Actor %d in simcall %s", transition->aid_, transition->to_string().c_str()));
 
     if (race != nullptr) {
       if (transition->aid_ == simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)) {

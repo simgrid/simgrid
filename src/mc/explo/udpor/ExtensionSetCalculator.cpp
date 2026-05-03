@@ -810,7 +810,7 @@ EventSet ExtensionSetCalculator::partially_extend_ActorCreate(const Configuratio
   // I hope it doesn't require to be tracked in each single different thread action though.
 
   xbt_assert(not C.pre_event(create_action->get_child()).has_value(),
-             "How did the actor %ld achieved being executed before being created by someone else?", action->aid_);
+             "How did the actor %d achieved being executed before being created by someone else?", action->aid_);
 
   if (const auto pre_event_a_C = C.pre_event(create_action->aid_); pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), create_action);

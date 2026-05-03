@@ -24,10 +24,10 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
    * it is not explored*/
   for (size_t i = 0; i < static_cast<SleepSetState*>(parent_state.get())->opened_.size(); i++) {
     auto const& transition = static_cast<SleepSetState*>(parent_state.get())->opened_[i];
-    XBT_DEBUG("At state #%lu, transition <Actor %ld: %s> is contained in parent opened", get_num(), transition->aid_,
+    XBT_DEBUG("At state #%lu, transition <Actor %d: %s> is contained in parent opened", get_num(), transition->aid_,
               transition->to_string().c_str());
     if (not get_transition_in()->dispatch_depends(transition.get())) {
-      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent opened set", get_num(),
+      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %d: %s> added from parent opened set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
@@ -37,7 +37,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
 
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
     if (not get_transition_in()->dispatch_depends(transition.get())) {
-      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %ld: %s> added from parent sleep set", get_num(),
+      XBT_DEBUG("sleep set @ state #%lu: transition <Actor %d: %s> added from parent sleep set", get_num(),
                 transition->aid_, transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
@@ -71,7 +71,7 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
 
 void SleepSetState::sleep_add_and_mark(TransitionPtr transition)
 {
-  XBT_DEBUG("Adding transition Actor %ld:%s to the sleep set from parent state", transition->aid_,
+  XBT_DEBUG("Adding transition Actor %d:%s to the sleep set from parent state", transition->aid_,
             transition->to_string().c_str());
   sleep_set_.try_emplace(transition->aid_, transition);
   if (actors_to_run_.size() > (unsigned)transition->aid_ and actors_to_run_[transition->aid_].has_value()) {

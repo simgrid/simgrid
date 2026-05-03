@@ -196,7 +196,7 @@ void BeFSExplorer::run()
     auto executed_transition = state->execute_next(next, get_remote_app());
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
-    XBT_VERB("Executed %ld: %.60s (stack depth: %zu, state: %lu, %zu interleaves, %lu opened states)",
+    XBT_VERB("Executed %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves, %lu opened states)",
              state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
 

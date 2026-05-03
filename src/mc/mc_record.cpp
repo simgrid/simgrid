@@ -65,13 +65,13 @@ void RecordTrace::replay() const
 
   for (const simgrid::mc::Transition* transition : transitions_) {
     kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
-    xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
+    xbt_assert(actor != nullptr, "Unexpected actor (id:%d).", transition->aid_);
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
 
     XBT_INFO("***********************************************************************************");
-    XBT_INFO("* Path chunk #%d '%ld/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_,
+    XBT_INFO("* Path chunk #%d '%d/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_,
              transition->times_considered_, simcall->issuer_->get_cname(), simcall->issuer_->get_pid(),
              simcall->observer_->to_string().c_str());
     XBT_INFO("***********************************************************************************");
@@ -185,7 +185,7 @@ std::string simgrid::mc::RecordTrace::to_string() const
       continue;
     if (i != transitions_.begin())
       stream << ';';
-    stream << (*i)->aid_;
+    stream << static_cast<int>((*i)->aid_);
     if ((*i)->times_considered_ > 0)
       stream << '/' << (*i)->times_considered_;
   }

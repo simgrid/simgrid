@@ -24,7 +24,7 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, mc::Cha
     XBT_DEBUG("TestAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 }
 std::string TestAnyTransition::to_string(bool verbose) const
 {
@@ -53,7 +53,7 @@ WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, mc::Cha
     XBT_DEBUG("WaitAny received transition %u/%u %s", (i + 1), size, t->to_string(true).c_str());
     transitions_.push_back(t);
   }
-  call_location_ = channel.unpack<std::string>();
+  call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 }
 std::string WaitAnyTransition::to_string(bool verbose) const
 {
