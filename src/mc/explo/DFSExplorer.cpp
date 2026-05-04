@@ -151,15 +151,14 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
   S.push_transition(executed_transition);
 
   // Backtrack if we reached the maximum depth
-  if (state_stack.size() > (std::size_t)_sg_mc_max_depth) {
+  if (size_t max = _sg_mc_max_depth; max > 0 && state_stack.size() > max) {
     if (reduction_->get_kind() == ReductionMode::dpor) {
-      XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
-                _sg_mc_max_depth.get());
+      XBT_ERROR("/!\\ Max depth of %zu reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\", max);
       XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
     } else if (reduction_->get_kind() == ReductionMode::sdpor || reduction_->get_kind() == ReductionMode::odpor) {
-      XBT_WARN("/!\\ Max depth of %d reached! THIS **WILL** BREAK the reduction, which is not sound "
+      XBT_WARN("/!\\ Max depth of %zu reached! THIS **WILL** BREAK the reduction, which is not sound "
                "when stopping at a fixed depth /!\\",
-               _sg_mc_max_depth.get());
+               max);
       XBT_WARN("/!\\ If bad things happen, disable the reduction with --cfg=model-check/reduction:none /!\\");
     } else {
       XBT_WARN("/!\\ Max depth reached ! /!\\ ");

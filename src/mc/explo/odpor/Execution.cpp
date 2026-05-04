@@ -482,7 +482,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
 
     // If we are cutting exploration at some arbitrary depth, we might not find what we are looking for
     // It's okay, we just don't cut any exploration opportunity in that case
-    if (_sg_mc_max_depth != config::is_default("model-check/max-depth") and next_transition_aid == this->end())
+    if (next_transition_aid == this->end() and _sg_mc_max_depth <= this->size())
       continue;
 
     xbt_assert(next_transition_aid != this->end(),

@@ -36,8 +36,10 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
     return nullptr;
 
   // If we exceeded the max depth, we won't explore anyway so skip this race
-  if (this->get_depth() >= (unsigned)_sg_mc_max_depth)
+  if (size_t max = _sg_mc_max_depth; max > 0 && this->get_depth() >= max) {
+    XBT_DEBUG("Don't insert TODO work since it would exceed the depth");
     return nullptr;
+  }
 
   if (_sg_mc_explore_algo == "parallel" and this->owned_by_the_explorers_) {
 
