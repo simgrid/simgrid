@@ -688,7 +688,7 @@ The ``model-check/max-depth`` can set the maximum depth of the
 exploration graph of the model checker. If this limit is reached, a
 logging message is sent and the results might not be exact.
 
-By default, the exploration is limited to the depth of 1000.
+By default, the exploration is limited to the depth of 100000. 0 means 'no limit'. Do not use a negative value here.
 
 .. _cfg=model-check/max-errors:
 
