@@ -22,6 +22,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
+#include "xbt/xbt_os_time.h"
 
 #include <filesystem>
 #include <memory>
@@ -92,7 +93,10 @@ void BeFSExplorer::run()
 
   XBT_DEBUG("**************************************************");
 
-  stack_.emplace_back(std::move(initial_state));
+  auto run_timer = xbt_os_timer_new();
+  xbt_os_walltimer_start(run_timer);
+
+  stack_.push_back(initial_state);
   visited_states_count_++;
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
@@ -142,6 +146,7 @@ void BeFSExplorer::run()
         Reduction::RaceUpdate* todo_updates = reduction_->races_computation(execution_seq_, &stack_, &opened_states_);
         reduction_->apply_race_update(get_remote_app(), todo_updates, &opened_states_);
         reduction_->delete_race_update(todo_updates);
+        state->on_branch_completion();
 
         explored_traces_++;
         // Costly verification used to check against algorithm optimality
@@ -153,6 +158,20 @@ void BeFSExplorer::run()
         report_correct_execution(state);
 
         state->mark_to_delete(); // This state is fully explored, let's suppress it when we can
+      }
+
+      if (_sg_mc_eta_steps != 0 and explored_traces_ % abs(_sg_mc_eta_steps) == 0) {
+        xbt_os_walltimer_stop(run_timer);
+        double now = xbt_os_timer_elapsed(run_timer);
+        xbt_os_walltimer_resume(run_timer);
+        double states_per_sec = ((double)State::get_expanded_states()) / now;
+        double ETA            = ((double)initial_state->get_expected_total_children() - State::get_expanded_states()) /
+                     states_per_sec / 60 / 60;
+        XBT_INFO("[%lu traces in %.0fs] Explored a total of %.5e/%.5e states (%.0f states/second and %.0f "
+                 "traces/second). Hence %3.2f%% completion rate. Completion in %.2f hours.",
+                 explored_traces_, now, (double)State::get_expanded_states(),
+                 initial_state->get_expected_total_children(), states_per_sec, ((double)explored_traces_) / now,
+                 100 * (double)State::get_expanded_states() / initial_state->get_expected_total_children(), ETA);
       }
 
       this->backtrack();
