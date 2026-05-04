@@ -100,7 +100,8 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   int* engine_argc;
   auto myargs = getenv("STHREAD_ARGS");
   if (myargs != nullptr) {
-    XBT_INFO("sthread is not using the parameters from the command line, but '%s' from STHREAD_ARGS", myargs);
+    if (not sthread_quiet)
+      XBT_INFO("sthread is not using the parameters from the command line, but '%s' from STHREAD_ARGS", myargs);
     std::vector<std::string> result;
     boost::algorithm::split(result, myargs, boost::is_any_of(" "));
     engine_argv    = (char**)malloc(sizeof(char*) * (result.size() + 2));

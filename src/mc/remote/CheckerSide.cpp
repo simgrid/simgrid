@@ -82,7 +82,7 @@ XBT_ATTRIB_NORETURN static void run_child_process(int socket, const std::vector<
       kv.push_back(t);
     xbt_assert(kv.size() == 2, "Parse error on 'model-check/setenv' value %s. Does it contain an equal sign?",
                token.c_str());
-    XBT_INFO("setenv '%s'='%s'", kv[0].c_str(), kv[1].c_str());
+    XBT_VERB("setenv '%s'='%s'", kv[0].c_str(), kv[1].c_str());
     setenv(kv[0].c_str(), kv[1].c_str(), 1);
   }
 
