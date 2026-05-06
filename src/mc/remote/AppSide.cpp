@@ -34,6 +34,7 @@
 #include <cstddef>
 #include <cstdio> // setvbuf
 #include <cstdlib>
+#include <malloc.h>
 #include <memory>
 #include <numeric>
 #include <sys/ptrace.h>
@@ -71,9 +72,20 @@ AppSide* AppSide::get()
 
   instance_ = std::make_unique<simgrid::mc::AppSide>(fd);
 
-  // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
-  if (not _sg_mc_nofork)
+  if (not _sg_mc_nofork) {
+    // If we plan to fork, remove the SIGINT handler that would get messed up by all the forked childs
     std::signal(SIGINT, SIG_DFL);
+
+    // Also warm up the malloc areas by pre-reserving some pages
+    mallopt(M_TRIM_THRESHOLD, -1); // Never reduce brk() when free() is called
+    char* blocks[100];
+    for (int i = 0; i < 100; i++) {
+      blocks[i]    = (char*)malloc(1024 * 64);
+      blocks[i][0] = 0;
+    }
+    for (int i = 0; i < 100; i++)
+      free(blocks[i]); // We just wanted to warm up the memory
+  }
 
   instance_->handle_messages();
   return instance_.get();
