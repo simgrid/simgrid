@@ -27,7 +27,7 @@
  * optimized both in time and space, as a transition may touch megabytes or even gigabytes of data.
  *
  * To further optimize, one can change the constexpr `granularity` parameter. When its value is 4, we use one bit per
- * set of 4 bytes in memory (these 4 bytes are said to form a bucklet), reducing the amount of memory by a factor of 4,
+ * set of 4 bytes in memory (these 4 bytes are said to form a bucket), reducing the amount of memory by a factor of 4,
  * but possibly creating false shared accesses in memory. 1, 2, 4, 8, 16 are possible granularity values.
  *
  * This structure comes with an iterator that traverses the list of all contiguous memory areas (i.e., two adjacent

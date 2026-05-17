@@ -184,7 +184,7 @@ TEST_CASE("MemoryAccessTracker: writes overlapping on previous reads", "[MemoryA
         expected_writes.push_back(i < 4 ? false
                                         : (i - 4 < MemoryAccessTracker::get_bucket_size()
                                                ? true
-                                               : false)); // Only wrote on the first part, but a whole bucklet
+                                               : false)); // Only wrote on the first part, but a whole bucket
       }
     }
     REQUIRE_THAT(expected_reads, Catch::Matchers::Equals(result_reads));
@@ -318,7 +318,7 @@ TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessTracker]")
   else {
     REQUIRE(size == std::max<size_t>(1, MemoryAccessTracker::get_bucket_size()));
     ++it;
-    if (4 >= MemoryAccessTracker::get_bucket_size()) { // Not all variables fall into the same bucklet
+    if (4 >= MemoryAccessTracker::get_bucket_size()) { // Not all variables fall into the same bucket
       REQUIRE(it != tracker.end());                    // not merged
 
       std::tie(addr, size, type) = *it;
@@ -327,7 +327,7 @@ TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessTracker]")
       REQUIRE(type == MemOpType::Write);
       ++it;
 
-      if (MemoryAccessTracker::get_bucket_size() == 1) { // The two chars do not fall into the same bucklet
+      if (MemoryAccessTracker::get_bucket_size() == 1) { // The two chars do not fall into the same bucket
         REQUIRE(it != tracker.end());                    // not merged
 
         std::tie(addr, size, type) = *it;

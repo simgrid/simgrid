@@ -124,21 +124,21 @@ static void xbt_dict_rehash(xbt_dict_t dict)
 
     xbt_dictelm_t *twincell = currcell + oldsize;
     xbt_dictelm_t *pprev = currcell;
-    xbt_dictelm_t bucklet = *currcell;
-    while (bucklet != nullptr) {
-      /* Since we use "& size" instead of "%size" and since the size was doubled, each bucklet of this cell must either:
+    xbt_dictelm_t bucket    = *currcell;
+    while (bucket != nullptr) {
+      /* Since we use "& size" instead of "%size" and since the size was doubled, each bucket of this cell must either:
          - stay  in  cell i (ie, currcell)
          - go to the cell i+oldsize (ie, twincell) */
-      if ((bucklet->hash_code & newsize) != i) {        /* Move to b */
-        *pprev = bucklet->next;
-        bucklet->next = *twincell;
+      if ((bucket->hash_code & newsize) != i) { /* Move to b */
+        *pprev       = bucket->next;
+        bucket->next = *twincell;
         if (*twincell == nullptr)
           dict->fill++;
-        *twincell = bucklet;
+        *twincell = bucket;
       } else {
-        pprev = &bucklet->next;
+        pprev = &bucket->next;
       }
-      bucklet = *pprev;
+      bucket = *pprev;
     }
 
     if (*currcell == nullptr) /* everything moved */
