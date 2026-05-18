@@ -72,9 +72,9 @@ public:
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::unique_ptr<std::string> call_location_;
-  static const std::string empty_string; // Trick to return an empty string when no call_location was provided
 
 private:
+  static const std::string empty_string; // Trick to return an empty string when no call_location was provided
   std::unique_ptr<smemory::MemoryAccessTracker> memory_tracker_ = nullptr;
 
 public:
