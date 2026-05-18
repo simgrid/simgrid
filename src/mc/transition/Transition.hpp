@@ -68,7 +68,7 @@ public:
       UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
-  unsigned char aid_ = 0;
+  mc_aid_t aid_ = 0;
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::unique_ptr<std::string> call_location_;
