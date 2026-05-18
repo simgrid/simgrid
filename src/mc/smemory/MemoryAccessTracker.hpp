@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SMEMORY_MEMORYACCESSTRACKER_HPP
 
 #include "src/mc/remote/Channel.hpp"
+#include "src/mc/smemory/smemory_config.hpp"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -26,9 +27,9 @@
  * byte was read during this transition while the other bitfield marks whether it was writen. The data structure is
  * optimized both in time and space, as a transition may touch megabytes or even gigabytes of data.
  *
- * To further optimize, one can change the constexpr `granularity` parameter. When its value is 4, we use one bit per
- * set of 4 bytes in memory (these 4 bytes are said to form a bucket), reducing the amount of memory by a factor of 4,
- * but possibly creating false shared accesses in memory. 1, 2, 4, 8, 16 are possible granularity values.
+ * To further optimize, one can change the constexpr `granularity` parameter in smemory_config. When its value is 4, we
+ * use one bit per set of 4 bytes in memory (these 4 bytes are said to form a bucket), reducing the amount of memory by
+ * a factor of 4, but possibly creating false shared accesses in memory. 1, 2, 4, 8, 16 are possible granularity values.
  *
  * This structure comes with an iterator that traverses the list of all contiguous memory areas (i.e., two adjacent
  * reads are merged by this iterator into a single read). For each item, a tuple {base address, size in bytes,
@@ -41,17 +42,14 @@ XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 
 class MemoryAccessTracker {
 private:
-  static constexpr uintptr_t page_shift_ = 12;                  // 12 gives 4k per page -- assumed by the tests
-  static constexpr uintptr_t page_size_  = 1ULL << page_shift_; /* 4096 bytes */
-  static constexpr uintptr_t page_mask_  = page_size_ - 1;
+  static constexpr uintptr_t page_shift_ = __builtin_ctzll(smemory::config::page_size);
+  ; // long long log2 (number of trailing 0-bits in x)
+  static constexpr uintptr_t page_mask_ = smemory::config::page_size - 1;
 
-  constexpr static uintptr_t granularity_ = 1;
-  static_assert(granularity_ != 0 && ((granularity_ & (granularity_ - 1)) == 0),
-                "MemoryAccessTracker::granularity must be power of two.");
-
-  constexpr static uintptr_t bucket_shift_     = __builtin_ctz(granularity_); // log2 (number of trailing 0-bits in x)
+  constexpr static uintptr_t bucket_shift_ =
+      __builtin_ctzll(smemory::config::granularity); // long long log2 (uintptr_t is a long long)
   constexpr static uintptr_t word_shift_       = bucket_shift_ + 6;
-  constexpr static uintptr_t buckets_per_page_ = page_size_ >> bucket_shift_;
+  constexpr static uintptr_t buckets_per_page_ = smemory::config::page_size >> bucket_shift_;
   constexpr static uintptr_t words_per_page_   = buckets_per_page_ / 64;
 
   static_assert(buckets_per_page_ % 64 == 0,
@@ -91,7 +89,7 @@ public:
   {
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
-  constexpr static size_t get_bucket_size() { return granularity_; }
+  constexpr static size_t get_bucket_size() { return smemory::config::granularity; }
   constexpr static bool is_coalescing() { return coalescing_; }
 
   // ============================================================

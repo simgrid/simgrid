@@ -513,6 +513,7 @@ set(MC_SRC_BASE
   src/mc/mc_replay.hpp
 
   src/mc/smemory/runtime/smemory_memorymaps.cpp
+  src/mc/smemory/smemory_config.hpp
   src/mc/smemory/MemoryAccessTracker.cpp
   src/mc/smemory/MemoryAccessTracker.hpp
 

@@ -50,7 +50,7 @@ void MemoryAccessTracker::create_memory_access(MemOpType type, void* where, unsi
     uintptr_t page_index = addr >> page_shift_;
 
     uintptr_t page_base = page_index << page_shift_;
-    uintptr_t page_end  = page_base + page_size_;
+    uintptr_t page_end  = page_base + smemory::config::page_size;
 
     // The end of what can be written to a single page from what needs to be marked
     uintptr_t limit = (end < page_end) ? end : page_end;
@@ -288,7 +288,7 @@ void MemoryAccessTracker::iterator::advance()
           count = 1;
         }
 
-        current_ = std::make_tuple(reinterpret_cast<void*>(base_addr), count * parent_->granularity_, type);
+        current_ = std::make_tuple(reinterpret_cast<void*>(base_addr), count * smemory::config::granularity, type);
         return;
       }
 
