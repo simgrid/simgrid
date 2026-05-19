@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_any, mc_transition, "Logging specific t
 
 namespace simgrid::mc {
 
-TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+TestAnyTransition::TestAnyTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::TESTANY, issuer, times_considered)
 {
   unsigned size = channel.unpack<unsigned>();
@@ -44,7 +44,7 @@ bool TestAnyTransition::reversible_race(const Transition* other, const odpor::Ex
   return true; // TestAny is always enabled
 }
 
-WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+WaitAnyTransition::WaitAnyTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::WAITANY, issuer, times_considered)
 {
   unsigned size = channel.unpack<unsigned>();

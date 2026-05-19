@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/states/SleepSetState.hpp"
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "xbt/log.h"
@@ -24,11 +25,11 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
    * it is not explored*/
   for (size_t i = 0; i < static_cast<SleepSetState*>(parent_state.get())->opened_.size(); i++) {
     auto const& transition = static_cast<SleepSetState*>(parent_state.get())->opened_[i];
-    XBT_DEBUG("At state #%lu, transition <Actor %d: %s> is contained in parent opened", get_num(), transition->aid_,
-              transition->to_string().c_str());
+    XBT_DEBUG("At state #%lu, transition <Actor %d: %s> is contained in parent opened", get_num(),
+              transition->aid_.c_val(), transition->to_string().c_str());
     if (not get_transition_in()->dispatch_depends(transition.get())) {
       XBT_DEBUG("sleep set @ state #%lu: transition <Actor %d: %s> added from parent opened set", get_num(),
-                transition->aid_, transition->to_string().c_str());
+                transition->aid_.c_val(), transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
     if (transition->aid_ == incoming_transition->aid_)
@@ -38,7 +39,7 @@ SleepSetState::SleepSetState(RemoteApp& remote_app, StatePtr parent_state, Trans
   for (const auto& [aid, transition] : static_cast<SleepSetState*>(parent_state.get())->get_sleep_set()) {
     if (not get_transition_in()->dispatch_depends(transition.get())) {
       XBT_DEBUG("sleep set @ state #%lu: transition <Actor %d: %s> added from parent sleep set", get_num(),
-                transition->aid_, transition->to_string().c_str());
+                transition->aid_.c_val(), transition->to_string().c_str());
       sleep_add_and_mark(transition);
     }
   }
@@ -54,13 +55,13 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
   XBT_DEBUG("Adding arbitraty transition in state #%lu", get_num());
   if (sleep_set_.empty() and Exploration::can_go_one_way()) {
     XBT_DEBUG("Asking for one way");
-    xbt_assert(next_transition() == -1,
+    xbt_assert(not next_transition().has_value(),
                "State #%lu already has something to explore, why are we adding an arbitrary transition there?",
                get_num());
     remote_app.go_one_way();
-    aid_t aid = remote_app.get_aid_of_next_transition();
-    if (aid == -1) {
-      xbt_assert(Exploration::get_strategy()->best_transition_in(this, false).first == -1);
+    Aid aid = remote_app.get_aid_of_next_transition();
+    if (not aid.has_value()) {
+      xbt_assert(not Exploration::get_strategy()->best_transition_in(this, false).first.has_value());
       return; // No more enabled actors here
     }
     consider_one(aid);
@@ -71,25 +72,25 @@ void SleepSetState::add_arbitrary_transition(RemoteApp& remote_app)
 
 void SleepSetState::sleep_add_and_mark(TransitionPtr transition)
 {
-  XBT_DEBUG("Adding transition Actor %d:%s to the sleep set from parent state", transition->aid_,
+  XBT_DEBUG("Adding transition Actor %d:%s to the sleep set from parent state", transition->aid_.c_val(),
             transition->to_string().c_str());
   sleep_set_.try_emplace(transition->aid_, transition);
-  if (actors_to_run_.size() > (unsigned)transition->aid_ and actors_to_run_[transition->aid_].has_value()) {
-    actors_to_run_[transition->aid_]->mark_done();
+  if (actors_to_run_.size() > transition->aid_.value() and actors_to_run_[transition->aid_.value()].has_value()) {
+    actors_to_run_[transition->aid_.value()]->mark_done();
   }
 }
 
-std::unordered_set<aid_t> SleepSetState::get_sleeping_actors(aid_t) const
+std::unordered_set<Aid> SleepSetState::get_sleeping_actors(Aid) const
 {
-  std::unordered_set<aid_t> actors;
+  std::unordered_set<Aid> actors;
   for (const auto& [aid, _] : get_sleep_set()) {
     actors.insert(aid);
   }
   return actors;
 }
-std::vector<aid_t> SleepSetState::get_enabled_minus_sleep() const
+std::vector<Aid> SleepSetState::get_enabled_minus_sleep() const
 {
-  std::vector<aid_t> actors;
+  std::vector<Aid> actors;
   for (const auto& state : actors_to_run_) {
     if (not state.has_value())
       continue;
@@ -100,7 +101,7 @@ std::vector<aid_t> SleepSetState::get_enabled_minus_sleep() const
   return actors;
 }
 
-bool SleepSetState::is_actor_sleeping(aid_t actor) const
+bool SleepSetState::is_actor_sleeping(Aid actor) const
 {
   return std::find_if(sleep_set_.begin(), sleep_set_.end(), [=](const auto& pair) { return pair.first == actor; }) !=
          sleep_set_.end();

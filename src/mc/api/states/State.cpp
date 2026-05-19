@@ -9,7 +9,6 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "xbt/asserts.h"
-#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/thread.hpp"
 
@@ -74,7 +73,7 @@ State::State(const RemoteApp& remote_app, StatePtr parent_state, TransitionPtr i
   traversal_ = std::make_shared<PostFixTraversal>(this);
 
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_.c_val(),
                  incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -93,23 +92,23 @@ bool State::has_more_to_be_explored() const
   return count > 0;
 }
 
-aid_t State::next_transition() const
+Aid State::next_transition() const
 {
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors_to_run_.size());
   for (auto const& actor : actors_to_run_) {
     if (not actor.has_value())
       continue;
-    aid_t aid = actor.value().get_aid();
+    Aid aid = actor.value().get_aid();
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.value().is_todo() || not actor.value().is_enabled() || actor.value().is_done()) {
       if (not actor.value().is_todo())
-        XBT_DEBUG("Can't run actor %ld because it is not todo", aid);
+        XBT_DEBUG("Can't run actor %d because it is not todo", aid.c_val());
 
       if (not actor.value().is_enabled())
-        XBT_DEBUG("Can't run actor %ld because it is not enabled", aid);
+        XBT_DEBUG("Can't run actor %d because it is not enabled", aid.c_val());
 
       if (actor.value().is_done())
-        XBT_DEBUG("Can't run actor %ld because it has already been done", aid);
+        XBT_DEBUG("Can't run actor %d because it has already been done", aid.c_val());
 
       continue;
     }
@@ -117,31 +116,32 @@ aid_t State::next_transition() const
     return aid;
   }
 
-  return -1;
+  return Aid::INVALID_VALUE;
 }
 
-std::pair<aid_t, int> State::next_transition_guided() const
+std::pair<Aid, int> State::next_transition_guided() const
 {
   return Exploration::get_strategy()->next_transition_in(this);
 }
 
 // This should be done in GuidedState, or at least interact with it
-TransitionPtr State::execute_next(aid_t next, RemoteApp& app)
+TransitionPtr State::execute_next(Aid next, RemoteApp& app)
 {
   //  This actor is ready to be executed. Execution involves three phases:
 
   // 1. Identify the appropriate ActorState to prepare for execution
   // when simcall_handle will be called on it
   const auto actor_state                         = get_actor_at(next);
-  const unsigned times_considered                = actors_to_run_[next]->do_consider();
+  const unsigned times_considered                = actors_to_run_[next.value()]->do_consider();
   const Transition* expected_executed_transition = nullptr;
   if (_sg_mc_debug) {
     expected_executed_transition = actor_state.get_transition(times_considered).get();
     xbt_assert(actor_state.is_enabled(), "Tried to execute a disabled actor");
     xbt_assert(expected_executed_transition != nullptr,
-               "Expected a transition with %u times considered to be noted in actor %ld", times_considered, next);
+               "Expected a transition with %u times considered to be noted in actor %d", times_considered,
+               next.c_val());
   }
-  XBT_DEBUG("Let's run actor %ld (times_considered = %u)", next, times_considered);
+  XBT_DEBUG("Let's run actor %d (times_considered = %u)", next.c_val(), times_considered);
 
   // 2. Execute the actor according to the preparation above
   Transition::executed_transitions_++;
@@ -149,7 +149,7 @@ TransitionPtr State::execute_next(aid_t next, RemoteApp& app)
   if (_sg_mc_debug) {
     xbt_assert(
         just_executed->type_ == expected_executed_transition->type_,
-        "The transition that was just executed by actor %ld, viz:\n"
+        "The transition that was just executed by actor %d, viz:\n"
         "%s\n"
         "is not what was purportedly scheduled to execute, which was:\n"
         "%s\n"
@@ -158,7 +158,7 @@ TransitionPtr State::execute_next(aid_t next, RemoteApp& app)
         "such "
         "applications, as they cannot be exhaustively explored with Mc SimGrid.\n\n"
         "If adding this parameter does not help, then it's probably a bug in Mc SimGrid itself. Please report it.\n",
-        next, just_executed->to_string().c_str(), expected_executed_transition->to_string().c_str());
+        next.c_val(), just_executed->to_string().c_str(), expected_executed_transition->to_string().c_str());
   }
   // 3. Update the state with the newest information. This means recording
   // both
@@ -169,15 +169,15 @@ TransitionPtr State::execute_next(aid_t next, RemoteApp& app)
   outgoing_transition_ = TransitionPtr(just_executed);
 
   if (Exploration::need_actor_status_transitions())
-    actors_to_run_[next]->set_transition(outgoing_transition_, times_considered);
+    actors_to_run_[next.value()]->set_transition(outgoing_transition_, times_considered);
   app.wait_for_requests();
 
   return outgoing_transition_;
 }
 
-std::unordered_set<aid_t> State::get_backtrack_set() const
+std::unordered_set<Aid> State::get_backtrack_set() const
 {
-  std::unordered_set<aid_t> actors;
+  std::unordered_set<Aid> actors;
   for (const auto& state : get_actors_list()) {
     if (not state.has_value())
       continue;
@@ -223,13 +223,13 @@ void State::register_as_correct()
 
 void State::record_child_state(StatePtr child)
 {
-  aid_t child_aid      = child->get_transition_in()->aid_;
+  Aid child_aid        = child->get_transition_in()->aid_;
   int times_considered = child->get_transition_in()->times_considered_;
-  if (children_states_.size() < static_cast<long unsigned>(child_aid + 1))
-    children_states_.resize(child_aid + 1);
-  if (children_states_[child_aid].size() < static_cast<long unsigned>(times_considered + 1))
-    children_states_[child_aid].resize(times_considered + 1);
-  children_states_[child_aid][times_considered] = std::move(child);
+  if (children_states_.size() < static_cast<std::size_t>(child_aid.value() + 1))
+    children_states_.resize(child_aid.value() + 1);
+  if (children_states_[child_aid.value()].size() < static_cast<long unsigned>(times_considered + 1))
+    children_states_[child_aid.value()].resize(times_considered + 1);
+  children_states_[child_aid.value()][times_considered] = std::move(child);
   is_a_leaf                                     = false;
 }
 
@@ -270,22 +270,22 @@ void State::initialize(const RemoteApp& remote_app)
 
   for (auto const& t : opened_) {
     xbt_assert(t != nullptr);
-    actors_to_run_.at(t->aid_)->mark_todo();
+    actors_to_run_.at(t->aid_.value())->mark_todo();
   }
 
   // Tell the parent we are being done (and are not "todo" anymore)
-  if (not parent_state_->actors_to_run_[incoming_transition_->aid_]->has_more_to_consider())
-    parent_state_->actors_to_run_[incoming_transition_->aid_]->mark_done();
+  if (not parent_state_->actors_to_run_[incoming_transition_->aid_.value()]->has_more_to_consider())
+    parent_state_->actors_to_run_[incoming_transition_->aid_.value()]->mark_done();
 }
 
-void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered)
+void State::update_incoming_transition_with_remote_app(const RemoteApp& remote_app, Aid aid, int times_considered)
 {
-  aid_t previous_incoming_aid = incoming_transition_->aid_;
+  Aid previous_incoming_aid   = incoming_transition_->aid_;
   incoming_transition_        = TransitionPtr(remote_app.handle_simcall(aid, times_considered, true));
   xbt_assert(previous_incoming_aid == incoming_transition_->aid_,
              "Update should only update the type of the exact transition type, not the actor. FixMe!");
   if (_sg_mc_output_lts)
-    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_,
+    XBT_CRITICAL("State %lu ==> Actor %d: %.60s ==> State %lu", parent_state_->num_, incoming_transition_->aid_.c_val(),
                  incoming_transition_->to_string().c_str(), num_);
 }
 
@@ -304,15 +304,16 @@ void State::update_opened(TransitionPtr transition)
 
   opened_.push_back(transition);
 }
-void State::consider_one(aid_t aid)
+void State::consider_one(Aid aid)
 {
   auto actor = get_actor_at(aid);
-  xbt_assert(actor.is_enabled(), "Tried to mark as TODO actor %ld in state #%lu but it is not enabled", aid, get_num());
-  xbt_assert(not actor.is_done(), "Tried to mark as TODO actor %ld in state #%lu but it is already done", aid,
+  xbt_assert(actor.is_enabled(), "Tried to mark as TODO actor %d in state #%lu but it is not enabled", aid.c_val(),
              get_num());
-  actors_to_run_[aid]->mark_todo();
+  xbt_assert(not actor.is_done(), "Tried to mark as TODO actor %d in state #%lu but it is already done", aid.c_val(),
+             get_num());
+  actors_to_run_[aid.value()]->mark_todo();
   opened_.emplace_back(TransitionPtr(new Transition(Transition::Type::UNKNOWN, aid, actor.get_times_considered())));
-  XBT_DEBUG("Considered actor %hd at state %lu", actor.get_aid(), get_num());
+  XBT_DEBUG("Considered actor %d at state %lu", actor.get_aid().c_val(), get_num());
 }
 
 State::PostFixTraversal State::PostFixTraversal::HEAD_;
@@ -367,7 +368,7 @@ State::PostFixTraversal::PostFixTraversal(StatePtr state)
 
 void State::remove_ref_in_parent()
 {
-  parent_state_->children_states_[get_transition_in()->aid_][get_transition_in()->times_considered_] = nullptr;
+  parent_state_->children_states_[get_transition_in()->aid_.value()][get_transition_in()->times_considered_] = nullptr;
 
   auto new_pair = std::make_pair(get_transition_in()->aid_, get_transition_in()->times_considered_);
   auto findme   = std::find(parent_state_->closed_.begin(), parent_state_->closed_.end(), new_pair);
@@ -466,7 +467,7 @@ unsigned long State::consider_all()
       count++;
       opened_.push_back(TransitionPtr(
           new Transition(Transition::Type::UNKNOWN, actor.value().get_aid(), actor.value().get_times_considered())));
-      XBT_DEBUG("Marked actor %hd at state %lu", actor->get_aid(), get_num());
+      XBT_DEBUG("Marked actor %d at state %lu", actor->get_aid().c_val(), get_num());
     }
   }
   return count;
@@ -488,14 +489,14 @@ void State::update_expected_total_children(bool is_leaf)
     float scheduled_children = 0;
     double estimate_sum      = 0;
     for (auto t : opened_) {
-      aid_t aid = t->aid_;
+      Aid aid = t->aid_;
 
-      if (expected_of_children_[aid] == 0)
+      if (expected_of_children_[aid.value()] == 0)
         scheduled_children += 1;
       else
         explored_children += 1;
 
-      estimate_sum += expected_of_children_[aid];
+      estimate_sum += expected_of_children_[aid.value()];
     }
 
     if (scheduled_children == 0)
@@ -506,7 +507,7 @@ void State::update_expected_total_children(bool is_leaf)
   }
 
   if (parent_state_ != nullptr) {
-    parent_state_->expected_of_children_[incoming_transition_->aid_] = expected_total_children_;
+    parent_state_->expected_of_children_[incoming_transition_->aid_.value()] = expected_total_children_;
     parent_state_->update_expected_total_children(false);
   }
 }

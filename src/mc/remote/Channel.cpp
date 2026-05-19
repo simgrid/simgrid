@@ -66,7 +66,7 @@ Channel::~Channel()
 }
 template <> void Channel::pack<std::string>(std::string str)
 {
-  XBT_DEBUG("Pack string (size: %lu; ctn: '%s')", str.length(), str.c_str());
+  XBT_DEBUG("%s packs string (size: %lu; ctn: '%s')", xbt::gettid().c_str(), str.length(), str.c_str());
   xbt_assert(str.length() < std::numeric_limits<unsigned short>::max());
   pack<unsigned short>((unsigned short)str.length());
   pack(str.data(), str.length() + 1);

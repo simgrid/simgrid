@@ -17,10 +17,10 @@ namespace simgrid::mc {
 
 class ActorJoinTransition : public Transition {
   bool timeout_;
-  aid_t target_;
+  Aid target_;
 
 public:
-  ActorJoinTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  ActorJoinTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -41,12 +41,12 @@ public:
 
   bool get_timeout() const { return timeout_; }
   /** Target ID */
-  aid_t get_target() const { return target_; }
+  Aid get_target() const { return target_; }
 };
 class ActorExitTransition : public Transition {
 
 public:
-  ActorExitTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  ActorExitTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -62,7 +62,7 @@ public:
 class ActorSleepTransition : public Transition {
 
 public:
-  ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  ActorSleepTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -74,10 +74,10 @@ public:
 };
 
 class ActorCreateTransition : public Transition {
-  aid_t child_;
+  Aid child_;
 
 public:
-  ActorCreateTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  ActorCreateTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -98,7 +98,7 @@ public:
                        EventHandle other_handle) const override;
 
   /** ID of the created actor */
-  aid_t get_child() const { return child_; }
+  Aid get_child() const { return child_; }
 };
 
 } // namespace simgrid::mc

@@ -39,7 +39,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `1: AsyncSend(m)`
     Configuration C;
-    aid_t issuer = 1;
+    Aid issuer = 1;
 
     const auto async_send      = new CommSendTransition(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_send);
@@ -56,7 +56,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `2: AsyncRecv(m)`
     Configuration C;
-    aid_t issuer = 2;
+    Aid issuer = 2;
 
     const auto async_recv      = new CommRecvTransition(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_recv);

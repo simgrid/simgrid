@@ -6,17 +6,13 @@
 #include "src/mc/api/RemoteApp.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
-#include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_exit.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "xbt/asserts.h"
-#include "xbt/backtrace.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
-#include "xbt/thread.hpp"
 
 #include <algorithm>
 #include <array>
@@ -162,10 +158,6 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
   // Message sanity checks
   xbt_assert(actor_count >= 0, "Received an ACTORS_STATUS_REPLY_COUNT message with an actor count of '%d' < 0",
              actor_count);
-  xbt_assert(actor_count < std::numeric_limits<short>::max(),
-             "The applications has more than %d actors, but the model-checker saves aid_t on an "
-             "short int to save memory. Such app is probably too big for MC anyway.",
-             std::numeric_limits<short>::max());
 
   if (actor_count > 0) {
     size_t size           = actor_count * sizeof(s_mc_message_actors_status_one_t);
@@ -178,7 +170,7 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
     for (int i = 0; i < actor_count; i++) {
       const auto& actor = status[i];
 
-      if ((unsigned)actor.aid >= whereto.size())
+      if (actor.aid >= whereto.size())
         whereto.resize(actor.aid + 1);
 
       std::vector<TransitionPtr> actor_transitions;
@@ -186,17 +178,10 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
       if (Exploration::need_actor_status_transitions()) {
         int n_transitions = actor.max_considered;
         for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
-          xbt_assert(actor.aid < mc::smemory::config::max_threads,
-                     "The model-checker assumes that no aid will ever be larger than %d. Change max_threads in "
-                     "src/mc/smemory/smemory_config.hpp to verify larger applications, but be warned that it will slow "
-                     "down the exploration while the state space of such a large application is probably be too large "
-                     "to be explored anyway. Slowing down the exploration is thus both inevitable and a bad idea in "
-                     "this case.",
-                     mc::smemory::config::max_threads);
           actor_transitions.emplace_back(
               deserialize_transition(actor.aid, times_considered, checker_side_->get_channel()));
         }
-        XBT_DEBUG("Received %zu transitions for actor %ld. The first one is %s", actor_transitions.size(), actor.aid,
+        XBT_DEBUG("Received %zu transitions for actor %d. The first one is %s", actor_transitions.size(), actor.aid,
                   (actor_transitions.size() > 0 ? actor_transitions[0]->to_string().c_str() : "null"));
       } else {
         XBT_DEBUG("No need for the actor transitions today");
@@ -208,7 +193,7 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
   XBT_DEBUG("Done receiving ACTORS_STATUS_REPLY");
   for (auto state : whereto) {
     if (state.has_value())
-      XBT_DEBUG("Actor %hd is %s, %s/%s/%s considered %u/%u with %lu transitions", state.value().get_aid(),
+      XBT_DEBUG("Actor %d is %s, %s/%s/%s considered %u/%u with %lu transitions", state.value().get_aid().c_val(),
                 state.value().is_enabled() ? "enabled" : "disabled", state.value().is_todo() ? "todo" : "-",
                 state.value().is_done() ? "done" : "-", state.value().is_unknown() ? "unknown" : "-",
                 state.value().get_times_considered(), state.value().get_max_considered(),
@@ -255,16 +240,16 @@ void RemoteApp::wait_for_requests()
   checker_side_->wait_for_requests();
 }
 
-Transition* RemoteApp::handle_simcall(aid_t aid, int times_considered, bool new_transition) const
+Transition* RemoteApp::handle_simcall(Aid aid, int times_considered, bool new_transition) const
 {
-  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; %s)", (int)aid, times_considered,
+  XBT_DEBUG("Handle simcall of pid %d (time considered: %d; %s)", aid.c_val(), times_considered,
             (new_transition ? "newly considered -- not replay" : "replay"));
 
   return checker_side_->handle_simcall(aid, times_considered, new_transition);
 }
 
-void RemoteApp::replay_sequence(std::deque<std::pair<aid_t, int>> to_replay,
-                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug,
+void RemoteApp::replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                                std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
                                 void* location)
 {
   checker_side_->handle_replay(to_replay, to_replay_and_actor_status, debug, location);

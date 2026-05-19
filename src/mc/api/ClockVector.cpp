@@ -14,7 +14,7 @@ ClockVector ClockVector::max(const ClockVector& cv1, const ClockVector& cv2)
   auto max_vector = ClockVector(cv1);
 
   for (size_t aid = 0; aid < cv2.size(); aid++)
-    max_vector[aid] = std::max<signed long>(cv2.get(aid).value(), cv1.get(aid).value_or(-1));
+    max_vector[aid] = std::max<Clock>(cv1.get(aid), cv2.get(aid));
 
   return max_vector;
 }

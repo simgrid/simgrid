@@ -35,7 +35,7 @@ static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Chann
   actor->get_memory_tracker()->serialize(app_side);
   xbt_assert(app_side.send() == 0, "Could not send response: %s", strerror(errno));
 
-  auto* t = deserialize_transition(actor->get_pid(), actor->get_restart_count(), checker_side);
+  auto* t = deserialize_transition((unsigned)actor->get_pid(), actor->get_restart_count(), checker_side);
   t->deserialize_memory_tracker(checker_side);
 
   return t;
@@ -64,14 +64,14 @@ void RecordTrace::replay() const
   auto exec = std::make_unique<odpor::Execution>();
 
   for (const simgrid::mc::Transition* transition : transitions_) {
-    kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
-    xbt_assert(actor != nullptr, "Unexpected actor (id:%d).", transition->aid_);
+    kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_.value());
+    xbt_assert(actor != nullptr, "Unexpected actor (id:%d).", transition->aid_.c_val());
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
 
     XBT_INFO("***********************************************************************************");
-    XBT_INFO("* Path chunk #%d '%d/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_,
+    XBT_INFO("* Path chunk #%d '%d/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_.c_val(),
              transition->times_considered_, simcall->issuer_->get_cname(), simcall->issuer_->get_pid(),
              simcall->observer_->to_string().c_str());
     XBT_INFO("***********************************************************************************");
@@ -93,16 +93,14 @@ void RecordTrace::replay() const
     } catch (const McDataRace& e) {
       XBT_INFO("Found a datarace at location %p", xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_);
       // Printing the epoch is not very interesting for the user
-      XBT_DEBUG(
-          "Race between actor %ld at step %d and actor %ld at step %d",
-          simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_), simgrid::mc::odpor::epoch_get_clock(e.first_mem_op_),
-          simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_), simgrid::mc::odpor::epoch_get_clock(e.second_mem_op_));
+      XBT_DEBUG("Race between actor %d at step %lu and actor %d at step %lu", e.first_mem_op_.get_aid().c_val(),
+                e.first_mem_op_.get_clock().value(), e.second_mem_op_.get_aid().c_val(),
+                e.second_mem_op_.get_clock().value());
 
-      XBT_INFO("First operation was a WRITE made by actor %ld", simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_));
+      XBT_INFO("First operation was a WRITE made by actor %d", e.first_mem_op_.get_aid().c_val());
 
-      XBT_INFO("Second operation was a %s made by actor %ld",
-               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-               simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_));
+      XBT_INFO("Second operation was a %s made by actor %d",
+               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.second_mem_op_.get_aid().c_val());
 
       abort();
     }
@@ -161,10 +159,10 @@ simgrid::mc::RecordTrace::RecordTrace(const std::string& path_string)
 
   const char* current = data.c_str();
   while (*current) {
-    long aid;
+    int aid;
     int times_considered = 0;
 
-    if (int count = sscanf(current, "%ld/%d", &aid, &times_considered); count != 2 && count != 1)
+    if (int count = sscanf(current, "%d/%d", &aid, &times_considered); count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
     push_back(new simgrid::mc::Transition(simgrid::mc::Transition::Type::UNKNOWN, aid, times_considered));
 
@@ -185,7 +183,7 @@ std::string simgrid::mc::RecordTrace::to_string() const
       continue;
     if (i != transitions_.begin())
       stream << ';';
-    stream << static_cast<int>((*i)->aid_);
+    stream << static_cast<int>((*i)->aid_.value());
     if ((*i)->times_considered_ > 0)
       stream << '/' << (*i)->times_considered_;
   }

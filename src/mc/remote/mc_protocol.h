@@ -6,12 +6,10 @@
 #ifndef SIMGRID_MC_PROTOCOL_H
 #define SIMGRID_MC_PROTOCOL_H
 
-// ***** Environment variables for passing context to the model-checked process
-
 #ifdef __cplusplus
 
-#include "simgrid/forward.h" // aid_t
-#include <xbt/utility.hpp>
+#include "src/mc/api/Aid.hpp"
+#include "xbt/utility.hpp"
 
 #include <array>
 #include <cstdint>
@@ -66,13 +64,13 @@ struct s_mc_message_fork_t {
 
 struct s_mc_message_simcall_execute_t {
   simgrid::mc::MessageType type;
-  aid_t aid_;
+  simgrid::mc::Aid::storage_type aid_;
   int times_considered_;
   bool want_transition;
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  aid_t aid;
+  simgrid::mc::Aid::storage_type aid;
 };
 
 struct s_mc_message_actors_status_t {
@@ -95,7 +93,7 @@ struct s_mc_message_one_way_t {
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
                                           // after a `s_mc_message_actors_status_answer_t`
   simgrid::mc::MessageType type;
-  aid_t aid;
+  simgrid::mc::Aid::storage_type aid;
   bool enabled;
   int max_considered;
 };

@@ -16,7 +16,7 @@ std::string RandomTransition::to_string(bool verbose) const
   return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
 }
 
-RandomTransition::RandomTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+RandomTransition::RandomTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::RANDOM, issuer, times_considered)
 {
   min_ = channel.unpack<int>();

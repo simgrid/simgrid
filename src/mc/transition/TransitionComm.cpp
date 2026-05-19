@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 
 namespace simgrid::mc {
 
-CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_,
-                                       aid_t receiver_, unsigned mbox_)
+CommWaitTransition::CommWaitTransition(Aid issuer, int times_considered, bool timeout_, unsigned comm_, Aid sender_,
+                                       Aid receiver_, unsigned mbox_)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
     , timeout_(timeout_)
     , comm_(comm_)
@@ -29,28 +29,32 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, bool 
     , receiver_(receiver_)
 {
 }
-CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+CommWaitTransition::CommWaitTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
   timeout_ = channel.unpack<bool>();
   comm_    = channel.unpack<unsigned>();
 
-  sender_        = channel.unpack<aid_t>();
-  receiver_      = channel.unpack<aid_t>();
+  auto data = channel.unpack<aid_t>();
+  sender_   = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  data      = channel.unpack<aid_t>();
+  receiver_ = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+
   mbox_          = channel.unpack<unsigned>();
   call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
 
-  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s",
-            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, call_location_->c_str());
+  XBT_DEBUG("CommWaitTransition %s comm:%u, sender:%d receiver:%d mbox:%u call_loc:%s",
+            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_.c_val(), receiver_.c_val(), mbox_,
+            call_location_->c_str());
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
   if (not verbose)
-    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s)", sender_, receiver_, mbox_,
+    return xbt::string_printf("WaitComm(from %d to %d, mbox=%u, %s)", sender_.c_val(), receiver_.c_val(), mbox_,
                               (timeout_ ? "timeout" : "no timeout"));
   else
-    return xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s, comm=%u)", sender_, receiver_, mbox_,
-                              (timeout_ ? "timeout" : "no timeout"), comm_);
+    return xbt::string_printf("WaitComm(from %d to %d, mbox=%u, %s, comm=%u)", sender_.c_val(), receiver_.c_val(),
+                              mbox_, (timeout_ ? "timeout" : "no timeout"), comm_);
 }
 
 bool CommWaitTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
@@ -62,8 +66,8 @@ bool CommWaitTransition::reversible_race(const Transition* other, const odpor::E
   return other->type_ != Type::COMM_WAIT;
 }
 
-CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_,
-                                       aid_t receiver_, unsigned mbox_)
+CommTestTransition::CommTestTransition(Aid issuer, int times_considered, unsigned comm_, Aid sender_, Aid receiver_,
+                                       unsigned mbox_)
     : Transition(Type::COMM_TEST, issuer, times_considered)
     , comm_(comm_)
     , mbox_(mbox_)
@@ -71,20 +75,24 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, unsig
     , receiver_(receiver_)
 {
 }
-CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+CommTestTransition::CommTestTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
   comm_          = channel.unpack<unsigned>();
-  sender_        = channel.unpack<aid_t>();
-  receiver_      = channel.unpack<aid_t>();
+
+  auto data = channel.unpack<aid_t>();
+  sender_   = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  data      = channel.unpack<aid_t>();
+  receiver_ = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+
   mbox_          = channel.unpack<unsigned>();
   call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
-  XBT_DEBUG("CommTestTransition comm:%u, sender:%ld receiver:%ld mbox:%u call_loc:%s", comm_, sender_, receiver_, mbox_,
-            call_location_->c_str());
+  XBT_DEBUG("CommTestTransition comm:%u, sender:%d receiver:%d mbox:%u call_loc:%s", comm_, sender_.c_val(),
+            receiver_.c_val(), mbox_, call_location_->c_str());
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("TestComm(from %ld to %ld, mbox=%u)", sender_, receiver_, mbox_);
+  return xbt::string_printf("TestComm(from %d to %d, mbox=%u)", sender_.c_val(), receiver_.c_val(), mbox_);
 }
 
 bool CommTestTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
@@ -94,11 +102,11 @@ bool CommTestTransition::reversible_race(const Transition* other, const odpor::E
   return true; // CommTest is always enabled
 }
 
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
+CommRecvTransition::CommRecvTransition(Aid issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+CommRecvTransition::CommRecvTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
   comm_          = channel.unpack<unsigned>();
@@ -137,11 +145,11 @@ bool CommRecvTransition::reversible_race(const Transition* other, const odpor::E
   return true;
 }
 
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
+CommSendTransition::CommSendTransition(Aid issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
 }
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+CommSendTransition::CommSendTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
   comm_          = channel.unpack<unsigned>();
@@ -181,11 +189,11 @@ bool CommSendTransition::reversible_race(const Transition* other, const odpor::E
   return true;
 }
 
-CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
+CommIprobeTransition::CommIprobeTransition(Aid issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
     : Transition(Type::COMM_IPROBE, issuer, times_considered), is_sender_(is_sender), mbox_(mbox), tag_(tag)
 {
 }
-CommIprobeTransition::CommIprobeTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+CommIprobeTransition::CommIprobeTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::COMM_IPROBE, issuer, times_considered)
 {
   mbox_      = channel.unpack<unsigned>();

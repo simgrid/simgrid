@@ -535,14 +535,14 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
   return exC;
 }
 
-std::pair<aid_t, aid_t> ExtensionSetCalculator::firstTwoOwners(uintptr_t mutex_id, EventSet history)
+std::pair<Aid, Aid> ExtensionSetCalculator::firstTwoOwners(uintptr_t mutex_id, EventSet history)
 {
-  std::pair<aid_t, aid_t> two_owners(-1, -1);
+  std::pair<Aid, Aid> two_owners(Aid::INVALID_VALUE, Aid::INVALID_VALUE);
   for (const auto e : history) {
     if (e->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK) {
-      if (two_owners.first == -1)
+      if (not two_owners.first.has_value())
         two_owners.first = e->get_transition()->aid_;
-      else if (two_owners.second == -1) {
+      else if (not two_owners.second.has_value()) {
         two_owners.second = e->get_transition()->aid_;
         return two_owners;
       }
@@ -780,7 +780,7 @@ EventSet ExtensionSetCalculator::partially_extend_ActorSleep(const Configuration
   return exC;
 }
 
-std::optional<const UnfoldingEvent*> ExtensionSetCalculator::find_ActorCreate_Event(const EventSet history, aid_t actor)
+std::optional<const UnfoldingEvent*> ExtensionSetCalculator::find_ActorCreate_Event(const EventSet history, Aid actor)
 {
 
   for (const auto event : history) {
@@ -810,7 +810,8 @@ EventSet ExtensionSetCalculator::partially_extend_ActorCreate(const Configuratio
   // I hope it doesn't require to be tracked in each single different thread action though.
 
   xbt_assert(not C.pre_event(create_action->get_child()).has_value(),
-             "How did the actor %d achieved being executed before being created by someone else?", action->aid_);
+             "How did the actor %d achieved being executed before being created by someone else?",
+             action->aid_.c_val());
 
   if (const auto pre_event_a_C = C.pre_event(create_action->aid_); pre_event_a_C.has_value()) {
     const auto e_prime = U->discover_event(EventSet({pre_event_a_C.value()}), create_action);
@@ -896,11 +897,11 @@ int ExtensionSetCalculator::available_token_after(const UnfoldingEvent* e, unsig
   return max_capacity - nb_lock + nb_unlock;
 }
 
-aid_t ExtensionSetCalculator::first_waiting_before(const EventSet history, unsigned sem_id)
+Aid ExtensionSetCalculator::first_waiting_before(const EventSet history, unsigned sem_id)
 {
   auto history_event                  = history.begin();
   int capacity                        = -1;
-  std::deque<aid_t> waiting_processes = {};
+  std::deque<Aid> waiting_processes   = {};
   for (; history_event != history.end(); history_event++) {
     const SemaphoreTransition* sem_transition = dynamic_cast<SemaphoreTransition*>((*history_event)->get_transition());
 
@@ -938,7 +939,7 @@ aid_t ExtensionSetCalculator::first_waiting_before(const EventSet history, unsig
 }
 
 // Compute the aid of the first actor waiting on the queue of sem_id in the configuration history(e)
-aid_t ExtensionSetCalculator::first_waiting_before(const UnfoldingEvent* e, unsigned sem_id)
+Aid ExtensionSetCalculator::first_waiting_before(const UnfoldingEvent* e, unsigned sem_id)
 {
   return first_waiting_before(e->get_history(), sem_id);
 }

@@ -15,10 +15,10 @@ TEST_CASE("simgrid::mc::ClockVector: Constructing Vectors")
     ClockVector cv;
 
     // Verify `cv` doesn't map any values
-    REQUIRE((not cv.get(0).has_value() or cv.get(0).value() < 0));
-    REQUIRE((not cv.get(1).has_value() or cv.get(1).value() < 0));
-    REQUIRE((not cv.get(2).has_value() or cv.get(2).value() < 0));
-    REQUIRE((not cv.get(3).has_value() or cv.get(3).value() < 0));
+    REQUIRE(not cv.get(0).has_value());
+    REQUIRE(not cv.get(1).has_value());
+    REQUIRE(not cv.get(2).has_value());
+    REQUIRE(not cv.get(3).has_value());
   }
 
   SECTION("With initial values")
@@ -62,8 +62,8 @@ TEST_CASE("simgrid::mc::ClockVector: Testing operator[]")
   REQUIRE(cv.get(0).value() == 1);
 
   // Verify `cv` doesn't map other values
-  REQUIRE((not cv.get(2).has_value() or cv.get(2).value() < 0));
-  REQUIRE((not cv.get(3).has_value() or cv.get(3).value() < 0));
+  REQUIRE(not cv.get(2).has_value());
+  REQUIRE(not cv.get(3).has_value());
 
   cv[10] = 31;
 
@@ -211,19 +211,15 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
       cv1[1]   = 2;
       cv1[4]   = 41;
       cv1[12]  = 0;
-      cv1[100] = 5;
       ClockVector cv2;
       cv2[2]  = 4;
       cv2[4]  = 10;
       cv2[10] = 3;
       cv2[12] = 8;
-      cv2[19] = 0;
-      cv2[21] = 6;
-      cv2[22] = 0;
       ClockVector cv3;
-      cv3[21]  = 60;
-      cv3[22]  = 6;
-      cv3[100] = 3;
+      cv3[5]  = 60;
+      cv3[12] = 6;
+      cv3[14] = 3;
 
       ClockVector maxCV = ClockVector::max(cv1, cv2);
       maxCV             = ClockVector::max(maxCV, cv3);
@@ -247,22 +243,6 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
       REQUIRE(maxCV.get(12).has_value());
       REQUIRE(maxCV.get(12).value() == 8);
       REQUIRE(maxCV[12] == 8);
-
-      REQUIRE(maxCV.get(19).has_value());
-      REQUIRE(maxCV.get(19).value() == 0);
-      REQUIRE(maxCV[19] == 0);
-
-      REQUIRE(maxCV.get(21).has_value());
-      REQUIRE(maxCV.get(21).value() == 60);
-      REQUIRE(maxCV[21] == 60);
-
-      REQUIRE(maxCV.get(22).has_value());
-      REQUIRE(maxCV.get(22).value() == 6);
-      REQUIRE(maxCV[22] == 6);
-
-      REQUIRE(maxCV.get(100).has_value());
-      REQUIRE(maxCV.get(100).value() == 5);
-      REQUIRE(maxCV[100] == 5);
     }
   }
 
@@ -343,11 +323,10 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
       cv2[2]  = 4;
       cv2[10] = 3;
       cv2[12] = 8;
-      cv2[19] = 0;
-      cv2[21] = 6;
+      cv2[11] = 0;
       ClockVector cv3;
-      cv3[22]           = 6;
-      cv3[100]          = 3;
+      cv3[8]            = 6;
+      cv3[9]            = 3;
       ClockVector maxCV = ClockVector::max(cv1, cv2);
       maxCV             = ClockVector::max(maxCV, cv3);
 
@@ -370,22 +349,6 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
       REQUIRE(maxCV.get(12).has_value());
       REQUIRE(maxCV.get(12).value() == 8);
       REQUIRE(maxCV[12] == 8);
-
-      REQUIRE(maxCV.get(19).has_value());
-      REQUIRE(maxCV.get(19).value() == 0);
-      REQUIRE(maxCV[19] == 0);
-
-      REQUIRE(maxCV.get(21).has_value());
-      REQUIRE(maxCV.get(21).value() == 6);
-      REQUIRE(maxCV[21] == 6);
-
-      REQUIRE(maxCV.get(22).has_value());
-      REQUIRE(maxCV.get(22).value() == 6);
-      REQUIRE(maxCV[22] == 6);
-
-      REQUIRE(maxCV.get(100).has_value());
-      REQUIRE(maxCV.get(100).value() == 3);
-      REQUIRE(maxCV[100] == 3);
     }
   }
 }

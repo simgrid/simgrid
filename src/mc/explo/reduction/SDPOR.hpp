@@ -7,11 +7,11 @@
 #define SIMGRID_MC_SDPOR_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 
-#include "src/mc/api/states/SleepSetState.hpp"
 #include <memory>
 
 namespace simgrid::mc {
@@ -23,15 +23,15 @@ public:
   ~SDPOR() override = default;
 
   class RaceUpdate : public Reduction::RaceUpdate {
-    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> state_and_choices_;
+    std::vector<std::pair<StatePtr, std::unordered_set<Aid>>> state_and_choices_;
 
   public:
     RaceUpdate() = default;
-    void add_element(StatePtr state, std::unordered_set<aid_t> choices)
+    void add_element(StatePtr state, std::unordered_set<Aid> choices)
     {
       state_and_choices_.emplace_back(state, choices);
     }
-    std::vector<std::pair<StatePtr, std::unordered_set<aid_t>>> get_value() { return state_and_choices_; }
+    std::vector<std::pair<StatePtr, std::unordered_set<Aid>>> get_value() { return state_and_choices_; }
   };
 
   RaceUpdate* empty_race_update() override { return new RaceUpdate(); }
@@ -72,7 +72,7 @@ public:
     unsigned long nb_updates = 0;
 
     for (auto& [state, choices] : sdpor_updates->get_value()) {
-      aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
+      Aid considered   = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), choices);
       auto s           = StatePtr(
           new SleepSetState(remote_app, state,
                                       TransitionPtr(new Transition(Transition::Type::UNKNOWN, considered,
@@ -99,10 +99,10 @@ public:
     return res;
   }
 
-  aid_t next_to_explore(odpor::Execution& E, stack_t* S) override
+  Aid next_to_explore(odpor::Execution& E, stack_t* S) override
   {
     if (not S->back()->has_todo_actors())
-      return -1;
+      return Aid::INVALID_VALUE;
     return S->back()->next_transition_guided().first;
   }
 

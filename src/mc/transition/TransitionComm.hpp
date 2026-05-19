@@ -23,16 +23,16 @@ class CommWaitTransition : public Transition {
   bool timeout_;
   unsigned comm_;
   unsigned mbox_;
-  aid_t sender_;
-  aid_t receiver_;
+  Aid sender_;
+  Aid receiver_;
   friend CommRecvTransition;
   friend CommSendTransition;
   friend CommTestTransition;
 
 public:
-  CommWaitTransition(aid_t issuer, int times_considered, bool timeout_, unsigned comm_, aid_t sender_, aid_t receiver_,
+  CommWaitTransition(Aid issuer, int times_considered, bool timeout_, unsigned comm_, Aid sender_, Aid receiver_,
                      unsigned mbox_);
-  CommWaitTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  CommWaitTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -49,29 +49,28 @@ public:
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 
-  bool is_enabled() const { return sender_ != -1 and receiver_ != -1; }
+  bool is_enabled() const { return sender_.has_value() and receiver_.has_value(); }
   bool get_timeout() const { return timeout_; }
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
   /** Sender ID */
-  aid_t get_sender() const { return sender_; }
+  Aid get_sender() const { return sender_; }
   /** Receiver ID */
-  aid_t get_receiver() const { return receiver_; }
+  Aid get_receiver() const { return receiver_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
 };
 class CommTestTransition : public Transition {
   unsigned comm_;
   unsigned mbox_;
-  aid_t sender_;
-  aid_t receiver_;
+  Aid sender_;
+  Aid receiver_;
   friend CommSendTransition;
   friend CommRecvTransition;
 
 public:
-  CommTestTransition(aid_t issuer, int times_considered, unsigned comm_, aid_t sender_, aid_t receiver_,
-                     unsigned mbox_);
-  CommTestTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  CommTestTransition(Aid issuer, int times_considered, unsigned comm_, Aid sender_, Aid receiver_, unsigned mbox_);
+  CommTestTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -94,9 +93,9 @@ public:
   /** ID of the corresponding Communication object in the application, or 0 if unknown */
   unsigned get_comm() const { return comm_; }
   /** Sender ID */
-  aid_t get_sender() const { return sender_; }
+  Aid get_sender() const { return sender_; }
   /** Receiver ID */
-  aid_t get_receiver() const { return receiver_; }
+  Aid get_receiver() const { return receiver_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
 };
@@ -106,8 +105,8 @@ class CommIprobeTransition : public Transition {
   int tag_;
 
 public:
-  CommIprobeTransition(aid_t issuer, int times_considered, bool is_sender, unsigned mbox, int tag);
-  CommIprobeTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  CommIprobeTransition(Aid issuer, int times_considered, bool is_sender, unsigned mbox, int tag);
+  CommIprobeTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -134,8 +133,8 @@ class CommRecvTransition : public Transition {
   int tag_;
 
 public:
-  CommRecvTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
-  CommRecvTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  CommRecvTransition(Aid issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
+  CommRecvTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -205,8 +204,8 @@ class CommSendTransition : public Transition {
   int tag_;
 
 public:
-  CommSendTransition(aid_t issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
-  CommSendTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  CommSendTransition(Aid issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_);
+  CommSendTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {

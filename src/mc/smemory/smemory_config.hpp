@@ -37,19 +37,32 @@ constexpr short granularity = 1;
 /* The maximal amount of threads is arguably very low, but keep in mind that the exploration of large applications will
  * certainly not terminate, while reducing this maximal amount of threads allow for many optimizations. Feel free to
  * increase this value if you want to explore larger apps at a slower pace.*/
-constexpr short max_threads = 16;
+constexpr short max_threads = 32;
+
+/* The maximal time_considered can be kept low unless you verify a MPI application using Waitany on a vector of more
+ * than 256 requests, or something similar. To be honnest, keeping this value low is not as important as keeping
+ * max_threads low. In particular, there is no gain if the max_considered is not the maximal value of a given type such
+ * as uint8_t, uint16_t or uint32_t. In other words, the only interesting values are 256, 65535 or 2^32 */
+constexpr short max_time_considered = 256;
+
+/* **** End of the configuration part **** */
 
 // Sanity checks
 static_assert(page_size != 0 && ((page_size & (page_size - 1)) == 0),
               "smemory::config::page_size must be power of two.");
 static_assert(granularity != 0 && ((granularity & (granularity - 1)) == 0),
               "smemory::config::granularity must be power of two.");
+static_assert(max_time_considered != 0 && ((max_time_considered & (max_time_considered - 1)) == 0),
+              "smemory::config::max_time_considered should be power of two. We are enforcing it for no reason, simply "
+              "because doing otherwise brings no good.");
 }; // namespace smemory::config
 
 // Define the mc::mc_aid_t type as the smallest integer that can contain the max_threads value
-using mc_aid_t =
-    std::conditional_t<(smemory::config::max_threads <= 256), std::uint8_t,
-                       std::conditional_t<(smemory::config::max_threads <= 65536), std::uint16_t, std::uint32_t>>;
+
+// Define mc::time_considered_t as the smallest integer that can contain the max_times_considered value
+using time_considered_t = std::conditional_t<
+    (smemory::config::max_time_considered < 256), std::uint8_t,
+    std::conditional_t<(smemory::config::max_time_considered < 65536), std::uint16_t, std::uint32_t>>;
 
 }; // namespace simgrid::mc
 

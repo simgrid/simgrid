@@ -19,7 +19,7 @@ class TestAnyTransition : public Transition {
   std::vector<Transition*> transitions_;
 
 public:
-  TestAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  TestAnyTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
@@ -43,7 +43,7 @@ class WaitAnyTransition : public Transition {
   std::vector<Transition*> transitions_;
 
 public:
-  WaitAnyTransition(aid_t issuer, int times_considered, mc::Channel& channel);
+  WaitAnyTransition(Aid issuer, int times_considered, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {

@@ -62,7 +62,7 @@ std::string UnfoldingEvent::to_string() const
   dependencies_string += "]";
 
   return xbt::string_printf("Event %lu, Actor %d: %.60s (%lu dependencies: %.100s)", this->id,
-                            associated_transition->aid_, associated_transition->to_string(true).c_str(),
+                            associated_transition->aid_.c_val(), associated_transition->to_string(true).c_str(),
                             immediate_causes.size(), dependencies_string.c_str());
 }
 

@@ -8,6 +8,7 @@
 #ifndef SIMGRID_MC_CLIENT_H
 #define SIMGRID_MC_CLIENT_H
 
+#include "simgrid/forward.h"
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/remote/mc_protocol.h"
 

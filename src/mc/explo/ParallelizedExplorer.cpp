@@ -228,7 +228,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
               get_record_trace_from_stack(local_explorer.stack).to_string().c_str());
     for (auto iter = std::next(local_explorer.stack.begin()); iter != local_explorer.stack.end(); ++iter) {
       XBT_DEBUG("... taking transition <Actor %d: %s> from state %lu to reconstitute the execution sequence",
-                (*iter)->get_transition_in()->aid_, (*iter)->get_transition_in()->to_string().c_str(),
+                (*iter)->get_transition_in()->aid_.c_val(), (*iter)->get_transition_in()->to_string().c_str(),
                 (*iter)->get_num());
       local_explorer.execution_seq.push_transition((*iter)->get_transition_in());
     }
@@ -238,7 +238,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
     while (do_explore) {
       State* state = local_explorer.stack.back().get();
 
-      const aid_t next = reduction_algo_->next_to_explore(local_explorer.execution_seq, &local_explorer.stack);
+      const Aid next = reduction_algo_->next_to_explore(local_explorer.execution_seq, &local_explorer.stack);
 
       if (next < 0) {
         // It can be: a leaf, a deadlock or a stop caused by reduction (eg. by sleep set)
@@ -275,7 +275,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
       auto executed_transition = state->execute_next(next, local_explorer.get_remote_app());
 
       XBT_VERB("[tid: Explorer %d] Executed %d: %.60s (stack depth: %zu, state: %lu)", local_explorer.get_explorer_id(),
-               state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(),
+               state->get_transition_out()->aid_.c_val(), state->get_transition_out()->to_string().c_str(),
                local_explorer.stack.size(), state->get_num());
 
       local_explorer.visited_states_count++;

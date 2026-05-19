@@ -105,14 +105,14 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
       // Prior to removal, the first `a1` was the first single-process node
       REQUIRE(tree.get_min_single_process_node().has_value());
       REQUIRE(tree.get_min_single_process_actor().has_value());
-      REQUIRE(tree.get_min_single_process_actor().value() == a1->aid_);
+      REQUIRE(tree.get_min_single_process_actor().value() == a1->aid_.value());
 
       auto subtree_a1 = tree.get_first_subtree();
 
       // Now the first `a4` is
       REQUIRE(tree.get_min_single_process_node().has_value());
       REQUIRE(tree.get_min_single_process_actor().has_value());
-      REQUIRE(tree.get_min_single_process_actor().value() == a4->aid_);
+      REQUIRE(tree.get_min_single_process_actor().value() == a4->aid_.value());
       compare_tree(subtree_a1, {a4, a3, a2, a4, a2, a5, a3});
       compare_tree(tree, {a3, a1, a2, a4});
       tree.get_first_subtree();

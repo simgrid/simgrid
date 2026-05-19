@@ -39,10 +39,10 @@ std::string Transition::dot_string() const
   static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
                                                        "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
                                                        "lightblue", "tan"}};
-  const char* color = colors[(aid_ - 1) % colors.size()];
+  const char* color = colors[(aid_.value() - 1) % colors.size()];
 
-  return xbt::string_printf("label = \"[(%d)] %s\", color = %s, fontcolor = %s", aid_, Transition::to_c_str(type_),
-                            color, color);
+  return xbt::string_printf("label = \"[(%d)] %s\", color = %s, fontcolor = %s", aid_.c_val(),
+                            Transition::to_c_str(type_), color, color);
 }
 void Transition::replay(RemoteApp& app) const
 {
@@ -60,7 +60,7 @@ void Transition::deserialize_memory_tracker(mc::Channel& channel)
   XBT_DEBUG("Created a memory access tracker for the new transition");
 }
 
-Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel)
+Transition* deserialize_transition(Aid issuer, int times_considered, mc::Channel& channel)
 {
 #if SIMGRID_HAVE_MC
   mc::Transition::Type simcall = channel.unpack<mc::Transition::Type>();

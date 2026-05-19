@@ -32,8 +32,8 @@ std::string WakeupTreeNode::string_of_whole_tree(const std::string& prefix, bool
 
   std::string final_string = action_ == nullptr
                                  ? "<>\n"
-                                 : prefix + (is_last ? "└──" : "├──") + "Actor " + std::to_string(action_->aid_) +
-                                       ": " + action_->to_string(true) + "\n";
+                                 : prefix + (is_last ? "└──" : "├──") + "Actor " +
+                                       std::to_string(action_->aid_.c_val()) + ": " + action_->to_string(true) + "\n";
   bool is_next_first       = true;
   for (auto node_it = children_.begin(); node_it != children_.end(); node_it++) {
     auto node                    = node_it;
@@ -57,18 +57,18 @@ std::vector<std::string> WakeupTree::get_single_process_texts() const
   std::vector<std::string> trace;
   for (const auto& child : root_->children_) {
     const auto t = child->get_action();
-    auto message = xbt::string_printf("Actor %d: %s", t->aid_, t->to_string(true).c_str());
+    auto message = xbt::string_printf("Actor %d: %s", t->aid_.c_val(), t->to_string(true).c_str());
     trace.emplace_back(std::move(message));
   }
   return trace;
 }
 
-std::optional<aid_t> WakeupTree::get_min_single_process_actor() const
+Aid WakeupTree::get_min_single_process_actor() const
 {
   if (const auto node = get_min_single_process_node(); node.has_value()) {
     return node.value()->get_actor();
   }
-  return std::nullopt;
+  return Aid::INVALID_VALUE;
 }
 
 std::optional<WakeupTreeNode*> WakeupTree::get_min_single_process_node() const
@@ -107,7 +107,7 @@ WakeupTree WakeupTree::get_first_subtree()
   return subtree;
 }
 
-void WakeupTree::remove_subtree_at_aid(aid_t proc)
+void WakeupTree::remove_subtree_at_aid(Aid proc)
 {
   auto child = std::find_if(root_->children_.begin(), root_->children_.end(),
                             [&](const auto& node) { return node->get_actor() == proc; });
@@ -137,7 +137,7 @@ InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExec
   for (auto& node : this->children_) {
     const auto& next_E_p = node->action_;
     // Is `p in `I_[E](w)`?
-    if (const aid_t p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
+    if (const Aid p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
       // Remove `p` from w and continue with this node
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -155,10 +155,10 @@ InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExec
       if (_sg_mc_debug) {
         const auto& w_action = *action_by_p_in_w;
         xbt_assert(w_action->type_ == next_E_p->type_,
-                   "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                   "Invariant violated: `v` claims that actor `%d` executes '%s' while "
                    "`w` claims that it executes '%s'. These two partial executions both "
                    "refer to `next_[E](p)`, which should be the same",
-                   p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+                   p.c_val(), next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
       }
       w.erase(action_by_p_in_w);
       return node->recursive_insert(father, w);
@@ -176,10 +176,10 @@ InsertionResult WakeupTreeNode::recursive_insert(WakeupTree& father, PartialExec
       const auto action_by_p_in_w =
           std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
       xbt_assert(action_by_p_in_w == w.end(),
-                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "Invariant violated: We claimed that actor `%d` is not an initial "
                  "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
                  "This indicates that there is a bug computing initials",
-                 p);
+                 p.c_val());
       return node->recursive_insert(father, w);
     }
   }
@@ -204,7 +204,7 @@ WakeupTreeNode* WakeupTreeNode::recursive_insert_and_get_inserted_seq(WakeupTree
   for (auto& node : this->children_) {
     const auto& next_E_p = node->action_;
     // Is `p in `I_[E](w)`?
-    if (const aid_t p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
+    if (const Aid p = next_E_p->aid_; Execution::is_initial_after_execution_of(w, p)) {
       // Remove `p` from w and continue with this node
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -221,10 +221,10 @@ WakeupTreeNode* WakeupTreeNode::recursive_insert_and_get_inserted_seq(WakeupTree
                                               "is a bug computing initials");
       const auto& w_action = *action_by_p_in_w;
       xbt_assert(w_action->type_ == next_E_p->type_,
-                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "Invariant violated: `v` claims that actor `%d` executes '%s' while "
                  "`w` claims that it executes '%s'. These two partial executions both "
                  "refer to `next_[E](p)`, which should be the same",
-                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+                 p.c_val(), next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
       w.erase(action_by_p_in_w);
       return node->recursive_insert_and_get_inserted_seq(father, w);
     }
@@ -241,10 +241,10 @@ WakeupTreeNode* WakeupTreeNode::recursive_insert_and_get_inserted_seq(WakeupTree
       const auto action_by_p_in_w =
           std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
       xbt_assert(action_by_p_in_w == w.end(),
-                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "Invariant violated: We claimed that actor `%d` is not an initial "
                  "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
                  "This indicates that there is a bug computing initials",
-                 p);
+                 p.c_val());
       return node->recursive_insert_and_get_inserted_seq(father, w);
     }
   }
@@ -271,7 +271,7 @@ WakeupTreeNode* WakeupTree::insert_sequence_after(WakeupTreeNode* node, const Pa
   return cur_node;
 }
 
-WakeupTreeNode* WakeupTree::get_node_after_actor(aid_t aid) const
+WakeupTreeNode* WakeupTree::get_node_after_actor(Aid aid) const
 {
   for (auto const& node : root_->children_)
     if (node->get_actor() == aid)

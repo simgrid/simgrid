@@ -6,7 +6,6 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
-#include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/State.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
@@ -49,7 +48,7 @@ protected:
   /// Recursively explore the transtions provided by the reduction
   void explore(odpor::Execution& S, stack_t& state_stack);
   /// Do one step in the exploration: execute a transition, create a state and deal with failures
-  void step_exploration(odpor::Execution& S, aid_t next_actor, stack_t& state_stack);
+  void step_exploration(odpor::Execution& S, Aid next_actor, stack_t& state_stack);
 };
 
 } // namespace simgrid::mc

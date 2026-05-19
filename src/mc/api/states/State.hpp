@@ -10,9 +10,9 @@
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/transition/Transition.hpp"
 #include "src/mc/xbt_intrusiveptr.hpp"
 #include "xbt/asserts.h"
+
 #include <atomic>
 #include <boost/smart_ptr/intrusive_ref_counter.hpp>
 #include <condition_variable>
@@ -124,7 +124,7 @@ protected:
 
   /** Store the (aid,times considered) that have been closed. This is usefull to determine wether a given state is
    * leftmost. */
-  std::vector<std::pair<aid_t, int>> closed_;
+  std::vector<std::pair<Aid, int>> closed_;
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);
@@ -134,24 +134,24 @@ public:
 
   bool has_been_initialized() const { return actor_status_set_; }
   void initialize(const RemoteApp& remote_app);
-  void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, aid_t aid, int times_considered);
+  void update_incoming_transition_with_remote_app(const RemoteApp& remote_app, Aid aid, int times_considered);
   void update_incoming_transition_explicitly(TransitionPtr incoming_transition)
   {
     incoming_transition_ = incoming_transition;
   }
 
   /* Returns a positive number if there is another transition to pick, or -1 if not */
-  aid_t next_transition() const; // this function should disapear as it is redundant with the next one
+  Aid next_transition() const; // this function should disapear as it is redundant with the next one
 
   /* Same as next_transition(), but choice is now guided, and an integer corresponding to the
    internal cost of the transition is returned */
-  virtual std::pair<aid_t, int> next_transition_guided() const;
+  virtual std::pair<Aid, int> next_transition_guided() const;
 
   /**
    * Explore a new path on the remote app; the parameter 'next' must be the result of a previous call to
    * next_transition()
    */
-  TransitionPtr execute_next(aid_t next, RemoteApp& app);
+  TransitionPtr execute_next(Aid next, RemoteApp& app);
 
   unsigned long get_num() const { return num_; }
   unsigned long get_depth() const { return depth_; }
@@ -159,26 +159,26 @@ public:
 
   virtual bool has_more_to_be_explored() const;
 
-  bool actor_exists(aid_t aid)
+  bool actor_exists(Aid aid)
   {
-    return aid >= 0 and actors_to_run_.size() >= (unsigned)aid and actors_to_run_[aid].has_value();
+    return aid.has_value() and actors_to_run_.size() >= aid.value() and actors_to_run_[aid.value()].has_value();
   }
 
-  const ActorState& get_actor_at(aid_t aid)
+  const ActorState& get_actor_at(Aid aid)
   {
-    xbt_assert(actor_exists(aid), "Actor %ld does not exist in state #%lu, yet one was asked", aid, get_num());
-    return *actors_to_run_[aid];
+    xbt_assert(actor_exists(aid), "Actor %d does not exist in state #%lu, yet one was asked", aid.c_val(), get_num());
+    return *actors_to_run_[aid.value()];
   }
 
   /* Marking as TODO some actor in this state:
    *  + consider_one mark aid actor (and assert it is possible)
    *  + consider_best ensure one actor is marked by eventually marking the best regarding its guiding method
    *  + consider_all mark all enabled actor that are not done yet */
-  void consider_one(aid_t aid);
+  void consider_one(Aid aid);
 
   unsigned long consider_all();
 
-  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).value().is_done(); }
+  bool is_actor_done(Aid actor) const { return actors_to_run_.at(actor.value()).value().is_done(); }
   TransitionPtr const get_transition_out() const { return outgoing_transition_; }
   TransitionPtr const get_transition_in() const { return incoming_transition_; }
   State* get_parent_state() const { return parent_state_.get(); }
@@ -187,7 +187,7 @@ public:
   std::vector<std::optional<ActorState>> const& get_actors_list() const { return actors_to_run_; }
 
   unsigned long get_actor_count() const;
-  bool is_actor_enabled(aid_t actor) const { return actors_to_run_.at(actor).value().is_enabled(); }
+  bool is_actor_enabled(Aid actor) const { return actors_to_run_.at(actor.value()).value().is_enabled(); }
 
   /** Returns whether this state has a state factory.
    *
@@ -216,7 +216,7 @@ public:
    * explicitly of the `done` set, but we again note that the
    * backtrack set still contains processes added to the done set.
    */
-  std::unordered_set<aid_t> get_backtrack_set() const;
+  std::unordered_set<Aid> get_backtrack_set() const;
   virtual bool has_enabled_actors() const;
   bool has_todo_actors() const;
 
@@ -247,11 +247,11 @@ public:
    */
   static void garbage_collect();
 
-  StatePtr get_children_state_of_aid(aid_t next, int times_considered) const
+  StatePtr get_children_state_of_aid(Aid next, int times_considered) const
   {
-    if (next >= 0 && times_considered >= 0 && children_states_.size() > static_cast<long unsigned>(next) &&
-        children_states_[next].size() > static_cast<long unsigned>(times_considered))
-      return children_states_[next][times_considered];
+    if (next.has_value() && times_considered >= 0 && children_states_.size() > next.value() &&
+        children_states_[next.value()].size() > static_cast<long unsigned>(times_considered))
+      return children_states_[next.value()][times_considered];
     return nullptr;
   }
 

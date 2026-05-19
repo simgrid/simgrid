@@ -48,7 +48,7 @@ public:
 
   bool has_more_to_be_explored() const override { return direct_children() > 0; }
 
-  std::unordered_set<aid_t> get_sleeping_actors(aid_t after_actor) const override;
+  std::unordered_set<Aid> get_sleeping_actors(Aid after_actor) const override;
 
   void give_ownership_to_explorers() { owned_by_the_explorers_ = true; }
 

@@ -16,16 +16,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_actorlifecycle, mc_transition,
 
 namespace simgrid::mc {
 
-ActorJoinTransition::ActorJoinTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+ActorJoinTransition::ActorJoinTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::ACTOR_JOIN, issuer, times_considered)
 {
-  target_  = channel.unpack<aid_t>();
+  auto recv = channel.unpack<aid_t>();
+  target_   = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
+
   timeout_ = channel.unpack<bool>();
-  XBT_DEBUG("ActorJoinTransition target:%ld, %s ", target_, (timeout_ ? "timeout" : "no-timeout"));
+  XBT_DEBUG("ActorJoinTransition target:%d, %s ", target_.c_val(), (timeout_ ? "timeout" : "no-timeout"));
 }
 std::string ActorJoinTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("ActorJoin(target %ld, %s)", target_, (timeout_ ? "timeout" : "no timeout"));
+  return xbt::string_printf("ActorJoin(target %d, %s)", target_.c_val(), (timeout_ ? "timeout" : "no timeout"));
 }
 
 bool ActorJoinTransition::can_be_co_enabled(const Transition* other) const
@@ -58,7 +60,7 @@ bool ActorJoinTransition::reversible_race(const Transition* other, const odpor::
    the vector of memaccesses is sent with the following simcall. If this action were omited, the last mem accesses of
    the actors would not get observed by the checker. See this as a placeholder intended to carry the trailing memory
    accesses */
-ActorExitTransition::ActorExitTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+ActorExitTransition::ActorExitTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::ACTOR_EXIT, issuer, times_considered)
 {
   XBT_DEBUG("ActorExitTransition ");
@@ -87,7 +89,7 @@ bool ActorExitTransition::reversible_race(const Transition* other, const odpor::
   return false;
 }
 /* --------------------- */
-ActorSleepTransition::ActorSleepTransition(aid_t issuer, int times_considered, mc::Channel&)
+ActorSleepTransition::ActorSleepTransition(Aid issuer, int times_considered, mc::Channel&)
     : Transition(Type::ACTOR_SLEEP, issuer, times_considered)
 {
   XBT_DEBUG("ActorSleepTransition()");
@@ -105,15 +107,16 @@ bool ActorSleepTransition::reversible_race(const Transition* other, const odpor:
   return false; // The creation of the actor is the only way to be dependent with a sleep
 }
 
-ActorCreateTransition::ActorCreateTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+ActorCreateTransition::ActorCreateTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::ACTOR_CREATE, issuer, times_considered)
 {
-  child_ = channel.unpack<aid_t>();
-  XBT_DEBUG("ActorCreateTransition child:%ld", child_);
+  auto recv = channel.unpack<aid_t>();
+  child_    = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
+  XBT_DEBUG("ActorCreateTransition child:%d", child_.c_val());
 }
 std::string ActorCreateTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("ActorCreate(child %ld)", child_);
+  return xbt::string_printf("ActorCreate(child %d)", child_.c_val());
 }
 
 bool ActorCreateTransition::can_be_co_enabled(const Transition* other) const

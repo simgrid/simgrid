@@ -68,7 +68,7 @@ public:
       UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
-  mc_aid_t aid_ = 0;
+  Aid aid_ = mc::Aid::INVALID_VALUE;
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::unique_ptr<std::string> call_location_;
@@ -96,7 +96,7 @@ public:
   unsigned short times_considered_ = 0;
 
   Transition() = default;
-  Transition(Type type, aid_t issuer, int times_considered)
+  Transition(Type type, Aid issuer, int times_considered)
       : type_(type), aid_(issuer), times_considered_(times_considered)
   {
   }
@@ -165,7 +165,7 @@ public:
 };
 
 /** Make a new transition from serialized description */
-Transition* deserialize_transition(aid_t issuer, int times_considered, mc::Channel& channel);
+Transition* deserialize_transition(Aid issuer, int times_considered, mc::Channel& channel);
 
 } // namespace simgrid::mc
 

@@ -49,7 +49,7 @@ public:
   bool is_dependent_with(const UnfoldingEvent* other) const;
 
   unsigned get_id() const { return this->id; }
-  aid_t get_actor() const { return get_transition()->aid_; }
+  Aid get_actor() const { return get_transition()->aid_; }
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
 

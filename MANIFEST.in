@@ -2497,8 +2497,12 @@ include src/kernel/xml/simgrid.dtd
 include src/kernel/xml/simgrid_dtd.c
 include src/kernel/xml/simgrid_dtd.h
 include src/mc/api/ActorState.hpp
+include src/mc/api/Aid.hpp
+include src/mc/api/BasicTypes.cpp
+include src/mc/api/Clock.hpp
 include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp
+include src/mc/api/Epoch.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
 include src/mc/api/Strategy.cpp
@@ -2595,6 +2599,7 @@ include src/mc/smemory/pass/smemory_pass.cpp
 include src/mc/smemory/runtime/smemory_memorymaps.cpp
 include src/mc/smemory/runtime/smemory_observer.cpp
 include src/mc/smemory/runtime/smemory_observer.h
+include src/mc/smemory/smemory_config.hpp
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
 include src/mc/transition/TransitionActor.cpp

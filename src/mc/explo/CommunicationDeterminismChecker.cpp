@@ -34,8 +34,8 @@ public:
   int num                       = 0;
   uintptr_t comm_addr           = 0;
   PatternCommunicationType type = PatternCommunicationType::send;
-  unsigned long src_proc        = 0;
-  unsigned long dst_proc        = 0;
+  Aid src_proc                  = 0;
+  Aid dst_proc                  = 0;
   unsigned mbox                 = 0;
   unsigned size                 = 0;
   int tag                       = 0;
@@ -88,7 +88,7 @@ public:
     incomplete_communications_pattern.resize(maxpid);
   }
   void restore_communications_pattern(const simgrid::mc::State* state, RemoteApp const& remote_app);
-  void enforce_deterministic_pattern(aid_t process, const PatternCommunication* comm);
+  void enforce_deterministic_pattern(Aid process, const PatternCommunication* comm);
   void get_comm_pattern(const Transition* transition);
   void complete_comm_pattern(const CommWaitTransition* transition);
   void handle_comm_pattern(const Transition* transition);
@@ -165,16 +165,16 @@ void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* 
   }
 }
 
-static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t actor,
+static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, Aid actor,
                                             const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   std::string type;
   std::string res;
 
   if (comm->type == simgrid::mc::PatternCommunicationType::send)
-    type = xbt::string_printf("The send communications pattern of the actor %ld is different!", actor - 1);
+    type = xbt::string_printf("The send communications pattern of the actor %d is different!", actor.c_val() - 1);
   else
-    type = xbt::string_printf("The recv communications pattern of the actor %ld is different!", actor - 1);
+    type = xbt::string_printf("The recv communications pattern of the actor %d is different!", actor.c_val() - 1);
 
   using simgrid::mc::CommPatternDifference;
   switch (diff) {
@@ -204,9 +204,9 @@ static std::string print_determinism_result(simgrid::mc::CommPatternDifference d
   return res;
 }
 
-void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternCommunication* comm)
+void CommDetExtension::enforce_deterministic_pattern(Aid actor, const PatternCommunication* comm)
 {
-  PatternCommunicationList& list = initial_communications_pattern[actor];
+  PatternCommunicationList& list = initial_communications_pattern[actor.value()];
   CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
   if (diff != CommPatternDifference::NONE) {
@@ -243,8 +243,9 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
 
 void CommDetExtension::get_comm_pattern(const Transition* transition)
 {
-  const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[transition->aid_];
-  const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
+  const mc::PatternCommunicationList& initial_pattern = initial_communications_pattern[transition->aid_.value()];
+  const std::vector<PatternCommunication*>& incomplete_pattern =
+      incomplete_communications_pattern[transition->aid_.value()];
 
   auto pattern   = std::make_unique<PatternCommunication>();
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
@@ -267,14 +268,14 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
   }
 
   XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %d (comm: %" PRIxPTR ")", pattern.get(),
-            (int)pattern->type, transition->aid_, pattern->comm_addr);
-  incomplete_communications_pattern[transition->aid_].push_back(pattern.release());
+            (int)pattern->type, transition->aid_.c_val(), pattern->comm_addr);
+  incomplete_communications_pattern[transition->aid_.value()].push_back(pattern.release());
 }
 
 void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transition)
 {
   /* Complete comm pattern */
-  std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
+  std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_.value()];
   uintptr_t comm_addr                                    = transition->get_comm();
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
@@ -286,17 +287,17 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
   comm_pattern->dst_proc = transition->get_receiver();
   comm_pattern->mbox     = transition->get_mailbox();
 
-  XBT_DEBUG("Remove incomplete comm pattern for actor %d at cursor %zd", transition->aid_,
+  XBT_DEBUG("Remove incomplete comm pattern for actor %d at cursor %zd", transition->aid_.c_val(),
             std::distance(begin(incomplete_pattern), current_comm_pattern));
   incomplete_pattern.erase(current_comm_pattern);
 
   if (initial_communications_pattern_done) {
     /* Evaluate comm determinism */
     enforce_deterministic_pattern(transition->aid_, comm_pattern.get());
-    initial_communications_pattern[transition->aid_].index_comm++;
+    initial_communications_pattern[transition->aid_.value()].index_comm++;
   } else {
     /* Store comm pattern */
-    initial_communications_pattern[transition->aid_].list.push_back(std::move(comm_pattern));
+    initial_communications_pattern[transition->aid_.value()].list.push_back(std::move(comm_pattern));
   }
 }
 

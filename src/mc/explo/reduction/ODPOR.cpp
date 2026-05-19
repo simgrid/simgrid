@@ -89,13 +89,13 @@ unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpd
   return nb_updates;
 }
 
-aid_t ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
+Aid ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   auto s           = S->back().get();
-  const aid_t next = Exploration::get_strategy()->next_transition_in(s).first;
+  const Aid next   = Exploration::get_strategy()->next_transition_in(s).first;
 
-  if (next == -1)
-    return -1;
+  if (not next.has_value())
+    return next;
 
   // xbt_assert(s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition. Fix Me!");
 
@@ -116,7 +116,7 @@ StatePtr ODPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, Trans
       if (not existing_state->has_been_initialized()) {
         existing_state->update_incoming_transition_explicitly(incoming_transition);
         existing_state->initialize(remote_app);
-        if (existing_state->next_transition() == -1)
+        if (not existing_state->next_transition().has_value())
           static_cast<SleepSetState*>(existing_state.get())->add_arbitrary_transition(remote_app);
       }
       return existing_state;

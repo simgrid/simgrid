@@ -6,10 +6,11 @@
 #ifndef SIMGRID_MC_ODPOR_EXECUTION_HPP
 #define SIMGRID_MC_ODPOR_EXECUTION_HPP
 
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/api/ClockVector.hpp"
+#include "src/mc/api/Epoch.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/mc_record.hpp"
 #include "src/mc/transition/Transition.hpp"
 
 #include <cstdint>
@@ -26,33 +27,6 @@ namespace simgrid::mc::odpor {
 std::vector<std::string> get_textual_trace(const PartialExecution& w);
 std::string one_string_textual_trace(const PartialExecution& w);
 
-// Data structure to implement FastTrack algorithm (see [Flanagan'09])
-// Layout: [ AID (10 bits) | CLOCK (22 bits) ]
-//          31          22   21             0
-using epoch_t                  = uint32_t;
-const auto EPOCH_AID_BITSIZE   = 10;
-const auto EPOCH_CLOCK_BITSIZE = 22;
-static_assert(EPOCH_AID_BITSIZE + EPOCH_CLOCK_BITSIZE == 32,
-              "In an epoch, the area of AID and the one of CLOCK must sum to 32");
-static constexpr uint32_t EPOCH_CLOCK_MASK = (1u << EPOCH_CLOCK_BITSIZE) - 1;
-static constexpr uint32_t EPOCH_AID_MASK   = (1u << EPOCH_AID_BITSIZE) - 1;
-
-static inline uint32_t epoch_new(aid_t aid, int clock)
-{
-  return ((static_cast<uint32_t>(aid) & EPOCH_AID_MASK) << EPOCH_CLOCK_BITSIZE) |
-         (static_cast<uint32_t>(clock) & EPOCH_CLOCK_MASK);
-}
-
-static inline aid_t epoch_get_aid(uint32_t epoch)
-{
-  return static_cast<aid_t>((epoch >> EPOCH_CLOCK_BITSIZE) & EPOCH_AID_MASK);
-}
-
-static inline int epoch_get_clock(uint32_t epoch)
-{
-  return static_cast<int>(epoch & EPOCH_CLOCK_MASK);
-}
-
 /**
  * @brief The occurrence of a transition in an execution
  *
@@ -64,7 +38,7 @@ class Event {
   TransitionPtr transition_;
   ClockVector clock_vector_;
 
-  std::unordered_map<void*, epoch_t> last_write_;
+  std::unordered_map<void*, Epoch> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;
@@ -139,7 +113,7 @@ private:
    *  - else, the action that created the actor if it exists
    *  - -1 if none of the above exist
    */
-  EventHandle find_pre_event_of_aid(aid_t actor);
+  std::optional<EventHandle> find_pre_event_of_aid(Aid actor);
 
   static PartialExecution preallocated_partial_execution_;
 
@@ -199,8 +173,8 @@ public:
    * and `e' := get_latest_event_handle()`; that is, an initial that is
    * not already contained in the set `backtrack_set`.
    */
-  std::unordered_set<aid_t> get_missing_source_set_actors_from(EventHandle e,
-                                                               const std::unordered_set<aid_t>& backtrack_set) const;
+  std::unordered_set<Aid> get_missing_source_set_actors_from(EventHandle e,
+                                                             const std::unordered_set<Aid>& backtrack_set) const;
 
   /**
    * @brief Computes the analogous lines from the SDPOR algorithm
@@ -229,7 +203,7 @@ public:
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
                                                            const SleepSetState& state_at_e,
-                                                           aid_t actor_after_e = -1) const;
+                                                           Aid actor_after_e = Aid::INVALID_VALUE) const;
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,
@@ -287,7 +261,7 @@ public:
    * `N` actors, we can process them "in-parallel" as is done with the
    * computation of SDPOR initials)
    */
-  static bool is_initial_after_execution_of(const PartialExecution& w, aid_t p);
+  static bool is_initial_after_execution_of(const PartialExecution& w, Aid p);
 
   /**
    * @brief Determines whether `E ⊢ p ◊ w` given the next action taken by `p`
@@ -302,7 +276,7 @@ public:
   /**
    * @brief Determines the actor associated with the given event handle `handle`
    */
-  aid_t get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
+  Aid get_actor_with_handle(EventHandle handle) const { return get_event_with_handle(handle).get_transition()->aid_; }
 
   /**
    * @brief Determines the transition associated with the given handle `handle`
@@ -412,7 +386,7 @@ public:
    * where `E` is this execution, limited to the handle `limit` (so that we don't have to copy the execution to explore
    * only its prefix)
    */
-  bool happens_before_process(EventHandle e, aid_t p, EventHandle limit) const;
+  bool happens_before_process(EventHandle e, Aid p, EventHandle limit) const;
 
   /**
    * @brief Extends the execution by one more step

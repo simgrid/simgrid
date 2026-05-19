@@ -5,9 +5,10 @@
 
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "xbt/asserts.h"
+
 #include "xbt/log.h"
 #include <cstddef>
 #include <memory>
@@ -16,8 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc_reduction, "Dynamic partial order re
 
 namespace simgrid::mc {
 
-std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, EventHandle limit, const State* s,
-                                                    aid_t p)
+std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, EventHandle limit, const State* s, Aid p)
 {
 
   if (limit == 0)
@@ -35,16 +35,16 @@ std::optional<EventHandle> DPOR::max_dependent_dpor(const odpor::Execution& S, E
   return {};
 }
 
-std::unordered_set<aid_t> DPOR::compute_ancestors(const odpor::Execution& S, EventHandle limit, stack_t* state_stack,
-                                                  aid_t p, EventHandle i)
+std::unordered_set<Aid> DPOR::compute_ancestors(const odpor::Execution& S, EventHandle limit, stack_t* state_stack,
+                                                Aid p, EventHandle i)
 {
 
-  XBT_DEBUG("Computing the ancestors of aid %ld before event %u", p, i);
-  std::unordered_set<aid_t> E = std::unordered_set<aid_t>();
+  XBT_DEBUG("Computing the ancestors of aid %d before event %u", p.c_val(), i);
+  std::unordered_set<Aid> E = std::unordered_set<Aid>();
   for (const auto& state : (*state_stack)[i]->get_actors_list()) {
     if (not state.has_value() || not state.value().is_enabled())
       continue;
-    aid_t q = state.value().get_aid();
+    Aid q = state.value().get_aid();
     if (q == p) {
       E.insert(q);
       continue;
@@ -76,10 +76,10 @@ Reduction::RaceUpdate* DPOR::races_computation(odpor::Execution& E, stack_t* S, 
   for (std::size_t i = 1; i < S->size(); i++) {
     StatePtr s = (*S)[i];
     // With persistency, we only need to test the race detection for the lastly taken proc
-    aid_t proc                     = s->get_transition_in()->aid_;
+    Aid proc = s->get_transition_in()->aid_;
     if (std::optional<EventHandle> opt_j = max_dependent_dpor(E, i - 1, s.get(), proc); opt_j.has_value()) {
       EventHandle j                       = opt_j.value();
-      std::unordered_set<aid_t> ancestors = compute_ancestors(E, i - 1, S, proc, j);
+      std::unordered_set<Aid> ancestors   = compute_ancestors(E, i - 1, S, proc, j);
       // note: computing the whole set is necessary with guiding strategy
 
       updates->add_element((*S)[j], std::move(ancestors));
@@ -97,9 +97,9 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
   XBT_DEBUG("%lu updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
-      aid_t considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
-      XBT_DEBUG("Enabling the considered actor %ld in state #%lu", considered, state->get_num());
-      if (considered == -1)
+      Aid considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);
+      XBT_DEBUG("Enabling the considered actor %d in state #%lu", considered.c_val(), state->get_num());
+      if (not considered.has_value())
         continue; // Do not create a new state if the actor was already created before
       StatePtr(new SleepSetState(remote_app, state,
                                  new Transition(Transition::Type::UNKNOWN, considered,
@@ -136,10 +136,10 @@ StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, Transi
   return res;
 }
 
-aid_t DPOR::next_to_explore(odpor::Execution& E, stack_t* S)
+Aid DPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   if (not S->back()->has_todo_actors())
-    return -1;
+    return Aid::INVALID_VALUE;
   return S->back()->next_transition_guided().first;
 }
 

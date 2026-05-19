@@ -58,8 +58,8 @@ class ActorState {
    */
   std::vector<TransitionPtr> pending_transitions_;
 
-  /** The ID of that actor (not an aid_t to save space in memory) */
-  const short aid_;
+  /** The ID of that actor */
+  const Aid aid_;
 
   /* Possible exploration status of an actor transition in a state.
    * Either the checker did not consider the transition, or it was considered and still to do, or considered and
@@ -89,9 +89,9 @@ class ActorState {
   unsigned char max_consider_ = 0;
 
 public:
-  ActorState(aid_t aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
+  ActorState(Aid aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
 
-  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<TransitionPtr> transitions)
+  ActorState(Aid aid, bool enabled, unsigned int max_consider, std::vector<TransitionPtr> transitions)
       : pending_transitions_(std::move(transitions)), aid_(aid), enabled_(enabled), max_consider_(max_consider)
   {
     pending_transitions_.shrink_to_fit();
@@ -107,7 +107,7 @@ public:
   unsigned char get_times_considered() const { return times_considered_; }
   unsigned char get_times_not_considered() const { return max_consider_ - times_considered_; }
   bool has_more_to_consider() const { return get_times_not_considered() > 0; }
-  short get_aid() const { return aid_; }
+  Aid get_aid() const { return aid_; }
 
   /* returns whether the actor is marked as enabled in the application side */
   bool is_enabled() const { return enabled_; }
@@ -160,7 +160,7 @@ public:
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %d does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for. Pending transitions are: %s",
-               aid_, times_considered,
+               aid_.c_val(), times_considered,
                std::accumulate(
                    pending_transitions_.begin(), pending_transitions_.end(), std::string(),
                    [](std::string a, TransitionPtr b) { return std::move(a) + ';' + b->to_string(); })
@@ -173,7 +173,7 @@ public:
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %d does not have a state available transition with `times_considered = %u`, "
                "yet one was attempted to be set",
-               aid_, times_considered);
+               aid_.c_val(), times_considered);
     this->pending_transitions_[times_considered] = std::move(t);
   }
 

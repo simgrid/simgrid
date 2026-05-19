@@ -33,7 +33,7 @@ private:
   static EventSet partially_extend_CommTest(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper methods that are used for the mutex extension computation
-  static std::pair<aid_t, aid_t> firstTwoOwners(uintptr_t mutex_id, EventSet history);
+  static std::pair<Aid, Aid> firstTwoOwners(uintptr_t mutex_id, EventSet history);
   static bool is_mutex_available_before(const UnfoldingEvent* e, MutexTransition* mutex);
 
   static EventSet partially_extend_MutexAsyncLock(const Configuration&, Unfolding*, TransitionPtr);
@@ -42,8 +42,8 @@ private:
   static EventSet partially_extend_MutexUnlock(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper methods that are used for the mutex extension computation
-  static aid_t first_waiting_before(const EventSet history, unsigned sem_id);
-  static aid_t first_waiting_before(const UnfoldingEvent*, unsigned sem_id);
+  static Aid first_waiting_before(const EventSet history, unsigned sem_id);
+  static Aid first_waiting_before(const UnfoldingEvent*, unsigned sem_id);
   static int available_token_after(const UnfoldingEvent*, unsigned sem_id);
 
   static EventSet partially_extend_SemAsyncLock(const Configuration&, Unfolding*, TransitionPtr);
@@ -51,7 +51,7 @@ private:
   static EventSet partially_extend_SemUnlock(const Configuration&, Unfolding*, TransitionPtr);
 
   // Helper method that find the event that created the actor given in parameter if any
-  static std::optional<const UnfoldingEvent*> find_ActorCreate_Event(const EventSet history, aid_t actor);
+  static std::optional<const UnfoldingEvent*> find_ActorCreate_Event(const EventSet history, Aid actor);
 
   static EventSet partially_extend_ActorJoin(const Configuration&, Unfolding*, TransitionPtr);
   static EventSet partially_extend_ActorExit(const Configuration&, Unfolding*, TransitionPtr);

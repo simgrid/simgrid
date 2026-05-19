@@ -5,19 +5,14 @@
 
 #include "src/mc/explo/BeFSExplorer.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
-#include "src/mc/explo/reduction/ODPOR.hpp"
+#include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
-#include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
-
-#include "src/mc/explo/reduction/DPOR.hpp"
-#include "src/mc/explo/reduction/NoReduction.hpp"
-#include "src/mc/explo/reduction/Reduction.hpp"
-#include "src/mc/explo/reduction/SDPOR.hpp"
 
 #include "xbt/asserts.h"
 #include "xbt/log.h"
@@ -129,11 +124,9 @@ void BeFSExplorer::run()
     }
 
     // Search for the next transition
-    // next_transition returns a pair<aid_t, int>
-    // in case we want to consider multiple states (eg. during backtrack)
-    const aid_t next = reduction_->next_to_explore(execution_seq_, &stack_);
+    const Aid next = reduction_->next_to_explore(execution_seq_, &stack_);
 
-    if (next < 0) {
+    if (not next.has_value()) {
 
       // If there is no more transition in the current state (or if ODPOR picked an actor that is not enabled --
       // ReversibleRace is an overapproximation), backtrace
@@ -202,13 +195,13 @@ void BeFSExplorer::run()
         XBT_VERB("Sleep set actually containing:");
 
         for (const auto& [aid, transition] : sleep_state->get_sleep_set())
-          XBT_VERB("  <%ld,%s>", aid, transition->to_string().c_str());
+          XBT_VERB("  <%d,%s>", aid.c_val(), transition->to_string().c_str());
       }
     }
 
     if (XBT_LOG_ISENABLED(mc_befs, xbt_log_priority_debug)) {
       auto todo = state->get_actor_at(next).get_transition();
-      XBT_DEBUG("wanna execute %ld: %.60s", next, todo->to_string().c_str());
+      XBT_DEBUG("wanna execute %d: %.60s", next.c_val(), todo->to_string().c_str());
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
@@ -216,7 +209,7 @@ void BeFSExplorer::run()
     on_transition_execute_signal(state->get_transition_out().get(), get_remote_app());
 
     XBT_VERB("Executed %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves, %lu opened states)",
-             state->get_transition_out()->aid_, state->get_transition_out()->to_string().c_str(), stack_.size(),
+             state->get_transition_out()->aid_.c_val(), state->get_transition_out()->to_string().c_str(), stack_.size(),
              state->get_num(), state->count_todo(), opened_states_.size());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
@@ -256,7 +249,7 @@ StatePtr BeFSExplorer::best_opened_state()
   if (_sg_mc_strategy == "none") {
     opened_states_.clear();
     State* candidate = stack_.back().get();
-    while (candidate->next_transition_guided().first == -1) {
+    while (not candidate->next_transition_guided().first.has_value()) {
       if (candidate->get_parent_state() != nullptr)
         candidate = candidate->get_parent_state();
       else
@@ -273,7 +266,7 @@ StatePtr BeFSExplorer::best_opened_state()
     int guess          = xbt::random::uniform_int(0, opened_states_.size() - 1);
     StatePtr candidate = std::move(opened_states_[guess]);
     opened_states_.erase(opened_states_.begin() + guess);
-    while (candidate->next_transition_guided().first == -1) {
+    while (not candidate->next_transition_guided().first.has_value()) {
       XBT_DEBUG("Candidate state #%lu discarded because the next transition guided is -1", candidate->get_num());
       if (opened_states_.size() == 0) {
         XBT_DEBUG("No more opened state");

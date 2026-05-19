@@ -40,7 +40,7 @@ Configuration::Configuration(const EventSet& events) : events_(events)
   // Since we add in topological order under `<`, we know that the "most-recent"
   // transition executed by each actor will appear last
   for (const UnfoldingEvent* e : get_topologically_sorted_events()) {
-    this->latest_event_mapping[e->get_actor()] = e;
+    this->latest_event_mapping[e->get_actor().value()] = e;
   }
 }
 
@@ -65,7 +65,7 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
   this->events_.insert(e);
   this->newest_event                         = e;
-  this->latest_event_mapping[e->get_actor()] = e;
+  this->latest_event_mapping[e->get_actor().value()] = e;
 
   // Preserves the property that the configuration is causally closed
   if (auto history = History(e); not this->events_.contains(history)) {
@@ -229,7 +229,7 @@ std::optional<Configuration> Configuration::compute_k_partial_alternative_to(con
   return Configuration(History(map_events(*alternative)));
 }
 
-std::optional<const UnfoldingEvent*> Configuration::get_latest_event_of(aid_t aid) const
+std::optional<const UnfoldingEvent*> Configuration::get_latest_event_of(Aid aid) const
 {
   if (const auto latest_event = latest_event_mapping.find(aid); latest_event != latest_event_mapping.end()) {
     return std::optional<const UnfoldingEvent*>{latest_event->second};
@@ -237,7 +237,7 @@ std::optional<const UnfoldingEvent*> Configuration::get_latest_event_of(aid_t ai
   return std::nullopt;
 }
 
-std::optional<const Transition*> Configuration::get_latest_action_of(aid_t aid) const
+std::optional<const Transition*> Configuration::get_latest_action_of(Aid aid) const
 {
   if (const auto latest_event = get_latest_event_of(aid); latest_event.has_value()) {
     return std::optional<const Transition*>{latest_event.value()->get_transition()};

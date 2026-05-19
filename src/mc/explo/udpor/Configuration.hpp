@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_UDPOR_CONFIGURATION_HPP
 #define SIMGRID_MC_UDPOR_CONFIGURATION_HPP
 
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
@@ -169,7 +170,7 @@ public:
    * they would be in conflict, which cannot happen between any pair of events
    * in a configuration. Thus `e` and `e'` cannot exist simultaneously
    */
-  std::optional<const UnfoldingEvent*> get_latest_event_of(aid_t) const;
+  std::optional<const UnfoldingEvent*> get_latest_event_of(Aid) const;
   /**
    * @brief Determines the most recent transition of the given actor
    * in this configuration, or `pre(a)` as denoted in the thesis of
@@ -185,8 +186,8 @@ public:
    * in this configuration, or `std::nullopt` if there are no transitions
    * in this configuration run by the given actor
    */
-  std::optional<const Transition*> get_latest_action_of(aid_t aid) const;
-  std::optional<const UnfoldingEvent*> pre_event(aid_t aid) const { return get_latest_event_of(aid); }
+  std::optional<const Transition*> get_latest_action_of(Aid aid) const;
+  std::optional<const UnfoldingEvent*> pre_event(Aid aid) const { return get_latest_event_of(aid); }
 
 private:
   /**
@@ -212,7 +213,7 @@ private:
    * @invariant: The events that are contained in the map
    * are also contained in the set `events_`
    */
-  std::unordered_map<aid_t, const UnfoldingEvent*> latest_event_mapping;
+  std::unordered_map<Aid, const UnfoldingEvent*> latest_event_mapping;
 };
 
 } // namespace simgrid::mc::udpor

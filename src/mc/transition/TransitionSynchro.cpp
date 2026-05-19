@@ -26,7 +26,7 @@ std::string BarrierTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("%s(barrier: %u)", Transition::to_c_str(type_), bar_);
 }
-BarrierTransition::BarrierTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
+BarrierTransition::BarrierTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
   bar_ = channel.unpack<unsigned>();
@@ -54,14 +54,15 @@ bool BarrierTransition::reversible_race(const Transition* other, const odpor::Ex
 
 std::string MutexTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("%s(mutex: %" PRIxPTR ", owner: %ld)", Transition::to_c_str(type_), mutex_, owner_);
+  return xbt::string_printf("%s(mutex: %" PRIxPTR ", owner: %d)", Transition::to_c_str(type_), mutex_, owner_.c_val());
 }
 
-MutexTransition::MutexTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
+MutexTransition::MutexTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
   mutex_ = channel.unpack<unsigned>();
-  owner_ = channel.unpack<aid_t>();
+  auto recv = channel.unpack<aid_t>();
+  owner_    = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
 }
 
 bool MutexTransition::can_be_co_enabled(const Transition* o) const
@@ -184,7 +185,7 @@ std::string SemaphoreTransition::to_string(bool verbose) const
                               capacity_, granted_ ? "yes" : "no");
   THROW_IMPOSSIBLE;
 }
-SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
+SemaphoreTransition::SemaphoreTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
   sem_      = channel.unpack<unsigned>();
@@ -227,7 +228,7 @@ bool MutexTransition::reversible_race(const Transition* other, const odpor::Exec
   }
 }
 
-CondvarTransition::CondvarTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel)
+CondvarTransition::CondvarTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
   if (type == Type::CONDVAR_ASYNC_LOCK) {
@@ -282,7 +283,7 @@ static bool is_cv_wait_fireable_without_transition(const odpor::Execution* exec,
 
     if (cv_transition->aid_ == exec->get_actor_with_handle(cv_wait_handle)) {
       xbt_assert(cv_transition->type_ == Transition::Type::CONDVAR_ASYNC_LOCK,
-                 "A condvar wait is always preceeded by an async_lock right? (aid: %d)", cv_transition->aid_);
+                 "A condvar wait is always preceeded by an async_lock right? (aid: %d)", cv_transition->aid_.c_val());
       lock_handle = e;
       break;
     }

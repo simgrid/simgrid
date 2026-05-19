@@ -11,7 +11,7 @@
 
 namespace simgrid::mc {
 
-ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considered, mc::Channel& channel)
+ObjectAccessTransition::ObjectAccessTransition(Aid issuer, int times_considered, mc::Channel& channel)
     : Transition(Type::OBJECT_ACCESS, issuer, times_considered)
 {
   data_               = std::make_unique<data>();

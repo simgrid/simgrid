@@ -9,6 +9,7 @@
 #include "simgrid/forward.h"
 #include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/CheckerSide.hpp"
+#include <cstdint>
 #include <optional>
 
 namespace simgrid::mc {
@@ -69,22 +70,24 @@ public:
   void get_actors_status(std::vector<std::optional<simgrid::mc::ActorState>>& whereto) const;
 
   /** Take a transition. A new Transition is created iff the last parameter is true */
-  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition) const;
+  Transition* handle_simcall(Aid aid, int times_considered, bool new_transition) const;
 
   /** Replay a whole sequence on the application with a single communication.
    *  The sequence is split in two: a first part that will only be replayed, and a second part that will
    *  be replayed and asked for actor status.
    *
+   *  At each step, the first component is the aid to replay and the second component is the time_considered.
+   *
    *  If debug is true, the application is requested to display all debug info during the replay.
    *  If location is provided, this is watched during the replay.
    *
    *  @note: this call should be followed by |to_replay_and_actor_status| calls to get_actors_status. */
-  void replay_sequence(std::deque<std::pair<aid_t, int>> to_replay,
-                       std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug = false,
+  void replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                       std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug = false,
                        void* location = nullptr);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
-  aid_t get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }
+  Aid get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }
 
   /** Tell the checker side that the application should now pick transitions, execute them, send the reply and actor
    *  status until reaching a leaf or a problem */

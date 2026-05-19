@@ -70,7 +70,7 @@ public:
 
   bool is_leaf() const { return children_.empty(); }
   bool is_root() const { return parent_ == nullptr; }
-  aid_t get_actor() const { return action_->aid_; }
+  Aid get_actor() const { return action_->aid_; }
   const PartialExecution& get_sequence() const;
 
   /** @brief Return an intrusiv pointer to the transition if the action exists.
@@ -94,7 +94,7 @@ public:
 
   bool have_same_content(const WakeupTreeNode& n2) const;
 
-  WakeupTreeNode* get_node_after_actor(aid_t aid) const
+  WakeupTreeNode* get_node_after_actor(Aid aid) const
   {
     for (auto const& node : children_)
       if (node->get_actor() == aid)
@@ -164,7 +164,7 @@ public:
 
   std::string string_of_whole_tree() const;
 
-  void remove_subtree_at_aid(aid_t proc);
+  void remove_subtree_at_aid(Aid proc);
 
   /**
    * @brief Whether or not this tree is considered empty
@@ -180,7 +180,7 @@ public:
    *
    * If the tree is empty, returns std::nullopt
    */
-  std::optional<aid_t> get_min_single_process_actor() const;
+  Aid get_min_single_process_actor() const;
 
   /**
    * @brief Gets the node itself that is the "smallest" (with respect
@@ -233,9 +233,9 @@ public:
    */
   unsigned int count_direct_children() const { return root_->get_ordered_children().size(); }
 
-  std::vector<aid_t> get_direct_children_actors() const
+  std::vector<Aid> get_direct_children_actors() const
   {
-    std::vector<aid_t> result;
+    std::vector<Aid> result;
     for (auto const& leaf : root_->get_ordered_children())
       result.push_back(leaf->get_actor());
     return result;
@@ -247,7 +247,7 @@ public:
    *
    * If the tree is empty, returns nullptr
    */
-  WakeupTreeNode* get_node_after_actor(aid_t aid) const;
+  WakeupTreeNode* get_node_after_actor(Aid aid) const;
 
   /**
    * @brief returns true iff calling object is a subset of called object

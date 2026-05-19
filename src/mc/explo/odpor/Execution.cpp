@@ -4,10 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
-#include "src/mc/api/states/State.hpp"
-#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -33,7 +32,7 @@ std::vector<std::string> get_textual_trace(const PartialExecution& w)
 {
   std::vector<std::string> trace;
   for (const auto& t : w) {
-    auto a = xbt::string_printf("Actor %d: %s", t->aid_, t->to_string(true).c_str());
+    auto a = xbt::string_printf("Actor %d: %s", t->aid_.c_val(), t->to_string(true).c_str());
     trace.emplace_back(std::move(a));
   }
   return trace;
@@ -73,33 +72,33 @@ struct EventDataRace : public std::exception {
 
 void Event::initialize_epoch()
 {
-  aid_t event_aid_ = transition_->aid_;
+  Aid event_aid_ = transition_->aid_;
   for (auto [location, size, kind] : transition_->get_memory_tracker())
     if (kind == smemory::MemOpType::Write)
-      last_write_[location] = epoch_new(event_aid_, clock_vector_.get(event_aid_).value() - 1);
+      last_write_.insert_or_assign(location, Epoch{event_aid_, clock_vector_.get(event_aid_).value() - 1});
 }
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_event)
 {
   XBT_VERB("Updating epoch");
   last_write_      = prev_event.last_write_;
-  aid_t event_aid_ = transition_->aid_;
+  Aid event_aid_   = transition_->aid_;
 
   for (auto [location, size, kind] : transition_->get_memory_tracker()) {
     auto prev_write = last_write_.find(location);
 
-    if (prev_write != last_write_.end() and epoch_get_aid(prev_write->second) == event_aid_)
+    if (prev_write != last_write_.end() and prev_write->second.get_aid() == event_aid_)
       continue; // Cannot race with myself
 
     if (kind == smemory::MemOpType::Read) {
 
       if (prev_write != last_write_.end()) {
-        auto aid   = epoch_get_aid(prev_write->second);
-        auto clock = epoch_get_clock(prev_write->second);
-        if (clock >= prev_clock.get(aid).value()) {
+        const auto aid   = prev_write->second.get_aid();
+        const auto clock = prev_write->second.get_clock();
+        if (clock.value() >= prev_clock.get(aid).value()) {
           // TODO: We need to retrieve the size of the first access
-          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read, clock + 1,
-                              this->clock_vector_.get(event_aid_).value());
+          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read,
+                              clock.value() + 1, this->clock_vector_.get(event_aid_).value());
           // +1 is here to find the right transition in replay mode
         }
       }
@@ -107,18 +106,18 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_ev
     } else {
 
       if (prev_write != last_write_.end()) {
-        auto aid   = epoch_get_aid(prev_write->second);
-        auto clock = epoch_get_clock(prev_write->second);
-        if (clock >= prev_clock.get(aid).value())
-          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write, clock + 1,
-                              this->clock_vector_.get(event_aid_).value());
+        const auto aid   = prev_write->second.get_aid();
+        const auto clock = prev_write->second.get_clock();
+        if (clock.value() >= prev_clock.get(aid).value())
+          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write,
+                              clock.value() + 1, this->clock_vector_.get(event_aid_).value());
         // +1 is here to find the right transition in replay mode
       }
 
       // Record the new write as it happened juste before this transition
       // the -1 is here because we receive reads and writes AFTER the transition while
       // in reality it happened BEFORE
-      last_write_[location] = epoch_new(event_aid_, clock_vector_.get(event_aid_).value() - 1);
+      last_write_.insert_or_assign(location, Epoch(event_aid_, clock_vector_.get(event_aid_).value() - 1));
     }
   }
 }
@@ -130,12 +129,12 @@ Execution::Execution(const PartialExecution& w)
   push_partial_execution(w);
 }
 
-EventHandle Execution::find_pre_event_of_aid(aid_t actor)
+std::optional<EventHandle> Execution::find_pre_event_of_aid(Aid actor)
 {
 
   // If there is a previous action made by actor
-  if (skip_list_[actor].size() != 0)
-    return skip_list_[actor].back();
+  if (skip_list_[actor.value()].size() != 0)
+    return skip_list_[actor.value()].back();
 
   // If actor was created by someone else
   for (auto handle = contents_.size() - 1; handle < contents_.size(); handle--) {
@@ -150,7 +149,7 @@ EventHandle Execution::find_pre_event_of_aid(aid_t actor)
   }
 
   // Else
-  return -1;
+  return std::nullopt;
 }
 
 void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution)
@@ -171,10 +170,10 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
   }
   max_clock_vector[t->aid_] = this->size();
   contents_.push_back(Event(t, std::move(max_clock_vector)));
-  if (skip_list_.size() <= (unsigned)t->aid_)
-    skip_list_.resize(t->aid_ + 1, {});
-  EventHandle prev_event_of_aid = find_pre_event_of_aid(t->aid_);
-  skip_list_[t->aid_].push_back(this->size() - 1);
+  if (skip_list_.size() <= t->aid_.value())
+    skip_list_.resize(t->aid_.value() + 1, {});
+  auto prev_event_of_aid = find_pre_event_of_aid(t->aid_);
+  skip_list_[t->aid_.value()].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
     contents_.back().consider_races();
@@ -183,23 +182,23 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
     contents_.back().initialize_epoch();
   else {
     ClockVector clock =
-        prev_event_of_aid == (unsigned)-1 ? ClockVector(0) : contents_[prev_event_of_aid].get_clock_vector();
+        prev_event_of_aid.has_value() ? contents_[prev_event_of_aid.value()].get_clock_vector() : ClockVector(0);
     try {
       contents_.back().update_epoch_from(clock, *(std::prev(contents_.end(), 2)));
     } catch (EventDataRace& dr) {
 
-      aid_t first_aid  = contents_[dr.first_event_].get_transition()->aid_;
-      aid_t second_aid = contents_[dr.second_event_].get_transition()->aid_;
+      Aid first_aid  = contents_[dr.first_event_].get_transition()->aid_;
+      Aid second_aid = contents_[dr.second_event_].get_transition()->aid_;
 
       // count the number of previously recorded transition made by the corresponding actor
       // this way the replayed app can pinpoint which transition has done the transition and display the right backtrace
-      long first_op  = std::count_if(contents_.begin(), contents_.begin() + dr.first_event_,
-                                     [&](auto event) { return event.get_transition()->aid_ == first_aid; });
-      long second_op = std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
-                                     [&](auto event) { return event.get_transition()->aid_ == second_aid; });
+      Clock first_op{(int)std::count_if(contents_.begin(), contents_.begin() + dr.first_event_,
+                                        [&](auto event) { return event.get_transition()->aid_ == first_aid; })};
+      Clock second_op{(int)std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
+                                         [&](auto event) { return event.get_transition()->aid_ == second_aid; })};
 
-      throw McDataRace(epoch_new(first_aid, first_op), epoch_new(second_aid, second_op), dr.location_, dr.size1_,
-                       dr.size2_, dr.second_mem_op_);
+      throw McDataRace(Epoch(first_aid, first_op), Epoch(second_aid, second_op), dr.location_, dr.size1_, dr.size2_,
+                       dr.second_mem_op_);
     }
   }
 }
@@ -209,7 +208,7 @@ void Execution::remove_last_event()
   xbt_assert(!contents_.empty(), "Tried to remove an element from an empty Execution");
   auto aid = contents_.back().get_transition()->aid_;
   contents_.pop_back();
-  skip_list_[aid].pop_back();
+  skip_list_[aid.value()].pop_back();
 }
 
 void Execution::push_partial_execution(const PartialExecution& w)
@@ -223,7 +222,7 @@ std::vector<std::string> Execution::get_textual_trace() const
 {
   std::vector<std::string> trace;
   for (EventHandle e_i = 0; e_i != this->contents_.size(); e_i++) {
-    auto a = xbt::string_printf("Actor %d: %s", contents_[e_i].get_transition()->aid_,
+    auto a = xbt::string_printf("Actor %d: %s", contents_[e_i].get_transition()->aid_.c_val(),
                                 contents_[e_i].get_transition()->to_string(true).c_str());
 
     trace.emplace_back(std::move(a));
@@ -233,10 +232,10 @@ std::vector<std::string> Execution::get_textual_trace() const
 
 std::string Execution::get_one_string_textual_trace() const
 {
-  std::string trace = xbt::string_printf(";%d", contents_[0].get_transition()->aid_).c_str();
+  std::string trace = xbt::string_printf(";%d", contents_[0].get_transition()->aid_.c_val()).c_str();
 
   for (EventHandle e_i = 1; e_i != this->contents_.size(); e_i++) {
-    trace = trace + xbt::string_printf(";%d", contents_[e_i].get_transition()->aid_).c_str();
+    trace = trace + xbt::string_printf(";%d", contents_[e_i].get_transition()->aid_.c_val()).c_str();
   }
 
   return trace;
@@ -251,8 +250,8 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
   const auto evt_aid = evt.get_transition()->aid_;
   const auto& evt_cv = evt.get_clock_vector();
 
-  for (aid_t aid = 0; (unsigned)aid < evt_cv.size(); aid++)
-    if (aid != evt_aid and evt_cv.get(aid).value() >= 0)
+  for (unsigned aid = 0; aid < evt_cv.size(); aid = aid + 1)
+    if (aid != evt_aid.value() and evt_cv.get(aid).has_value())
       candidates.push_back(evt_cv.get(aid).value());
 
   candidates.sort(std::greater<EventHandle>());
@@ -311,14 +310,14 @@ Execution Execution::get_prefix_before(Execution::EventHandle handle) const
   return Execution(std::vector<Event>{contents_.begin(), contents_.begin() + handle});
 }
 
-std::unordered_set<aid_t>
-Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordered_set<aid_t>& backtrack_set) const
+std::unordered_set<Aid>
+Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordered_set<Aid>& backtrack_set) const
 {
   // If this execution is empty, there are no initials
   // relative to the last transition added to the execution
   // since such a transition does not exist
   if (empty()) {
-    return std::unordered_set<aid_t>{};
+    return std::unordered_set<Aid>{};
   }
 
   // To actually compute `I_[E'](v) ∩ backtrack(E')`, we must
@@ -342,8 +341,8 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
              e, next_E_p);
   Execution E_prime_v = get_prefix_before(e);
   std::vector<sdpor::Execution::EventHandle> v;
-  std::unordered_set<aid_t> I_E_prime_v;
-  std::unordered_set<aid_t> disqualified_actors;
+  std::unordered_set<Aid> I_E_prime_v;
+  std::unordered_set<Aid> disqualified_actors;
 
   // Note `e + 1` here: `notdep(e, E)` is defined as the
   // set of events that *occur-after* but don't *happen-after* `e`
@@ -369,7 +368,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
       // does not "happen-after" `e`
       v.push_back(e_prime_in_E_prime_v);
 
-      const aid_t q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
+      const Aid q = E_prime_v.get_actor_with_handle(e_prime_in_E_prime_v);
       if (disqualified_actors.count(q) > 0) { // Did we already note that `q` is not an initial?
         continue;
       }
@@ -381,7 +380,7 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
         // they've made note to search for (or have already searched for)
         // this initial
         if (backtrack_set.count(q) > 0) {
-          return std::unordered_set<aid_t>{};
+          return std::unordered_set<Aid>{};
         } else {
           I_E_prime_v.insert(q);
         }
@@ -406,10 +405,10 @@ Execution::get_missing_source_set_actors_from(EventHandle e, const std::unordere
 
 std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle e, EventHandle e_prime,
                                                                     const SleepSetState& state_at_e,
-                                                                    aid_t actor_after_e) const
+                                                                    Aid actor_after_e) const
 {
-  XBT_VERB("Calling odpor extension from with parameters e:%u ; e_prime:%u ; actor_after_e:%ld\n sequence:<%s>", e,
-           e_prime, actor_after_e, get_one_string_textual_trace().c_str());
+  XBT_VERB("Calling odpor extension from with parameters e:%u ; e_prime:%u ; actor_after_e:%d\n sequence:<%s>", e,
+           e_prime, actor_after_e.c_val(), get_one_string_textual_trace().c_str());
   if (XBT_LOG_ISENABLED(mc_odpor_execution, xbt_log_priority_verbose))
     for (auto const& s : this->get_textual_trace())
       XBT_VERB("... %s", s.c_str());
@@ -427,13 +426,13 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
   }
 
   PartialExecution v;
-  std::unordered_set<aid_t> disqualified_actors = {get_actor_with_handle(e)};
-  const std::unordered_set<aid_t> sleep_E_prime = state_at_e.get_sleeping_actors(actor_after_e);
+  std::unordered_set<Aid> disqualified_actors = {get_actor_with_handle(e)};
+  const std::unordered_set<Aid> sleep_E_prime = state_at_e.get_sleeping_actors(actor_after_e);
 
   XBT_DEBUG("... Sleepinging set at E_prime containing %s",
-            std::accumulate(sleep_E_prime.begin(), sleep_E_prime.end(), std::string(), [](std::string a, aid_t b) {
+            std::accumulate(sleep_E_prime.begin(), sleep_E_prime.end(), std::string(), [](std::string a, Aid b) {
               xbt_assert(b != 0, "How did we create an actor 0??");
-              return std::move(a) + ';' + std::to_string(b);
+              return std::move(a) + ';' + std::to_string(b.c_val());
             }).c_str());
 
   // For each event after e, find the first dependent on each actor. From this point,
@@ -487,7 +486,7 @@ std::optional<PartialExecution> Execution::get_odpor_extension_from(EventHandle 
       continue;
 
     xbt_assert(next_transition_aid != this->end(),
-               "Since actor `%ld` is in the sleep set, it should be executed at some point. Fix me!", aid);
+               "Since actor `%d` is in the sleep set, it should be executed at some point. Fix me!", aid.c_val());
     if (is_in_weak_initial_of(next_transition_aid->get_transition(), v)) {
       XBT_DEBUG("Discarding this potential because a weak-initial actor is already in the sleep set");
       return std::nullopt;
@@ -509,7 +508,7 @@ bool Execution::is_in_weak_initial_of(Transition* t, const PartialExecution& w)
   return true;
 }
 
-bool Execution::is_initial_after_execution_of(const PartialExecution& w, aid_t p)
+bool Execution::is_initial_after_execution_of(const PartialExecution& w, Aid p)
 {
 
   for (auto w_i = w.begin(); w_i != w.end(); w_i++) {
@@ -552,7 +551,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   for (const auto& next_E_p : v) {
     // Is `p in `I_[E](w)`?
 
-    if (const aid_t p = next_E_p->aid_; is_initial_after_execution_of(preallocated_partial_execution_, p)) {
+    if (const Aid p = next_E_p->aid_; is_initial_after_execution_of(preallocated_partial_execution_, p)) {
       // Remove `p` from w and continue
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -571,10 +570,10 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
                  "is a bug computing initials");
       const auto& w_action = *action_by_p_in_w;
       xbt_assert(w_action->type_ == next_E_p->type_,
-                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "Invariant violated: `v` claims that actor `%d` executes '%s' while "
                  "`w` claims that it executes '%s'. These two partial executions both "
                  "refer to `next_[E](p)`, which should be the same",
-                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+                 p.c_val(), next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
       preallocated_partial_execution_.erase(action_by_p_in_w);
     }
     // Is `E ⊢ p ◇ w`?
@@ -590,10 +589,10 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
             std::find_if(preallocated_partial_execution_.begin(), preallocated_partial_execution_.end(),
                          [=](const auto& action) { return action->aid_ == p; });
         xbt_assert(action_by_p_in_w == preallocated_partial_execution_.end(),
-                   "Invariant violated: We claimed that actor `%ld` is not an initial "
+                   "Invariant violated: We claimed that actor `%d` is not an initial "
                    "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
                    "This indicates that there is a bug computing initials",
-                   p);
+                   p.c_val());
       }
     } else {
       // Neither of the two above conditions hold, so the relation fails
@@ -603,7 +602,7 @@ std::optional<PartialExecution> Execution::get_shortest_odpor_sq_subset_insertio
   return std::optional<PartialExecution>{std::move(preallocated_partial_execution_)};
 }
 
-bool Execution::happens_before_process(Execution::EventHandle e, aid_t p, EventHandle limit) const
+bool Execution::happens_before_process(Execution::EventHandle e, Aid p, EventHandle limit) const
 {
 
   if (get_actor_with_handle(e) == p)
@@ -627,10 +626,10 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   // Each execution maintains a stack of clock vectors which are updated
   // according to the procedure outlined in section 4 of the original DPOR paper
   const Event& e2     = get_event_with_handle(e2_handle);
-  const aid_t proc_e1 = get_actor_with_handle(e1_handle);
+  const Aid proc_e1   = get_actor_with_handle(e1_handle);
 
   if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1);
-      e1_in_e2_clock.has_value() and e1_in_e2_clock >= 0) {
+      e1_in_e2_clock.has_value() and e1_in_e2_clock.has_value()) {
     return e1_handle <= e1_in_e2_clock.value();
   }
   // If `e1` does not appear in e2's clock vector, this implies
@@ -664,7 +663,7 @@ bool MazurkiewiczTraces::are_equivalent(const PartialExecution& u, const Partial
     if ((*b)->dispatch_depends(a.get())) {
       XBT_DEBUG("The two execution are judge inequivalent because a-->b in the new one, where as b-->a in the old "
                 "one\na := Actor %d: %s\nb := Actor %d: %s",
-                a.get()->aid_, a.get()->to_string().c_str(), (*b)->aid_, (*b)->to_string().c_str());
+                a.get()->aid_.c_val(), a.get()->to_string().c_str(), (*b)->aid_.c_val(), (*b)->to_string().c_str());
       return false;
     }
   }

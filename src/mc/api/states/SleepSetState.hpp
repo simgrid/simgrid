@@ -17,7 +17,7 @@ protected:
   /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
    * set. With this information, it is check whether it should be removed from it or not when exploring a new
    * transition */
-  std::map<aid_t, TransitionPtr> sleep_set_;
+  std::map<Aid, TransitionPtr> sleep_set_;
 
 public:
   explicit SleepSetState(RemoteApp& remote_app);
@@ -25,13 +25,13 @@ public:
                          bool set_actor_status = true);
 
   void add_arbitrary_transition(RemoteApp& remote_app);
-  virtual std::unordered_set<aid_t> get_sleeping_actors(aid_t) const;
-  std::vector<aid_t> get_enabled_minus_sleep() const;
+  virtual std::unordered_set<Aid> get_sleeping_actors(Aid) const;
+  std::vector<Aid> get_enabled_minus_sleep() const;
 
-  std::map<aid_t, TransitionPtr> const& get_sleep_set() const { return sleep_set_; }
+  std::map<Aid, TransitionPtr> const& get_sleep_set() const { return sleep_set_; }
   void add_sleep_set(TransitionPtr t) { sleep_set_.insert_or_assign(t->aid_, std::move(t)); }
   void sleep_add_and_mark(TransitionPtr t);
-  bool is_actor_sleeping(aid_t actor) const;
+  bool is_actor_sleeping(Aid actor) const;
 
   std::string string_of_sleep_set() const
   {
@@ -40,10 +40,11 @@ public:
     else
       return std::to_string('[') +
              std::accumulate(std::next(sleep_set_.begin()), sleep_set_.end(),
-                             '<' + std::to_string(sleep_set_.begin()->first) + ',' +
+                             '<' + std::to_string(sleep_set_.begin()->first.c_val()) + ',' +
                                  sleep_set_.begin()->second->to_string(),
                              [](std::string a, auto b) {
-                               return std::move(a) + ';' + '<' + std::to_string(b.first) + ',' + b.second->to_string();
+                               return std::move(a) + ';' + '<' + std::to_string(b.first.c_val()) + ',' +
+                                      b.second->to_string();
                              }) +
              std::to_string(']');
   }

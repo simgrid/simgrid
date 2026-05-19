@@ -21,11 +21,11 @@ private:
   const int value;
 
 public:
-  DependentIfSameValueAction(Type type, aid_t issuer, int value, int times_considered = 0)
+  DependentIfSameValueAction(Type type, Aid issuer, int value, int times_considered = 0)
       : Transition(type, issuer, times_considered), value(value)
   {
   }
-  DependentIfSameValueAction(aid_t issuer, int value, int times_considered = 0)
+  DependentIfSameValueAction(Aid issuer, int value, int times_considered = 0)
       : Transition(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered), value(value)
   {
   }

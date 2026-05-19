@@ -57,17 +57,17 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   for (auto& t : this->opened_) {
     auto aid              = t->aid_;
     auto times_considered = t->times_considered_;
-    StatePtr state        = this->children_states_[aid][times_considered];
+    StatePtr state        = this->children_states_[aid.value()][times_considered];
     if (state == nullptr)
       continue;
 
     const auto& next_E_p = state->get_transition_in();
 
-    XBT_DEBUG("... considering state after transition Actor %d:%s as a candidate", next_E_p->aid_,
+    XBT_DEBUG("... considering state after transition Actor %d:%s as a candidate", next_E_p->aid_.c_val(),
               next_E_p->to_string().c_str());
 
     // Is `p in `I_[E](w)`?
-    if (const aid_t p = next_E_p->aid_; odpor::Execution::is_initial_after_execution_of(w, p)) {
+    if (const Aid p = next_E_p->aid_; odpor::Execution::is_initial_after_execution_of(w, p)) {
       // Remove `p` from w and continue with this node
 
       // INVARIANT: If `p` occurs in `w`, it had better refer to the same
@@ -84,10 +84,10 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
                                               "is a bug computing initials");
       const auto& w_action = *action_by_p_in_w;
       xbt_assert(w_action->type_ == next_E_p->type_,
-                 "Invariant violated: `v` claims that actor `%ld` executes '%s' while "
+                 "Invariant violated: `v` claims that actor `%d` executes '%s' while "
                  "`w` claims that it executes '%s'. These two partial executions both "
                  "refer to `next_[E](p)`, which should be the same",
-                 p, next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
+                 p.c_val(), next_E_p->to_string(false).c_str(), w_action->to_string(false).c_str());
       w.erase(action_by_p_in_w);
       auto state_wut = static_cast<WutState*>(state.get());
       return state_wut->insert_into_tree(w, remote_app);
@@ -105,10 +105,10 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
       const auto action_by_p_in_w =
           std::find_if(w.begin(), w.end(), [=](const auto& action) { return action->aid_ == p; });
       xbt_assert(action_by_p_in_w == w.end(),
-                 "Invariant violated: We claimed that actor `%ld` is not an initial "
+                 "Invariant violated: We claimed that actor `%d` is not an initial "
                  "after `w`, yet it's independent with all actions of `w` AND occurs in `w`."
                  "This indicates that there is a bug computing initials",
-                 p);
+                 p.c_val());
       auto state_wut = static_cast<WutState*>(state.get());
       return state_wut->insert_into_tree(w, remote_app);
     }
@@ -119,20 +119,20 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   auto tran_it           = w.begin();
 
   parent_state = current_state;
-  XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_, current_state->get_num());
+  XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_.c_val(), current_state->get_num());
   current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
 
   // We need to mark the option of the first state as TODO in order to take this branch at some point
   // but this can only be done if the actor status is set
   // Also, we do this AFTER creating a child: this way the initialize will happen the transition already in opened_
   if (actor_status_set_)
-    actors_to_run_[(*tran_it)->aid_]->mark_todo();
+    actors_to_run_[(*tran_it)->aid_.value()]->mark_todo();
 
   tran_it++;
 
   for (; tran_it != w.end(); tran_it++) {
     parent_state = current_state;
-    XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_, current_state->get_num());
+    XBT_DEBUG("Creating state after actor %d in parent state %lu", (*tran_it)->aid_.c_val(), current_state->get_num());
     current_state = StatePtr(new WutState(remote_app, current_state, (*tran_it), false), true);
   }
 
@@ -140,9 +140,9 @@ StatePtr WutState::insert_into_tree(odpor::PartialExecution& w, RemoteApp& remot
   return current_state;
 }
 
-std::unordered_set<aid_t> WutState::get_sleeping_actors(aid_t after_actor) const
+std::unordered_set<Aid> WutState::get_sleeping_actors(Aid after_actor) const
 {
-  std::unordered_set<aid_t> actors;
+  std::unordered_set<Aid> actors;
   for (const auto& [aid, _] : get_sleep_set()) {
     xbt_assert(aid != 0);
     actors.insert(aid);

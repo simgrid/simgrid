@@ -19,7 +19,7 @@ class BarrierTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  BarrierTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
+  BarrierTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* o) const override
   {
     if (const auto* other = dynamic_cast<const BarrierTransition*>(o)) {
@@ -51,7 +51,7 @@ class CondvarTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  CondvarTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
+  CondvarTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* o) const override
   {
 
@@ -82,11 +82,11 @@ public:
 
 class MutexTransition : public Transition {
   uintptr_t mutex_;
-  aid_t owner_;
+  Aid owner_;
 
 public:
   std::string to_string(bool verbose) const override;
-  MutexTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
+  MutexTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* o) const override
   {
     // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
@@ -152,7 +152,7 @@ public:
                        EventHandle other_handle) const override;
 
   uintptr_t get_mutex() const { return this->mutex_; }
-  aid_t get_owner() const { return this->owner_; }
+  Aid get_owner() const { return this->owner_; }
 };
 
 class SemaphoreTransition : public Transition {
@@ -162,7 +162,7 @@ class SemaphoreTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  SemaphoreTransition(aid_t issuer, int times_considered, Type type, mc::Channel& channel);
+  SemaphoreTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* o) const override
   {
     // LOCK indep UNLOCK: pop_front and push_back are independent.

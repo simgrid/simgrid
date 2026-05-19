@@ -526,8 +526,12 @@ set(MC_SRC_BASE
 
 set(MC_SRC_STATELESS
   src/mc/api/ActorState.hpp
+  src/mc/api/Aid.hpp
+  src/mc/api/BasicTypes.cpp
+  src/mc/api/Clock.hpp
   src/mc/api/ClockVector.cpp
   src/mc/api/ClockVector.hpp
+  src/mc/api/Epoch.hpp
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
   src/mc/api/Strategy.cpp

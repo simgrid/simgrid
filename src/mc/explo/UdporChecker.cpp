@@ -180,12 +180,12 @@ EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, 
   for (const auto& actor_state : stateC.get_actors_list()) {
     if (not actor_state.has_value())
       continue;
-    aid_t aid                       = actor_state->get_aid();
+    auto aid                        = actor_state->get_aid();
     const auto& enabled_transitions = actor_state->get_enabled_transitions();
     if (enabled_transitions.empty()) {
-      XBT_DEBUG("\t Actor `%ld` is disabled: no partial extensions need to be considered", aid);
+      XBT_DEBUG("\t Actor `%d` is disabled: no partial extensions need to be considered", aid.c_val());
     } else {
-      XBT_DEBUG("\t Actor `%ld` is enabled", aid);
+      XBT_DEBUG("\t Actor `%d` is enabled", aid.c_val());
       for (const auto& transition : enabled_transitions) {
         XBT_DEBUG("\t Considering partial extension for %s", transition->to_string().c_str());
         EventSet extension = ExtensionSetCalculator::partially_extend(C, &unfolding, transition);
@@ -210,18 +210,18 @@ EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) 
 
 void UdporChecker::move_to_stateCe(State* state, UnfoldingEvent* e)
 {
-  const aid_t next_actor = e->get_transition()->aid_;
+  const auto next_actor = e->get_transition()->aid_;
 
   // TODO: Add the trace if possible for reporting a bug
-  xbt_assert(next_actor >= 0, "\n\n****** INVARIANT VIOLATION ******\n"
-                              "In reaching this execution path, UDPOR ensures that at least one\n"
-                              "one transition of the state of an visited event is enabled, yet no\n"
-                              "state was actually enabled. Please report this as a bug.\n"
-                              "*********************************\n\n");
-  XBT_DEBUG("UDPOR going to execute actor %ld with transition <%s>", next_actor,
+  xbt_assert(next_actor.has_value(), "\n\n****** INVARIANT VIOLATION ******\n"
+                                     "In reaching this execution path, UDPOR ensures that at least one\n"
+                                     "one transition of the state of an visited event is enabled, yet no\n"
+                                     "state was actually enabled. Please report this as a bug.\n"
+                                     "*********************************\n\n");
+  XBT_DEBUG("UDPOR going to execute actor %d with transition <%s>", next_actor.c_val(),
             e->get_transition()->to_string().c_str());
   auto latest_transition_by_next_actor = state->execute_next(next_actor, get_remote_app());
-  XBT_DEBUG("UDPOR successfully executed actor %ld with transition <%s>", next_actor,
+  XBT_DEBUG("UDPOR successfully executed actor %d with transition <%s>", next_actor.c_val(),
             latest_transition_by_next_actor->to_string().c_str());
 
   // The transition that is associated with the event was just

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 #define SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/Channel.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -56,18 +57,19 @@ public:
   void wait_for_requests();
 
   /** Ask the application to run one step. A transition is built iff new_transition = true */
-  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
+  Transition* handle_simcall(Aid aid, int times_considered, bool new_transition);
 
   /** Check whether there is an assertion failure on the wire */
   void peek_assertion_failure();
 
   /** Ask the application to run a full sequence of transition. The checker will receive |to_replay_and_actor_status|
    *  answers of type actor_status. */
-  void handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
-                     std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug, void* location);
+  void handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                     std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
+                     void* location);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
-  aid_t get_aid_of_next_transition();
+  Aid get_aid_of_next_transition();
 
   /** Ask the application to run post-mortem analysis, and maybe to stop ASAP */
   void finalize(bool terminate_asap = false);

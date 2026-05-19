@@ -6,14 +6,10 @@
 #ifndef SIMGRID_MC_CLOCK_VECTOR_HPP
 #define SIMGRID_MC_CLOCK_VECTOR_HPP
 
-#include "simgrid/forward.h"
-#include "xbt/asserts.h"
+#include "src/mc/api/Aid.hpp"
+#include "src/mc/api/Clock.hpp"
 
 #include <algorithm>
-#include <cstdint>
-#include <initializer_list>
-#include <optional>
-#include <unordered_map>
 #include <vector>
 
 namespace simgrid::mc {
@@ -48,18 +44,16 @@ namespace simgrid::mc {
 struct ClockVector final {
 private:
   static size_t max_size;
-  std::vector<long> contents_ = std::vector<long>(max_size, -1);
-  long negative_value         = -1;
-  // std::unordered_map<aid_t, uint32_t> contents_;
+  std::vector<Clock> contents_ = std::vector<Clock>(max_size, Clock::INVALID_VALUE);
 
 public:
   ClockVector()                              = default;
   ClockVector(const ClockVector&)            = default;
   ClockVector& operator=(ClockVector const&) = default;
   ClockVector(ClockVector&&)                 = default;
-  // ClockVector(std::initializer_list<std::pair<const aid_t, uint32_t>> init) : contents_(std::move(init)) {}
-  ClockVector(std::vector<long> init) : contents_(std::move(init)) {}
-  ClockVector(long initial_value) : contents_(std::vector<long>(max_size, initial_value)) {}
+  // ClockVector(std::initializer_list<std::pair<const mc_aid_t, uint32_t>> init) : contents_(std::move(init)) {}
+  ClockVector(std::vector<Clock> init) : contents_(std::move(init)) {}
+  ClockVector(Clock initial_value) : contents_(std::vector<Clock>(max_size, initial_value)) {}
 
   bool empty() const { return this->contents_.empty(); }
   auto begin() const { return this->contents_.begin(); }
@@ -83,34 +77,34 @@ public:
    */
   size_t size() const { return this->contents_.size(); }
 
-  long& operator[](aid_t aid)
+  Clock& operator[](Aid aid)
   {
     // NOTE: The `operator[]` overload of
     // unordered_map will create a new key-value
     // pair if `tid` does not exist and will use
     // a _default_ value for the value (0 in this case)
     // which is precisely what we want here
-    if (aid < 0)
-      return negative_value;
-    if ((unsigned)aid >= contents_.size()) {
-      this->contents_.resize(aid + 1, -1);
-      max_size = aid + 1;
-      return this->contents_[aid];
+    if (not aid.has_value())
+      return Clock::INVALID_VALUE;
+    if (aid.value() >= contents_.size()) {
+      this->contents_.resize(aid.value() + 1, Clock::INVALID_VALUE);
+      max_size = aid.value() + 1;
+      return this->contents_[aid.value()];
     }
-    return this->contents_[aid];
+    return this->contents_[aid.value()];
   }
 
   /**
    * @brief Retrieves the value mapped to the given
    * actor if it is contained in this clock vector
    */
-  std::optional<long> get(aid_t aid) const
+  Clock get(Aid aid) const
   {
-    if (aid < 0)
-      return std::nullopt;
-    if ((unsigned)aid >= contents_.size())
-      return std::nullopt;
-    return contents_[aid];
+    if (not aid.has_value())
+      return Clock::INVALID_VALUE;
+    if (aid.value() >= contents_.size())
+      return Clock::INVALID_VALUE;
+    return contents_[aid.value()];
   }
 
   /**
@@ -148,9 +142,9 @@ public:
   inline void static max_emplace_left(ClockVector& cv1, const ClockVector& cv2)
   {
     if (cv1.size() < cv2.size())
-      cv1.contents_.resize(cv2.size(), -1);
+      cv1.contents_.resize(cv2.size(), Clock::INVALID_VALUE);
     std::transform(cv2.begin(), cv2.end(), cv1.contents_.begin(), cv1.contents_.begin(),
-                   [](int a, int b) { return std::max(a, b); });
+                   [](Clock a, Clock b) { return std::max(a, b); });
   }
 };
 

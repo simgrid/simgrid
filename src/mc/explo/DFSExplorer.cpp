@@ -5,24 +5,17 @@
 
 #include "src/mc/explo/DFSExplorer.hpp"
 #include "simgrid/forward.h"
+#include "src/mc/api/states/SleepSetState.hpp"
 #include "src/mc/api/states/SoftLockedState.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
-#include "src/mc/explo/reduction/DPOR.hpp"
-#include "src/mc/explo/reduction/NoReduction.hpp"
-#include "src/mc/explo/reduction/ODPOR.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
-#include "src/mc/explo/reduction/SDPOR.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/remote/mc_protocol.h"
 #include "src/mc/transition/Transition.hpp"
-
-#include "xbt/asserts.h"
-#include "xbt/log.h"
 
 #include <cstdlib>
 #include <memory>
@@ -60,7 +53,7 @@ void DFSExplorer::log_state() // override
   Exploration::log_state();
 }
 
-void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_t& state_stack)
+void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t& state_stack)
 {
 
   // This means the exploration asked us to visit a parallel history
@@ -80,18 +73,18 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
       XBT_DEBUG("Sleep set actually containing:");
 
       for (const auto& [aid, transition] : sleep_state->get_sleep_set())
-        XBT_DEBUG("  <%ld,%s>", aid, transition->to_string().c_str());
+        XBT_DEBUG("  <%d,%s>", aid.c_val(), transition->to_string().c_str());
     }
   }
 
-  XBT_DEBUG("Going to execute actor %ld", next_actor);
+  XBT_DEBUG("Going to execute actor %d", next_actor.c_val());
 
   TransitionPtr executed_transition;
   StatePtr next_state;
   try {
     executed_transition = state->execute_next(next_actor, get_remote_app());
     on_transition_execute_signal(executed_transition.get(), get_remote_app());
-    XBT_VERB("Executed %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_,
+    XBT_VERB("Executed %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves)", executed_transition->aid_.c_val(),
              executed_transition->to_string().c_str(), state_stack.size(), state->get_num(), state->count_todo());
 
     next_state = reduction_->state_create(get_remote_app(), state, executed_transition);
@@ -104,8 +97,8 @@ void DFSExplorer::step_exploration(odpor::Execution& S, aid_t next_actor, stack_
     if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug)) {
       auto transition_to_be_executed = state->get_actor_at(next_actor).get_transition();
       XBT_DEBUG("An error occured while executing %d: %.60s (stack depth: %zu, state: %lu, %zu interleaves)",
-                transition_to_be_executed->aid_, transition_to_be_executed->to_string().c_str(), state_stack.size(),
-                state->get_num(), state->count_todo());
+                transition_to_be_executed->aid_.c_val(), transition_to_be_executed->to_string().c_str(),
+                state_stack.size(), state->get_num(), state->count_todo());
     }
 
     // ... reset the application to the step before dying
@@ -191,9 +184,9 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
 
   State* s = state_stack.back().get();
 
-  aid_t next_to_explore;
+  Aid next_to_explore;
 
-  while ((next_to_explore = reduction_->next_to_explore(S, &state_stack)) != -1) {
+  while ((next_to_explore = reduction_->next_to_explore(S, &state_stack)).has_value()) {
 
     step_exploration(S, next_to_explore, state_stack);
   }

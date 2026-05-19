@@ -4,8 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/AppSide.hpp"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Host.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -138,7 +136,7 @@ void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool wan
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message)
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
-  xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
+  xbt_assert(actor != nullptr, "Invalid pid %d", message->aid_);
   xbt_assert(
       (actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
           (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
@@ -167,27 +165,35 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     addresses.push_back(msg->watch);
   }
 
-  auto [more_aid, aids] = channel_.receive(sizeof(unsigned char) * replay_size);
+  auto [more_aid, aids] = channel_.receive(sizeof(Aid::storage_type) * replay_size);
   if (not more_aid)
     ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
 
-  auto [more_times, times] = channel_.receive(sizeof(unsigned char) * replay_size);
+  auto [more_times, times] = channel_.receive(sizeof(time_considered_t) * replay_size);
   if (not more_times)
     ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
 
   XBT_DEBUG("Going to replay %u transitions", replay_size - 1);
   unsigned i = 0;
   for (; i < replay_size; i++) {
-    aid_t aid            = ((unsigned char*)aids)[i];
-    int times_considered = ((unsigned char*)times)[i];
+    auto aid              = ((Aid::storage_type*)aids)[i];
+    auto times_considered = ((time_considered_t*)times)[i];
 
     // The -1 value is used to indicate the part requiring transition and status
-    if (aid == 255 and times_considered == 255) // -1 in unsigned char
+    if (aid == static_cast<Aid::storage_type>(-1) and
+        (int) times_considered == (int)(mc::smemory::config::max_time_considered - 1))
       break;
+    xbt_assert(aid != static_cast<Aid::storage_type>(-1),
+               "The time_considered array reached an end but not the AID one. Please fix me.");
+    xbt_assert((int)times_considered != (int)(static_cast<int>(mc::smemory::config::max_time_considered) - 1),
+               "The AID arrays reached an end (last value: %d -- invalid is %d) but not the time_considered one, which "
+               "last value is %u == %u. Please fix me.",
+               (int)aid, (int)static_cast<Aid::storage_type>(-1), static_cast<unsigned>(times_considered),
+               static_cast<unsigned>(mc::smemory::config::max_time_considered - 1));
 
-    XBT_VERB("MC asked to replay %ld(nb_times=%d)", aid, times_considered);
+    XBT_VERB("MC asked to replay %d(nb_times=%d)", aid, times_considered);
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
-    xbt_assert(actor != nullptr, "Invalid pid %ld at depth %u of replay", aid, i);
+    xbt_assert(actor != nullptr, "Invalid pid %d at depth %u of replay", aid, i);
     xbt_assert((actor->simcall_.observer_ == nullptr &&
                 actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
                    (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
@@ -196,7 +202,7 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
 
     if (msg->debug) {
       XBT_INFO("***********************************************************************************");
-      XBT_INFO("* Path chunk #%u '%ld/%i' Actor %s: %s", i, aid, times_considered, actor->get_cname(),
+      XBT_INFO("* Path chunk #%u '%d/%i' Actor %s: %s", i, aid, times_considered, actor->get_cname(),
                actor->simcall_.observer_->to_string().c_str());
       XBT_INFO("***********************************************************************************");
     }
@@ -298,7 +304,9 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
         xbt_assert(actor->simcall_.observer_, "simcall %s in actor %s has no observer.", actor->simcall_.get_cname(),
                    actor->get_cname());
         status[i].type           = MessageType::ACTORS_STATUS_REPLY_TRANSITION;
-        status[i].aid            = aid;
+        xbt_assert(aid > 0, "Cannot send the status of an actor which AID is negative");
+        mc::Aid sent_aid{(unsigned long)aid};
+        status[i].aid            = sent_aid.value();
         status[i].enabled        = mc::actor_is_enabled(actor);
         status[i].max_considered = actor->simcall_.observer_->get_max_consider();
         i++;
@@ -428,7 +436,13 @@ void AppSide::send_actor_status(bool want_transitions)
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
+  xbt_assert(actor_list.size() < mc::smemory::config::max_threads - 1, // -1 because of INVALID_AID consuming a value
+             "The applications has more than %d actors, which is the maximum amount of actors supported by the "
+             "model-checker. Modify src/mc/smemory/smemory_config.hpp to increase this limit if you want, but be "
+             "warned that this will slow down the exploration. Such app is probably too big for MC anyway.",
+             mc::smemory::config::max_threads - 1);
   answer.count                                      = static_cast<int>(actor_list.size());
+
   channel_.pack(answer);
   XBT_DEBUG("Pack ACTORS_STATUS_REPLY with count %d", answer.count);
 

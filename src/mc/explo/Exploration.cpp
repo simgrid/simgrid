@@ -121,7 +121,7 @@ static const char* signal_name(int status)
 
 std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
 {
-  std::vector<int> actor_epoch;
+  std::vector<Clock> actor_epoch;
   if (race != nullptr)
     actor_epoch.resize(s4u::Engine::get_instance()->get_actor_max_pid() + 1);
 
@@ -129,48 +129,46 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
   for (auto const& transition : get_record_trace()) {
     auto const& call_location = transition->get_call_location();
     if (not call_location.empty())
-      trace.push_back(xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_, call_location.c_str(),
-                                         transition->to_string().c_str()));
+      trace.push_back(xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_.c_val(),
+                                         call_location.c_str(), transition->to_string().c_str()));
     else
-      trace.push_back(xbt::string_printf("Actor %d in simcall %s", transition->aid_, transition->to_string().c_str()));
+      trace.push_back(
+          xbt::string_printf("Actor %d in simcall %s", transition->aid_.c_val(), transition->to_string().c_str()));
 
     if (race != nullptr) {
-      if (transition->aid_ == simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)) {
-        if (simgrid::mc::odpor::epoch_get_clock(race->first_mem_op_) == 0 && actor_epoch[transition->aid_] == 0) {
+      if (transition->aid_ == race->first_mem_op_.get_aid()) {
+        if (race->first_mem_op_.get_clock() == Clock(0) && actor_epoch[transition->aid_.value()] == 0) {
           if (smemory::MemoryAccessTracker::is_coalescing())
             trace.back().append(xbt::string_printf(
-                "     <== racy WRITE of size %ub on %p by actor %ld between its creation and this operation",
+                "     <== racy WRITE of size %ub on %p by actor %d between its creation and this operation",
                 race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
-                simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)));
+                race->first_mem_op_.get_aid().c_val()));
           else
-            trace.back().append(
-                xbt::string_printf("     <== racy WRITE on %p by actor %ld between its creation and this operation",
-                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
-                                   simgrid::mc::odpor::epoch_get_aid(race->first_mem_op_)));
+            trace.back().append(xbt::string_printf(
+                "     <== racy WRITE on %p by actor %d between its creation and this operation",
+                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, (race->first_mem_op_.get_aid().c_val())));
         }
-        actor_epoch[transition->aid_]++;
-        if (actor_epoch[transition->aid_] == simgrid::mc::odpor::epoch_get_clock(race->first_mem_op_))
+        actor_epoch[transition->aid_.value()]++;
+        if (actor_epoch[transition->aid_.value()] == race->first_mem_op_.get_clock())
           trace.back().append(xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation",
                                                  race->sizes_[0],
                                                  xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_));
       }
-      if (transition->aid_ == simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)) {
-        if (simgrid::mc::odpor::epoch_get_clock(race->second_mem_op_) == 0 && actor_epoch[transition->aid_] == 0) {
+      if (transition->aid_ == race->second_mem_op_.get_aid()) {
+        if (race->second_mem_op_.get_clock() == 0 && actor_epoch[transition->aid_.value()] == 0) {
           if (smemory::MemoryAccessTracker::is_coalescing())
             trace.back().append(xbt::string_printf(
-                "     <== racy %s of size %ub on %p by actor %ld between its creation and this operation",
+                "     <== racy %s of size %ub on %p by actor %d between its creation and this operation",
                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
-                simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)));
+                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.get_aid().c_val()));
           else
-            trace.back().append(
-                xbt::string_printf("     <== racy %s on %p by actor %ld between its creation and this operation",
-                                   race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-                                   xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
-                                   simgrid::mc::odpor::epoch_get_aid(race->second_mem_op_)));
+            trace.back().append(xbt::string_printf(
+                "     <== racy %s on %p by actor %d between its creation and this operation",
+                race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.get_aid().c_val()));
         }
-        actor_epoch[transition->aid_]++;
-        if (actor_epoch[transition->aid_] == simgrid::mc::odpor::epoch_get_clock(race->second_mem_op_))
+        actor_epoch[transition->aid_.value()]++;
+        if (actor_epoch[transition->aid_.value()] == race->second_mem_op_.get_clock())
           trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
                                                  race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
                                                  race->sizes_[1],
@@ -268,8 +266,8 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 }
 void Exploration::debug_replay(void* location)
 {
-  std::deque<std::pair<aid_t, int>> recipe;
-  std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
+  std::deque<std::pair<Aid, time_considered_t>> recipe;
+  std::deque<std::pair<Aid, time_considered_t>> recipe_needing_actor_status;
   auto* state       = get_stack().back().get();
   State* root_state = nullptr;
   for (; state != nullptr; state = state->get_parent_state()) {
@@ -281,8 +279,15 @@ void Exploration::debug_replay(void* location)
       root_state = state;
   }
   for (unsigned i = 0; i < recipe.size(); i++) {
-    xbt_assert(recipe[i].first > 0, "Transition of depth %u is about actor %ld", i, recipe[i].first);
+    xbt_assert(
+        recipe[i].first.has_value(),
+        "Transition of depth %u is about no defined actor, or your application makes over config::max_threads threads",
+        i);
     xbt_assert(recipe[i].second >= 0, "Transition of depth %u is played %d times", i, recipe[i].second);
+    xbt_assert((int)recipe[i].second <= (int)mc::smemory::config::max_time_considered,
+               "Transition of depth %u is played %d times, which is larger than max_time_considered defined in "
+               "smemory_config.hpp",
+               i, recipe[i].second);
   }
 
   /* restart from the root */
@@ -291,7 +296,7 @@ void Exploration::debug_replay(void* location)
 
   XBT_DEBUG("Sending sequence for a replay (without actor_status): %s",
             std::accumulate(recipe.begin(), recipe.end(), std::string(), [](std::string a, auto b) {
-              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
+              return std::move(a) + ';' + '<' + std::to_string(b.first.c_val()) + '/' + std::to_string(b.second) + '>';
             }).c_str());
 
   get_remote_app().replay_sequence(recipe, recipe_needing_actor_status, true, location);
@@ -333,10 +338,10 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::report_data_race(const McDataRace& e)
 {
-  XBT_INFO("Found a datarace at location %p between actor %ld and actor %ld after the following "
+  XBT_INFO("Found a datarace at location %p between actor %d and actor %d after the following "
            "execution:",
-           xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_, simgrid::mc::odpor::epoch_get_aid(e.first_mem_op_),
-           simgrid::mc::odpor::epoch_get_aid(e.second_mem_op_));
+           xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_, e.first_mem_op_.get_aid().c_val(),
+           e.second_mem_op_.get_aid().c_val());
   for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
     XBT_INFO("  %s", frame.c_str());
   XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
@@ -372,8 +377,8 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
   XBT_DEBUG("Backtracking to state #%lu", target_state->get_num());
 
   std::deque<Transition*> replayed_transitions;
-  std::deque<std::pair<aid_t, int>> recipe;
-  std::deque<std::pair<aid_t, int>> recipe_needing_actor_status;
+  std::deque<std::pair<Aid, time_considered_t>> recipe;
+  std::deque<std::pair<Aid, time_considered_t>> recipe_needing_actor_status;
   std::deque<StatePtr> state_needing_actor_status;
   auto* state       = target_state;
   State* root_state = nullptr;
@@ -401,12 +406,12 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
 
   XBT_DEBUG("Sending sequence for a replay (without actor_status): %s",
             std::accumulate(recipe.begin(), recipe.end(), std::string(), [](std::string a, auto b) {
-              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' + std::to_string(b.second) + '>';
+              return std::move(a) + ';' + '<' + std::to_string(b.first.c_val()) + '/' + std::to_string(b.second) + '>';
             }).c_str());
   XBT_DEBUG("... (with actor_status): %s",
             std::accumulate(recipe_needing_actor_status.begin(), recipe_needing_actor_status.end(), std::string(),
                             [](std::string a, auto b) {
-                              return std::move(a) + ';' + '<' + std::to_string(b.first) + '/' +
+                              return std::move(a) + ';' + '<' + std::to_string(b.first.c_val()) + '/' +
                                      std::to_string(b.second) + '>';
                             })
                 .c_str());
@@ -440,7 +445,7 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
     on_transition_replay_signal(transition, remote_app);
 
   // If we initialized something and it has not yet been given a possible thing to explore, go one way
-  if (state_needing_actor_status.size() != 0 and target_state->next_transition() == -1)
+  if (state_needing_actor_status.size() != 0 and not target_state->next_transition().has_value())
     static_cast<SleepSetState*>(target_state)->add_arbitrary_transition(remote_app);
 
   return;

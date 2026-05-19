@@ -5,7 +5,7 @@
 
 #include "src/mc/remote/CheckerSide.hpp"
 #include "simgrid/Exception.hpp"
-#include "src/mc/api/Strategy.hpp"
+#include "src/mc/api/Aid.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
@@ -15,6 +15,7 @@
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
+
 #include <atomic>
 #include <cerrno>
 #include <cstdio>
@@ -263,12 +264,12 @@ void CheckerSide::peek_assertion_failure()
     Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
 }
 
-Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool new_transition)
+Transition* CheckerSide::handle_simcall(Aid aid, int times_considered, bool new_transition)
 {
   if (not is_one_way) {
     s_mc_message_simcall_execute_t execute = {};
     execute.type                           = MessageType::SIMCALL_EXECUTE;
-    execute.aid_                           = aid;
+    execute.aid_                           = aid.value();
     execute.times_considered_              = times_considered;
     execute.want_transition                = new_transition;
     get_channel().send(execute);
@@ -283,8 +284,8 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   auto* answer = (s_mc_message_simcall_execute_answer_t*)(get_channel().expect_message(
       sizeof(s_mc_message_simcall_execute_answer_t), MessageType::SIMCALL_EXECUTE_REPLY,
       "Could not receive answer to SIMCALL_EXECUTE"));
-  xbt_assert(answer->aid == aid, "The application did not execute the expected actor (expected %ld, ran %ld)", aid,
-             answer->aid);
+  xbt_assert(answer->aid == aid.value(), "The application did not execute the expected actor (expected %d, ran %d)",
+             aid.c_val(), answer->aid);
 
   if (new_transition) {
     auto* t = deserialize_transition(aid, times_considered, channel_);
@@ -296,8 +297,8 @@ Transition* CheckerSide::handle_simcall(aid_t aid, int times_considered, bool ne
   return nullptr;
 }
 
-void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
-                                std::deque<std::pair<aid_t, int>> to_replay_and_actor_status, bool debug,
+void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                                std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
                                 void* location)
 {
   long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
@@ -308,34 +309,39 @@ void CheckerSide::handle_replay(std::deque<std::pair<aid_t, int>> to_replay,
   replay_msg.watch                 = location;
   replay_msg.length                = msg_length;
 
-  unsigned char* aids  = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
-  unsigned char* times = (unsigned char*)alloca(sizeof(unsigned char) * msg_length);
+  Aid::storage_type* aids  = (Aid::storage_type*)alloca(sizeof(Aid::storage_type) * msg_length);
+  time_considered_t* times = (time_considered_t*)alloca(sizeof(time_considered_t) * msg_length);
 
   XBT_DEBUG("send a replay of size %lu", msg_length);
   int i = 0;
   for (auto const& [aid, time] : to_replay) {
-    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
-    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
-    aids[i]  = aid;
+    // Aid are valid by construction, no need for an assert here
+    xbt_assert(
+        (int)time < (int)(mc::smemory::config::max_time_considered - 1),
+        "Overflow on the time_considered value. %d is larger than max_time_considered defined in smemory_config.hpp",
+        time);
+    aids[i]  = aid.value();
     times[i] = time;
     i++;
   }
   // Signal the end of the first part
-  aids[i]  = -1;
-  times[i] = -1;
+  aids[i]  = static_cast<Aid::storage_type>(-1);
+  times[i] = mc::smemory::config::max_time_considered - 1;
   i++;
 
   for (auto const& [aid, time] : to_replay_and_actor_status) {
-    xbt_assert(aid < 254, "Overflow on the aid value. %ld is too big to fit in an unsigned char", aid);
-    xbt_assert(time < 254, "Overflow on the time_considered value. %d is too big to fit in an unsigned char", time);
-    aids[i]  = aid;
+    xbt_assert(
+        (int)time < (int)mc::smemory::config::max_time_considered,
+        "Overflow on the time_considered value. %d is larger than max_time_considered defined in smemory_config.hpp",
+        time);
+    aids[i]  = aid.value();
     times[i] = time;
     i++;
   }
 
   get_channel().pack(&replay_msg, sizeof(replay_msg));
-  get_channel().pack(aids, sizeof(unsigned char) * msg_length);
-  get_channel().pack(times, sizeof(unsigned char) * msg_length);
+  get_channel().pack(aids, sizeof(Aid::storage_type) * msg_length);
+  get_channel().pack(times, sizeof(time_considered_t) * msg_length);
 
   xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
 
@@ -360,20 +366,20 @@ void CheckerSide::finalize(bool terminate_asap)
                                "Could not receive answer to FINALIZE");
 }
 
-aid_t CheckerSide::get_aid_of_next_transition()
+Aid CheckerSide::get_aid_of_next_transition()
 {
   auto [more_data, type] = get_channel().peek_message_type();
 
   if (not more_data) { // The app closed the socket. It must be dead by now.
     handle_waitpid();
-    return -1;
+    return Aid::INVALID_VALUE;
   }
 
   if (type == MessageType::WAITING) {
     get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING,
                                  "Could not receive MessageType::WAITING");
     is_one_way = false;
-    return -1;
+    return Aid::INVALID_VALUE;
   } else {
     auto [more_data2, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
     xbt_assert(more_data2);

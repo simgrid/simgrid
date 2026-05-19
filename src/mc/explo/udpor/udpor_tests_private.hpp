@@ -18,8 +18,8 @@ namespace simgrid::mc::udpor {
 
 struct IndependentAction : public Transition {
   IndependentAction() = default;
-  IndependentAction(Type type, aid_t issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
-  IndependentAction(aid_t issuer, int times_considered = 0)
+  IndependentAction(Type type, Aid issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
+  IndependentAction(Aid issuer, int times_considered = 0)
       : IndependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
   {
   }
@@ -41,8 +41,8 @@ struct IndependentAction : public Transition {
 
 struct DependentAction : public Transition {
   DependentAction() = default;
-  DependentAction(Type type, aid_t issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
-  DependentAction(aid_t issuer, int times_considered = 0)
+  DependentAction(Type type, Aid issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
+  DependentAction(Aid issuer, int times_considered = 0)
       : DependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
   {
   }
@@ -61,11 +61,11 @@ struct DependentAction : public Transition {
 
 struct ConditionallyDependentAction : public Transition {
   ConditionallyDependentAction() = default;
-  ConditionallyDependentAction(Type type, aid_t issuer, int times_considered = 0)
+  ConditionallyDependentAction(Type type, Aid issuer, int times_considered = 0)
       : Transition(type, issuer, times_considered)
   {
   }
-  ConditionallyDependentAction(aid_t issuer, int times_considered = 0)
+  ConditionallyDependentAction(Aid issuer, int times_considered = 0)
       : ConditionallyDependentAction(simgrid::mc::Transition::Type::UNKNOWN, issuer, times_considered)
   {
   }
