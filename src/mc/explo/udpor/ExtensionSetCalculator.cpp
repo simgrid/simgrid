@@ -537,7 +537,7 @@ EventSet ExtensionSetCalculator::partially_extend_MutexAsyncLock(const Configura
 
 std::pair<Aid, Aid> ExtensionSetCalculator::firstTwoOwners(uintptr_t mutex_id, EventSet history)
 {
-  std::pair<Aid, Aid> two_owners(Aid::INVALID_VALUE, Aid::INVALID_VALUE);
+  std::pair<Aid, Aid> two_owners(Aid::INVALID, Aid::INVALID);
   for (const auto e : history) {
     if (e->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK) {
       if (not two_owners.first.has_value())

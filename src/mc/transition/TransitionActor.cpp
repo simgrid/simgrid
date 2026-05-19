@@ -20,7 +20,7 @@ ActorJoinTransition::ActorJoinTransition(Aid issuer, int times_considered, mc::C
     : Transition(Type::ACTOR_JOIN, issuer, times_considered)
 {
   auto recv = channel.unpack<aid_t>();
-  target_   = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
+  target_   = recv == -1 ? Aid::INVALID : Aid{(int)recv};
 
   timeout_ = channel.unpack<bool>();
   XBT_DEBUG("ActorJoinTransition target:%d, %s ", target_.c_val(), (timeout_ ? "timeout" : "no-timeout"));
@@ -111,7 +111,7 @@ ActorCreateTransition::ActorCreateTransition(Aid issuer, int times_considered, m
     : Transition(Type::ACTOR_CREATE, issuer, times_considered)
 {
   auto recv = channel.unpack<aid_t>();
-  child_    = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
+  child_    = recv == -1 ? Aid::INVALID : Aid{(int)recv};
   XBT_DEBUG("ActorCreateTransition child:%d", child_.c_val());
 }
 std::string ActorCreateTransition::to_string(bool verbose) const

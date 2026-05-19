@@ -139,7 +139,7 @@ StatePtr DPOR::state_create(RemoteApp& remote_app, StatePtr parent_state, Transi
 Aid DPOR::next_to_explore(odpor::Execution& E, stack_t* S)
 {
   if (not S->back()->has_todo_actors())
-    return Aid::INVALID_VALUE;
+    return Aid::INVALID;
   return S->back()->next_transition_guided().first;
 }
 

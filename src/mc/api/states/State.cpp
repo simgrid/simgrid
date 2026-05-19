@@ -116,7 +116,7 @@ Aid State::next_transition() const
     return aid;
   }
 
-  return Aid::INVALID_VALUE;
+  return Aid::INVALID;
 }
 
 std::pair<Aid, int> State::next_transition_guided() const

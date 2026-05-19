@@ -44,7 +44,7 @@ namespace simgrid::mc {
 struct ClockVector final {
 private:
   static size_t max_size;
-  std::vector<Clock> contents_ = std::vector<Clock>(max_size, Clock::INVALID_VALUE);
+  std::vector<Clock> contents_ = std::vector<Clock>(max_size, Clock::INVALID);
 
 public:
   ClockVector()                              = default;
@@ -85,9 +85,9 @@ public:
     // a _default_ value for the value (0 in this case)
     // which is precisely what we want here
     if (not aid.has_value())
-      return Clock::INVALID_VALUE;
+      return Clock::INVALID;
     if (aid.value() >= contents_.size()) {
-      this->contents_.resize(aid.value() + 1, Clock::INVALID_VALUE);
+      this->contents_.resize(aid.value() + 1, Clock::INVALID);
       max_size = aid.value() + 1;
       return this->contents_[aid.value()];
     }
@@ -101,9 +101,9 @@ public:
   Clock get(Aid aid) const
   {
     if (not aid.has_value())
-      return Clock::INVALID_VALUE;
+      return Clock::INVALID;
     if (aid.value() >= contents_.size())
-      return Clock::INVALID_VALUE;
+      return Clock::INVALID;
     return contents_[aid.value()];
   }
 
@@ -142,7 +142,7 @@ public:
   inline void static max_emplace_left(ClockVector& cv1, const ClockVector& cv2)
   {
     if (cv1.size() < cv2.size())
-      cv1.contents_.resize(cv2.size(), Clock::INVALID_VALUE);
+      cv1.contents_.resize(cv2.size(), Clock::INVALID);
     std::transform(cv2.begin(), cv2.end(), cv1.contents_.begin(), cv1.contents_.begin(),
                    [](Clock a, Clock b) { return std::max(a, b); });
   }

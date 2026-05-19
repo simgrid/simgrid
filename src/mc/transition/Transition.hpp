@@ -68,7 +68,7 @@ public:
       UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
-  Aid aid_ = mc::Aid::INVALID_VALUE;
+  Aid aid_ = mc::Aid::INVALID;
 
   /** The user function call that caused this transition to exist. Format: >>filename:line:function()<< */
   std::unique_ptr<std::string> call_location_;

@@ -62,7 +62,7 @@ MutexTransition::MutexTransition(Aid issuer, int times_considered, Type type, mc
 {
   mutex_ = channel.unpack<unsigned>();
   auto recv = channel.unpack<aid_t>();
-  owner_    = recv == -1 ? Aid::INVALID_VALUE : Aid{(int)recv};
+  owner_    = recv == -1 ? Aid::INVALID : Aid{(int)recv};
 }
 
 bool MutexTransition::can_be_co_enabled(const Transition* o) const

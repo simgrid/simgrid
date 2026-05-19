@@ -102,7 +102,7 @@ public:
   Aid next_to_explore(odpor::Execution& E, stack_t* S) override
   {
     if (not S->back()->has_todo_actors())
-      return Aid::INVALID_VALUE;
+      return Aid::INVALID;
     return S->back()->next_transition_guided().first;
   }
 

@@ -54,19 +54,18 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     SECTION("Check the vector clocks")
     {
       SECTION("compare after a1")
-      compare_cv(execution.get_event_with_handle(0).get_clock_vector(), {Aid::INVALID_VALUE, 0});
+      compare_cv(execution.get_event_with_handle(0).get_clock_vector(), {Aid::INVALID, 0});
 
       SECTION("compare after a2")
 
-      compare_cv(execution.get_event_with_handle(1).get_clock_vector(), {Aid::INVALID_VALUE, Aid::INVALID_VALUE, 1});
+      compare_cv(execution.get_event_with_handle(1).get_clock_vector(), {Aid::INVALID, Aid::INVALID, 1});
       SECTION("compare after a3")
 
-      compare_cv(execution.get_event_with_handle(2).get_clock_vector(),
-                 {Aid::INVALID_VALUE, Aid::INVALID_VALUE, Aid::INVALID_VALUE, 2});
+      compare_cv(execution.get_event_with_handle(2).get_clock_vector(), {Aid::INVALID, Aid::INVALID, Aid::INVALID, 2});
       SECTION("compare after a4")
 
       compare_cv(execution.get_event_with_handle(3).get_clock_vector(),
-                 {Aid::INVALID_VALUE, 0, Aid::INVALID_VALUE, Aid::INVALID_VALUE, 3});
+                 {Aid::INVALID, 0, Aid::INVALID, Aid::INVALID, 3});
     }
 
     SECTION("Happens-before is irreflexive")

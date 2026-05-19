@@ -124,7 +124,7 @@ protected:
 
   /** Store the (aid,times considered) that have been closed. This is usefull to determine wether a given state is
    * leftmost. */
-  std::vector<std::pair<Aid, int>> closed_;
+  std::vector<std::pair<Aid, unsigned short>> closed_;
 
 public:
   explicit State(const RemoteApp& remote_app, bool set_actor_status = true);

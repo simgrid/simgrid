@@ -5,7 +5,6 @@
 
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/Clock.hpp"
-#include "src/mc/smemory/smemory_config.hpp"
 
-simgrid::mc::Clock simgrid::mc::Clock::INVALID_VALUE = static_cast<uint64_t>(~uint64_t(0));
-simgrid::mc::Aid simgrid::mc::Aid::INVALID_VALUE{simgrid::mc::smemory::config::max_threads - 1, false};
+simgrid::mc::Clock simgrid::mc::Clock::INVALID = Clock::INVALID_VALUE;
+simgrid::mc::Aid simgrid::mc::Aid::INVALID{Aid::INVALID_VALUE, false};

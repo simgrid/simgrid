@@ -51,7 +51,6 @@ static constexpr int verify_aid_is_valid(int val)
 {
   if (val >= simgrid::mc::smemory::config::max_threads - 1) { // -1 because we need a value for the INVALID_VALUE
     xbt_backtrace_display_current();
-    XBT_CCRITICAL(root, "Aid is %d, which is above config::max_threads", val);
     throw AidCannotBeAboveMaxThreads(val);
   }
   return (val >= 0) ? val : throw AidCannotBeNegative(val);
@@ -63,11 +62,14 @@ struct Aid {
                          std::conditional_t<(smemory::config::max_threads <= 65536), std::uint16_t, std::uint32_t>>;
 
 private:
+  // Getting g++12 to consider this as a constexpr requires to give it a complete type such as storage_type. Aid cannot
+  // be used
+  static constexpr storage_type INVALID_VALUE = static_cast<storage_type>(smemory::config::max_threads - 1);
   storage_type value_;
 
 public:
-  static Aid INVALID_VALUE;                         // Similar to std::nullopt, this represents an invalid value
-  constexpr Aid() : value_(INVALID_VALUE.value_) {} // The default constructor gives the invalid value
+  static Aid INVALID;                        // Similar to std::nullopt, this represents an invalid value
+  constexpr Aid() : value_(INVALID_VALUE) {} // The default constructor gives the invalid value
   // Constructor used for literals and constants
   constexpr Aid(
       int val,
@@ -91,15 +93,14 @@ public:
   Aid(T val) = delete;
 
   // These functions provide an API that is somewhat similar to std::optional
-  constexpr bool has_value() const { return value_ != INVALID_VALUE.value_; }
+  constexpr bool has_value() const { return value_ != INVALID_VALUE; }
   constexpr storage_type value() const
   {
-    if (value_ != INVALID_VALUE.value_)
+    if (value_ != INVALID_VALUE)
       return value_;
-    xbt_backtrace_display_current();
     throw "Cannot extract the value of an invalid aid";
   }
-  constexpr int c_val() const { return value_ != INVALID_VALUE.value_ ? value_ : -1; }
+  constexpr int c_val() const { return value_ != INVALID_VALUE ? value_ : -1; }
   constexpr explicit operator bool() const { return has_value(); }
 
   // Forbid comparison with integer types
@@ -120,7 +121,7 @@ public:
   // Arithmetics on aids
   constexpr Aid operator++(int)
   {
-    if (value_ == INVALID_VALUE.value_)
+    if (value_ == INVALID_VALUE)
       throw "Cannot increase the value of the invalid AID";
     Aid temp = *this;
     value_++;

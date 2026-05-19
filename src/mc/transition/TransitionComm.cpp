@@ -36,9 +36,9 @@ CommWaitTransition::CommWaitTransition(Aid issuer, int times_considered, mc::Cha
   comm_    = channel.unpack<unsigned>();
 
   auto data = channel.unpack<aid_t>();
-  sender_   = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  sender_   = data == -1 ? Aid::INVALID : Aid{(int)data};
   data      = channel.unpack<aid_t>();
-  receiver_ = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  receiver_ = data == -1 ? Aid::INVALID : Aid{(int)data};
 
   mbox_          = channel.unpack<unsigned>();
   call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());
@@ -81,9 +81,9 @@ CommTestTransition::CommTestTransition(Aid issuer, int times_considered, mc::Cha
   comm_          = channel.unpack<unsigned>();
 
   auto data = channel.unpack<aid_t>();
-  sender_   = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  sender_   = data == -1 ? Aid::INVALID : Aid{(int)data};
   data      = channel.unpack<aid_t>();
-  receiver_ = data == -1 ? Aid::INVALID_VALUE : Aid{(int)data};
+  receiver_ = data == -1 ? Aid::INVALID : Aid{(int)data};
 
   mbox_          = channel.unpack<unsigned>();
   call_location_ = std::make_unique<std::string>(channel.unpack<std::string>());

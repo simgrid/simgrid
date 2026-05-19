@@ -372,14 +372,14 @@ Aid CheckerSide::get_aid_of_next_transition()
 
   if (not more_data) { // The app closed the socket. It must be dead by now.
     handle_waitpid();
-    return Aid::INVALID_VALUE;
+    return Aid::INVALID;
   }
 
   if (type == MessageType::WAITING) {
     get_channel().expect_message(sizeof(s_mc_message_t), MessageType::WAITING,
                                  "Could not receive MessageType::WAITING");
     is_one_way = false;
-    return Aid::INVALID_VALUE;
+    return Aid::INVALID;
   } else {
     auto [more_data2, got] = get_channel().peek(sizeof(struct s_mc_message_simcall_execute_answer_t));
     xbt_assert(more_data2);

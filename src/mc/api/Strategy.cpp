@@ -48,7 +48,7 @@ std::pair<Aid, int> ExplorationStrategy::best_transition_in(const State* state, 
         return actor.has_value() and actor->is_enabled() and not actor->is_done();
       });
       if (actor_opt == actors.end())
-        return std::make_pair(Aid::INVALID_VALUE, state->get_depth());
+        return std::make_pair(Aid::INVALID, state->get_depth());
       return std::make_pair(actor_opt->value().get_aid(), state->get_depth());
     }
 
@@ -66,7 +66,7 @@ std::pair<Aid, int> ExplorationStrategy::best_transition_in(const State* state, 
       XBT_DEBUG("Actor %d is the best possible transition at state @ %lu", aid.c_val(), state->get_num());
       return std::make_pair(aid, state->get_depth());
     }
-    return std::make_pair(Aid::INVALID_VALUE, state->get_depth());
+    return std::make_pair(Aid::INVALID, state->get_depth());
   } else {
     int possibilities = 0;
 
@@ -80,7 +80,7 @@ std::pair<Aid, int> ExplorationStrategy::best_transition_in(const State* state, 
 
     int chosen;
     if (possibilities == 0)
-      return std::make_pair(Aid::INVALID_VALUE, 0);
+      return std::make_pair(Aid::INVALID, 0);
     if (possibilities == 1)
       chosen = 0;
     else
@@ -154,7 +154,7 @@ Aid ExplorationStrategy::ensure_one_considered_among_set_in(State* state, std::u
       continue;
     // If we find an actor already satisfying condition E, we return
     if (E.count(actor->get_aid()) > 0 && (actor->is_done() or actor->is_todo()))
-      return Aid::INVALID_VALUE;
+      return Aid::INVALID;
   }
 
   return consider_best_among_set_in(state, E);

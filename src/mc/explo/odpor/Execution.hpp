@@ -203,7 +203,7 @@ public:
    */
   std::optional<PartialExecution> get_odpor_extension_from(EventHandle e, EventHandle e_prime,
                                                            const SleepSetState& state_at_e,
-                                                           Aid actor_after_e = Aid::INVALID_VALUE) const;
+                                                           Aid actor_after_e = Aid::INVALID) const;
 
   /**
    * @brief For a given sequence of actors `v` and a sequence of transitions `w`,

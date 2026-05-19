@@ -20,11 +20,12 @@ static constexpr int verify_clock_is_not_negative(int val)
 
 struct Clock {
 private:
+  static constexpr uint64_t INVALID_VALUE = static_cast<uint64_t>(~uint64_t(0));
   uint64_t value_;
 
 public:
-  static Clock INVALID_VALUE;                         // Similar to std::nullopt, this represents an invalid value
-  constexpr Clock() : value_(INVALID_VALUE.value_) {} // The default constructor gives the invalid value
+  static Clock INVALID;                        // Similar to std::nullopt, this represents an invalid value
+  constexpr Clock() : value_(INVALID_VALUE) {} // The default constructor gives the invalid value
   // Constructor used for literals and constants
   constexpr Clock(int val) : value_(static_cast<uint64_t>(verify_clock_is_not_negative(val))) {}
 
@@ -43,16 +44,16 @@ public:
   Clock(T val) = delete;
 
   // These functions provide an API that is somewhat similar to std::optional
-  constexpr bool has_value() const { return value_ != INVALID_VALUE.value_; }
+  constexpr bool has_value() const { return value_ != INVALID_VALUE; }
   constexpr uint64_t value() const
   {
-    return value_ != INVALID_VALUE.value_ ? value_ : throw "Cannot extract the value of an invalid clock";
+    return value_ != INVALID_VALUE ? value_ : throw "Cannot extract the value of an invalid clock";
   }
   constexpr explicit operator bool() const { return has_value(); }
 
   constexpr void operator++()
   {
-    if (value_ == INVALID_VALUE.value_)
+    if (value_ == INVALID_VALUE)
       throw "Cannot increase the value of the invalid clock";
     value_++;
   }

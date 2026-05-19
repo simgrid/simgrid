@@ -68,7 +68,7 @@ Aid WakeupTree::get_min_single_process_actor() const
   if (const auto node = get_min_single_process_node(); node.has_value()) {
     return node.value()->get_actor();
   }
-  return Aid::INVALID_VALUE;
+  return Aid::INVALID;
 }
 
 std::optional<WakeupTreeNode*> WakeupTree::get_min_single_process_node() const
