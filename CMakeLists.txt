@@ -428,6 +428,7 @@ if(enable_java)
 endif()
 
 # Checks for header libraries functions.
+CHECK_SYMBOL_EXISTS(mallopt "malloc.h" HAVE_MALLOPT)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 CHECK_INCLUDE_FILE("pthread_np.h" HAVE_PTHREAD_NP_H) # for pthread_setaffinity_np() on FreeBSD

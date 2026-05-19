@@ -14,16 +14,13 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/mc_protocol.h"
 #include "src/mc/smemory/runtime/smemory_observer.h"
+#include "src/sthread/sthread.h"
+#include "src/xbt/coverage.h"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
-#include "xbt/sysdep.h"
-#if HAVE_SMPI
-#include "src/smpi/include/private.hpp"
-#endif
-#include "src/sthread/sthread.h"
-#include "src/xbt/coverage.h"
 #include "xbt/str.h"
+#include "xbt/sysdep.h"
 #include <simgrid/modelchecker.h>
 
 #include <algorithm>
@@ -32,7 +29,6 @@
 #include <cstddef>
 #include <cstdio> // setvbuf
 #include <cstdlib>
-#include <malloc.h>
 #include <memory>
 #include <numeric>
 #include <sys/ptrace.h>
@@ -40,6 +36,13 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <sys/wait.h>
+
+#if HAVE_SMPI
+#include "src/smpi/include/private.hpp"
+#endif
+#if HAVE_MALLOPT
+#include <malloc.h>
+#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
@@ -75,7 +78,7 @@ AppSide* AppSide::get()
     std::signal(SIGINT, SIG_DFL);
 
     // Also warm up the malloc areas by pre-reserving some pages
-#if !SIMGRID_HAVE_MUSL
+#if HAVE_MALLOPT
     mallopt(M_TRIM_THRESHOLD, -1); // Never reduce brk() when free() is called
 #endif
     char* blocks[100];
