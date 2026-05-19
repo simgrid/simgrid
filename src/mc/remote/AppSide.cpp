@@ -75,7 +75,9 @@ AppSide* AppSide::get()
     std::signal(SIGINT, SIG_DFL);
 
     // Also warm up the malloc areas by pre-reserving some pages
+#if !SIMGRID_HAVE_MUSL
     mallopt(M_TRIM_THRESHOLD, -1); // Never reduce brk() when free() is called
+#endif
     char* blocks[100];
     for (int i = 0; i < 100; i++) {
       blocks[i]    = (char*)malloc(1024 * 64);
