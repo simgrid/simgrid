@@ -19,20 +19,22 @@ static constexpr int verify_clock_is_not_negative(int val)
 }
 
 struct Clock {
+  using storage_type = unsigned int; // No need to make it big: It must fit in an uint32 for Epoch
+
 private:
-  static constexpr uint64_t INVALID_VALUE = static_cast<uint64_t>(~uint64_t(0));
-  uint64_t value_;
+  static constexpr storage_type INVALID_VALUE = static_cast<storage_type>(~storage_type(0));
+  storage_type value_;
 
 public:
   static Clock INVALID;                        // Similar to std::nullopt, this represents an invalid value
   constexpr Clock() : value_(INVALID_VALUE) {} // The default constructor gives the invalid value
   // Constructor used for literals and constants
-  constexpr Clock(int val) : value_(static_cast<uint64_t>(verify_clock_is_not_negative(val))) {}
+  constexpr Clock(int val) : value_(static_cast<storage_type>(verify_clock_is_not_negative(val))) {}
 
   // The constructor for unsigned variables. This code would be simpler using C++20 concepts rather than using a type
   // template to trick the compiler into accepting two templated definitions of clock_t(T val) as we do here
   template <typename T, std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, int> = 0>
-  constexpr Clock(T val) : value_(static_cast<uint64_t>(val))
+  constexpr Clock(T val) : value_(static_cast<storage_type>(val))
   {
   }
 
@@ -45,7 +47,7 @@ public:
 
   // These functions provide an API that is somewhat similar to std::optional
   constexpr bool has_value() const { return value_ != INVALID_VALUE; }
-  constexpr uint64_t value() const
+  constexpr storage_type value() const
   {
     return value_ != INVALID_VALUE ? value_ : throw "Cannot extract the value of an invalid clock";
   }
