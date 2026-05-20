@@ -151,6 +151,8 @@ channel <https://framateam.org/simgrid/channels/bot-office>`_ on Mattermost. Our
 <https://sonarcloud.io/dashboard?id=simgrid_simgrid>`_ , and the `Debian build daemon <https://buildd.debian.org/status/package.php?p=simgrid>`_ test each
 release on several CPU architectures. We maintain some scripts to interact with these tools under ``tools/cmake``.
 
+Note: the gitlab worker on the freebsd image can be restarted using `service gitlab_runner start` on this machine.
+
 Interacting with git
 --------------------
 
