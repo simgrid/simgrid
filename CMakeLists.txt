@@ -478,7 +478,12 @@ if ((enable_smemory STREQUAL "ON") AND (NOT enable_sthread))
 endif()
 
 if(NOT (enable_smemory STREQUAL "OFF"))
-  if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  if ((NOT enable_sthread))
+      message( STATUS "Do not enable smemory that requests sthread. Turn sthread on to use smemory.")
+      set(enable_smemory "OFF")
+  endif()
+
+  if ((NOT (enable_smemory STREQUAL "OFF")) AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     if(enable_smemory STREQUAL "ON")
       message( FATAL_ERROR "The memory interception can only be used with clang++. Using the ${CMAKE_CXX_COMPILER_ID} compiler is not supported yet. Either change your compiler, or configure cmake with -Denable_smemory=OFF")
     else()
