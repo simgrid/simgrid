@@ -516,6 +516,8 @@ set(MC_SRC_BASE
   src/mc/smemory/smemory_config.hpp
   src/mc/smemory/MemoryAccessTracker.cpp
   src/mc/smemory/MemoryAccessTracker.hpp
+  src/mc/smemory/VectorClockPool.cpp
+  src/mc/smemory/VectorClockPool.hpp
 
   src/mc/transition/Transition.cpp
   src/mc/remote/Channel.cpp

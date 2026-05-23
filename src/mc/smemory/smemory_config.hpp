@@ -48,6 +48,8 @@ constexpr short max_time_considered = 256;
 /* **** End of the configuration part **** */
 
 // Sanity checks
+static_assert(max_threads % 8 == 0,
+              "smemory::config::max_threads must be a multiple of 8 or the SIMD optimization will break");
 static_assert(page_size != 0 && ((page_size & (page_size - 1)) == 0),
               "smemory::config::page_size must be power of two.");
 static_assert(granularity != 0 && ((granularity & (granularity - 1)) == 0),

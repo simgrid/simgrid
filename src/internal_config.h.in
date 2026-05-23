@@ -45,13 +45,17 @@
 #cmakedefine01 SIMGRID_PROCESSOR_x86_64
 #cmakedefine01 SIMGRID_PROCESSOR_arm64
 
-/* Variable for SysV, raw and Boost contexts */
+/* Variable for Boost and raw contexts */
 /* Does the stack growth upward, or downward? */
 #define PTH_STACKGROWTH @PTH_STACKGROWTH@
 
 /* MC variables */
 /* Path to sthread library */
 #cmakedefine STHREAD_PATH "@STHREAD_PATH@"
+/* malloc-tweaking API (GNU-only?) */
+#cmakedefine01 HAVE_MALLOPT
+/* the xxHash library makes smemory faster */
+#cmakedefine01 HAVE_XXHASH
 
 /* SMPI variables */
 /* SMPI enabled */
@@ -75,8 +79,6 @@
 #cmakedefine01 HAVE_VASPRINTF
 
 /* Other checks */
-/* malloc-tweaking API (GNU-only?) */
-#cmakedefine01 HAVE_MALLOPT
 /* The graphviz library */
 #cmakedefine01 HAVE_GRAPHVIZ
 /* The boost_stacktrace_backtrace library */

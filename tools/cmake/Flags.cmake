@@ -72,12 +72,13 @@ if(enable_compile_warnings)
   endif()
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 
-  # makecontext takes a pointer to function of non-matching type, and we cannot do otherwise
-  CHECK_CXX_COMPILER_FLAG(-Wno-cast-function-type-strict _have_flag)
-  if(_have_flag)
-    set_source_files_properties(src/kernel/context/ContextUnix.cpp PROPERTIES COMPILE_FLAGS -Wno-cast-function-type-strict)
+  # libeigen has a little error when compiled with AVX2
+  if(SIMGRID_HAVE_EIGEN3 AND AVX_FOUND)
+    set_source_files_properties(src/kernel/resource/models/ptask_L07.cpp PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
+    set_source_files_properties(src/kernel/lmm/System.cpp                PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
+    set_source_files_properties(src/kernel/lmm/bmf.cpp                   PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
+    set_source_files_properties(src/kernel/lmm/bmf_test.cpp              PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
   endif()
-  unset(_have_flag)
 endif()
 
 # NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
@@ -195,8 +196,8 @@ if(NOT enable_debug)
   set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
-set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
+set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS} ${AVX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS} ${AVX_FLAGS}")
 
 # Try to make Mac a bit more compliant to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
