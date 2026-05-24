@@ -42,7 +42,7 @@ RUN printf '%s\n' \
     && rm -rf /var/lib/apt/lists/*
 
 # pycewise
-RUN pip install --no-cache-dir --no-dependencies \
+RUN pip install --only-binary :all: --no-cache-dir --no-dependencies \
     pycewise==0.1.4 \
     plotnine==0.8.0 \
     patsy==0.5.2 \
@@ -58,7 +58,7 @@ RUN R -e "install.packages('remotes', dependencies=TRUE, repos='https://cran.rst
 
 # python jupyterlab packages
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
+    pip install --only-binary :all: --no-cache-dir \
     jupyterlab==3.2.3 \
     papermill==2.3.3 \
     ipywidgets==7.6.5
