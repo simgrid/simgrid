@@ -49,8 +49,8 @@ include(CheckCXXCompilerFlag)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
-## We need a decent support of the C++17 and C11 standards
-set(CMAKE_CXX_STANDARD 17)
+## We need a decent support of the C++20 and C11 standards
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_STANDARD 11)
@@ -304,7 +304,7 @@ else()
     message(STATUS "C++23 stacks: found. Switching to C++23.")
     set(CMAKE_CXX_STANDARD 23)
   else()
-    message(STATUS "C++23 stacks: NOT FOUND. Sticking to C++17.\n${compile_stacktrace_output}")
+    message(STATUS "C++23 stacks: NOT FOUND. Sticking to C++20.\n${compile_stacktrace_output}")
   endif()
 endif()
 
