@@ -66,16 +66,16 @@ public:
     value_++;
   }
   constexpr void operator++(int) { ++*this; }
-  constexpr bool operator!=(const Clock& rhs) const { return value_ != rhs.value_; }
-  constexpr bool operator==(const Clock& rhs) const { return value_ == rhs.value_; }
-  constexpr bool operator<(const Clock& rhs) const
+  constexpr std::strong_ordering operator<=>(const Clock& rhs) const noexcept
   {
+    // INVALID is seen as the smallest possible value, despite its numerical value
     if (not this->has_value())
-      return rhs.has_value(); // INVALID is seen as the smallest possible value, despite its numerical value
+      return not rhs.has_value() ? std::strong_ordering::equal : std::strong_ordering::less;
     if (not rhs.has_value())
-      return false; // this is valid
-    return this->value_ < rhs.value_;
+      return std::strong_ordering::greater;
+    return this->value_ <=> rhs.value_;
   }
+  constexpr bool operator==(const Clock& rhs) const noexcept = default;
 };
 }; // namespace simgrid::mc
 
