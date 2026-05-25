@@ -503,8 +503,10 @@ if(NOT (enable_smemory STREQUAL "OFF"))
     set(SIMGRID_HAVE_SMEMORY OFF)
   endif()
 
-  FIND_PACKAGE(AVX)
-  if(NOT AVX_FOUND)
+  if (NOT (enable_smemory STREQUAL "OFF"))  
+    FIND_PACKAGE(AVX)
+  endif()
+  if((NOT (enable_smemory STREQUAL "OFF")) AND (NOT AVX_FOUND))
     if(enable_smemory STREQUAL "ON")
       message( FATAL_ERROR "The memory interception requires AVX instructions. Please use an AVX-compatible processor, or configure cmake with -Denable_smemory=OFF")
     endif()
@@ -513,42 +515,46 @@ if(NOT (enable_smemory STREQUAL "OFF"))
     set(SIMGRID_HAVE_SMEMORY OFF)
   endif()
 
-  find_package(LLVM CONFIG)
-  if((NOT (enable_smemory STREQUAL "OFF")) AND NOT LLVM_FOUND)
-    if(enable_smemory STREQUAL "ON")
-      message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with -Denable_smemory=OFF")
+  if (NOT (enable_smemory STREQUAL "OFF"))  
+    find_package(LLVM CONFIG)
+
+    if(NOT LLVM_FOUND)
+      if(enable_smemory STREQUAL "ON")
+        message( FATAL_ERROR "The memory interception requires the LLVM development kit. Please install llvm-dev or equivalent, or configure cmake with -Denable_smemory=OFF")
+      endif()
+      message( STATUS "LLVM development kit not found. Disabling smemory.")
+      set(enable_smemory "OFF")
+      set(SIMGRID_HAVE_SMEMORY OFF)
+
+    else()
+      message( STATUS "Found LLVM development kit. LLVM_INCLUDE_DIRS=${LLVM_INCLUDE_DIRS}; LLVM_DIR=${LLVM_DIR}")
+
+      include(AddLLVM)
+
+      add_llvm_library(smemory_pass
+        MODULE      src/mc/smemory/pass/smemory_pass.cpp
+        DEPENDS     intrinsics_gen
+        PLUGIN_TOOL opt
+        PARTIAL_SOURCES_INTENDED
+      )
+
+      target_include_directories(smemory_pass PRIVATE ${LLVM_INCLUDE_DIRS})
+      target_compile_definitions(smemory_pass PRIVATE ${LLVM_DEFINITIONS})
+
+      configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
+      configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
+      execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
+      execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang++)
+      install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
+              DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+
+      set(SIMGRID_HAVE_SMEMORY ON)
+      message(STATUS "Enabling smemory (the MC memory interceptor).")
     endif()
-    message( STATUS "LLVM development kit not found. Disabling smemory.")
-    set(enable_smemory "OFF")
-    set(SIMGRID_HAVE_SMEMORY OFF)
-
-  else()
-    message( STATUS "Found LLVM development kit. LLVM_INCLUDE_DIRS=${LLVM_INCLUDE_DIRS}; LLVM_DIR=${LLVM_DIR}")
-
-    include(AddLLVM)
-  
-    add_llvm_library(smemory_pass
-      MODULE      src/mc/smemory/pass/smemory_pass.cpp
-      DEPENDS     intrinsics_gen
-      PLUGIN_TOOL opt
-      PARTIAL_SOURCES_INTENDED
-    )
-  
-    target_include_directories(smemory_pass PRIVATE ${LLVM_INCLUDE_DIRS})
-    target_compile_definitions(smemory_pass PRIVATE ${LLVM_DEFINITIONS})
-  
-    configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang.in   ${CMAKE_BINARY_DIR}/mclang @ONLY)
-    configure_file(${CMAKE_HOME_DIRECTORY}/src/mc/smemory/mclang++.in ${CMAKE_BINARY_DIR}/mclang++ @ONLY)
-    execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang)
-    execute_process(COMMAND chmod a=rx ${CMAKE_BINARY_DIR}/mclang++)
-    install(PROGRAMS    ${CMAKE_BINARY_DIR}/mclang ${CMAKE_BINARY_DIR}/mclang++
-            DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-  
-    set(SIMGRID_HAVE_SMEMORY ON)
-    message(STATUS "Enabling smemory (the MC memory interceptor).")
-  endif()
+  endif(NOT LLVM_FOUND)
 else()
   message(STATUS "Disabling smemory as requested.")
+  set(SIMGRID_HAVE_SMEMORY OFF)
 endif()
 
 if(enable_smpi)

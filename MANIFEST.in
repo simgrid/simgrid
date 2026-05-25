@@ -2593,6 +2593,9 @@ include src/mc/remote/mc_protocol.h
 include src/mc/smemory/MemoryAccessTracker.cpp
 include src/mc/smemory/MemoryAccessTracker.hpp
 include src/mc/smemory/MemoryAccessTracker_test.cpp
+include src/mc/smemory/VectorClockPool.cpp
+include src/mc/smemory/VectorClockPool.hpp
+include src/mc/smemory/VectorClockPool_test.cpp
 include src/mc/smemory/mclang++.in
 include src/mc/smemory/mclang.in
 include src/mc/smemory/pass/smemory_pass.cpp
@@ -2949,6 +2952,7 @@ include tools/cmake/Flags.cmake
 include tools/cmake/Java.cmake
 include tools/cmake/MaintainerMode.cmake
 include tools/cmake/MakeLib.cmake
+include tools/cmake/Modules/FindAVX.cmake
 include tools/cmake/Modules/FindGraphviz.cmake
 include tools/cmake/Modules/FindLibdw.cmake
 include tools/cmake/Modules/FindLibelf.cmake
