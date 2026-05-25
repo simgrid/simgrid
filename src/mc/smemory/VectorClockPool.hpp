@@ -12,12 +12,14 @@
 #include <array>
 #include <cstdint>
 #include <cstring>
-#include <immintrin.h>
 #include <memory>
 #include <unordered_map>
 #include <vector>
 #if HAVE_XXHASH
 #include <xxhash.h>
+#endif
+#if SIMGRID_HAVE_SMEMORY
+#include <immintrin.h> /* x86-only*/
 #endif
 
 /* VectorClockPool centralizes the instances of VectorClocks to reduce the memory usage (See
