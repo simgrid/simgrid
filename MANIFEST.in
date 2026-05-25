@@ -2590,9 +2590,9 @@ include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
 include src/mc/remote/mc_protocol.h
-include src/mc/smemory/MemoryAccessTracker.cpp
-include src/mc/smemory/MemoryAccessTracker.hpp
-include src/mc/smemory/MemoryAccessTracker_test.cpp
+include src/mc/smemory/MemoryAccessRecord.cpp
+include src/mc/smemory/MemoryAccessRecord.hpp
+include src/mc/smemory/MemoryAccessRecord_test.cpp
 include src/mc/smemory/VectorClockPool.cpp
 include src/mc/smemory/VectorClockPool.hpp
 include src/mc/smemory/VectorClockPool_test.cpp

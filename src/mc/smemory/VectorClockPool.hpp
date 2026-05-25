@@ -101,10 +101,6 @@ private:
   // Stack of free indexes that we could reuse
   std::vector<index_t> free_list_;
 
-  /* Check (using AVX2) whether all components of the VC behind that index are less or equal to global_min
-   * This will fail if called on a free index (no verification done internally), so don't do that. */
-  [[nodiscard]] bool is_past(index_t index, const VectorClock& global_min) const noexcept;
-
 public:
   VectorClockPool();
 
@@ -125,6 +121,10 @@ public:
   /* Garbage collection: removes all entries that are in the past according to the previous function
    * This is an heavy operation so don't do that too often. */
   void clean_before(const VectorClock& global_min) noexcept;
+
+  /* Check (using AVX2) whether all components of the VC behind that index are less or equal to global_min
+   * This will fail if called on a free index (no verification done internally), so don't do that. */
+  [[nodiscard]] bool is_past(index_t index, const VectorClock& global_min) const noexcept;
 
   [[nodiscard]] std::size_t size() const noexcept { return pool_.size(); }
 };

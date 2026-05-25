@@ -12,6 +12,8 @@
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/Clock.hpp"
 #include "src/mc/smemory/smemory_config.hpp"
+#include "xbt/asserts.h"
+#include <cstdint>
 #include <stdexcept>
 
 namespace simgrid::mc {
@@ -41,12 +43,14 @@ private:
 
 public:
   Epoch() = delete; // The epoch must be correctly initialized
-  constexpr Epoch(Aid aid, Clock clock) // This is the constructor to use for real Epochs
+  explicit constexpr Epoch(Aid aid, Clock clock) // This is the constructor to use for real Epochs
       : data_((static_cast<uint32_t>(aid.value()) << CLOCK_BITS) | (static_cast<uint32_t>(clock.value()) & CLOCK_MASK))
   {
   }
-  // Forbids type coercisions: Epoch cannot be created from a literal
-  explicit constexpr Epoch(uint32_t) = delete;
+  explicit constexpr Epoch(uint32_t idx) : data_(idx)
+  {
+    xbt_assert(idx & SELECTOR_MASK, "Cannot create an Epoch from an uint32 that is not a pure index.");
+  }
 
   // Differenciate between indexes and real epochs
   constexpr bool is_pure_epoch() const noexcept { return (data_ & SELECTOR_MASK) == 0; }

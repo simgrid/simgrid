@@ -514,8 +514,8 @@ set(MC_SRC_BASE
 
   src/mc/smemory/runtime/smemory_memorymaps.cpp
   src/mc/smemory/smemory_config.hpp
-  src/mc/smemory/MemoryAccessTracker.cpp
-  src/mc/smemory/MemoryAccessTracker.hpp
+  src/mc/smemory/MemoryAccessRecord.cpp
+  src/mc/smemory/MemoryAccessRecord.hpp
   src/mc/smemory/VectorClockPool.cpp
   src/mc/smemory/VectorClockPool.hpp
 

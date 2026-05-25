@@ -40,7 +40,7 @@ namespace simgrid::mc::smemory {
 
 XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 
-class MemoryAccessTracker {
+class MemoryAccessRecord {
 private:
   static constexpr uintptr_t page_shift_ = __builtin_ctzll(smemory::config::page_size);
   ; // long long log2 (number of trailing 0-bits in x)
@@ -105,7 +105,7 @@ public:
   private:
     using OuterIt = typename std::unordered_map<uintptr_t, Page>::const_iterator;
 
-    MemoryAccessTracker* parent_;
+    MemoryAccessRecord* parent_;
     size_t page_pos_      = 0;
     uintptr_t bucket_pos_ = 0;
     std::tuple<void*, size_t, MemOpType> current_;
@@ -119,7 +119,7 @@ public:
     using difference_type   = std::ptrdiff_t;
     using iterator_category = std::forward_iterator_tag;
 
-    iterator(MemoryAccessTracker* p, bool end) : parent_(end ? nullptr : p)
+    iterator(MemoryAccessRecord* p, bool end) : parent_(end ? nullptr : p)
     {
       if (not end) {
         if (parent_->sorted_pages_dirty_)

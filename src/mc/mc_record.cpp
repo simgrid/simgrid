@@ -32,7 +32,7 @@ static TransitionPtr create_mc_transition(kernel::actor::ActorImpl* actor, Chann
 {
 
   actor->simcall_.observer_->serialize(app_side);
-  actor->get_memory_tracker()->serialize(app_side);
+  actor->get_memory_record()->serialize(app_side);
   xbt_assert(app_side.send() == 0, "Could not send response: %s", strerror(errno));
 
   auto* t = deserialize_transition((unsigned)actor->get_pid(), actor->get_restart_count(), checker_side);

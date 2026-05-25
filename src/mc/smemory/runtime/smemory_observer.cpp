@@ -6,7 +6,7 @@
 #include "smemory_observer.h"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/smemory/MemoryAccessTracker.hpp"
+#include "src/mc/smemory/MemoryAccessRecord.hpp"
 #include "xbt/log.h"
 
 using namespace simgrid::mc::smemory;
@@ -43,7 +43,7 @@ static void create_memory_access(MemOpType type, void* where, unsigned char size
 
   auto* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (issuer)
-    issuer->get_memory_tracker()->create_memory_access(type, where, size);
+    issuer->get_memory_record()->create_memory_access(type, where, size);
   instrument = true;
 }
 

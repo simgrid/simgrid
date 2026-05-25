@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/smemory/MemoryAccessTracker.hpp"
+#include "src/mc/smemory/MemoryAccessRecord.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");
 
 namespace simgrid::mc::smemory {
 
-void MemoryAccessTracker::create_memory_access(MemOpType type, void* where, unsigned char size)
+void MemoryAccessRecord::create_memory_access(MemOpType type, void* where, unsigned char size)
 {
   // Save the memory access to the bitmap
   uintptr_t addr = reinterpret_cast<uintptr_t>(where);
@@ -91,7 +91,7 @@ void MemoryAccessTracker::create_memory_access(MemOpType type, void* where, unsi
   }
 }
 
-bool MemoryAccessTracker::was_marked(void* where, MemOpType type) const
+bool MemoryAccessRecord::was_marked(void* where, MemOpType type) const
 {
   uintptr_t addr       = reinterpret_cast<uintptr_t>(where);
   uintptr_t page_index = addr >> page_shift_;
@@ -108,7 +108,7 @@ bool MemoryAccessTracker::was_marked(void* where, MemOpType type) const
   const auto& word_ctn = type == MemOpType::Read ? it->second.read_bits[word] : it->second.write_bits[word];
   return word_ctn & (1ULL << bit);
 }
-void MemoryAccessTracker::Page::mark_bucket(uintptr_t bucket, MemOpType type)
+void MemoryAccessRecord::Page::mark_bucket(uintptr_t bucket, MemOpType type)
 {
   uintptr_t word_index = bucket >> 6;
   uintptr_t bit_index  = bucket & 63;
@@ -120,8 +120,7 @@ void MemoryAccessTracker::Page::mark_bucket(uintptr_t bucket, MemOpType type)
 // Search the marked bucket at or before start_bucket (including start_bucket)
 //
 // Returns std::nullopt if no suck bucket exists in this page
-std::optional<uintptr_t> MemoryAccessTracker::Page::find_prev_marked_bucket(uintptr_t start_bucket,
-                                                                            MemOpType type) const
+std::optional<uintptr_t> MemoryAccessRecord::Page::find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const
 {
   xbt_assert(start_bucket < buckets_per_page_);
 
@@ -158,8 +157,7 @@ std::optional<uintptr_t> MemoryAccessTracker::Page::find_prev_marked_bucket(uint
 // Search the marked bucket at or after start_bucket (including start_bucket)
 //
 // Returns std::nullopt if no such bucket exists in this page
-std::optional<uintptr_t> MemoryAccessTracker::Page::find_next_marked_bucket(uintptr_t start_bucket,
-                                                                            MemOpType type) const
+std::optional<uintptr_t> MemoryAccessRecord::Page::find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const
 {
   xbt_assert(start_bucket < buckets_per_page_);
 
@@ -192,7 +190,7 @@ std::optional<uintptr_t> MemoryAccessTracker::Page::find_next_marked_bucket(uint
   return std::nullopt;
 }
 
-void MemoryAccessTracker::serialize(Channel& channel)
+void MemoryAccessRecord::serialize(Channel& channel)
 {
   unsigned int page_count = pages_.size();
   channel.pack<unsigned int>(page_count);
@@ -218,7 +216,7 @@ void MemoryAccessTracker::serialize(Channel& channel)
   sorted_pages_.clear();
   sorted_pages_dirty_ = true;
 }
-void MemoryAccessTracker::deserialize(Channel& channel)
+void MemoryAccessRecord::deserialize(Channel& channel)
 {
   xbt_assert(pages_.empty(), "Cannot deserialize a memory tracker when the receiver is not empty");
 
@@ -236,7 +234,7 @@ void MemoryAccessTracker::deserialize(Channel& channel)
   }
 }
 
-void MemoryAccessTracker::iterator::advance()
+void MemoryAccessRecord::iterator::advance()
 {
   if (parent_ == nullptr) // don't advance beyond end()
     return;

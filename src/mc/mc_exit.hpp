@@ -7,7 +7,7 @@
 #define SIMGRID_MC_EXIT_HPP
 
 #include "src/mc/api/Epoch.hpp"
-#include "src/mc/smemory/MemoryAccessTracker.hpp"
+#include "src/mc/smemory/MemoryAccessRecord.hpp"
 
 #include <exception>
 
