@@ -552,12 +552,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   // The tests enumerate all possible subsets of the events
   // in the structure and test whether those subsets are
   // maximal and/or valid configurations
-  UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
-  UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4));
-  UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3u));
+  UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4u));
+  UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5u));
 
   SECTION("Valid Configurations")
   {
@@ -803,12 +803,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 
   SECTION("No conflicts throughout the whole structure with independent actions")
   {
-    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
-    UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4));
-    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3u));
+    UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4u));
+    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5u));
 
     // 6 choose 0 = 1 test
     CHECK(EventSet().is_conflict_free());
@@ -983,12 +983,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 
   SECTION("Conditional conflicts")
   {
-    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new ConditionallyDependentAction(1));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
-    UnfoldingEvent e5(EventSet({&e1}), new DependentAction(4));
-    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new ConditionallyDependentAction(1u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+    UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3u));
+    UnfoldingEvent e5(EventSet({&e1}), new DependentAction(4u));
+    UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5u));
 
     // 6 choose 0 = 1 test
     // There are no events even to be in conflict with

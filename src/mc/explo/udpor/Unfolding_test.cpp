@@ -21,8 +21,8 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and marking events with an u
 {
   Unfolding unfolding;
   auto e1 =
-      std::make_unique<UnfoldingEvent>(EventSet(), new ConditionallyDependentAction(Transition::Type::UNKNOWN, 0));
-  auto e2 = std::make_unique<UnfoldingEvent>(EventSet(), new DependentAction(Transition::Type::UNKNOWN, 1));
+      std::make_unique<UnfoldingEvent>(EventSet(), new ConditionallyDependentAction(Transition::Type::UNKNOWN, 0u));
+  auto e2 = std::make_unique<UnfoldingEvent>(EventSet(), new DependentAction(Transition::Type::UNKNOWN, 1u));
   const auto* e1_handle = e1.get();
   const auto* e2_handle = e2.get();
 

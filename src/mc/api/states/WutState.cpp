@@ -144,7 +144,7 @@ std::unordered_set<Aid> WutState::get_sleeping_actors(Aid after_actor) const
 {
   std::unordered_set<Aid> actors;
   for (const auto& [aid, _] : get_sleep_set()) {
-    xbt_assert(aid != 0);
+    xbt_assert(aid.c_val() != 0);
     actors.insert(aid);
   }
   // Access them directly to ensure the order of traversal
@@ -152,7 +152,7 @@ std::unordered_set<Aid> WutState::get_sleeping_actors(Aid after_actor) const
     const auto& t = opened_[i];
     if (t->aid_ == after_actor)
       break;
-    xbt_assert(t->aid_ != 0);
+    xbt_assert(t->aid_.c_val() != 0);
 
     actors.insert(t->aid_);
   }

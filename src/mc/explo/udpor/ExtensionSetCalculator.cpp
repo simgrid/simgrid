@@ -933,7 +933,7 @@ Aid ExtensionSetCalculator::first_waiting_before(const EventSet history, unsigne
     }
   }
   if (waiting_processes.empty())
-    return -1;
+    return Aid::INVALID;
   else
     return waiting_processes.front();
 }

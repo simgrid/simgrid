@@ -12,14 +12,14 @@ using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
 {
-  UnfoldingEvent e1(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-  UnfoldingEvent e3(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-  UnfoldingEvent e4(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+  UnfoldingEvent e3(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+  UnfoldingEvent e4(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
 
-  UnfoldingEvent e5(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-  UnfoldingEvent e6(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-  UnfoldingEvent e7(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
+  UnfoldingEvent e5(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+  UnfoldingEvent e6(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+  UnfoldingEvent e7(EventSet({&e1, &e3, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
 
   SECTION("Equivalence is an equivalence relation")
   {
@@ -54,9 +54,9 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
 
   SECTION("Equivalence fails with different actors")
   {
-    UnfoldingEvent e1_diff_actor(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 1, 0));
-    UnfoldingEvent e2_diff_actor(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 1, 0));
-    UnfoldingEvent e5_diff_actor(EventSet({&e1, &e3, &e2}), new DependentAction(Transition::Type::UNKNOWN, 1, 0));
+    UnfoldingEvent e1_diff_actor(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 1u, 0));
+    UnfoldingEvent e2_diff_actor(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 1u, 0));
+    UnfoldingEvent e5_diff_actor(EventSet({&e1, &e3, &e2}), new DependentAction(Transition::Type::UNKNOWN, 1u, 0));
     REQUIRE(e1 != e1_diff_actor);
     REQUIRE(e1 != e2_diff_actor);
     REQUIRE(e1 != e5_diff_actor);
@@ -68,10 +68,10 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
     // modifying the `Type` enum that exists in `Transition` just for the tests,
     // we instead provide different values of `Transition::Type` to simulate
     // the different types
-    UnfoldingEvent e1_diff_transition(EventSet(), new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
-    UnfoldingEvent e2_diff_transition(EventSet({&e1}), new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
+    UnfoldingEvent e1_diff_transition(EventSet(), new IndependentAction(Transition::Type::ACTOR_JOIN, 0u, 0));
+    UnfoldingEvent e2_diff_transition(EventSet({&e1}), new IndependentAction(Transition::Type::ACTOR_JOIN, 0u, 0));
     UnfoldingEvent e5_diff_transition(EventSet({&e1, &e3, &e2}),
-                                      new IndependentAction(Transition::Type::ACTOR_JOIN, 0, 0));
+                                      new IndependentAction(Transition::Type::ACTOR_JOIN, 0u, 0));
     REQUIRE(e1 != e1_diff_transition);
     REQUIRE(e1 != e2_diff_transition);
     REQUIRE(e1 != e5_diff_transition);
@@ -80,10 +80,10 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
   SECTION("Equivalence fails with different `times_considered`")
   {
     // With a different number for `times_considered`, we know
-    UnfoldingEvent e1_diff_considered(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
-    UnfoldingEvent e2_diff_considered(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
+    UnfoldingEvent e1_diff_considered(EventSet(), new IndependentAction(Transition::Type::UNKNOWN, 0u, 1));
+    UnfoldingEvent e2_diff_considered(EventSet({&e1}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 1));
     UnfoldingEvent e5_diff_considered(EventSet({&e1, &e3, &e2}),
-                                      new IndependentAction(Transition::Type::UNKNOWN, 0, 1));
+                                      new IndependentAction(Transition::Type::UNKNOWN, 0u, 1));
     REQUIRE(e1 != e1_diff_considered);
     REQUIRE(e1 != e2_diff_considered);
     REQUIRE(e1 != e5_diff_considered);
@@ -91,9 +91,9 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Semantic Equivalence Tests")
 
   SECTION("Equivalence fails with different immediate histories of events")
   {
-    UnfoldingEvent e1_diff_hist(EventSet({&e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-    UnfoldingEvent e2_diff_hist(EventSet({&e3}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
-    UnfoldingEvent e5_diff_hist(EventSet({&e1, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0, 0));
+    UnfoldingEvent e1_diff_hist(EventSet({&e2}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+    UnfoldingEvent e2_diff_hist(EventSet({&e3}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
+    UnfoldingEvent e5_diff_hist(EventSet({&e1, &e2}), new IndependentAction(Transition::Type::UNKNOWN, 0u, 0));
     REQUIRE(e1 != e1_diff_hist);
     REQUIRE(e1 != e2_diff_hist);
     REQUIRE(e1 != e5_diff_hist);
@@ -114,13 +114,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //        e4  e5   e7
     //
     // e5 and e6 are in conflict, e5 and e7 are in conflict, e2 and e6, and e2 ands e7 are in conflict
-    UnfoldingEvent e1(EventSet(), new ConditionallyDependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new DependentAction(0));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(0));
-    UnfoldingEvent e4(EventSet({&e3}), new ConditionallyDependentAction(1));
-    UnfoldingEvent e5(EventSet({&e3}), new DependentAction(1));
-    UnfoldingEvent e6(EventSet({&e1}), new ConditionallyDependentAction(2));
-    UnfoldingEvent e7(EventSet({&e6, &e2}), new ConditionallyDependentAction(3));
+    UnfoldingEvent e1(EventSet(), new ConditionallyDependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new DependentAction(0u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(0u));
+    UnfoldingEvent e4(EventSet({&e3}), new ConditionallyDependentAction(1u));
+    UnfoldingEvent e5(EventSet({&e3}), new DependentAction(1u));
+    UnfoldingEvent e6(EventSet({&e1}), new ConditionallyDependentAction(2u));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), new ConditionallyDependentAction(3u));
 
     SECTION("Dependency relation properties")
     {
@@ -185,13 +185,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3   /   /
     //         /  /    /
     //        e4  e5   e7
-    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3));
-    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4));
-    UnfoldingEvent e6(EventSet({&e1}), new IndependentAction(5));
-    UnfoldingEvent e7(EventSet({&e6, &e2}), new IndependentAction(6));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3u));
+    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4u));
+    UnfoldingEvent e6(EventSet({&e1}), new IndependentAction(5u));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), new IndependentAction(6u));
 
     // Since everyone's actions are independent of one another, we expect
     // that there are no conflicts between each pair of events (except with
@@ -304,13 +304,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3   /   /
     //         /  /    /
     //        e4  e5   e7
-    UnfoldingEvent e1(EventSet(), new DependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new DependentAction(1));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3));
-    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4));
-    UnfoldingEvent e6(EventSet({&e1}), new IndependentAction(5));
-    UnfoldingEvent e7(EventSet({&e6, &e2}), new ConditionallyDependentAction(6));
+    UnfoldingEvent e1(EventSet(), new DependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new DependentAction(1u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3u));
+    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4u));
+    UnfoldingEvent e6(EventSet({&e1}), new IndependentAction(5u));
+    UnfoldingEvent e7(EventSet({&e6, &e2}), new ConditionallyDependentAction(6u));
 
     // Since everyone's actions are independent of one another, we expect
     // that there are no conflicts between each pair of events (except the pair
@@ -427,13 +427,13 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     //          e3      /
     //         /  /    e7
     //        e4  e5
-    UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-    UnfoldingEvent e2(EventSet({&e1}), new ConditionallyDependentAction(1));
-    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3));
-    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4));
-    UnfoldingEvent e6(EventSet({&e1}), new DependentAction(5));
-    UnfoldingEvent e7(EventSet({&e6}), new IndependentAction(6));
+    UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+    UnfoldingEvent e2(EventSet({&e1}), new ConditionallyDependentAction(1u));
+    UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+    UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3u));
+    UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4u));
+    UnfoldingEvent e6(EventSet({&e1}), new DependentAction(5u));
+    UnfoldingEvent e7(EventSet({&e6}), new IndependentAction(6u));
 
     CHECK_FALSE(e1.conflicts_with(&e1));
     CHECK_FALSE(e1.conflicts_with(&e2));

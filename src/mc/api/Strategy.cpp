@@ -27,7 +27,7 @@ std::pair<Aid, int> ExplorationStrategy::best_transition_in(const State* state, 
     // do not yet contain informations about the application, so impossible to
     // add any form of TODO
     if (opened_transitions.size() == 0)
-      return std::make_pair(0, state->get_depth()); // we return an arbitrary actor != INVALID_AID
+      return std::make_pair(0u, state->get_depth()); // we return an arbitrary actor != INVALID_AID
     if (_sg_mc_strategy == "none") {
       return std::make_pair(opened_transitions[0]->aid_, state->get_depth());
     } else {
@@ -97,7 +97,7 @@ std::pair<Aid, int> ExplorationStrategy::best_transition_in(const State* state, 
       chosen--;
     }
 
-    return std::make_pair(-1, 0);
+    return std::make_pair(Aid::INVALID, 0);
   }
 }
 
@@ -117,14 +117,14 @@ Aid ExplorationStrategy::consider_best_among_set_in(State* state, std::unordered
   if (std::any_of(begin(E), end(E), [=](const auto& aid) {
         return actors.size() > aid.value() && actors[aid.value()].has_value() && actors[aid.value()]->is_todo();
       }))
-    return -1;
+    return Aid::INVALID;
   if (_sg_mc_strategy == "none") {
 
     for (auto& actor : actors) {
       if (not actor.has_value())
         continue;
       Aid aid = actor->get_aid();
-      if (E.count(aid.value()) > 0) {
+      if (E.count(aid) > 0) {
         xbt_assert(actor->is_enabled(), "Asked to consider one among a set containing the disabled actor %d",
                    aid.c_val());
         state->consider_one(aid);
@@ -144,7 +144,7 @@ Aid ExplorationStrategy::consider_best_among_set_in(State* state, std::unordered
       return aid;
     }
   }
-  return -1;
+  return Aid::INVALID;
 }
 
 Aid ExplorationStrategy::ensure_one_considered_among_set_in(State* state, std::unordered_set<Aid> E)

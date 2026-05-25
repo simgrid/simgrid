@@ -8,41 +8,41 @@
 
 #include "src/mc/smemory/smemory_config.hpp"
 #include "xbt/asserts.h"
-#include "xbt/log.h"
+
 #include <cstdint>
 #include <functional> // std::hash
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
 namespace simgrid::mc {
-class AidCannotBeNegative : std::exception {
-  std::string reason_;
-
+class AidCannotBeNegative : public std::logic_error {
 public:
-  AidCannotBeNegative(int id)
-      : reason_("Error: The value of an aid cannot be negative, so " + std::to_string(id) + " is invalid.")
+  explicit AidCannotBeNegative(int id)
+      : std::logic_error("Error: The value of an aid cannot be negative, so " + std::to_string(id) + " is invalid.")
   {
     xbt_backtrace_display_current();
   }
-  const char* what() const noexcept override { return reason_.c_str(); }
 };
-class AidCannotBeAboveMaxThreads : std::exception {
-  std::string reason_;
-
+class AidCannotBeAboveMaxThreads : public std::logic_error {
 public:
-  AidCannotBeAboveMaxThreads(int id)
-      : reason_(std::string("The model-checker assumes that no actor ID will ever be larger than ") +
-                std::to_string(mc::smemory::config::max_threads - 1) +
-                ". Change max_threads in "
-                "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least " +
-                std::to_string(id) +
-                "), but be warned that it will slow "
-                "down the exploration while the state space of such a large application is probably be too large "
-                "to be explored anyway. Slowing down the exploration is thus both inevitable and a bad idea in "
-                "this case.")
+  explicit AidCannotBeAboveMaxThreads(int id)
+      : std::logic_error(
+            std::string("The model-checker assumes that no actor ID will ever be larger than ") +
+            std::to_string(mc::smemory::config::max_threads - 1) +
+            ". Change max_threads in "
+            "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least " +
+            std::to_string(id) +
+            "), but be warned that it will slow "
+            "down the exploration while the state space of such a large application is probably be too large "
+            "to be explored anyway. Slowing down the exploration is thus both inevitable and a bad idea in "
+            "this case.")
   {
   }
-  const char* what() const noexcept override { return reason_.c_str(); }
+};
+class InvalidAid : std::logic_error {
+public:
+  explicit InvalidAid(std::string reason) : std::logic_error(reason) {}
 };
 
 // Helper function to prevent assigning a negative value to a Aid. If the value is negative, the code tries to raise an
@@ -71,7 +71,7 @@ public:
   static Aid INVALID;                        // Similar to std::nullopt, this represents an invalid value
   constexpr Aid() : value_(INVALID_VALUE) {} // The default constructor gives the invalid value
   // Constructor used for literals and constants
-  constexpr Aid(
+  explicit constexpr Aid(
       int val,
       bool check_validity = true) // You should always check validity. The only exception is when building INVALID_VALUE
       : value_(static_cast<storage_type>(check_validity ? verify_aid_is_valid(val) : val))
@@ -98,7 +98,7 @@ public:
   {
     if (value_ != INVALID_VALUE)
       return value_;
-    throw "Cannot extract the value of an invalid aid";
+    throw InvalidAid("Cannot extract the value of an invalid aid");
   }
   constexpr int c_val() const { return value_ != INVALID_VALUE ? value_ : -1; }
   constexpr explicit operator bool() const { return has_value(); }
@@ -122,7 +122,7 @@ public:
   constexpr Aid operator++(int)
   {
     if (value_ == INVALID_VALUE)
-      throw "Cannot increase the value of the invalid AID";
+      throw InvalidAid("Cannot increase the value of the invalid AID");
     Aid temp = *this;
     value_++;
     return temp;

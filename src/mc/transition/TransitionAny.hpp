@@ -34,7 +34,7 @@ public:
   {
     return std::any_of(begin(transitions_), end(transitions_), [](const Transition* transition) {
       const auto* tested_transition = static_cast<const CommTestTransition*>(transition);
-      return (tested_transition->get_sender() != -1 && tested_transition->get_receiver() != -1);
+      return (tested_transition->get_sender().has_value() && tested_transition->get_receiver().has_value());
     });
   }
 };

@@ -40,7 +40,7 @@ Configuration::Configuration(const EventSet& events) : events_(events)
   // Since we add in topological order under `<`, we know that the "most-recent"
   // transition executed by each actor will appear last
   for (const UnfoldingEvent* e : get_topologically_sorted_events()) {
-    this->latest_event_mapping[e->get_actor().value()] = e;
+    this->latest_event_mapping[e->get_actor()] = e;
   }
 }
 
@@ -65,7 +65,7 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
   this->events_.insert(e);
   this->newest_event                         = e;
-  this->latest_event_mapping[e->get_actor().value()] = e;
+  this->latest_event_mapping[e->get_actor()] = e;
 
   // Preserves the property that the configuration is causally closed
   if (auto history = History(e); not this->events_.contains(history)) {

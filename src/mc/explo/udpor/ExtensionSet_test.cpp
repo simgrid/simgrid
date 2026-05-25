@@ -39,7 +39,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `1: AsyncSend(m)`
     Configuration C;
-    Aid issuer = 1;
+    Aid issuer = 1u;
 
     const auto async_send      = new CommSendTransition(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_send);
@@ -56,7 +56,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
   {
     // Consider the extension with `2: AsyncRecv(m)`
     Configuration C;
-    Aid issuer = 2;
+    Aid issuer = 2u;
 
     const auto async_recv      = new CommRecvTransition(issuer, times_considered, comm, mbox, tag);
     const auto incremental_exC = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
@@ -74,7 +74,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     // Consider the extension with `1: AsyncSend(m)`
     Configuration C;
 
-    const auto async_send           = new CommSendTransition(1, times_considered, comm, mbox, tag);
+    const auto async_send           = new CommSendTransition(1u, times_considered, comm, mbox, tag);
     const auto incremental_exC_send = ExtensionSetCalculator::partially_extend(C, &U, async_send);
 
     // Check that the events have been added to `U`
@@ -85,7 +85,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
 
     // Consider the extension with `2: AsyncRecv(m)`
-    const auto async_recv           = new CommRecvTransition(2, times_considered, comm, mbox, tag);
+    const auto async_recv           = new CommRecvTransition(2u, times_considered, comm, mbox, tag);
     const auto incremental_exC_recv = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
 
     // Check that the events have been added to `U`
@@ -101,7 +101,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     Configuration C;
 
     // Consider the extension with `1: AsyncSend(m)`
-    const auto async_send           = new CommSendTransition(1, times_considered, comm, mbox, tag);
+    const auto async_send           = new CommSendTransition(1u, times_considered, comm, mbox, tag);
     const auto incremental_exC_send = ExtensionSetCalculator::partially_extend(C, &U, async_send);
 
     // Check that event `a` has been added to `U`
@@ -110,7 +110,7 @@ TEST_CASE("simgrid::mc::udpor: Testing Computation with AsyncSend/AsyncReceive O
     REQUIRE(incremental_exC_send.contains_equivalent_to(&e_send));
 
     // Consider the extension with `2: AsyncRecv(m)`
-    const auto async_recv           = new CommRecvTransition(2, times_considered, comm, mbox, tag);
+    const auto async_recv           = new CommRecvTransition(2u, times_considered, comm, mbox, tag);
     const auto incremental_exC_recv = ExtensionSetCalculator::partially_extend(C, &U, async_recv);
 
     // Check that event `b` has been added to `U`
@@ -190,10 +190,10 @@ TEST_CASE("simgrid::mc::udpor: Testing Waits, Receives, and Sends")
   const bool timeout         = false;
 
   Unfolding U;
-  const auto comm_send   = new CommSendTransition(1, times_considered, comm, mbox, tag);
-  const auto comm_recv   = new CommRecvTransition(2, times_considered, comm, mbox, tag);
-  const auto comm_wait_1 = new CommWaitTransition(1, times_considered, timeout, comm, 1, 2, mbox);
-  const auto comm_wait_2 = new CommWaitTransition(2, times_considered, timeout, comm, 1, 2, mbox);
+  const auto comm_send   = new CommSendTransition(1u, times_considered, comm, mbox, tag);
+  const auto comm_recv   = new CommRecvTransition(2u, times_considered, comm, mbox, tag);
+  const auto comm_wait_1 = new CommWaitTransition(1u, times_considered, timeout, comm, 1u, 2u, mbox);
+  const auto comm_wait_2 = new CommWaitTransition(2u, times_considered, timeout, comm, 1u, 2u, mbox);
 
   // 1. UDPOR will attempt to expand first ex({⊥})
 

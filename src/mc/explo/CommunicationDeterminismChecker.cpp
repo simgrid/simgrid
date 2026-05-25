@@ -34,8 +34,8 @@ public:
   int num                       = 0;
   uintptr_t comm_addr           = 0;
   PatternCommunicationType type = PatternCommunicationType::send;
-  Aid src_proc                  = 0;
-  Aid dst_proc                  = 0;
+  Aid src_proc{0};
+  Aid dst_proc{0};
   unsigned mbox                 = 0;
   unsigned size                 = 0;
   int tag                       = 0;

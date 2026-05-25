@@ -15,69 +15,69 @@ TEST_CASE("simgrid::mc::ClockVector: Constructing Vectors")
     ClockVector cv;
 
     // Verify `cv` doesn't map any values
-    REQUIRE(not cv.get(0).has_value());
-    REQUIRE(not cv.get(1).has_value());
-    REQUIRE(not cv.get(2).has_value());
-    REQUIRE(not cv.get(3).has_value());
+    REQUIRE(not cv.get(0u).has_value());
+    REQUIRE(not cv.get(1u).has_value());
+    REQUIRE(not cv.get(2u).has_value());
+    REQUIRE(not cv.get(3u).has_value());
   }
 
   SECTION("With initial values")
   {
     ClockVector cv;
-    cv[1]  = 5;
-    cv[3]  = 1;
-    cv[7]  = 10;
-    cv[6]  = 5;
-    cv[8]  = 1;
-    cv[10] = 10;
+    cv[1u]  = 5;
+    cv[3u]  = 1;
+    cv[7u]  = 10;
+    cv[6u]  = 5;
+    cv[8u]  = 1;
+    cv[10u] = 10;
 
     // Verify `cv` maps each value
-    REQUIRE(cv.get(1).has_value());
-    REQUIRE(cv.get(1).value() == 5);
-    REQUIRE(cv[1] == 5);
-    REQUIRE(cv.get(3).has_value());
-    REQUIRE(cv.get(3).value() == 1);
-    REQUIRE(cv[3] == 1);
-    REQUIRE(cv.get(7).has_value());
-    REQUIRE(cv.get(7).value() == 10);
-    REQUIRE(cv[7] == 10);
-    REQUIRE(cv.get(6).has_value());
-    REQUIRE(cv.get(6).value() == 5);
-    REQUIRE(cv[6] == 5);
-    REQUIRE(cv.get(8).has_value());
-    REQUIRE(cv.get(8).value() == 1);
-    REQUIRE(cv[8] == 1);
-    REQUIRE(cv.get(10).has_value());
-    REQUIRE(cv.get(10).value() == 10);
-    REQUIRE(cv[10] == 10);
+    REQUIRE(cv.get(1u).has_value());
+    REQUIRE(cv.get(1u).value() == 5);
+    REQUIRE(cv[1u] == 5);
+    REQUIRE(cv.get(3u).has_value());
+    REQUIRE(cv.get(3u).value() == 1);
+    REQUIRE(cv[3u] == 1);
+    REQUIRE(cv.get(7u).has_value());
+    REQUIRE(cv.get(7u).value() == 10);
+    REQUIRE(cv[7u] == 10);
+    REQUIRE(cv.get(6u).has_value());
+    REQUIRE(cv.get(6u).value() == 5);
+    REQUIRE(cv[6u] == 5);
+    REQUIRE(cv.get(8u).has_value());
+    REQUIRE(cv.get(8u).value() == 1);
+    REQUIRE(cv[8u] == 1);
+    REQUIRE(cv.get(10u).has_value());
+    REQUIRE(cv.get(10u).value() == 10);
+    REQUIRE(cv[10u] == 10);
   }
 }
 
 TEST_CASE("simgrid::mc::ClockVector: Testing operator[]")
 {
   ClockVector cv;
-  cv[0] = 1;
+  cv[0u] = 1;
 
-  REQUIRE(cv.get(0).has_value());
-  REQUIRE(cv.get(0).value() == 1);
+  REQUIRE(cv.get(0u).has_value());
+  REQUIRE(cv.get(0u).value() == 1);
 
   // Verify `cv` doesn't map other values
-  REQUIRE(not cv.get(2).has_value());
-  REQUIRE(not cv.get(3).has_value());
+  REQUIRE(not cv.get(2u).has_value());
+  REQUIRE(not cv.get(3u).has_value());
 
-  cv[10] = 31;
+  cv[10u] = 31;
 
   // Old values are still mapped
-  REQUIRE(cv.get(0).has_value());
-  REQUIRE(cv.get(0).value() == 1);
-  REQUIRE(cv[0] == 1);
-  REQUIRE(cv.get(10).has_value());
-  REQUIRE(cv.get(10).value() == 31);
-  REQUIRE(cv[10] == 31);
+  REQUIRE(cv.get(0u).has_value());
+  REQUIRE(cv.get(0u).value() == 1);
+  REQUIRE(cv[0u] == 1);
+  REQUIRE(cv.get(10u).has_value());
+  REQUIRE(cv.get(10u).value() == 31);
+  REQUIRE(cv[10u] == 31);
 
   // Verify `cv` doesn't map other values
-  REQUIRE_FALSE(cv.get(11).has_value());
-  REQUIRE_FALSE(cv.get(12).has_value());
+  REQUIRE_FALSE(cv.get(11u).has_value());
+  REQUIRE_FALSE(cv.get(12u).has_value());
 }
 
 TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
@@ -85,45 +85,45 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
   SECTION("Max with zero clock vector yields self")
   {
     ClockVector cv1;
-    cv1[1] = 2;
-    cv1[2] = 10;
-    cv1[3] = 5;
+    cv1[1u] = 2;
+    cv1[2u] = 10;
+    cv1[3u] = 5;
 
     ClockVector cv2;
     ClockVector maxCV = ClockVector::max(cv1, cv2);
 
-    REQUIRE(maxCV.get(1).has_value());
-    REQUIRE(maxCV.get(1).value() == 2);
-    REQUIRE(maxCV[1] == 2);
+    REQUIRE(maxCV.get(1u).has_value());
+    REQUIRE(maxCV.get(1u).value() == 2);
+    REQUIRE(maxCV[1u] == 2);
 
-    REQUIRE(maxCV.get(2).has_value());
-    REQUIRE(maxCV.get(2).value() == 10);
-    REQUIRE(maxCV[2] == 10);
+    REQUIRE(maxCV.get(2u).has_value());
+    REQUIRE(maxCV.get(2u).value() == 10);
+    REQUIRE(maxCV[2u] == 10);
 
-    REQUIRE(maxCV.get(3).has_value());
-    REQUIRE(maxCV.get(3).value() == 5);
-    REQUIRE(maxCV[3] == 5);
+    REQUIRE(maxCV.get(3u).has_value());
+    REQUIRE(maxCV.get(3u).value() == 5);
+    REQUIRE(maxCV[3u] == 5);
   }
 
   SECTION("Max with self clock vector yields self")
   {
     ClockVector cv1;
-    cv1[1]            = 2;
-    cv1[2]            = 10;
-    cv1[3]            = 5;
+    cv1[1u]           = 2;
+    cv1[2u]           = 10;
+    cv1[3u]           = 5;
     ClockVector maxCV = ClockVector::max(cv1, cv1);
 
-    REQUIRE(maxCV.get(1).has_value());
-    REQUIRE(maxCV.get(1).value() == 2);
-    REQUIRE(maxCV[1] == 2);
+    REQUIRE(maxCV.get(1u).has_value());
+    REQUIRE(maxCV.get(1u).value() == 2);
+    REQUIRE(maxCV[1u] == 2);
 
-    REQUIRE(maxCV.get(2).has_value());
-    REQUIRE(maxCV.get(2).value() == 10);
-    REQUIRE(maxCV[2] == 10);
+    REQUIRE(maxCV.get(2u).has_value());
+    REQUIRE(maxCV.get(2u).value() == 10);
+    REQUIRE(maxCV[2u] == 10);
 
-    REQUIRE(maxCV.get(3).has_value());
-    REQUIRE(maxCV.get(3).value() == 5);
-    REQUIRE(maxCV[3] == 5);
+    REQUIRE(maxCV.get(3u).has_value());
+    REQUIRE(maxCV.get(3u).value() == 5);
+    REQUIRE(maxCV[3u] == 5);
   }
 
   SECTION("Testing with partial overlaps")
@@ -131,118 +131,118 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
     SECTION("Example 1")
     {
       ClockVector cv1;
-      cv1[1] = 2;
-      cv1[2] = 10;
-      cv1[3] = 5;
+      cv1[1u] = 2;
+      cv1[2u] = 10;
+      cv1[3u] = 5;
       ClockVector cv2;
-      cv2[1]            = 5;
-      cv2[3]            = 1;
-      cv2[7]            = 10;
+      cv2[1u]           = 5;
+      cv2[3u]           = 1;
+      cv2[7u]           = 10;
       ClockVector maxCV = ClockVector::max(cv1, cv2);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 5);
-      REQUIRE(maxCV[1] == 5);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 5);
+      REQUIRE(maxCV[1u] == 5);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 10);
-      REQUIRE(maxCV[2] == 10);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 10);
+      REQUIRE(maxCV[2u] == 10);
 
-      REQUIRE(maxCV.get(3).has_value());
-      REQUIRE(maxCV.get(3).value() == 5);
-      REQUIRE(maxCV[3] == 5);
+      REQUIRE(maxCV.get(3u).has_value());
+      REQUIRE(maxCV.get(3u).value() == 5);
+      REQUIRE(maxCV[3u] == 5);
 
-      REQUIRE(maxCV.get(7).has_value());
-      REQUIRE(maxCV.get(7).value() == 10);
-      REQUIRE(maxCV[7] == 10);
+      REQUIRE(maxCV.get(7u).has_value());
+      REQUIRE(maxCV.get(7u).value() == 10);
+      REQUIRE(maxCV[7u] == 10);
     }
 
     SECTION("Example 2")
     {
       ClockVector cv1;
-      cv1[1]  = 2;
-      cv1[2]  = 10;
-      cv1[3]  = 5;
-      cv1[4]  = 40;
-      cv1[11] = 3;
-      cv1[12] = 8;
+      cv1[1u]  = 2;
+      cv1[2u]  = 10;
+      cv1[3u]  = 5;
+      cv1[4u]  = 40;
+      cv1[11u] = 3;
+      cv1[12u] = 8;
 
       ClockVector cv2;
-      cv2[1]  = 18;
-      cv2[2]  = 4;
-      cv2[4]  = 41;
-      cv2[10] = 3;
-      cv2[12] = 8;
+      cv2[1u]  = 18;
+      cv2[2u]  = 4;
+      cv2[4u]  = 41;
+      cv2[10u] = 3;
+      cv2[12u] = 8;
 
       ClockVector maxCV = ClockVector::max(cv1, cv2);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 18);
-      REQUIRE(maxCV[1] == 18);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 18);
+      REQUIRE(maxCV[1u] == 18);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 10);
-      REQUIRE(maxCV[2] == 10);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 10);
+      REQUIRE(maxCV[2u] == 10);
 
-      REQUIRE(maxCV.get(3).has_value());
-      REQUIRE(maxCV.get(3).value() == 5);
-      REQUIRE(maxCV[3] == 5);
+      REQUIRE(maxCV.get(3u).has_value());
+      REQUIRE(maxCV.get(3u).value() == 5);
+      REQUIRE(maxCV[3u] == 5);
 
-      REQUIRE(maxCV.get(4).has_value());
-      REQUIRE(maxCV.get(4).value() == 41);
-      REQUIRE(maxCV[4] == 41);
+      REQUIRE(maxCV.get(4u).has_value());
+      REQUIRE(maxCV.get(4u).value() == 41);
+      REQUIRE(maxCV[4u] == 41);
 
-      REQUIRE(maxCV.get(10).has_value());
-      REQUIRE(maxCV.get(10).value() == 3);
-      REQUIRE(maxCV[10] == 3);
+      REQUIRE(maxCV.get(10u).has_value());
+      REQUIRE(maxCV.get(10u).value() == 3);
+      REQUIRE(maxCV[10u] == 3);
 
-      REQUIRE(maxCV.get(11).has_value());
-      REQUIRE(maxCV.get(11).value() == 3);
-      REQUIRE(maxCV[11] == 3);
+      REQUIRE(maxCV.get(11u).has_value());
+      REQUIRE(maxCV.get(11u).value() == 3);
+      REQUIRE(maxCV[11u] == 3);
 
-      REQUIRE(maxCV.get(12).has_value());
-      REQUIRE(maxCV.get(12).value() == 8);
-      REQUIRE(maxCV[12] == 8);
+      REQUIRE(maxCV.get(12u).has_value());
+      REQUIRE(maxCV.get(12u).value() == 8);
+      REQUIRE(maxCV[12u] == 8);
     }
 
     SECTION("Example 3")
     {
       ClockVector cv1;
-      cv1[1]   = 2;
-      cv1[4]   = 41;
-      cv1[12]  = 0;
+      cv1[1u]  = 2;
+      cv1[4u]  = 41;
+      cv1[12u] = 0;
       ClockVector cv2;
-      cv2[2]  = 4;
-      cv2[4]  = 10;
-      cv2[10] = 3;
-      cv2[12] = 8;
+      cv2[2u]  = 4;
+      cv2[4u]  = 10;
+      cv2[10u] = 3;
+      cv2[12u] = 8;
       ClockVector cv3;
-      cv3[5]  = 60;
-      cv3[12] = 6;
-      cv3[14] = 3;
+      cv3[5u]  = 60;
+      cv3[12u] = 6;
+      cv3[14u] = 3;
 
       ClockVector maxCV = ClockVector::max(cv1, cv2);
       maxCV             = ClockVector::max(maxCV, cv3);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 2);
-      REQUIRE(maxCV[1] == 2);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 2);
+      REQUIRE(maxCV[1u] == 2);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 4);
-      REQUIRE(maxCV[2] == 4);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 4);
+      REQUIRE(maxCV[2u] == 4);
 
-      REQUIRE(maxCV.get(4).has_value());
-      REQUIRE(maxCV.get(4).value() == 41);
-      REQUIRE(maxCV[4] == 41);
+      REQUIRE(maxCV.get(4u).has_value());
+      REQUIRE(maxCV.get(4u).value() == 41);
+      REQUIRE(maxCV[4u] == 41);
 
-      REQUIRE(maxCV.get(10).has_value());
-      REQUIRE(maxCV.get(10).value() == 3);
-      REQUIRE(maxCV[10] == 3);
+      REQUIRE(maxCV.get(10u).has_value());
+      REQUIRE(maxCV.get(10u).value() == 3);
+      REQUIRE(maxCV[10u] == 3);
 
-      REQUIRE(maxCV.get(12).has_value());
-      REQUIRE(maxCV.get(12).value() == 8);
-      REQUIRE(maxCV[12] == 8);
+      REQUIRE(maxCV.get(12u).has_value());
+      REQUIRE(maxCV.get(12u).value() == 8);
+      REQUIRE(maxCV[12u] == 8);
     }
   }
 
@@ -251,104 +251,104 @@ TEST_CASE("simgrid::mc::ClockVector: Testing Maximal Clock Vectors")
     SECTION("Example 1")
     {
       ClockVector cv1;
-      cv1[1] = 2;
+      cv1[1u] = 2;
       ClockVector cv2;
-      cv2[2]  = 4;
-      cv2[4]  = 41;
-      cv2[10] = 3;
-      cv2[12] = 8;
+      cv2[2u]  = 4;
+      cv2[4u]  = 41;
+      cv2[10u] = 3;
+      cv2[12u] = 8;
 
       ClockVector maxCV = ClockVector::max(cv1, cv2);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 2);
-      REQUIRE(maxCV[1] == 2);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 2);
+      REQUIRE(maxCV[1u] == 2);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 4);
-      REQUIRE(maxCV[2] == 4);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 4);
+      REQUIRE(maxCV[2u] == 4);
 
-      REQUIRE(maxCV.get(4).has_value());
-      REQUIRE(maxCV.get(4).value() == 41);
-      REQUIRE(maxCV[4] == 41);
+      REQUIRE(maxCV.get(4u).has_value());
+      REQUIRE(maxCV.get(4u).value() == 41);
+      REQUIRE(maxCV[4u] == 41);
 
-      REQUIRE(maxCV.get(10).has_value());
-      REQUIRE(maxCV.get(10).value() == 3);
-      REQUIRE(maxCV[10] == 3);
+      REQUIRE(maxCV.get(10u).has_value());
+      REQUIRE(maxCV.get(10u).value() == 3);
+      REQUIRE(maxCV[10u] == 3);
 
-      REQUIRE(maxCV.get(12).has_value());
-      REQUIRE(maxCV.get(12).value() == 8);
-      REQUIRE(maxCV[12] == 8);
+      REQUIRE(maxCV.get(12u).has_value());
+      REQUIRE(maxCV.get(12u).value() == 8);
+      REQUIRE(maxCV[12u] == 8);
     }
 
     SECTION("Example 2")
     {
       ClockVector cv1;
-      cv1[1] = 2;
-      cv1[4] = 41;
+      cv1[1u] = 2;
+      cv1[4u] = 41;
       ClockVector cv2;
-      cv2[2]  = 4;
-      cv2[10] = 3;
-      cv2[12] = 8;
+      cv2[2u]  = 4;
+      cv2[10u] = 3;
+      cv2[12u] = 8;
 
       ClockVector maxCV = ClockVector::max(cv1, cv2);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 2);
-      REQUIRE(maxCV[1] == 2);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 2);
+      REQUIRE(maxCV[1u] == 2);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 4);
-      REQUIRE(maxCV[2] == 4);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 4);
+      REQUIRE(maxCV[2u] == 4);
 
-      REQUIRE(maxCV.get(4).has_value());
-      REQUIRE(maxCV.get(4).value() == 41);
-      REQUIRE(maxCV[4] == 41);
+      REQUIRE(maxCV.get(4u).has_value());
+      REQUIRE(maxCV.get(4u).value() == 41);
+      REQUIRE(maxCV[4u] == 41);
 
-      REQUIRE(maxCV.get(10).has_value());
-      REQUIRE(maxCV.get(10).value() == 3);
-      REQUIRE(maxCV[10] == 3);
+      REQUIRE(maxCV.get(10u).has_value());
+      REQUIRE(maxCV.get(10u).value() == 3);
+      REQUIRE(maxCV[10u] == 3);
 
-      REQUIRE(maxCV.get(12).has_value());
-      REQUIRE(maxCV.get(12).value() == 8);
-      REQUIRE(maxCV[12] == 8);
+      REQUIRE(maxCV.get(12u).has_value());
+      REQUIRE(maxCV.get(12u).value() == 8);
+      REQUIRE(maxCV[12u] == 8);
     }
 
     SECTION("Example 3")
     {
       ClockVector cv1;
-      cv1[1] = 2;
-      cv1[4] = 41;
+      cv1[1u] = 2;
+      cv1[4u] = 41;
       ClockVector cv2;
-      cv2[2]  = 4;
-      cv2[10] = 3;
-      cv2[12] = 8;
-      cv2[11] = 0;
+      cv2[2u]  = 4;
+      cv2[10u] = 3;
+      cv2[12u] = 8;
+      cv2[11u] = 0;
       ClockVector cv3;
-      cv3[8]            = 6;
-      cv3[9]            = 3;
+      cv3[8u]           = 6;
+      cv3[9u]           = 3;
       ClockVector maxCV = ClockVector::max(cv1, cv2);
       maxCV             = ClockVector::max(maxCV, cv3);
 
-      REQUIRE(maxCV.get(1).has_value());
-      REQUIRE(maxCV.get(1).value() == 2);
-      REQUIRE(maxCV[1] == 2);
+      REQUIRE(maxCV.get(1u).has_value());
+      REQUIRE(maxCV.get(1u).value() == 2);
+      REQUIRE(maxCV[1u] == 2);
 
-      REQUIRE(maxCV.get(2).has_value());
-      REQUIRE(maxCV.get(2).value() == 4);
-      REQUIRE(maxCV[2] == 4);
+      REQUIRE(maxCV.get(2u).has_value());
+      REQUIRE(maxCV.get(2u).value() == 4);
+      REQUIRE(maxCV[2u] == 4);
 
-      REQUIRE(maxCV.get(4).has_value());
-      REQUIRE(maxCV.get(4).value() == 41);
-      REQUIRE(maxCV[4] == 41);
+      REQUIRE(maxCV.get(4u).has_value());
+      REQUIRE(maxCV.get(4u).value() == 41);
+      REQUIRE(maxCV[4u] == 41);
 
-      REQUIRE(maxCV.get(10).has_value());
-      REQUIRE(maxCV.get(10).value() == 3);
-      REQUIRE(maxCV[10] == 3);
+      REQUIRE(maxCV.get(10u).has_value());
+      REQUIRE(maxCV.get(10u).value() == 3);
+      REQUIRE(maxCV[10u] == 3);
 
-      REQUIRE(maxCV.get(12).has_value());
-      REQUIRE(maxCV.get(12).value() == 8);
-      REQUIRE(maxCV[12] == 8);
+      REQUIRE(maxCV.get(12u).has_value());
+      REQUIRE(maxCV.get(12u).value() == 8);
+      REQUIRE(maxCV[12u] == 8);
     }
   }
 }

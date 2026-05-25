@@ -63,12 +63,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Constructing Trees")
   {
     // Here, we make everything dependent. This will ensure that each unique sequence
     // inserted into the tree never "eventually looks like"
-    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a1 = new DependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a2 = new DependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 5);
-    const TransitionPtr a5 = new DependentAction(Transition::Type::UNKNOWN, 6);
+    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a1 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a2 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 5u);
+    const TransitionPtr a5 = new DependentAction(Transition::Type::UNKNOWN, 6u);
 
     Execution execution;
     execution.push_transition(a0);
@@ -152,11 +152,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
     // We first notice that there's a reversible race between
     // events 0 and 3.
 
-    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 2u);
 
     Execution execution;
     execution.push_transition(a0);
@@ -244,12 +244,12 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
 
   SECTION("Performing Arbitrary Insertions")
   {
-    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+    const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
     WakeupTree tree;
 
     SECTION("Attempting to insert the empty sequence into an empty tree should have no effect")
@@ -336,11 +336,11 @@ TEST_CASE("simgrid::mc::odpor::WakeupTree: Testing Insertion for Empty Execution
 
   SECTION("Insertion with more subtle equivalents")
   {
-    const TransitionPtr cd_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr i_2  = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr i_3  = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr d_1  = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr d_2  = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const TransitionPtr cd_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr i_2  = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr i_3  = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr d_1  = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr d_2  = new DependentAction(Transition::Type::UNKNOWN, 2u);
     WakeupTree complex_tree;
     // After the insertions below, the tree looks like the following:
     //                              {}

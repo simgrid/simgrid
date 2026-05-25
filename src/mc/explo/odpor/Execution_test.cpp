@@ -40,10 +40,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
   {
     // We check each permutation for happens before
     // among the given actions added to the execution
-    const TransitionPtr a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 4);
+    const TransitionPtr a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a4 = new DependentAction(Transition::Type::UNKNOWN, 4u);
 
     Execution execution;
     execution.push_transition(a1);
@@ -54,18 +54,18 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
     SECTION("Check the vector clocks")
     {
       SECTION("compare after a1")
-      compare_cv(execution.get_event_with_handle(0).get_clock_vector(), {Aid::INVALID, 0});
+      compare_cv(execution.get_event_with_handle(0).get_clock_vector(), {Aid::INVALID, 0u});
 
       SECTION("compare after a2")
 
-      compare_cv(execution.get_event_with_handle(1).get_clock_vector(), {Aid::INVALID, Aid::INVALID, 1});
+      compare_cv(execution.get_event_with_handle(1).get_clock_vector(), {Aid::INVALID, Aid::INVALID, 1u});
       SECTION("compare after a3")
 
-      compare_cv(execution.get_event_with_handle(2).get_clock_vector(), {Aid::INVALID, Aid::INVALID, Aid::INVALID, 2});
+      compare_cv(execution.get_event_with_handle(2).get_clock_vector(), {Aid::INVALID, Aid::INVALID, Aid::INVALID, 2u});
       SECTION("compare after a4")
 
       compare_cv(execution.get_event_with_handle(3).get_clock_vector(),
-                 {Aid::INVALID, 0, Aid::INVALID, Aid::INVALID, 3});
+                 {Aid::INVALID, 0u, Aid::INVALID, Aid::INVALID, 3u});
     }
 
     SECTION("Happens-before is irreflexive")
@@ -99,10 +99,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
 
   SECTION("Example 2")
   {
-    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
 
     // Notice that `a5` and `a6` are executed by the same actor; thus, although
     // the actor is executing independent actions, each still "happen-before"
@@ -150,11 +150,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
       // Given a reversible race between events `e1` and `e3` in a simulation,
       // we assert that `e5` would be eliminated from being contained in
       // the sequence `notdep(e1, E)`
-      const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2);
-      const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-      const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 3);
-      const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-      const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3);
+      const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+      const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+      const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+      const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+      const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3u);
 
       Execution execution;
       execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4});
@@ -168,17 +168,17 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
       // This test verifies that for each triple of events
       // in the execution, for a modestly intersting one,
       // that transitivity holds
-      const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2);
-      const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1);
-      const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-      const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
-      const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3);
-      const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0);
-      const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -5);
-      const auto e7  = new DependentAction(Transition::Type::UNKNOWN, 1);
-      const auto e8  = new DependentAction(Transition::Type::UNKNOWN, 0);
-      const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
-      const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+      const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+      const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1u);
+      const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+      const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -10);
+      const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+      const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0u);
+      const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -5);
+      const auto e7  = new DependentAction(Transition::Type::UNKNOWN, 1u);
+      const auto e8  = new DependentAction(Transition::Type::UNKNOWN, 0u);
+      const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -10);
+      const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
 
       Execution execution;
       execution.push_partial_execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
@@ -203,11 +203,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 {
   SECTION("Example 1")
   {
-    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-    const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const auto a4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto a5 = new DependentAction(Transition::Type::UNKNOWN, 2);
+    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto a3 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto a4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto a5 = new DependentAction(Transition::Type::UNKNOWN, 2u);
 
     Execution execution;
     execution.push_transition(a1);
@@ -223,7 +223,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     REQUIRE(execution.get_racing_events_of(1) == std::list<Execution::EventHandle>{});
 
     // 2 and 1 are executed by different actors and happen right after each other
-    REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{1});
+    REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{1u});
 
     // Although a3 and a4 are dependent, they are executed by the same actor
     REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{});
@@ -233,15 +233,15 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     //
     // Furthermore, event 1 is run by the same actor and thus also is not in a race.
     // Hence, only event 3 races with event 4
-    REQUIRE(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{3});
+    REQUIRE(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{3u});
   }
 
   SECTION("Example 2: Events with multiple races")
   {
-    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-    const auto a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto a1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto a3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto a4 = new DependentAction(Transition::Type::UNKNOWN, 3u);
 
     Execution execution;
     execution.push_transition(a1);
@@ -268,7 +268,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
       // with respect to `v`. e2, however, has nothing happening before it in dom_E(v),
       // so it is an initial of E' wrt. `v`
       const auto initial_wrt_event1 = execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{});
-      REQUIRE(initial_wrt_event1 == std::unordered_set<Aid>{1});
+      REQUIRE(initial_wrt_event1 == std::unordered_set<Aid>{1u});
     }
 
     SECTION("Check initials with respect to event 2")
@@ -277,7 +277,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
       // e3 has nothing happening before it in dom_E(v), so it is an initial
       // of E' wrt. `v`
       const auto initial_wrt_event2 = execution.get_missing_source_set_actors_from(2, std::unordered_set<Aid>{});
-      REQUIRE(initial_wrt_event2 == std::unordered_set<Aid>{3});
+      REQUIRE(initial_wrt_event2 == std::unordered_set<Aid>{3u});
     }
   }
 
@@ -285,11 +285,11 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
   {
     // In this example, `e0` and `e1` are lock actions that
     // are in a race. We assert that
-    const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e2 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e0 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e2 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e3 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 3u);
 
     Execution execution;
     execution.push_transition(e0);
@@ -302,16 +302,16 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 4: Indirect Races")
   {
-    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 6);
-    const auto e5 = new DependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 3);
-    const auto e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-    const auto e8 = new IndependentAction(Transition::Type::UNKNOWN, 4);
-    const auto e9 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
+    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e1 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e2 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e4 = new DependentAction(Transition::Type::UNKNOWN, 6u);
+    const auto e5 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+    const auto e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+    const auto e8 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+    const auto e9 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9});
 
@@ -331,7 +331,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     // 2. Events 2 and 4 do NOT race since 2 --> 3 --> 4
     // 3. Events 1 and 4 do NOT race since 1 is independent of 4
     // 4. Events 0 and 4 do NOT race since 0 --> 2 --> 4
-    REQUIRE(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{3});
+    REQUIRE(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{3u});
 
     // Events 4 and 5 race; and because everyone before 4 (including 3) either
     // a) happens-before, b) races, or c) does not race with 4, 4 is the race
@@ -354,17 +354,17 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example 5: Stress testing race detection")
   {
-    const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
-    const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0);
-    const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -5);
-    const auto e7  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, -5);
-    const auto e8  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 0, 4);
-    const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, -10);
-    const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3);
+    const auto e0  = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e1  = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e2  = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e3  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -10);
+    const auto e4  = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const auto e5  = new DependentAction(Transition::Type::UNKNOWN, 0u);
+    const auto e6  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -5);
+    const auto e7  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1u, -5);
+    const auto e8  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 0u, 4);
+    const auto e9  = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, -10);
+    const auto e10 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6, e7, e8, e9, e10});
 
@@ -378,7 +378,7 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
     CHECK(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{});
 
     // Events 2 and 3 are independent while events 1 and 2 are dependent
-    CHECK(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{1});
+    CHECK(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{1u});
 
     // Event 4 is independent with everything so it can never be in a race
     CHECK(execution.get_racing_events_of(4) == std::list<Execution::EventHandle>{});
@@ -407,13 +407,13 @@ TEST_CASE("simgrid::mc::odpor::Execution: Testing Racing Events and Initials")
 
   SECTION("Example with many races for one event")
   {
-    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const auto e1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-    const auto e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-    const auto e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 5);
-    const auto e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 6);
-    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 7);
+    const auto e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const auto e1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+    const auto e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+    const auto e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+    const auto e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 5u);
+    const auto e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 6u);
+    const auto e6 = new DependentAction(Transition::Type::UNKNOWN, 7u);
 
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5, e6});
     REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{5, 4, 3, 2, 1, 0});
@@ -426,14 +426,14 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
   {
     // Every transition is independent with every other and run by different actors. Hopefully
     // we say that the events are independent with each other...
-    const TransitionPtr a0 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 5);
-    const TransitionPtr a5 = new IndependentAction(Transition::Type::UNKNOWN, 6);
-    const TransitionPtr a6 = new IndependentAction(Transition::Type::UNKNOWN, 7);
-    const TransitionPtr a7 = new IndependentAction(Transition::Type::UNKNOWN, 7);
+    const TransitionPtr a0 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a2 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a3 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 5u);
+    const TransitionPtr a5 = new IndependentAction(Transition::Type::UNKNOWN, 6u);
+    const TransitionPtr a6 = new IndependentAction(Transition::Type::UNKNOWN, 7u);
+    const TransitionPtr a7 = new IndependentAction(Transition::Type::UNKNOWN, 7u);
     Execution execution(PartialExecution{a0, a1, a2, a3});
 
     REQUIRE(execution.is_independent_with_execution_of(PartialExecution{a4, a5}, a6));
@@ -453,21 +453,21 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
   SECTION("Independence is trivial with an empty extension")
   {
     REQUIRE(Execution().is_independent_with_execution_of(PartialExecution{},
-                                                         new DependentAction(Transition::Type::UNKNOWN, 1)));
+                                                         new DependentAction(Transition::Type::UNKNOWN, 1u)));
   }
 
   SECTION("Dependencies stopping independence from being possible")
   {
-    const TransitionPtr a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a1    = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr a6    = new DependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-    const TransitionPtr indep = new IndependentAction(Transition::Type::UNKNOWN, 2);
+    const TransitionPtr a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a1    = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr a6    = new DependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+    const TransitionPtr indep = new IndependentAction(Transition::Type::UNKNOWN, 2u);
     Execution execution(PartialExecution{a0, a1, a2, a3});
 
     // We see that although `a4` comes after `a1` with which it is dependent, it
@@ -492,24 +492,24 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
 
   SECTION("More interesting dependencies stopping independence")
   {
-    const TransitionPtr e0 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, 5);
-    const TransitionPtr e1 = new DependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr e4 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3, 5);
-    const TransitionPtr e5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4, 4);
+    const TransitionPtr e0 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1u, 5);
+    const TransitionPtr e1 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr e4 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3u, 5);
+    const TransitionPtr e5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4u, 4);
     Execution execution(PartialExecution{e0, e1, e2, e3, e4, e5});
 
     SECTION("Action run by same actor disqualifies independence")
     {
-      const TransitionPtr w_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-      const TransitionPtr w_2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-      const TransitionPtr w_3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-      const TransitionPtr w_4 = new IndependentAction(Transition::Type::UNKNOWN, 4);
+      const TransitionPtr w_1 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+      const TransitionPtr w_2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+      const TransitionPtr w_3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+      const TransitionPtr w_4 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
       const auto w   = PartialExecution{w_1, w_2, w_3, w_4};
 
-      const TransitionPtr actor4_action  = new IndependentAction(Transition::Type::UNKNOWN, 4);
-      const TransitionPtr actor4_action2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+      const TransitionPtr actor4_action  = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+      const TransitionPtr actor4_action2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
 
       // Action `actor4_action` is independent with everything EXCEPT the last transition
       // which is executed by the same actor
@@ -524,16 +524,16 @@ TEST_CASE("simgrid::mc::odpor::Execution: Independence Tests")
 
 TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
 {
-  const TransitionPtr a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr a1    = new DependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr a6    = new DependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr indep = new IndependentAction(Transition::Type::UNKNOWN, 2);
+  const TransitionPtr a0    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr a1    = new DependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr a2    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr a3    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr a4    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr a5    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr a6    = new DependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr a7    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr a8    = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr indep = new IndependentAction(Transition::Type::UNKNOWN, 2u);
   Execution execution(PartialExecution{a0, a1, a2, a3});
 
   SECTION("Initials trivial with empty executions")
@@ -541,12 +541,12 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
     // There are no initials for an empty extension since
     // a requirement is that the actor be contained in the
     // extension itself
-    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 0));
-    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 1));
-    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 2));
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 0));
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 1));
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 2));
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 0u));
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 1u));
+    REQUIRE_FALSE(execution.is_initial_after_execution_of(PartialExecution{}, 2u));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 0u));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 1u));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{}, 2u));
   }
 
   SECTION("The first actor is always an initial")
@@ -570,10 +570,10 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
     // Even though actor `2` executes an independent
     // transition later on, it is blocked since its first transition
     // is dependent with actor 1's transition
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a5, indep}, 2));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a5, indep}, 2u));
 
     // However, if actor 2 executes its independent action first, it DOES become an initial
-    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, indep, a5}, 2));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, indep, a5}, 2u));
   }
 
   SECTION("Example: Large partial executions")
@@ -581,45 +581,45 @@ TEST_CASE("simgrid::mc::odpor::Execution: Initials Test")
     // The record trace is `1 3 4 4 3 1 4 2`
 
     // Actor 1 starts the execution
-    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 1));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 1u));
 
     // Actor 2 all the way at the end is independent with everybody: despite
     // the tangle that comes before it, we can more it to the front with no issue
-    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 2));
+    REQUIRE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 2u));
 
     // Actor 3 is eliminated since `a1` is dependent with `a2`
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 3));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 3u));
 
     // Likewise with actor 4
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 4));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(PartialExecution{a1, a2, a3, a4, a6, a7, a8, indep}, 4u));
   }
 
   SECTION("Example: Stress tests for initials computation")
   {
-    const TransitionPtr v_1 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1, 3);
-    const TransitionPtr v_2 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-    const TransitionPtr v_3 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2, 3);
-    const TransitionPtr v_4 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr v_5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3, 8);
-    const TransitionPtr v_6 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-    const TransitionPtr v_7 = new DependentAction(Transition::Type::UNKNOWN, 3);
-    const TransitionPtr v_8 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4, 3);
+    const TransitionPtr v_1 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 1u, 3);
+    const TransitionPtr v_2 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+    const TransitionPtr v_3 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 2u, 3);
+    const TransitionPtr v_4 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr v_5 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 3u, 8);
+    const TransitionPtr v_6 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+    const TransitionPtr v_7 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+    const TransitionPtr v_8 = new DependentIfSameValueAction(Transition::Type::UNKNOWN, 4u, 3);
     const auto v   = PartialExecution{v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8};
 
     // Actor 1 being the first actor in the expansion, it is clearly an initial
-    REQUIRE(Execution().is_initial_after_execution_of(v, 1));
+    REQUIRE(Execution().is_initial_after_execution_of(v, 1u));
 
     // Actor 2 can't be switched before actor 1 without creating an trace
     // that leads to a different state than that of `E.v := ().v := v`
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 2));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 2u));
 
     // The first action of Actor 3 is independent with what comes before it, so it can
     // be moved forward. Note that this is the case even though it later executes and action
     // that's dependent with most everyone else
-    REQUIRE(Execution().is_initial_after_execution_of(v, 3));
+    REQUIRE(Execution().is_initial_after_execution_of(v, 3u));
 
     // Actor 4 is blocked actor 3's second action `v_7`
-    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 4));
+    REQUIRE_FALSE(Execution().is_initial_after_execution_of(v, 4u));
   }
 }
 
@@ -627,14 +627,14 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
 {
   // This test case assumes that each detected race is detected to also
   // be reversible. For each reversible
-  const TransitionPtr e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr e1 = new DependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr e6 = new DependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1);
+  const TransitionPtr e0 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr e1 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr e2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr e3 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr e4 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr e5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr e6 = new DependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr e7 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u);
 
   Execution execution;
 
@@ -646,18 +646,20 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
 
   // Actor 3, since it starts the extension from event 1, clearly is an initial from there
   execution.push_transition(e2);
-  REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{1});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{3});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4, 5}) == std::unordered_set<Aid>{3});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{3}) == std::unordered_set<Aid>{});
+  REQUIRE(execution.get_racing_events_of(2) == std::list<Execution::EventHandle>{1u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{3u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4u, 5u}) ==
+        std::unordered_set<Aid>{3u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{3u}) == std::unordered_set<Aid>{});
 
   // e1 and e3 are in an reversible race. Actor 4 is not hindered from being moved to
   // the front since e2 is independent with e3; hence, it is an initial
   execution.push_transition(e3);
-  REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{1});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{4});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{3, 5}) == std::unordered_set<Aid>{4});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4}) == std::unordered_set<Aid>{});
+  REQUIRE(execution.get_racing_events_of(3) == std::list<Execution::EventHandle>{1u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{4u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{3u, 5u}) ==
+        std::unordered_set<Aid>{4u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4u}) == std::unordered_set<Aid>{});
 
   // e4 is not in a race since e3 is run by the same actor and occurs before e4
   execution.push_transition(e4);
@@ -665,39 +667,43 @@ TEST_CASE("simgrid::mc::odpor::Execution: SDPOR Backtracking Simulation")
 
   // e5 is independent with everything between e1 and e5, and `proc(e5) == 2`
   execution.push_transition(e5);
-  REQUIRE(execution.get_racing_events_of(5) == std::list<Execution::EventHandle>{1});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{2});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4, 5}) == std::unordered_set<Aid>{2});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{2}) == std::unordered_set<Aid>{});
+  REQUIRE(execution.get_racing_events_of(5) == std::list<Execution::EventHandle>{1u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{2u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4u, 5u}) ==
+        std::unordered_set<Aid>{2u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{2u}) == std::unordered_set<Aid>{});
 
   // Event 6 has two races: one with event 4 and one with event 5. In the latter race, actor 3 follows
   // immediately after and so is evidently a source set actor; in the former race, only actor 2 can
   // be brought to the front of the queue
   execution.push_transition(e6);
   REQUIRE(execution.get_racing_events_of(6) == std::list<Execution::EventHandle>{5, 4});
-  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{2});
-  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{6, 7}) == std::unordered_set<Aid>{2});
-  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{2}) == std::unordered_set<Aid>{});
-  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{3});
-  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{6, 7}) == std::unordered_set<Aid>{3});
-  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{3}) == std::unordered_set<Aid>{});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{2u});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{6u, 7u}) ==
+        std::unordered_set<Aid>{2u});
+  CHECK(execution.get_missing_source_set_actors_from(4, std::unordered_set<Aid>{2u}) == std::unordered_set<Aid>{});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{3u});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{6u, 7u}) ==
+        std::unordered_set<Aid>{3u});
+  CHECK(execution.get_missing_source_set_actors_from(5, std::unordered_set<Aid>{3u}) == std::unordered_set<Aid>{});
 
   // Finally, event e7 races with e6 and `proc(e7) = 1` is brought forward
   execution.push_transition(e7);
   REQUIRE(execution.get_racing_events_of(7) == std::list<Execution::EventHandle>{6});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{1});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4, 5}) == std::unordered_set<Aid>{1});
-  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{1}) == std::unordered_set<Aid>{});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{}) == std::unordered_set<Aid>{1u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{4u, 5u}) ==
+        std::unordered_set<Aid>{1u});
+  CHECK(execution.get_missing_source_set_actors_from(1, std::unordered_set<Aid>{1u}) == std::unordered_set<Aid>{});
 }
 
 TEST_CASE("simgrid::mc::odpor::Execution: ODPOR Smallest Sequence Tests")
 {
-  const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4);
-  const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4);
+  const TransitionPtr a0 = new DependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr a1 = new IndependentAction(Transition::Type::UNKNOWN, 4u);
+  const TransitionPtr a2 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr a3 = new DependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr a4 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr a5 = new ConditionallyDependentAction(Transition::Type::UNKNOWN, 4u);
 
   Execution execution;
   execution.push_transition(a0);

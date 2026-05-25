@@ -27,11 +27,11 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Constructing Configurations")
   //          e3
   //         /  /
   //        e4   e5
-  UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3));
-  UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3u));
+  UnfoldingEvent e5(EventSet({&e3}), new IndependentAction(4u));
 
   SECTION("Creating a configuration without events")
   {
@@ -96,10 +96,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Adding Events")
   //           /
   //         /  /
   //        e3   e4
-  UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(3u));
 
   REQUIRE_THROWS_AS(Configuration().add_event(nullptr), std::invalid_argument);
   REQUIRE_THROWS_AS(Configuration().add_event(&e2), std::invalid_argument);
@@ -139,10 +139,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order")
   //          e3
   //         /
   //        e4
-  UnfoldingEvent e1(EventSet(), new IndependentAction(1));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(3));
-  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(4));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(1u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(3u));
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(4u));
 
   SECTION("Topological ordering for entire set")
   {
@@ -197,12 +197,12 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Compli
   //        e4   e6
   //        /
   //       e5
-  UnfoldingEvent e1(EventSet(), new IndependentAction(1));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(3));
-  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(4));
-  UnfoldingEvent e5(EventSet({&e4}), new IndependentAction(5));
-  UnfoldingEvent e6(EventSet({&e3}), new IndependentAction(6));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(1u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(3u));
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(4u));
+  UnfoldingEvent e5(EventSet({&e4}), new IndependentAction(5u));
+  UnfoldingEvent e6(EventSet({&e3}), new IndependentAction(6u));
 
   SECTION("Topological ordering for subsets")
   {
@@ -306,18 +306,18 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
   //        /   /     /
   //         /  /   /
   //         [   e12    ]
-  UnfoldingEvent e1(EventSet(), new IndependentAction(1));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2));
-  UnfoldingEvent e8(EventSet({&e1}), new IndependentAction(3));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(4));
-  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(5));
-  UnfoldingEvent e5(EventSet({&e4}), new IndependentAction(6));
-  UnfoldingEvent e6(EventSet({&e4}), new IndependentAction(7));
-  UnfoldingEvent e7(EventSet({&e2, &e8}), new IndependentAction(8));
-  UnfoldingEvent e9(EventSet({&e6, &e7}), new IndependentAction(9));
-  UnfoldingEvent e10(EventSet({&e7}), new IndependentAction(10));
-  UnfoldingEvent e11(EventSet({&e8}), new IndependentAction(11));
-  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), new IndependentAction(12));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(1u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2u));
+  UnfoldingEvent e8(EventSet({&e1}), new IndependentAction(3u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(4u));
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(5u));
+  UnfoldingEvent e5(EventSet({&e4}), new IndependentAction(6u));
+  UnfoldingEvent e6(EventSet({&e4}), new IndependentAction(7u));
+  UnfoldingEvent e7(EventSet({&e2, &e8}), new IndependentAction(8u));
+  UnfoldingEvent e9(EventSet({&e6, &e7}), new IndependentAction(9u));
+  UnfoldingEvent e10(EventSet({&e7}), new IndependentAction(10u));
+  UnfoldingEvent e11(EventSet({&e8}), new IndependentAction(11u));
+  UnfoldingEvent e12(EventSet({&e5, &e9, &e10}), new IndependentAction(12u));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
 
   SECTION("Test every combination of the maximal configuration (forward graph)")
@@ -406,14 +406,14 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
   //           e3    e6
   //           /     / /
   //          e4    e7 e8
-  UnfoldingEvent e1(EventSet(), new IndependentAction(0));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1));
-  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2));
-  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3));
-  UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4));
-  UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5));
-  UnfoldingEvent e7(EventSet({&e6}), new IndependentAction(6));
-  UnfoldingEvent e8(EventSet({&e6}), new IndependentAction(7));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(0u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(1u));
+  UnfoldingEvent e3(EventSet({&e2}), new IndependentAction(2u));
+  UnfoldingEvent e4(EventSet({&e3}), new IndependentAction(3u));
+  UnfoldingEvent e5(EventSet({&e1}), new IndependentAction(4u));
+  UnfoldingEvent e6(EventSet({&e5}), new IndependentAction(5u));
+  UnfoldingEvent e7(EventSet({&e6}), new IndependentAction(6u));
+  UnfoldingEvent e8(EventSet({&e6}), new IndependentAction(7u));
 
   SECTION("Iteration over an empty configuration yields only the empty set")
   {
@@ -541,24 +541,24 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
   //               |   e11 e12 e13 e14   e15
   //               |   /      / / /   /  /
   //               +-> e16     e17     e18
-  UnfoldingEvent e1(EventSet(), new IndependentAction(1));
-  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2));
-  UnfoldingEvent e3(EventSet({&e1}), new IndependentAction(3));
-  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(4));
-  UnfoldingEvent e5(EventSet({&e2}), new IndependentAction(5));
-  UnfoldingEvent e6(EventSet({&e3}), new IndependentAction(6));
-  UnfoldingEvent e7(EventSet({&e3}), new IndependentAction(7));
-  UnfoldingEvent e8(EventSet({&e4}), new IndependentAction(8));
-  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), new IndependentAction(9));
-  UnfoldingEvent e10(EventSet({&e6, &e7}), new IndependentAction(10));
-  UnfoldingEvent e11(EventSet({&e8}), new IndependentAction(11));
-  UnfoldingEvent e12(EventSet({&e8}), new IndependentAction(12));
-  UnfoldingEvent e13(EventSet({&e9}), new IndependentAction(13));
-  UnfoldingEvent e14(EventSet({&e9}), new IndependentAction(14));
-  UnfoldingEvent e15(EventSet({&e10}), new IndependentAction(15));
-  UnfoldingEvent e16(EventSet({&e5, &e11}), new IndependentAction(16));
-  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), new IndependentAction(17));
-  UnfoldingEvent e18(EventSet({&e14, &e15}), new IndependentAction(18));
+  UnfoldingEvent e1(EventSet(), new IndependentAction(1u));
+  UnfoldingEvent e2(EventSet({&e1}), new IndependentAction(2u));
+  UnfoldingEvent e3(EventSet({&e1}), new IndependentAction(3u));
+  UnfoldingEvent e4(EventSet({&e2}), new IndependentAction(4u));
+  UnfoldingEvent e5(EventSet({&e2}), new IndependentAction(5u));
+  UnfoldingEvent e6(EventSet({&e3}), new IndependentAction(6u));
+  UnfoldingEvent e7(EventSet({&e3}), new IndependentAction(7u));
+  UnfoldingEvent e8(EventSet({&e4}), new IndependentAction(8u));
+  UnfoldingEvent e9(EventSet({&e4, &e5, &e6}), new IndependentAction(9u));
+  UnfoldingEvent e10(EventSet({&e6, &e7}), new IndependentAction(10u));
+  UnfoldingEvent e11(EventSet({&e8}), new IndependentAction(11u));
+  UnfoldingEvent e12(EventSet({&e8}), new IndependentAction(12u));
+  UnfoldingEvent e13(EventSet({&e9}), new IndependentAction(13u));
+  UnfoldingEvent e14(EventSet({&e9}), new IndependentAction(14u));
+  UnfoldingEvent e15(EventSet({&e10}), new IndependentAction(15u));
+  UnfoldingEvent e16(EventSet({&e5, &e11}), new IndependentAction(16u));
+  UnfoldingEvent e17(EventSet({&e12, &e13, &e14}), new IndependentAction(17u));
+  UnfoldingEvent e18(EventSet({&e14, &e15}), new IndependentAction(18u));
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12, &e13, &e14, &e15, &e16, &e17, &e18};
 
   SECTION("Every subset iterated over is maximal")
@@ -612,14 +612,14 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Latest Transitions")
   //            e4(3) e5(2)  e6(1)
   //                  /   /
   //               e7(1) e8(1)
-  const TransitionPtr t1 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr t2 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr t3 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr t4 = new IndependentAction(Transition::Type::UNKNOWN, 3);
-  const TransitionPtr t5 = new IndependentAction(Transition::Type::UNKNOWN, 2);
-  const TransitionPtr t6 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr t7 = new IndependentAction(Transition::Type::UNKNOWN, 1);
-  const TransitionPtr t8 = new IndependentAction(Transition::Type::UNKNOWN, 1);
+  const TransitionPtr t1 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr t2 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr t3 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr t4 = new IndependentAction(Transition::Type::UNKNOWN, 3u);
+  const TransitionPtr t5 = new IndependentAction(Transition::Type::UNKNOWN, 2u);
+  const TransitionPtr t6 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr t7 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
+  const TransitionPtr t8 = new IndependentAction(Transition::Type::UNKNOWN, 1u);
 
   const UnfoldingEvent e1(EventSet(), t1);
   const UnfoldingEvent e2(EventSet({&e1}), t2);
@@ -635,159 +635,159 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Latest Transitions")
     SECTION("Empty configuration has no events")
     {
       Configuration C;
-      REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
-      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(1u).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
 
-      REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
-      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(1u).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
     }
 
     SECTION("Missing two actors")
     {
       Configuration C{&e1};
-      REQUIRE(C.get_latest_event_of(1).has_value());
-      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+      REQUIRE(C.get_latest_event_of(1u).has_value());
+      REQUIRE(C.get_latest_event_of(1u).value() == &e1);
 
-      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
 
-      REQUIRE(C.get_latest_action_of(1).has_value());
-      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+      REQUIRE(C.get_latest_action_of(1u).has_value());
+      REQUIRE(C.get_latest_action_of(1u).value() == t1.get());
 
-      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
     }
 
     SECTION("Two events with one actor yields the latest event")
     {
       Configuration C{&e1, &e2};
-      REQUIRE(C.get_latest_event_of(1).has_value());
-      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+      REQUIRE(C.get_latest_event_of(1u).has_value());
+      REQUIRE(C.get_latest_event_of(1u).value() == &e2);
 
-      REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
 
-      REQUIRE(C.get_latest_action_of(1).has_value());
-      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+      REQUIRE(C.get_latest_action_of(1u).has_value());
+      REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
 
-      REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
     }
 
     SECTION("Two events with two actors")
     {
       Configuration C{&e1, &e3};
-      REQUIRE(C.get_latest_event_of(1).has_value());
-      REQUIRE(C.get_latest_event_of(1).value() == &e1);
+      REQUIRE(C.get_latest_event_of(1u).has_value());
+      REQUIRE(C.get_latest_event_of(1u).value() == &e1);
 
-      REQUIRE(C.get_latest_event_of(2).has_value());
-      REQUIRE(C.get_latest_event_of(2).value() == &e3);
+      REQUIRE(C.get_latest_event_of(2u).has_value());
+      REQUIRE(C.get_latest_event_of(2u).value() == &e3);
 
-      REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
 
-      REQUIRE(C.get_latest_action_of(1).has_value());
-      REQUIRE(C.get_latest_action_of(1).value() == t1.get());
+      REQUIRE(C.get_latest_action_of(1u).has_value());
+      REQUIRE(C.get_latest_action_of(1u).value() == t1.get());
 
-      REQUIRE(C.get_latest_action_of(2).has_value());
-      REQUIRE(C.get_latest_action_of(2).value() == t3.get());
+      REQUIRE(C.get_latest_action_of(2u).has_value());
+      REQUIRE(C.get_latest_action_of(2u).value() == t3.get());
 
-      REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+      REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
     }
 
     SECTION("Three different actors actors")
     {
       Configuration C{&e1, &e2, &e3, &e4, &e5};
-      REQUIRE(C.get_latest_event_of(1).has_value());
-      REQUIRE(C.get_latest_event_of(1).value() == &e2);
+      REQUIRE(C.get_latest_event_of(1u).has_value());
+      REQUIRE(C.get_latest_event_of(1u).value() == &e2);
 
-      REQUIRE(C.get_latest_event_of(2).has_value());
-      REQUIRE(C.get_latest_event_of(2).value() == &e5);
+      REQUIRE(C.get_latest_event_of(2u).has_value());
+      REQUIRE(C.get_latest_event_of(2u).value() == &e5);
 
-      REQUIRE(C.get_latest_event_of(3).has_value());
-      REQUIRE(C.get_latest_event_of(3).value() == &e4);
+      REQUIRE(C.get_latest_event_of(3u).has_value());
+      REQUIRE(C.get_latest_event_of(3u).value() == &e4);
 
-      REQUIRE(C.get_latest_action_of(1).has_value());
-      REQUIRE(C.get_latest_action_of(1).value() == t2.get());
+      REQUIRE(C.get_latest_action_of(1u).has_value());
+      REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
 
-      REQUIRE(C.get_latest_action_of(2).has_value());
-      REQUIRE(C.get_latest_action_of(2).value() == t5.get());
+      REQUIRE(C.get_latest_action_of(2u).has_value());
+      REQUIRE(C.get_latest_action_of(2u).value() == t5.get());
 
-      REQUIRE(C.get_latest_action_of(3).has_value());
-      REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+      REQUIRE(C.get_latest_action_of(3u).has_value());
+      REQUIRE(C.get_latest_action_of(3u).value() == t4.get());
     }
   }
 
   SECTION("Test that the latest events are correct when adding new events")
   {
     Configuration C;
-    REQUIRE_FALSE(C.get_latest_event_of(1).has_value());
-    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
-    REQUIRE_FALSE(C.get_latest_action_of(1).has_value());
-    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(1u).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(1u).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
 
     C.add_event(&e1);
-    REQUIRE(C.get_latest_event_of(1).has_value());
-    REQUIRE(C.get_latest_event_of(1).value() == &e1);
-    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
-    REQUIRE(C.get_latest_action_of(1).has_value());
-    REQUIRE(C.get_latest_action_of(1).value() == t1.get());
-    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(1u).has_value());
+    REQUIRE(C.get_latest_event_of(1u).value() == &e1);
+    REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).value() == t1.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
 
     C.add_event(&e2);
-    REQUIRE(C.get_latest_event_of(1).has_value());
-    REQUIRE(C.get_latest_event_of(1).value() == &e2);
-    REQUIRE_FALSE(C.get_latest_event_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
-    REQUIRE(C.get_latest_action_of(1).has_value());
-    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
-    REQUIRE_FALSE(C.get_latest_action_of(2).has_value());
-    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(1u).has_value());
+    REQUIRE(C.get_latest_event_of(1u).value() == &e2);
+    REQUIRE_FALSE(C.get_latest_event_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
+    REQUIRE_FALSE(C.get_latest_action_of(2u).has_value());
+    REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
 
     C.add_event(&e3);
-    REQUIRE(C.get_latest_event_of(1).has_value());
-    REQUIRE(C.get_latest_event_of(1).value() == &e2);
-    REQUIRE(C.get_latest_event_of(2).has_value());
-    REQUIRE(C.get_latest_event_of(2).value() == &e3);
-    REQUIRE_FALSE(C.get_latest_event_of(3).has_value());
-    REQUIRE(C.get_latest_action_of(1).has_value());
-    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
-    REQUIRE(C.get_latest_action_of(2).has_value());
-    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
-    REQUIRE_FALSE(C.get_latest_action_of(3).has_value());
+    REQUIRE(C.get_latest_event_of(1u).has_value());
+    REQUIRE(C.get_latest_event_of(1u).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2u).has_value());
+    REQUIRE(C.get_latest_event_of(2u).value() == &e3);
+    REQUIRE_FALSE(C.get_latest_event_of(3u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2u).has_value());
+    REQUIRE(C.get_latest_action_of(2u).value() == t3.get());
+    REQUIRE_FALSE(C.get_latest_action_of(3u).has_value());
 
     C.add_event(&e4);
-    REQUIRE(C.get_latest_event_of(1).has_value());
-    REQUIRE(C.get_latest_event_of(1).value() == &e2);
-    REQUIRE(C.get_latest_event_of(2).has_value());
-    REQUIRE(C.get_latest_event_of(2).value() == &e3);
-    REQUIRE(C.get_latest_event_of(3).has_value());
-    REQUIRE(C.get_latest_event_of(3).value() == &e4);
-    REQUIRE(C.get_latest_action_of(1).has_value());
-    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
-    REQUIRE(C.get_latest_action_of(2).has_value());
-    REQUIRE(C.get_latest_action_of(2).value() == t3.get());
-    REQUIRE(C.get_latest_action_of(3).has_value());
-    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+    REQUIRE(C.get_latest_event_of(1u).has_value());
+    REQUIRE(C.get_latest_event_of(1u).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2u).has_value());
+    REQUIRE(C.get_latest_event_of(2u).value() == &e3);
+    REQUIRE(C.get_latest_event_of(3u).has_value());
+    REQUIRE(C.get_latest_event_of(3u).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2u).has_value());
+    REQUIRE(C.get_latest_action_of(2u).value() == t3.get());
+    REQUIRE(C.get_latest_action_of(3u).has_value());
+    REQUIRE(C.get_latest_action_of(3u).value() == t4.get());
 
     C.add_event(&e5);
-    REQUIRE(C.get_latest_event_of(1).has_value());
-    REQUIRE(C.get_latest_event_of(1).value() == &e2);
-    REQUIRE(C.get_latest_event_of(2).has_value());
-    REQUIRE(C.get_latest_event_of(2).value() == &e5);
-    REQUIRE(C.get_latest_event_of(3).has_value());
-    REQUIRE(C.get_latest_event_of(3).value() == &e4);
-    REQUIRE(C.get_latest_action_of(1).has_value());
-    REQUIRE(C.get_latest_action_of(1).value() == t2.get());
-    REQUIRE(C.get_latest_action_of(2).has_value());
-    REQUIRE(C.get_latest_action_of(2).value() == t5.get());
-    REQUIRE(C.get_latest_action_of(3).has_value());
-    REQUIRE(C.get_latest_action_of(3).value() == t4.get());
+    REQUIRE(C.get_latest_event_of(1u).has_value());
+    REQUIRE(C.get_latest_event_of(1u).value() == &e2);
+    REQUIRE(C.get_latest_event_of(2u).has_value());
+    REQUIRE(C.get_latest_event_of(2u).value() == &e5);
+    REQUIRE(C.get_latest_event_of(3u).has_value());
+    REQUIRE(C.get_latest_event_of(3u).value() == &e4);
+    REQUIRE(C.get_latest_action_of(1u).has_value());
+    REQUIRE(C.get_latest_action_of(1u).value() == t2.get());
+    REQUIRE(C.get_latest_action_of(2u).has_value());
+    REQUIRE(C.get_latest_action_of(2u).value() == t5.get());
+    REQUIRE(C.get_latest_action_of(3u).has_value());
+    REQUIRE(C.get_latest_action_of(3u).value() == t4.get());
   }
 }
 
@@ -811,44 +811,44 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Computing Full Alternatives in Rea
   Unfolding U;
 
   auto e0 =
-      std::make_unique<UnfoldingEvent>(EventSet(), new ConditionallyDependentAction(Transition::Type::UNKNOWN, 0));
+      std::make_unique<UnfoldingEvent>(EventSet(), new ConditionallyDependentAction(Transition::Type::UNKNOWN, 0u));
   const auto* e0_handle = e0.get();
 
-  auto e1 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), new DependentAction(Transition::Type::UNKNOWN, 0));
+  auto e1 = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}), new DependentAction(Transition::Type::UNKNOWN, 0u));
   const auto* e1_handle = e1.get();
 
   auto e2               = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}),
-                                             new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1));
+                                                           new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u));
   const auto* e2_handle = e2.get();
 
   auto e3               = std::make_unique<UnfoldingEvent>(EventSet({e1_handle}),
-                                             new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2));
+                                                           new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u));
   const auto* e3_handle = e3.get();
 
   auto e4               = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}),
-                                             new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1));
+                                                           new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u));
   const auto* e4_handle = e4.get();
 
-  auto e5 = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}), new DependentAction(Transition::Type::UNKNOWN, 0));
+  auto e5 = std::make_unique<UnfoldingEvent>(EventSet({e4_handle}), new DependentAction(Transition::Type::UNKNOWN, 0u));
   const auto* e5_handle = e5.get();
 
   auto e6               = std::make_unique<UnfoldingEvent>(EventSet({e5_handle}),
-                                             new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2));
+                                                           new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u));
   const auto* e6_handle = e6.get();
 
   auto e7               = std::make_unique<UnfoldingEvent>(EventSet({e0_handle}),
-                                             new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2));
+                                                           new ConditionallyDependentAction(Transition::Type::UNKNOWN, 2u));
   const auto* e7_handle = e7.get();
 
   auto e8               = std::make_unique<UnfoldingEvent>(EventSet({e4_handle, e7_handle}),
-                                             new DependentAction(Transition::Type::UNKNOWN, 0));
+                                                           new DependentAction(Transition::Type::UNKNOWN, 0u));
   const auto* e8_handle = e8.get();
 
-  auto e9 = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}), new DependentAction(Transition::Type::UNKNOWN, 0));
+  auto e9 = std::make_unique<UnfoldingEvent>(EventSet({e7_handle}), new DependentAction(Transition::Type::UNKNOWN, 0u));
   const auto* e9_handle = e9.get();
 
   auto e10               = std::make_unique<UnfoldingEvent>(EventSet({e9_handle}),
-                                              new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1));
+                                                            new ConditionallyDependentAction(Transition::Type::UNKNOWN, 1u));
   const auto* e10_handle = e10.get();
 
   SECTION("Alternative computation call 1")

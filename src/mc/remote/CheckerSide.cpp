@@ -388,7 +388,7 @@ Aid CheckerSide::get_aid_of_next_transition()
                "The next message on the wire is not a SIMCALL_EXECUTE as expected but a %s",
                is_valid_MessageType((int)msg->type) ? to_c_str(msg->type) : "invalid message");
 
-    return msg->aid;
+    return Aid(msg->aid);
   }
 }
 

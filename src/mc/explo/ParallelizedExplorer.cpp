@@ -240,7 +240,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
       const Aid next = reduction_algo_->next_to_explore(local_explorer.execution_seq, &local_explorer.stack);
 
-      if (next < 0) {
+      if (not next.has_value()) {
         // It can be: a leaf, a deadlock or a stop caused by reduction (eg. by sleep set)
 
         XBT_VERB("[tid: Explorer %d] %lu actors remain, but none of them need to be interleaved (depth %zu).",
