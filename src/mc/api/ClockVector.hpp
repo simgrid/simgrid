@@ -98,7 +98,7 @@ public:
    * @brief Retrieves the value mapped to the given
    * actor if it is contained in this clock vector
    */
-  Clock get(Aid aid) const
+  const Clock get(Aid aid) const
   {
     if (not aid.has_value())
       return Clock::INVALID;
