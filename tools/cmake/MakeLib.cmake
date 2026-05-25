@@ -120,6 +120,10 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "FreeBSD")
   set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat -lexecinfo")
 endif()
 
+if(XXHASH_FOUND)
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lxxhash")
+endif()
+
 # Compute the dependencies of SMPI
 ##################################
 
