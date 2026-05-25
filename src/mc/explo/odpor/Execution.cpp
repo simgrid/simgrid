@@ -95,7 +95,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_ev
       if (prev_write != last_write_.end()) {
         const auto aid   = prev_write->second.get_aid();
         const auto clock = prev_write->second.get_clock();
-        if (clock.value() >= prev_clock.get(aid).value()) {
+        if (clock >= prev_clock.get(aid)) {
           // TODO: We need to retrieve the size of the first access
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read,
                               clock.value() + 1, this->clock_vector_.get(event_aid_).value());
