@@ -529,10 +529,8 @@ flags:
   - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then BUILD_STHREAD=OFF ; else BUILD_STHREAD=ON ; fi
   - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_documentation=OFF -Denable_smpi=${BUILD_SMPI} -Denable_testsuite_smpi_MPICH3=${BUILD_SMPI} -Denable_model-checking=${BUILD_MC} -Denable_testsuite_McMini=${BUILD_MC} -Denable_debug=${BUILD_DEBUG} -Denable_sthread=${BUILD_STHREAD}  -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
-  # Run the test in one config with GLIBCXX_DEBUG
-  - if [ "${BUILD_MC}/${BUILD_SMPI}/${BUILD_DEBUG}" = "ON/ON/ON" ]; then
-     ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure ;
-    fi
+  # Run the tests (with GLIBCXX_DEBUG)
+  - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
 
 valgrind:
   image: $CI_REGISTRY_IMAGE/build-deps:latest
