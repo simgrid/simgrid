@@ -142,7 +142,7 @@ Develop in C++ with Eclipse
 If you wish to develop your plugin or modify SimGrid using
 Eclipse. You have to run cmake and import it as a Makefile project.
 
-Next, you have to activate C++17 in your build settings, add -std=c++17
+Next, you have to activate C++20 in your build settings, add -std=c++20
 in the CDT GCC Built-in compiler settings.
 
 .. image:: /img/eclipseScreenShot.png

@@ -45,7 +45,7 @@
 #       # use pre v4.0 API
 #    endif()
 #
-#  Since SimGrid header files require C++17, we set CMAKE_CXX_STANDARD to 17.
+#  Since SimGrid header files require C++20, we set CMAKE_CXX_STANDARD to 20.
 #    Change this variable in your own file if you need a later standard.
 
 # DEVELOPPERS OF MPI PROGRAMS USING SIMGRID
@@ -70,7 +70,7 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_path(SimGrid_INCLUDE_DIR
@@ -153,25 +153,8 @@ if (SimGrid_FOUND)
     INTERFACE_COMPILE_FEATURES cxx_alias_templates
     IMPORTED_LOCATION ${SimGrid_LIBRARY}
   )
-  # We need C++17, so check for it just in case the user removed it since compiling SimGrid
-  if (NOT CMAKE_VERSION VERSION_LESS 3.8)
-    # 3.8+ allows us to simply require C++17 (or higher)
-    set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_17)
-  else ()
-    # Old CMake can't do much. Just check the CXX_FLAGS and inform the user when a C++17 feature does not work
-    include(CheckCXXSourceCompiles)
-    set(CMAKE_REQUIRED_FLAGS "${CMAKE_CXX_FLAGS}")
-    check_cxx_source_compiles("
-#if __cplusplus < 201703L
-#error
-#else
-int main(){}
-#endif
-" _SIMGRID_CXX17_ENABLED)
-    if (NOT _SIMGRID_CXX17_ENABLED)
-        message(WARNING "C++17 is required to use SimGrid. Enable it with e.g. -std=c++17")
-    endif ()
-    unset(_SIMGRID_CXX14_ENABLED CACHE)
-  endif ()
+  # We need C++20, so check for it just in case the user removed it since compiling SimGrid
+  # (cxx_std_20 was introduced in CMake v3.12 so we're good)
+  set_property(TARGET SimGrid::SimGrid PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_20)
 endif ()
 
