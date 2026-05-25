@@ -108,7 +108,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_ev
       if (prev_write != last_write_.end()) {
         const auto aid   = prev_write->second.get_aid();
         const auto clock = prev_write->second.get_clock();
-        if (clock.value() >= prev_clock.get(aid).value())
+        if (clock >= prev_clock.get(aid))
           throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write,
                               clock.value() + 1, this->clock_vector_.get(event_aid_).value());
         // +1 is here to find the right transition in replay mode
