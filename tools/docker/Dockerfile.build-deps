@@ -5,7 +5,7 @@ FROM debian:trixie
 #  - of the website
 #  - of SimGrid itself
 RUN apt-get --allow-releaseinfo-change update && \
-    apt install -y \
+    apt install -y lsb-release \
        g++ gcc gfortran pybind11-dev ccache \
        git curl \
        valgrind \
