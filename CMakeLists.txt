@@ -465,6 +465,19 @@ endif()
 SET(SIMGRID_HAVE_MC OFF)
 
 if(enable_model-checking)
+  check_cxx_source_compiles("
+    #include <format>
+    #include <string>
+    int main() {
+        std::string s = std::format(\"Hello, {}!\", 42);
+        return 0;
+    }
+  " HAS_STD_FORMAT)
+
+  if(NOT HAS_STD_FORMAT)
+    message(FATAL_ERROR "A recent compiler that supports std::format is mandatory to compile the model checker. Either update your compiler or disable this feature with -Denable_model-checking=OFF")
+  endif()
+  
   message(STATUS "Enabling the model-checking as requested.")
   SET(SIMGRID_HAVE_MC ON)
 endif()
