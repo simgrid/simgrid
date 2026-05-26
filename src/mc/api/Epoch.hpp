@@ -15,6 +15,7 @@
 #include "xbt/asserts.h"
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 
 namespace simgrid::mc {
 
@@ -27,6 +28,10 @@ namespace simgrid::mc {
 //
 // Layout of a pool index: [ 1 (1 bit) |          index (31 bits)         ]
 //                         [31       31|30                               0]
+
+struct EpochIsNotPureIndex : public std::logic_error {
+  EpochIsNotPureIndex(const std::string& reason) : std::logic_error(reason) {}
+};
 
 struct Epoch {
 private:
@@ -49,7 +54,8 @@ public:
   }
   explicit constexpr Epoch(uint32_t idx) : data_(idx)
   {
-    xbt_assert(idx & SELECTOR_MASK, "Cannot create an Epoch from an uint32 that is not a pure index.");
+    if ((idx & SELECTOR_MASK) != 0)
+      throw EpochIsNotPureIndex("Cannot create an Epoch from an uint32 that is not a pure index.");
   }
 
   // Differenciate between indexes and real epochs
