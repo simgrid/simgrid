@@ -14,7 +14,7 @@
 namespace simgrid::mc {
 class InvalidClock : public std::logic_error {
 public:
-  explicit InvalidClock(std::string reason) : std::logic_error(reason) {}
+  explicit InvalidClock(const std::string& reason) : std::logic_error(reason) {}
 };
 
 // Helper function to prevent assigning a negative value to a Clock variable. If the value is negative, the code tries
@@ -28,7 +28,7 @@ struct Clock {
   using storage_type = unsigned int; // No need to make it big: It must fit in an uint32 for Epoch
 
 private:
-  static constexpr storage_type INVALID_VALUE = static_cast<storage_type>(~storage_type(0));
+  static constexpr storage_type INVALID_VALUE = ~storage_type(0);
   storage_type value_;
 
 public:
@@ -37,18 +37,16 @@ public:
   // Constructor used for literals and constants
   constexpr Clock(int val) : value_(static_cast<storage_type>(verify_clock_is_not_negative(val))) {}
 
-  // The constructor for unsigned variables. This code would be simpler using C++20 concepts rather than using a type
-  // template to trick the compiler into accepting two templated definitions of clock_t(T val) as we do here
-  template <typename T, std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, int> = 0>
+  // The constructor for unsigned variables.
+  template <typename T>
+    requires std::integral<T> && std::unsigned_integral<T>
   constexpr Clock(T val) : value_(static_cast<storage_type>(val))
   {
   }
 
   // The constructor for signed variables is removed
-  // The use of void* ensures that the compiler sees the difference with the previous template, even if the int and the
-  // void* are never used.
-  template <typename T,
-            std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T> && !std::is_same_v<T, int>, void*> = nullptr>
+  template <typename T>
+    requires std::integral<T> && std::signed_integral<T>
   Clock(T val) = delete;
 
   // These functions provide an API that is somewhat similar to std::optional

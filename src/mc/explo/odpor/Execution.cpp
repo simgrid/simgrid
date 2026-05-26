@@ -628,8 +628,7 @@ bool Execution::happens_before(Execution::EventHandle e1_handle, Execution::Even
   const Event& e2     = get_event_with_handle(e2_handle);
   const Aid proc_e1   = get_actor_with_handle(e1_handle);
 
-  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1);
-      e1_in_e2_clock.has_value() and e1_in_e2_clock.has_value()) {
+  if (const auto e1_in_e2_clock = e2.get_clock_vector().get(proc_e1); e1_in_e2_clock.has_value()) {
     return e1_handle <= e1_in_e2_clock.value();
   }
   // If `e1` does not appear in e2's clock vector, this implies

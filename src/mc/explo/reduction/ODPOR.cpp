@@ -94,10 +94,7 @@ Aid ODPOR::next_to_explore(odpor::Execution& E, stack_t* S)
   auto s           = S->back().get();
   const Aid next   = Exploration::get_strategy()->next_transition_in(s).first;
 
-  if (not next.has_value())
-    return next;
-
-  // xbt_assert(s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition. Fix Me!");
+  // xbt_assert(not next.has_value() || s->is_actor_enabled(next), "ODPOR wants to execute a disabled transition!");
 
   return next;
 }

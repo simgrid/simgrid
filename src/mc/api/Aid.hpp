@@ -9,7 +9,9 @@
 #include "src/mc/smemory/smemory_config.hpp"
 #include "xbt/asserts.h"
 
+#include <compare>
 #include <cstdint>
+#include <format>
 #include <functional> // std::hash
 #include <stdexcept>
 #include <string>
@@ -19,7 +21,7 @@ namespace simgrid::mc {
 class AidCannotBeNegative : public std::logic_error {
 public:
   explicit AidCannotBeNegative(int id)
-      : std::logic_error("Error: The value of an aid cannot be negative, so " + std::to_string(id) + " is invalid.")
+      : std::logic_error(std::format("Error: The value of an aid cannot be negative, so {} is invalid.", id))
   {
     xbt_backtrace_display_current();
   }
@@ -27,22 +29,19 @@ public:
 class AidCannotBeAboveMaxThreads : public std::logic_error {
 public:
   explicit AidCannotBeAboveMaxThreads(int id)
-      : std::logic_error(
-            std::string("The model-checker assumes that no actor ID will ever be larger than ") +
-            std::to_string(mc::smemory::config::max_threads - 1) +
-            ". Change max_threads in "
-            "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least " +
-            std::to_string(id) +
-            "), but be warned that it will slow "
-            "down the exploration while the state space of such a large application is probably be too large "
-            "to be explored anyway. Slowing down the exploration is thus both inevitable and a bad idea in "
-            "this case.")
+      : std::logic_error(std::format(
+            "The model-checker assumes that no actor ID will ever be larger than {}. Change max_threads in "
+            "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least {}), "
+            "but be warned that it will slow down the exploration while the state space of such a large application is "
+            "probably be too large to be explored anyway. Slowing down the exploration is thus both inevitable and a "
+            "bad idea in this case.",
+            mc::smemory::config::max_threads - 1, id))
   {
   }
 };
-class InvalidAid : std::logic_error {
+class InvalidAid : public std::logic_error {
 public:
-  explicit InvalidAid(std::string reason) : std::logic_error(reason) {}
+  explicit InvalidAid(const std::string& reason) : std::logic_error(reason) {}
 };
 
 // Helper function to prevent assigning a negative value to a Aid. If the value is negative, the code tries to raise an
@@ -78,18 +77,16 @@ public:
   {
   }
 
-  // The constructor for unsigned variables. This code would be simpler using C++20 concepts rather than using a type
-  // template to trick the compiler into accepting two templated definitions of clock_t(T val) as we do here
-  template <typename T, std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, int> = 0>
+  // The constructor for unsigned variables.
+  template <typename T>
+    requires std::integral<T> && std::unsigned_integral<T>
   constexpr Aid(T val) : value_(static_cast<storage_type>(val))
   {
   }
 
   // The constructor for signed variables is removed
-  // The use of void* ensures that the compiler sees the difference with the previous template, even if the int and the
-  // void* are never used.
-  template <typename T,
-            std::enable_if_t<std::is_integral_v<T> && std::is_signed_v<T> && !std::is_same_v<T, int>, void*> = nullptr>
+  template <typename T>
+    requires std::integral<T> && std::signed_integral<T>
   Aid(T val) = delete;
 
   // These functions provide an API that is somewhat similar to std::optional
@@ -104,20 +101,27 @@ public:
   constexpr explicit operator bool() const { return has_value(); }
 
   // Forbid comparison with integer types
-  template <typename T, std::enable_if_t<std::is_integral_v<T>>> bool operator<(T) const  = delete;
-  template <typename T, std::enable_if_t<std::is_integral_v<T>>> bool operator==(T) const = delete;
+  template <typename T>
+    requires std::integral<T> && std::signed_integral<T>
+  bool operator<(T) const = delete;
+  template <typename T>
+    requires std::integral<T> && std::signed_integral<T>
+  bool operator==(T) const = delete;
 
   // Comparisons between aids
-  constexpr bool operator!=(const Aid& rhs) const { return value_ != rhs.value_; }
-  constexpr bool operator==(const Aid& rhs) const { return value_ == rhs.value_; }
-  constexpr bool operator<(const Aid& rhs) const
+  constexpr std::strong_ordering operator<=>(const Aid& rhs) const
   {
+    // INVALID is seen as the smallest possible value, despite its numerical value
+    if (not this->has_value() && not rhs.has_value())
+      return std::strong_ordering::equivalent;
     if (not this->has_value())
-      return rhs.has_value(); // INVALID is seen as the smallest possible value, despite its numerical value
+      return std::strong_ordering::less; // INVALID < any valid value
     if (not rhs.has_value())
-      return false; // this is valid
-    return this->value_ < rhs.value_;
+      return std::strong_ordering::greater; // any valid value > INVALID
+    return this->value_ <=> rhs.value_;
   }
+  constexpr bool operator==(const Aid& rhs) const = default;
+  constexpr bool operator!=(const Aid& rhs) const = default;
   // Arithmetics on aids
   constexpr Aid operator++(int)
   {
