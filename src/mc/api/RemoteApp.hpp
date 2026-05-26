@@ -84,7 +84,7 @@ public:
    *  @note: this call should be followed by |to_replay_and_actor_status| calls to get_actors_status. */
   void replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
                        std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug = false,
-                       void* location = nullptr);
+                       uintptr_t location = 0);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   Aid get_aid_of_next_transition() const { return checker_side_->get_aid_of_next_transition(); }

@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <iterator>
 #include <limits>
@@ -49,14 +50,14 @@ std::string one_string_textual_trace(const PartialExecution& w)
 }
 
 struct EventDataRace : public std::exception {
-  void* location_;
+  uintptr_t location_;
   const unsigned char size1_;
   const unsigned char size2_;
   const smemory::MemOpType first_mem_op_;
   const smemory::MemOpType second_mem_op_;
   const EventHandle first_event_;
   const EventHandle second_event_;
-  explicit EventDataRace(void* location, const unsigned char size1, const unsigned char size2,
+  explicit EventDataRace(uintptr_t location, const unsigned char size1, const unsigned char size2,
                          smemory::MemOpType first_mem_op, smemory::MemOpType second_mem_op, EventHandle first_event,
                          EventHandle second_event)
       : location_(location)
@@ -73,9 +74,10 @@ struct EventDataRace : public std::exception {
 void Event::initialize_epoch()
 {
   Aid event_aid_ = transition_->aid_;
-  for (auto [location, size, kind] : transition_->get_memory_tracker())
-    if (kind == smemory::MemOpType::Write)
-      last_write_.insert_or_assign(location, Epoch{event_aid_, clock_vector_.get(event_aid_).value() - 1});
+  for (const auto& access_it : transition_->get_memory_tracker())
+    for (auto [location, size, kind] : access_it)
+      if (kind == smemory::MemOpType::Write)
+        last_write_.insert_or_assign(location, Epoch{event_aid_, clock_vector_.get(event_aid_).value() - 1});
 }
 
 void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_event)
@@ -84,42 +86,44 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_ev
   last_write_      = prev_event.last_write_;
   Aid event_aid_   = transition_->aid_;
 
-  for (auto [location, size, kind] : transition_->get_memory_tracker()) {
-    auto prev_write = last_write_.find(location);
+  for (const auto& access_it : transition_->get_memory_tracker())
+    for (auto [location, size, kind] : access_it) {
 
-    if (prev_write != last_write_.end() and prev_write->second.get_aid() == event_aid_)
-      continue; // Cannot race with myself
+      auto prev_write = last_write_.find(location);
 
-    if (kind == smemory::MemOpType::Read) {
+      if (prev_write != last_write_.end() and prev_write->second.get_aid() == event_aid_)
+        continue; // Cannot race with myself
 
-      if (prev_write != last_write_.end()) {
-        const auto aid   = prev_write->second.get_aid();
-        const auto clock = prev_write->second.get_clock();
-        if (clock >= prev_clock.get(aid)) {
-          // TODO: We need to retrieve the size of the first access
-          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read,
-                              clock.value() + 1, this->clock_vector_.get(event_aid_).value());
+      if (kind == smemory::MemOpType::Read) {
+
+        if (prev_write != last_write_.end()) {
+          const auto aid   = prev_write->second.get_aid();
+          const auto clock = prev_write->second.get_clock();
+          if (clock >= prev_clock.get(aid)) {
+            // TODO: We need to retrieve the size of the first access
+            throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read,
+                                clock.value() + 1, this->clock_vector_.get(event_aid_).value());
+            // +1 is here to find the right transition in replay mode
+          }
+        }
+
+      } else {
+
+        if (prev_write != last_write_.end()) {
+          const auto aid   = prev_write->second.get_aid();
+          const auto clock = prev_write->second.get_clock();
+          if (clock >= prev_clock.get(aid))
+            throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write,
+                                clock.value() + 1, this->clock_vector_.get(event_aid_).value());
           // +1 is here to find the right transition in replay mode
         }
+
+        // Record the new write as it happened juste before this transition
+        // the -1 is here because we receive reads and writes AFTER the transition while
+        // in reality it happened BEFORE
+        last_write_.insert_or_assign(location, Epoch(event_aid_, clock_vector_.get(event_aid_).value() - 1));
       }
-
-    } else {
-
-      if (prev_write != last_write_.end()) {
-        const auto aid   = prev_write->second.get_aid();
-        const auto clock = prev_write->second.get_clock();
-        if (clock >= prev_clock.get(aid))
-          throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write,
-                              clock.value() + 1, this->clock_vector_.get(event_aid_).value());
-        // +1 is here to find the right transition in replay mode
-      }
-
-      // Record the new write as it happened juste before this transition
-      // the -1 is here because we receive reads and writes AFTER the transition while
-      // in reality it happened BEFORE
-      last_write_.insert_or_assign(location, Epoch(event_aid_, clock_vector_.get(event_aid_).value() - 1));
     }
-  }
 }
 
 PartialExecution Execution::preallocated_partial_execution_ = PartialExecution();

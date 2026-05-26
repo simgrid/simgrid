@@ -38,7 +38,7 @@ class Event {
   TransitionPtr transition_;
   ClockVector clock_vector_;
 
-  std::unordered_map<void*, Epoch> last_write_;
+  std::unordered_map<uintptr_t, Epoch> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;

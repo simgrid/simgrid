@@ -299,7 +299,7 @@ Transition* CheckerSide::handle_simcall(Aid aid, int times_considered, bool new_
 
 void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
                                 std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                                void* location)
+                                uintptr_t location)
 {
   long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
 

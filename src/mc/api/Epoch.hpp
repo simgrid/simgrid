@@ -23,8 +23,8 @@ namespace simgrid::mc {
 // It can be either a real epoch, merging the AID and its clock in the same uint32, or an index into a VectorClockPool.
 // The first bit is the selector.
 //
-// Layout of an Epoch:     [ 0 (1 bit) | [ AID (6 bits) | CLOCK (24 bits) ]
-//                         [31       31|30            25|24              0]
+// Layout of an Epoch:     [ 0 (1 bit) | [ AID (5 bits) | CLOCK (26 bits) ]
+//                         [31       31|30            26|25              0]
 //
 // Layout of a pool index: [ 1 (1 bit) |          index (31 bits)         ]
 //                         [31       31|30                               0]

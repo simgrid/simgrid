@@ -9,6 +9,10 @@
 #include <utility>
 
 namespace simgrid::mc::smemory {
+
+static_assert(alignof(VectorClock) == 32 || alignof(VectorClock) == 64,
+              "VectorClock must be aligned to 32 or 64 for maximal speed of AVX2.");
+
 constexpr index_t INVALID_INDEX =
     0x7FFFFFFF; // We cannot use indexes larger than this value, because the indexes are 31 bits only in Epoch
 

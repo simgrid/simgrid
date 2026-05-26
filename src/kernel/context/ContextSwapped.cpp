@@ -103,7 +103,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* a
     }
 
 #if SIMGRID_HAVE_SMEMORY
-    smemory_add_stack(this->stack_, this->stack_ + actor->get_stacksize());
+    smemory_add_stack((uintptr_t)this->stack_, (uintptr_t)this->stack_ + actor->get_stacksize());
 #endif
 #if HAVE_VALGRIND_H
     if (RUNNING_ON_VALGRIND)
@@ -129,7 +129,7 @@ SwappedContext::~SwappedContext()
     return;
 
 #if SIMGRID_HAVE_SMEMORY
-  smemory_remove_stack(this->stack_, this->stack_ + get_actor()->get_stacksize());
+  smemory_remove_stack((uintptr_t)this->stack_, (uintptr_t)this->stack_ + get_actor()->get_stacksize());
 #endif
 #if HAVE_SANITIZER_THREAD_FIBER_SUPPORT
   __tsan_destroy_fiber(tsan_fiber_);

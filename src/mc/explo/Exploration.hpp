@@ -16,6 +16,7 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 #include <atomic>
+#include <cstdint>
 #include <xbt/Extendable.hpp>
 
 #include <memory>
@@ -105,7 +106,7 @@ public:
     backtrack_remote_app_to_state(*remote_app_.get(), target_state, finalize_app);
   }
   /** Re-run the current stack in a fresh application starting from the beginning, showing all available debug info */
-  void debug_replay(void* location = nullptr);
+  void debug_replay(uintptr_t location = 0);
 
   void backtrack_remote_app_to_state(RemoteApp& remote_app, State* target_state, bool finalize_app = true);
 

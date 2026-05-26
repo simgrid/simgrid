@@ -8,26 +8,22 @@
 #include "xbt/log.h"
 
 #include <cstdint>
-#include <limits>
 
 XBT_LOG_NEW_SUBCATEGORY(smemory, mc, "Tracking memory accesses");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");
 
 namespace simgrid::mc::smemory {
 
-void MemoryAccessRecord::create_memory_access(MemOpType type, void* where, unsigned char size)
+void MemoryAccessRecord::create_memory_access(MemOpType type, uintptr_t where, unsigned char size)
 {
   // Save the memory access to the bitmap
   uintptr_t addr = reinterpret_cast<uintptr_t>(where);
-  uintptr_t end  = addr + size; // ignored when coalescing
 
   if (not coalescing_) {
-    XBT_DEBUG("Marking the first byte of memory at %p as %s", where, to_c_str(type));
+    XBT_DEBUG("Marking the first byte of memory at %p as %s", (void*)where, to_c_str(type));
     uintptr_t page_index = addr >> page_shift_;
     uintptr_t page_base  = page_index << page_shift_;
     uintptr_t offset     = addr - page_base;
-    if (pages_.find(page_index) == pages_.end())
-      sorted_pages_dirty_ = true;
     Page& page = pages_.try_emplace(page_index).first->second;
 
     uintptr_t first_bucket = offset >> bucket_shift_;
@@ -42,8 +38,9 @@ void MemoryAccessRecord::create_memory_access(MemOpType type, void* where, unsig
 
     return;
   }
+  uintptr_t end = addr + size;
 
-  XBT_DEBUG("Marking %u bytes at %p as %s", size, where, to_c_str(type));
+  XBT_DEBUG("Marking %u bytes at %p as %s", size, (void*)where, to_c_str(type));
 
   while (addr < end) {
 
@@ -66,8 +63,6 @@ void MemoryAccessRecord::create_memory_access(MemOpType type, void* where, unsig
 
       //      mark_bytes(page_index, offset, chunk_end - addr, type);
       /* Go and mark the corresponding word */
-      if (pages_.find(page_index) == pages_.end())
-        sorted_pages_dirty_ = true;
       Page& page = pages_.try_emplace(page_index).first->second;
 
       uintptr_t first_bucket = offset >> bucket_shift_;
@@ -91,7 +86,7 @@ void MemoryAccessRecord::create_memory_access(MemOpType type, void* where, unsig
   }
 }
 
-bool MemoryAccessRecord::was_marked(void* where, MemOpType type) const
+bool MemoryAccessRecord::was_marked(uintptr_t where, MemOpType type) const
 {
   uintptr_t addr       = reinterpret_cast<uintptr_t>(where);
   uintptr_t page_index = addr >> page_shift_;
@@ -213,8 +208,6 @@ void MemoryAccessRecord::serialize(Channel& channel)
       channel.pack<uint64_t>(page.read_bits[rit]);
   }
   pages_.clear();
-  sorted_pages_.clear();
-  sorted_pages_dirty_ = true;
 }
 void MemoryAccessRecord::deserialize(Channel& channel)
 {
@@ -234,71 +227,70 @@ void MemoryAccessRecord::deserialize(Channel& channel)
   }
 }
 
-void MemoryAccessRecord::iterator::advance()
+// ============================================================
+//                 Two-level Online Iterator logic
+// ============================================================
+
+void MemoryAccessRecord::PageIterator::compute_current_view() const
 {
-  if (parent_ == nullptr) // don't advance beyond end()
+  if (current_view_.has_value())
+    return;
+  if (current_page_it_ == end_page_it_)
     return;
 
-  while (page_pos_ < parent_->sorted_pages_.size()) {
+  uintptr_t page_index = current_page_it_->first;
+  uintptr_t page_base  = page_index << page_shift_;
+  const Page& page     = current_page_it_->second;
 
-    uintptr_t page_index = parent_->sorted_pages_[page_pos_];
-    const Page& page     = parent_->pages_.at(page_index);
+  current_view_ = PageAccessView{page_base, &page, AccessIterator(&page, false), AccessIterator(&page, true)};
+}
 
-    // Search the next enabled bit in the bitfields
-    while (bucket_pos_ < parent_->buckets_per_page_) {
-
-      uintptr_t word = bucket_pos_ >> 6;
-      uintptr_t bit  = bucket_pos_ & 63;
-      uint64_t mask  = 1ULL << bit;
-
-      bool is_write = page.write_bits[word] & mask;
-      bool is_read  = (is_write) || (page.read_bits[word] & mask); // Don't even compute is_read if is_write is true
-
-      if (is_write || is_read) { // Found an enabled bit. Finalize the answer we will do
-
-        MemOpType type = is_write ? MemOpType::Write : MemOpType::Read;
-
-        uintptr_t start_bucket = bucket_pos_;
-        uintptr_t base_addr    = (page_index << page_shift_) + (start_bucket << parent_->bucket_shift_);
-
-        uintptr_t count = 0;
-        if (coalescing_) {
-          // Merge contiguous bits together in our answer
-          while (bucket_pos_ < parent_->buckets_per_page_) {
-
-            word = bucket_pos_ >> 6;
-            bit  = bucket_pos_ & 63;
-            mask = 1ULL << bit;
-
-            bool w = page.write_bits[word] & mask;
-            bool r = page.read_bits[word] & mask;
-
-            if ((type == MemOpType::Write && w) || (type == MemOpType::Read && r && not w)) {
-              // If we're still within the same chunk, advance the bucket.
-              bucket_pos_++;
-              count++;
-            } else
-              // Found the end of the chunk; bucket_pos is now one step too far, ready for the next call to advance()
-              break;
-          }
-        } else {
-          bucket_pos_++;
-          count = 1;
-        }
-
-        current_ = std::make_tuple(reinterpret_cast<void*>(base_addr), count * smemory::config::granularity, type);
-        return;
-      }
-
-      // That bit was not enabled. Search further
-      bucket_pos_++;
-    }
-
-    // We're done with the last bucket of that page, iterate to the next one
-    page_pos_++;
-    bucket_pos_ = 0;
+void MemoryAccessRecord::AccessIterator::advance()
+{
+  if (is_end_ || not page_) {
+    is_end_ = true;
+    return;
   }
 
-  parent_ = nullptr; // end() reached
+  while (bucket_pos_ < buckets_per_page_) {
+    uintptr_t word = bucket_pos_ >> 6;
+    uintptr_t bit  = bucket_pos_ & 63;
+    uint64_t mask  = 1ULL << bit;
+
+    bool is_write = page_->write_bits[word] & mask;
+    bool is_read  = is_write || (page_->read_bits[word] & mask); // Write dominates
+
+    if (is_write || is_read) {
+      MemOpType type         = is_write ? MemOpType::Write : MemOpType::Read;
+      uintptr_t start_bucket = bucket_pos_;
+
+      bucket_pos_++;
+
+      if (coalescing_) {
+        while (bucket_pos_ < buckets_per_page_) {
+          uintptr_t next_word = bucket_pos_ >> 6;
+          uintptr_t next_bit  = bucket_pos_ & 63;
+          uint64_t next_mask  = 1ULL << next_bit;
+
+          bool next_w = page_->write_bits[next_word] & next_mask;
+          bool next_r = page_->read_bits[next_word] & next_mask;
+
+          if ((type == MemOpType::Write && next_w) || (type == MemOpType::Read && next_r && not next_w)) {
+            bucket_pos_++;
+          } else {
+            break;
+          }
+        }
+      }
+
+      current_interval_ = {static_cast<uint16_t>(start_bucket * config::granularity),
+                           static_cast<uint16_t>(bucket_pos_ * config::granularity), type};
+      return;
+    }
+
+    bucket_pos_++;
+  }
+
+  is_end_ = true;
 }
 } // namespace simgrid::mc::smemory

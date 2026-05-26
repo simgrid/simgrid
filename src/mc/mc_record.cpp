@@ -91,7 +91,7 @@ void RecordTrace::replay() const
     try {
       exec->push_transition(t); // Race detection is done here
     } catch (const McDataRace& e) {
-      XBT_INFO("Found a datarace at location %p", xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_);
+      XBT_INFO("Found a datarace at location %p", reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_));
       // Printing the epoch is not very interesting for the user
       XBT_DEBUG("Race between actor %d at step %u and actor %d at step %u", e.first_mem_op_.get_aid().c_val(),
                 e.first_mem_op_.get_clock().value(), e.second_mem_op_.get_aid().c_val(),

@@ -66,7 +66,7 @@ public:
    *  answers of type actor_status. */
   void handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
                      std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                     void* location);
+                     uintptr_t location);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   Aid get_aid_of_next_transition();

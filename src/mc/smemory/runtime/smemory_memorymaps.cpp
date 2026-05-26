@@ -19,7 +19,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smemory);
 
 static std::vector<std::pair<uintptr_t, uintptr_t>> stacks_;
-void smemory_add_stack(void* begin, void* end)
+void smemory_add_stack(uintptr_t begin, uintptr_t end)
 {
   auto elem = std::make_pair(reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end));
   for (auto reg : stacks_)
@@ -29,10 +29,10 @@ void smemory_add_stack(void* begin, void* end)
   stacks_.push_back(elem);
   std::sort(stacks_.begin(), stacks_.end());
 }
-void smemory_remove_stack(void* begin, void* end)
+void smemory_remove_stack(uintptr_t begin, uintptr_t end)
 {
   auto elem = std::make_pair(reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end));
-  XBT_DEBUG("Removing stack %p-%p from a list of %lu stacks.", begin, end, stacks_.size());
+  XBT_DEBUG("Removing stack %p-%p from a list of %lu stacks.", (void*)begin, (void*)end, stacks_.size());
   for (auto it = stacks_.begin(); it != stacks_.end(); it++)
     if (it->first == elem.first && it->second == elem.second) {
       stacks_.erase(it);
@@ -41,7 +41,7 @@ void smemory_remove_stack(void* begin, void* end)
     }
   xbt_die("Cannot remove stack [%zu;%zu] from the list as it's not in it", elem.first, elem.second);
 }
-bool smemory_is_on_stack(void* ptr)
+bool smemory_is_on_stack(uintptr_t ptr)
 {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 

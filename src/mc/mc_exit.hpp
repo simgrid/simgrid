@@ -33,10 +33,10 @@ struct McDataRace : public std::exception {
   const Epoch first_mem_op_;
   const Epoch second_mem_op_;
   smemory::MemOpType second_mem_type_;
-  void* location_;
+  uintptr_t location_;
   unsigned char sizes_[2];
-  explicit McDataRace(Epoch first_mem_op, Epoch second_mem_op, void* location, unsigned char size1, unsigned char size2,
-                      smemory::MemOpType second_mem_type)
+  explicit McDataRace(Epoch first_mem_op, Epoch second_mem_op, uintptr_t location, unsigned char size1,
+                      unsigned char size2, smemory::MemOpType second_mem_type)
       : value(ExitStatus::DATA_RACE)
       , first_mem_op_(first_mem_op)
       , second_mem_op_(second_mem_op)

@@ -5,6 +5,7 @@
 
 #include "src/3rd-party/catch.hpp"
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #define private public
@@ -16,61 +17,65 @@ TEST_CASE("MemoryAccessRecord: one read", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0); // Addresses on the stack are ignored
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), 1);
+  tracker.create_memory_access(MemOpType::Read, addr, 1);
 
-  REQUIRE(tracker.was_read(buffer.data()) == true);
-  REQUIRE(tracker.was_written(buffer.data()) == false);
+  REQUIRE(tracker.was_read(addr) == true);
+  REQUIRE(tracker.was_written(addr) == false);
 
   // not touched (+tracker.get_bucket_size() because of the granularity simplification)
-  REQUIRE(tracker.was_read(buffer.data() + tracker.get_bucket_size() + 1) == false);
-  REQUIRE(tracker.was_written(buffer.data() + tracker.get_bucket_size() + 1) == false);
+  REQUIRE(tracker.was_read(addr + tracker.get_bucket_size() + 1) == false);
+  REQUIRE(tracker.was_written(addr + tracker.get_bucket_size() + 1) == false);
 }
 
 TEST_CASE("MemoryAccessRecord: one write", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Write, buffer.data(), 1);
+  tracker.create_memory_access(MemOpType::Write, addr, 1);
 
-  REQUIRE(tracker.was_read(buffer.data()) == false);
-  REQUIRE(tracker.was_written(buffer.data()) == true);
+  REQUIRE(tracker.was_read(addr) == false);
+  REQUIRE(tracker.was_written(addr) == true);
 
   // not touched
-  REQUIRE(tracker.was_read(buffer.data() + tracker.get_bucket_size() + 1) == false);
-  REQUIRE(tracker.was_written(buffer.data() + tracker.get_bucket_size() + 1) == false);
+  REQUIRE(tracker.was_read(addr + tracker.get_bucket_size() + 1) == false);
+  REQUIRE(tracker.was_written(addr + tracker.get_bucket_size() + 1) == false);
 }
 
 TEST_CASE("MemoryAccessRecord: write + read", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), 1);
-  tracker.create_memory_access(MemOpType::Write, buffer.data(), 1);
+  tracker.create_memory_access(MemOpType::Read, addr, 1);
+  tracker.create_memory_access(MemOpType::Write, addr, 1);
 
-  REQUIRE(tracker.was_read(buffer.data()) == false); // write dominates
-  REQUIRE(tracker.was_written(buffer.data()) == true);
+  REQUIRE(tracker.was_read(addr) == false); // write dominates
+  REQUIRE(tracker.was_written(addr) == true);
 }
 
 TEST_CASE("MemoryAccessRecord: several bytes of the same bucket", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), MemoryAccessRecord::get_bucket_size());
+  tracker.create_memory_access(MemOpType::Read, addr, MemoryAccessRecord::get_bucket_size());
   for (unsigned int i = 0; i < MemoryAccessRecord::get_bucket_size(); i++)
-    REQUIRE(tracker.was_read(buffer.data() + i) == true);
-  REQUIRE(tracker.was_read(buffer.data() + MemoryAccessRecord::get_bucket_size()) == false); // next bucket
+    REQUIRE(tracker.was_read(addr + i) == true);
+  REQUIRE(tracker.was_read(addr + MemoryAccessRecord::get_bucket_size()) == false); // next bucket
 
   // next bucket
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + MemoryAccessRecord::get_bucket_size(),
+  tracker.create_memory_access(MemOpType::Write, addr + MemoryAccessRecord::get_bucket_size(),
                                MemoryAccessRecord::get_bucket_size());
   for (unsigned int i = 0; i < MemoryAccessRecord::get_bucket_size(); i++)
-    REQUIRE(tracker.was_written(buffer.data() + MemoryAccessRecord::get_bucket_size() + i) == true);
-  REQUIRE(tracker.was_written(buffer.data() + 2 * MemoryAccessRecord::get_bucket_size()) == false);
-  REQUIRE(tracker.was_read(buffer.data() + 2 * MemoryAccessRecord::get_bucket_size()) == false);
+    REQUIRE(tracker.was_written(addr + MemoryAccessRecord::get_bucket_size() + i) == true);
+  REQUIRE(tracker.was_written(addr + 2 * MemoryAccessRecord::get_bucket_size()) == false);
+  REQUIRE(tracker.was_read(addr + 2 * MemoryAccessRecord::get_bucket_size()) == false);
 }
 
 TEST_CASE("MemoryAccessRecord: access accross two words", "[MemoryAccessRecord]")
@@ -79,19 +84,20 @@ TEST_CASE("MemoryAccessRecord: access accross two words", "[MemoryAccessRecord]"
   constexpr size_t word_bytes = 64 * MemoryAccessRecord::get_bucket_size(); // 64 buckets * 4 bytes
 
   std::vector<char> buffer(word_bytes * 2, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
   // Crossing the border
-  tracker.create_memory_access(MemOpType::Read, buffer.data() + word_bytes - 8, 16);
+  tracker.create_memory_access(MemOpType::Read, addr + word_bytes - 8, 16);
 
   // Check word 0
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes - 9) == false);
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes - 8) == true);
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes - 1) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_read(addr + word_bytes - 9) == false);
+  REQUIRE(tracker.was_read(addr + word_bytes - 8) == true);
+  REQUIRE(tracker.was_read(addr + word_bytes - 1) == MemoryAccessRecord::is_coalescing());
 
   // check word 1
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes) == MemoryAccessRecord::is_coalescing());
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes + 7) == MemoryAccessRecord::is_coalescing());
-  REQUIRE(tracker.was_read(buffer.data() + word_bytes + 8) == false);
+  REQUIRE(tracker.was_read(addr + word_bytes) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_read(addr + word_bytes + 7) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_read(addr + word_bytes + 8) == false);
 }
 
 TEST_CASE("MemoryAccessRecord: accross page boundary", "[MemoryAccessRecord]")
@@ -100,24 +106,25 @@ TEST_CASE("MemoryAccessRecord: accross page boundary", "[MemoryAccessRecord]")
 
   constexpr size_t page_size = 4096;
   std::vector<char> buffer(page_size * 2, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
   // This write ends exactly at the end of the page
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + page_size - 8, 8);
+  tracker.create_memory_access(MemOpType::Write, addr + page_size - 8, 8);
 
-  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) == MemoryAccessRecord::is_coalescing());
-  REQUIRE(tracker.was_written(buffer.data() + page_size) == false);
+  REQUIRE(tracker.was_written(addr + page_size - 1) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_written(addr + page_size) == false);
 
   // Accross the page boundary
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + page_size - 4, 8);
+  tracker.create_memory_access(MemOpType::Write, addr + page_size - 4, 8);
 
-  REQUIRE(tracker.was_written(buffer.data() + page_size - 1) ==
+  REQUIRE(tracker.was_written(addr + page_size - 1) ==
           (MemoryAccessRecord::is_coalescing() || MemoryAccessRecord::get_bucket_size() >= 4));
-  REQUIRE(tracker.was_written(buffer.data() + page_size) == MemoryAccessRecord::is_coalescing());
-  REQUIRE(tracker.was_written(buffer.data() + page_size + 3) == MemoryAccessRecord::is_coalescing());
-  REQUIRE(tracker.was_written(buffer.data() + page_size + 4) == false);
+  REQUIRE(tracker.was_written(addr + page_size) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_written(addr + page_size + 3) == MemoryAccessRecord::is_coalescing());
+  REQUIRE(tracker.was_written(addr + page_size + 4) == false);
 }
 
-static std::vector<bool>& make_result(MemoryAccessRecord& tracker, char* base, size_t size, MemOpType kind)
+static std::vector<bool>& make_result(MemoryAccessRecord& tracker, uintptr_t base, size_t size, MemOpType kind)
 {
   static std::vector<bool> result;
   result.clear();
@@ -130,16 +137,17 @@ TEST_CASE("MemoryAccessRecord: writes overlapping on previous reads", "[MemoryAc
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
   {
     std::vector<bool> reads;
     std::vector<bool> writes;
     std::vector<bool> expected;
 
     for (unsigned i = 0; i < 8; i++) {
-      UNSCOPED_INFO("Before, value " << i << " is: read=" << tracker.was_read(buffer.data() + i)
-                                     << " ; write=" << tracker.was_written(buffer.data() + i));
-      reads.push_back(tracker.was_read(buffer.data() + i));
-      writes.push_back(tracker.was_written(buffer.data() + i));
+      UNSCOPED_INFO("Before, value " << i << " is: read=" << tracker.was_read(addr + i)
+                                     << " ; write=" << tracker.was_written(addr + i));
+      reads.push_back(tracker.was_read(addr + i));
+      writes.push_back(tracker.was_written(addr + i));
       expected.push_back(false);
     }
 
@@ -148,15 +156,15 @@ TEST_CASE("MemoryAccessRecord: writes overlapping on previous reads", "[MemoryAc
   }
 
   // read 8 bytes
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), 8);
+  tracker.create_memory_access(MemOpType::Read, addr, 8);
   {
     std::vector<bool> result;
     std::vector<bool> expected;
 
     for (unsigned i = 0; i < 8; i++) {
-      UNSCOPED_INFO("Value " << i << " is: read=" << tracker.was_read(buffer.data() + i)
-                             << " ; write=" << tracker.was_written(buffer.data() + i));
-      result.push_back(tracker.was_read(buffer.data() + i));
+      UNSCOPED_INFO("Value " << i << " is: read=" << tracker.was_read(addr + i)
+                             << " ; write=" << tracker.was_written(addr + i));
+      result.push_back(tracker.was_read(addr + i));
       expected.push_back(i < MemoryAccessRecord::get_bucket_size() || MemoryAccessRecord::is_coalescing());
     }
 
@@ -164,7 +172,7 @@ TEST_CASE("MemoryAccessRecord: writes overlapping on previous reads", "[MemoryAc
   }
 
   // write 4 bytes, overlaps the previous read
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + 4, 4);
+  tracker.create_memory_access(MemOpType::Write, addr + 4, 4);
   {
     std::vector<bool> result_reads;
     std::vector<bool> result_writes;
@@ -172,10 +180,10 @@ TEST_CASE("MemoryAccessRecord: writes overlapping on previous reads", "[MemoryAc
     std::vector<bool> expected_writes;
 
     for (unsigned i = 0; i < 8; i++) {
-      UNSCOPED_INFO("After write " << i << " is: read=" << tracker.was_read(buffer.data() + i)
-                                   << " ; write=" << tracker.was_written(buffer.data() + i));
-      result_reads.push_back(tracker.was_read(buffer.data() + i));
-      result_writes.push_back(tracker.was_written(buffer.data() + i));
+      UNSCOPED_INFO("After write " << i << " is: read=" << tracker.was_read(addr + i)
+                                   << " ; write=" << tracker.was_written(addr + i));
+      result_reads.push_back(tracker.was_read(addr + i));
+      result_writes.push_back(tracker.was_written(addr + i));
       if (MemoryAccessRecord::is_coalescing()) {
         expected_reads.push_back(i < 4 ? true : false);  // write dominates
         expected_writes.push_back(i < 4 ? false : true); // Only wrote on the first part
@@ -192,112 +200,127 @@ TEST_CASE("MemoryAccessRecord: writes overlapping on previous reads", "[MemoryAc
   }
 }
 
-// ============ Iterator ================
+// ============ Two-Level Online Iterator ================
 
 TEST_CASE("Iterator: reads in a single page", "[MemoryAccessRecord]")
 {
-  MemoryAccessRecord tracker; // granularité 4 bytes
+  MemoryAccessRecord tracker; // granularity 4 bytes
   std::vector<char> buffer(16, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), 8);
+  tracker.create_memory_access(MemOpType::Read, addr, 8);
 
-  auto it  = tracker.begin();
-  auto end = tracker.end();
+  auto page_it = tracker.begin();
+  REQUIRE(page_it != tracker.end());
 
-  REQUIRE(it != end);
+  auto access_it = page_it->begin();
+  REQUIRE(access_it != page_it->end());
 
-  auto [addr, size, type] = *it;
-  REQUIRE(addr == (void*)buffer.data());
+  auto interval = *access_it;
+  REQUIRE(page_it->page_base_addr + interval.start_offset == addr);
+
   if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size == 8);
+    REQUIRE(interval.end_offset - interval.start_offset == 8);
   else
-    REQUIRE(size == std::min<size_t>(8, MemoryAccessRecord::get_bucket_size()));
-  REQUIRE(type == MemOpType::Read);
+    REQUIRE(interval.end_offset - interval.start_offset == std::min<size_t>(8, MemoryAccessRecord::get_bucket_size()));
+  REQUIRE(interval.type == MemOpType::Read);
 
-  ++it;
-  REQUIRE(it == end); // only one chunk
+  ++access_it;
+  REQUIRE(access_it == page_it->end()); // only one chunk
+
+  ++page_it;
+  REQUIRE(page_it == tracker.end());
 }
 
 TEST_CASE("Iterator: writes in a single page", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(16, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Write, buffer.data(), 8);
+  tracker.create_memory_access(MemOpType::Write, addr, 8);
 
-  auto it                 = tracker.begin();
-  auto [addr, size, type] = *it;
+  auto page_it   = tracker.begin();
+  auto access_it = page_it->begin();
+  auto interval  = *access_it;
 
-  REQUIRE(addr == buffer.data());
+  REQUIRE(page_it->page_base_addr + interval.start_offset == reinterpret_cast<uintptr_t>(addr));
   if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size == 8);
+    REQUIRE(interval.end_offset - interval.start_offset == 8);
   else
-    REQUIRE(size == std::min<size_t>(8, MemoryAccessRecord::get_bucket_size()));
-  REQUIRE(type == MemOpType::Write);
+    REQUIRE(interval.end_offset - interval.start_offset == std::min<size_t>(8, MemoryAccessRecord::get_bucket_size()));
+  REQUIRE(interval.type == MemOpType::Write);
 }
 
 TEST_CASE("Iterator: reads and then writes", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(16, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
-  tracker.create_memory_access(MemOpType::Read, buffer.data(), 8);
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + 4, 4);
+  tracker.create_memory_access(MemOpType::Read, addr, 8);
+  tracker.create_memory_access(MemOpType::Write, addr + 4, 4);
 
-  auto it = tracker.begin();
+  auto page_it   = tracker.begin();
+  auto access_it = page_it->begin();
+
   // First chunk
-  auto [addr1, size1, type1] = *it;
-  REQUIRE(addr1 == buffer.data());
-  REQUIRE(type1 == MemOpType::Read);
+  auto interval = *access_it;
+  REQUIRE(page_it->page_base_addr + interval.start_offset == reinterpret_cast<uintptr_t>(addr));
+  REQUIRE(interval.type == MemOpType::Read);
   if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size1 == 4);
+    REQUIRE(interval.end_offset - interval.start_offset == 4);
   else
-    REQUIRE(size1 == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
+    REQUIRE(interval.end_offset - interval.start_offset == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
 
   // Second chunk
-  ++it;
-  auto [addr2, size2, type2] = *it;
-  REQUIRE(addr2 == buffer.data() + 4);
+  ++access_it;
+  interval = *access_it;
+  REQUIRE(page_it->page_base_addr + interval.start_offset == addr + 4);
+  REQUIRE(interval.type == MemOpType::Write);
   if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size2 == 4);
+    REQUIRE(interval.end_offset - interval.start_offset == 4);
   else
-    REQUIRE(size2 == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
-  REQUIRE(type2 == MemOpType::Write);
+    REQUIRE(interval.end_offset - interval.start_offset == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
 
   // No more chunks
-  ++it;
-  REQUIRE(it == tracker.end());
+  ++access_it;
+  REQUIRE(access_it == page_it->end());
 }
 
 TEST_CASE("Iterator: contiguity within page", "[MemoryAccessRecord]")
 {
   MemoryAccessRecord tracker;
   std::vector<char> buffer(32, 0);
+  auto addr = reinterpret_cast<uintptr_t>(buffer.data());
 
   // Two contiguous writes in the same page
-  tracker.create_memory_access(MemOpType::Write, buffer.data(), 4);
-  tracker.create_memory_access(MemOpType::Write, buffer.data() + 4, 4);
+  tracker.create_memory_access(MemOpType::Write, addr, 4);
+  tracker.create_memory_access(MemOpType::Write, addr + 4, 4);
 
-  auto it                 = tracker.begin();
-  auto [addr, size, type] = *it;
-  REQUIRE(addr == (void*)buffer.data());
-  REQUIRE(type == MemOpType::Write);
-  if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size == 8); // both chunks were merged
-  else {
-    REQUIRE(size == std::min<size_t>(4, MemoryAccessRecord::get_bucket_size()));
-    ++it;
-    REQUIRE(it != tracker.end()); // not merged
+  auto page_it   = tracker.begin();
+  auto access_it = page_it->begin();
+  auto interval  = *access_it;
 
-    std::tie(addr, size, type) = *it;
-    REQUIRE(addr == (void*)(buffer.data() + 4));
-    REQUIRE(size == std::min<size_t>(4, MemoryAccessRecord::get_bucket_size()));
-    REQUIRE(type == MemOpType::Write);
+  REQUIRE(page_it->page_base_addr + interval.start_offset == addr);
+  REQUIRE(interval.type == MemOpType::Write);
+
+  if (MemoryAccessRecord::is_coalescing()) {
+    REQUIRE(interval.end_offset - interval.start_offset == 8); // both chunks were merged
+  } else {
+    REQUIRE(interval.end_offset - interval.start_offset == std::min<size_t>(4, MemoryAccessRecord::get_bucket_size()));
+    ++access_it;
+    REQUIRE(access_it != page_it->end()); // not merged
+
+    interval = *access_it;
+    REQUIRE(page_it->page_base_addr + interval.start_offset == addr + 4);
+    REQUIRE(interval.end_offset - interval.start_offset == std::min<size_t>(4, MemoryAccessRecord::get_bucket_size()));
+    REQUIRE(interval.type == MemOpType::Write);
   }
 
   // No more chunks
-  ++it;
-  REQUIRE(it == tracker.end());
+  ++access_it;
+  REQUIRE(access_it == page_it->end());
 }
 
 TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessRecord]")
@@ -305,45 +328,50 @@ TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessRecord]")
   MemoryAccessRecord tracker;
 
   // Simulate variables instead of using real ones to avoid ASLR and alignment issues
-  tracker.create_memory_access(MemOpType::Write, (void*)0x4000, 4); // Simulate an integer
-  tracker.create_memory_access(MemOpType::Write, (void*)0x4004, 1); // Simulate a char
-  tracker.create_memory_access(MemOpType::Write, (void*)0x4005, 1);
+  // Address 0x4000 fits safely inside a single 4096-bytes page.
+  tracker.create_memory_access(MemOpType::Write, 0x4000, 4); // Simulate an integer
+  tracker.create_memory_access(MemOpType::Write, 0x4004, 1); // Simulate a char
+  tracker.create_memory_access(MemOpType::Write, 0x4005, 1);
 
-  auto it                 = tracker.begin();
-  auto [addr, size, type] = *it;
-  REQUIRE(addr == (void*)0x4000);
-  REQUIRE(type == MemOpType::Write);
-  if (MemoryAccessRecord::is_coalescing())
-    REQUIRE(size == 6); // chunks were merged
-  else {
-    REQUIRE(size == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
-    ++it;
+  auto page_it   = tracker.begin();
+  auto access_it = page_it->begin();
+  auto interval  = *access_it;
+
+  REQUIRE(page_it->page_base_addr + interval.start_offset == 0x4000);
+  REQUIRE(interval.type == MemOpType::Write);
+
+  if (MemoryAccessRecord::is_coalescing()) {
+    REQUIRE(interval.end_offset - interval.start_offset == 6); // chunks were merged
+  } else {
+    REQUIRE(interval.end_offset - interval.start_offset == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
+    ++access_it;
+
     if (4 >= MemoryAccessRecord::get_bucket_size()) { // Not all variables fall into the same bucket
-      REQUIRE(it != tracker.end());                   // not merged
+      REQUIRE(access_it != page_it->end());           // not merged
 
-      std::tie(addr, size, type) = *it;
-      REQUIRE(addr == (void*)0x4004);
-      REQUIRE(size == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
-      REQUIRE(type == MemOpType::Write);
-      ++it;
+      interval = *access_it;
+      REQUIRE(page_it->page_base_addr + interval.start_offset == 0x4004);
+      REQUIRE(interval.end_offset - interval.start_offset ==
+              std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
+      REQUIRE(interval.type == MemOpType::Write);
+      ++access_it;
 
       if (MemoryAccessRecord::get_bucket_size() == 1) { // The two chars do not fall into the same bucket
-        REQUIRE(it != tracker.end());                   // not merged
+        REQUIRE(access_it != page_it->end());           // not merged
 
-        std::tie(addr, size, type) = *it;
-        REQUIRE(addr == (void*)0x4005);
-        REQUIRE(size == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
-        REQUIRE(type == MemOpType::Write);
-        ++it;
+        interval = *access_it;
+        REQUIRE(page_it->page_base_addr + interval.start_offset == 0x4005);
+        REQUIRE(interval.end_offset - interval.start_offset ==
+                std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
+        REQUIRE(interval.type == MemOpType::Write);
+        ++access_it;
       }
     }
   }
 
   // No more chunks
-  ++it;
-  REQUIRE(it == tracker.end());
+  REQUIRE(access_it == page_it->end());
 }
-
 // ============ Page::find_prev_marked_bucket() and Page::find_next_marked_bucket() ================
 
 TEST_CASE("find_*_marked_bucket - no bucket marked", "[MemoryAccessRecord]")

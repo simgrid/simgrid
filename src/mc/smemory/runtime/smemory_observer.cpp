@@ -8,12 +8,13 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/smemory/MemoryAccessRecord.hpp"
 #include "xbt/log.h"
+#include <cstdint>
 
 using namespace simgrid::mc::smemory;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smemory);
 
-static void create_memory_access(MemOpType type, void* where, unsigned char size)
+static void create_memory_access(MemOpType type, uintptr_t where, unsigned char size)
 {
   static bool instrument = true;
 
@@ -24,20 +25,20 @@ static void create_memory_access(MemOpType type, void* where, unsigned char size
 
   // Do not track data on a stack, there is no datarace there
   if (smemory_is_on_stack(where)) {
-    XBT_DEBUG("%p is on stack, ignore it", where);
+    XBT_DEBUG("%p is on stack, ignore it", (void*)where);
     instrument = true;
     return;
   }
 
   bool watched = false;
-  for (void* a : get_mc_watch_addresses()) {
+  for (auto a : get_mc_watch_addresses()) {
     if (a == where) {
       watched = 1;
       break;
     }
   }
   if (watched) {
-    XBT_INFO("%s access on the watched variable %p", type == MemOpType::Read ? "READ" : "WRITE", where);
+    XBT_INFO("%s access on the watched variable %p", type == MemOpType::Read ? "READ" : "WRITE", (void*)where);
     xbt_backtrace_display_current();
   }
 
@@ -47,11 +48,11 @@ static void create_memory_access(MemOpType type, void* where, unsigned char size
   instrument = true;
 }
 
-void __mcsimgrid_write(void* where, unsigned char size)
+void __mcsimgrid_write(uintptr_t where, unsigned char size)
 {
   create_memory_access(MemOpType::Write, where, size);
 }
-void __mcsimgrid_read(void* where, unsigned char size)
+void __mcsimgrid_read(uintptr_t where, unsigned char size)
 {
   create_memory_access(MemOpType::Read, where, size);
 }

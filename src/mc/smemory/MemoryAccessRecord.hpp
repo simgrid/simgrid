@@ -18,9 +18,10 @@
 #include <unordered_map>
 #include <vector>
 
-/* This structure tracks the read and write accesses to the memory during execution of a given transition, to detect
- * race conditions. We need to list all memory areas that were written to during this transition, and the ones that were
- * read from. If a memory address was both read and written, we need to report that it was written to.
+/* This structure keeps track the read and write accesses to the memory during execution of a given transition, to
+ * detect race conditions in SlabTrackState (see this file for an overview). We need to list all memory areas that were
+ * written to during this transition, and the ones that were read from. If a memory address was both read and written,
+ * only the write needs to be reported.
  *
  * It uses a `struct Page` per page of memory (actually, per chunk of 4kb regardless of the page size). That
  * substructure has two bitfields each with one bit per byte in the page. The first bitfield is used to mark whether the
@@ -31,9 +32,9 @@
  * use one bit per set of 4 bytes in memory (these 4 bytes are said to form a bucket), reducing the amount of memory by
  * a factor of 4, but possibly creating false shared accesses in memory. 1, 2, 4, 8, 16 are possible granularity values.
  *
- * This structure comes with an iterator that traverses the list of all contiguous memory areas (i.e., two adjacent
- * reads are merged by this iterator into a single read). For each item, a tuple {base address, size in bytes,
- * MemOpType::Read or Write} is returned.
+ * This structure comes with a two-level online iterator. The outer iterator traverses the memory pages touched during
+ * the transition. The inner iterator yields `PageInterval`s on the fly, merging contiguous bits together into a single
+ * interval without heap allocations. This hierarchical design enables O(1) FastPaths in the SlabTrackState.
  */
 
 namespace simgrid::mc::smemory {
@@ -42,12 +43,11 @@ XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 
 class MemoryAccessRecord {
 private:
+  // __builtin_ctzll: long long log2 (number of trailing 0-bits in x) uintptr_t is a long long
   static constexpr uintptr_t page_shift_ = __builtin_ctzll(smemory::config::page_size);
-  ; // long long log2 (number of trailing 0-bits in x)
   static constexpr uintptr_t page_mask_ = smemory::config::page_size - 1;
 
-  constexpr static uintptr_t bucket_shift_ =
-      __builtin_ctzll(smemory::config::granularity); // long long log2 (uintptr_t is a long long)
+  constexpr static uintptr_t bucket_shift_     = __builtin_ctzll(smemory::config::granularity);
   constexpr static uintptr_t word_shift_       = bucket_shift_ + 6;
   constexpr static uintptr_t buckets_per_page_ = smemory::config::page_size >> bucket_shift_;
   constexpr static uintptr_t words_per_page_   = buckets_per_page_ / 64;
@@ -67,25 +67,14 @@ private:
     std::optional<uintptr_t> find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
     std::optional<uintptr_t> find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
   };
-
   std::unordered_map<uintptr_t, Page> pages_;
-  std::vector<uintptr_t> sorted_pages_;
-  bool sorted_pages_dirty_ = true;
-  void sort_pages()
-  {
-    sorted_pages_.clear();
-    for (auto& kv : pages_)
-      sorted_pages_.push_back(kv.first);
-    std::sort(sorted_pages_.begin(), sorted_pages_.end());
-    sorted_pages_dirty_ = false;
-  }
 
-  bool was_marked(void* where, MemOpType type) const;
+  bool was_marked(uintptr_t where, MemOpType type) const;
 
 public:
-  void create_memory_access(MemOpType type, void* where, unsigned char size);
-  bool was_written(void* where) const { return was_marked(where, MemOpType::Write); }
-  bool was_read(void* where) const
+  void create_memory_access(MemOpType type, uintptr_t where, unsigned char size);
+  bool was_written(uintptr_t where) const { return was_marked(where, MemOpType::Write); }
+  bool was_read(uintptr_t where) const
   {
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
@@ -99,55 +88,109 @@ public:
   void deserialize(Channel& chan);
 
   // ============================================================
-  //                      Iterator
+  //                 Two-level Online Iterator
   // ============================================================
-  class iterator {
-  private:
-    using OuterIt = typename std::unordered_map<uintptr_t, Page>::const_iterator;
+  // Lightweight interval yielded by the inner iterator
+  struct PageInterval {
+    uint16_t start_offset;
+    uint16_t end_offset;
+    MemOpType type;
+  };
 
-    MemoryAccessRecord* parent_;
-    size_t page_pos_      = 0;
+  // Inner Iterator: parses bits of a page on the fly
+  class AccessIterator {
+  private:
+    const Page* page_              = nullptr;
     uintptr_t bucket_pos_ = 0;
-    std::tuple<void*, size_t, MemOpType> current_;
+    PageInterval current_interval_ = {};
+    bool is_end_                   = true;
 
     void advance();
 
   public:
-    using value_type        = std::tuple<void*, size_t, MemOpType>;
-    using reference         = value_type;
-    using pointer           = void;
+    using value_type        = PageInterval;
+    using reference         = const PageInterval&;
+    using pointer           = const PageInterval*;
     using difference_type   = std::ptrdiff_t;
     using iterator_category = std::forward_iterator_tag;
 
-    iterator(MemoryAccessRecord* p, bool end) : parent_(end ? nullptr : p)
+    AccessIterator() = default;
+    AccessIterator(const Page* page, bool is_end) : page_(page), is_end_(is_end)
     {
-      if (not end) {
-        if (parent_->sorted_pages_dirty_)
-          parent_->sort_pages();
+      if (not is_end)
         advance();
-      }
     }
 
-    reference operator*() const { return current_; }
-
-    iterator& operator++()
+    reference operator*() const { return current_interval_; }
+    pointer operator->() const { return &current_interval_; }
+    AccessIterator& operator++()
     {
       advance();
       return *this;
     }
-
-    bool operator==(const iterator& other) const
+    bool operator==(const AccessIterator& other) const
     {
-      if (parent_ == nullptr && other.parent_ == nullptr) // Disregard the positions when we reached the end
+      if (is_end_ && other.is_end_)
         return true;
-      return parent_ == other.parent_ && page_pos_ == other.page_pos_ && bucket_pos_ == other.bucket_pos_;
+      return is_end_ == other.is_end_ && page_ == other.page_ && bucket_pos_ == other.bucket_pos_;
     }
-
-    bool operator!=(const iterator& other) const { return not(*this == other); }
+    bool operator!=(const AccessIterator& other) const { return not(*this == other); }
   };
 
-  iterator begin() { return iterator(this, false); }
-  iterator end() { return iterator(this, true); }
+  // View over a page, yielded by the outer iterator
+  struct PageAccessView {
+    uintptr_t page_base_addr;
+    const Page* page_ptr;
+    AccessIterator begin_it;
+    AccessIterator end_it;
+
+    AccessIterator begin() const { return begin_it; }
+    AccessIterator end() const { return end_it; }
+  };
+
+  // Outer Iterator: iterates over touched pages
+  class PageIterator {
+  private:
+    using OuterIt = typename std::unordered_map<uintptr_t, Page>::const_iterator;
+    OuterIt current_page_it_;
+    OuterIt end_page_it_;
+    mutable std::optional<PageAccessView> current_view_;
+
+    void compute_current_view() const;
+
+  public:
+    using value_type        = PageAccessView;
+    using reference         = const PageAccessView&;
+    using pointer           = const PageAccessView*;
+    using difference_type   = std::ptrdiff_t;
+    using iterator_category = std::forward_iterator_tag;
+
+    PageIterator(OuterIt it, OuterIt end_it) : current_page_it_(it), end_page_it_(end_it) {}
+
+    reference operator*() const
+    {
+      compute_current_view();
+      return *current_view_;
+    }
+    pointer operator->() const
+    {
+      compute_current_view();
+      return &*current_view_;
+    }
+
+    PageIterator& operator++()
+    {
+      current_view_.reset();
+      ++current_page_it_;
+      return *this;
+    }
+
+    bool operator==(const PageIterator& other) const { return current_page_it_ == other.current_page_it_; }
+    bool operator!=(const PageIterator& other) const { return not(*this == other); }
+  };
+
+  PageIterator begin() const { return PageIterator(pages_.begin(), pages_.end()); }
+  PageIterator end() const { return PageIterator(pages_.end(), pages_.end()); }
 };
 
 } // namespace simgrid::mc::smemory

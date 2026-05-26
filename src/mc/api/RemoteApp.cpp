@@ -250,7 +250,7 @@ Transition* RemoteApp::handle_simcall(Aid aid, int times_considered, bool new_tr
 
 void RemoteApp::replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
                                 std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                                void* location)
+                                uintptr_t location)
 {
   checker_side_->handle_replay(to_replay, to_replay_and_actor_status, debug, location);
 }

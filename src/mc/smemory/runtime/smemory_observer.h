@@ -6,11 +6,11 @@
 #include <stdint.h>
 
 extern "C" {
-void __mcsimgrid_write(void* where, unsigned char size);
-void __mcsimgrid_read(void* where, unsigned char size);
-void __mcsimgrid_copy(void* from, void* to, unsigned char size);
-void __mcsimgrid_deref(void* where, unsigned char size);
-bool smemory_is_on_stack(void* ptr);
-void smemory_add_stack(void* begin, void* end);
-void smemory_remove_stack(void* begin, void* end);
+void __mcsimgrid_write(uintptr_t where, unsigned char size);
+void __mcsimgrid_read(uintptr_t where, unsigned char size);
+void __mcsimgrid_copy(uintptr_t from, uintptr_t to, unsigned char size);
+void __mcsimgrid_deref(uintptr_t where, unsigned char size);
+bool smemory_is_on_stack(uintptr_t ptr);
+void smemory_add_stack(uintptr_t begin, uintptr_t end);
+void smemory_remove_stack(uintptr_t begin, uintptr_t end);
 };

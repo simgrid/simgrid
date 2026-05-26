@@ -82,9 +82,9 @@ simgrid::mc::ReductionMode simgrid::mc::get_model_checking_reduction()
   return cfg_mc_reduction_value;
 }
 
-std::vector<void*>& get_mc_watch_addresses()
+std::vector<uintptr_t>& get_mc_watch_addresses()
 {
-  static std::vector<void*> addresses;
+  static std::vector<uintptr_t> addresses;
   return addresses;
 }
 static simgrid::config::Flag<std::string> _cfg_mc_watch{
@@ -96,7 +96,7 @@ static simgrid::config::Flag<std::string> _cfg_mc_watch{
       try {
         boost::algorithm::split(result, value, boost::is_any_of(","));
         for (const auto& s : result) {
-          void* addr = (void*)std::stoul(s, 0, 16);
+          auto addr = std::stoul(s, 0, 16);
           get_mc_watch_addresses().push_back(addr);
         }
       } catch (const std::exception& e) {

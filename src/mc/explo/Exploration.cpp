@@ -22,6 +22,7 @@
 #include "xbt/string.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <signal.h>
 #include <sys/wait.h>
@@ -141,18 +142,19 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
           if (smemory::MemoryAccessRecord::is_coalescing())
             trace.back().append(xbt::string_printf(
                 "     <== racy WRITE of size %ub on %p by actor %d between its creation and this operation",
-                race->sizes_[0], xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_,
+                race->sizes_[0], reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
                 race->first_mem_op_.get_aid().c_val()));
           else
-            trace.back().append(xbt::string_printf(
-                "     <== racy WRITE on %p by actor %d between its creation and this operation",
-                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, (race->first_mem_op_.get_aid().c_val())));
+            trace.back().append(
+                xbt::string_printf("     <== racy WRITE on %p by actor %d between its creation and this operation",
+                                   reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
+                                   (race->first_mem_op_.get_aid().c_val())));
         }
         actor_epoch[transition->aid_.value()]++;
         if (actor_epoch[transition->aid_.value()] == race->first_mem_op_.get_clock())
-          trace.back().append(xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation",
-                                                 race->sizes_[0],
-                                                 xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_));
+          trace.back().append(
+              xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation", race->sizes_[0],
+                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_)));
       }
       if (transition->aid_ == race->second_mem_op_.get_aid()) {
         if (race->second_mem_op_.get_clock() == 0 && actor_epoch[transition->aid_.value()] == 0) {
@@ -160,19 +162,21 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
             trace.back().append(xbt::string_printf(
                 "     <== racy %s of size %ub on %p by actor %d between its creation and this operation",
                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.get_aid().c_val()));
+                reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
+                race->second_mem_op_.get_aid().c_val()));
           else
-            trace.back().append(xbt::string_printf(
-                "     <== racy %s on %p by actor %d between its creation and this operation",
-                race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-                xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_, race->second_mem_op_.get_aid().c_val()));
+            trace.back().append(
+                xbt::string_printf("     <== racy %s on %p by actor %d between its creation and this operation",
+                                   race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+                                   reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
+                                   race->second_mem_op_.get_aid().c_val()));
         }
         actor_epoch[transition->aid_.value()]++;
         if (actor_epoch[transition->aid_.value()] == race->second_mem_op_.get_clock())
-          trace.back().append(xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
-                                                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-                                                 race->sizes_[1],
-                                                 xbt_log_no_loc ? (void*)0xDEADBEAF : race->location_));
+          trace.back().append(
+              xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
+                                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
+                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_)));
       }
     }
   }
@@ -264,7 +268,7 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
 
   throw McWarning(ExitStatus::SAFETY);
 }
-void Exploration::debug_replay(void* location)
+void Exploration::debug_replay(uintptr_t location)
 {
   std::deque<std::pair<Aid, time_considered_t>> recipe;
   std::deque<std::pair<Aid, time_considered_t>> recipe_needing_actor_status;
@@ -340,7 +344,7 @@ void Exploration::report_data_race(const McDataRace& e)
 {
   XBT_INFO("Found a datarace at location %p between actor %d and actor %d after the following "
            "execution:",
-           xbt_log_no_loc ? (void*)0xDEADBEAF : e.location_, e.first_mem_op_.get_aid().c_val(),
+           reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_), e.first_mem_op_.get_aid().c_val(),
            e.second_mem_op_.get_aid().c_val());
   for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
     XBT_INFO("  %s", frame.c_str());
