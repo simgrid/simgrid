@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/smemory/MemoryAccessRecord.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");
 
 namespace simgrid::mc::smemory {
 
-void MemoryAccessRecord::create_memory_access(MemOpType type, uintptr_t where, unsigned char size)
+void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, unsigned short size)
 {
   // Save the memory access to the bitmap
   uintptr_t addr = reinterpret_cast<uintptr_t>(where);
@@ -24,7 +24,7 @@ void MemoryAccessRecord::create_memory_access(MemOpType type, uintptr_t where, u
     uintptr_t page_index = addr >> page_shift_;
     uintptr_t page_base  = page_index << page_shift_;
     uintptr_t offset     = addr - page_base;
-    Page& page = pages_.try_emplace(page_index).first->second;
+    Page& page           = pages_.try_emplace(page_index).first->second;
 
     uintptr_t first_bucket = offset >> bucket_shift_;
     uintptr_t word_index   = first_bucket >> 6;
@@ -86,7 +86,7 @@ void MemoryAccessRecord::create_memory_access(MemOpType type, uintptr_t where, u
   }
 }
 
-bool MemoryAccessRecord::was_marked(uintptr_t where, MemOpType type) const
+bool MemoryAccessTrace::was_marked(uintptr_t where, MemOpType type) const
 {
   uintptr_t addr       = reinterpret_cast<uintptr_t>(where);
   uintptr_t page_index = addr >> page_shift_;
@@ -103,7 +103,7 @@ bool MemoryAccessRecord::was_marked(uintptr_t where, MemOpType type) const
   const auto& word_ctn = type == MemOpType::Read ? it->second.read_bits[word] : it->second.write_bits[word];
   return word_ctn & (1ULL << bit);
 }
-void MemoryAccessRecord::Page::mark_bucket(uintptr_t bucket, MemOpType type)
+void MemoryAccessTrace::Page::mark_bucket(uintptr_t bucket, MemOpType type)
 {
   uintptr_t word_index = bucket >> 6;
   uintptr_t bit_index  = bucket & 63;
@@ -115,7 +115,7 @@ void MemoryAccessRecord::Page::mark_bucket(uintptr_t bucket, MemOpType type)
 // Search the marked bucket at or before start_bucket (including start_bucket)
 //
 // Returns std::nullopt if no suck bucket exists in this page
-std::optional<uintptr_t> MemoryAccessRecord::Page::find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const
+std::optional<uintptr_t> MemoryAccessTrace::Page::find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const
 {
   xbt_assert(start_bucket < buckets_per_page_);
 
@@ -152,7 +152,7 @@ std::optional<uintptr_t> MemoryAccessRecord::Page::find_prev_marked_bucket(uintp
 // Search the marked bucket at or after start_bucket (including start_bucket)
 //
 // Returns std::nullopt if no such bucket exists in this page
-std::optional<uintptr_t> MemoryAccessRecord::Page::find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const
+std::optional<uintptr_t> MemoryAccessTrace::Page::find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const
 {
   xbt_assert(start_bucket < buckets_per_page_);
 
@@ -185,7 +185,7 @@ std::optional<uintptr_t> MemoryAccessRecord::Page::find_next_marked_bucket(uintp
   return std::nullopt;
 }
 
-void MemoryAccessRecord::serialize(Channel& channel)
+void MemoryAccessTrace::serialize(Channel& channel)
 {
   unsigned int page_count = pages_.size();
   channel.pack<unsigned int>(page_count);
@@ -209,7 +209,7 @@ void MemoryAccessRecord::serialize(Channel& channel)
   }
   pages_.clear();
 }
-void MemoryAccessRecord::deserialize(Channel& channel)
+void MemoryAccessTrace::deserialize(Channel& channel)
 {
   xbt_assert(pages_.empty(), "Cannot deserialize a memory tracker when the receiver is not empty");
 
@@ -231,7 +231,7 @@ void MemoryAccessRecord::deserialize(Channel& channel)
 //                 Two-level Online Iterator logic
 // ============================================================
 
-void MemoryAccessRecord::PageIterator::compute_current_view() const
+void MemoryAccessTrace::PageIterator::compute_current_view() const
 {
   if (current_view_.has_value())
     return;
@@ -245,7 +245,7 @@ void MemoryAccessRecord::PageIterator::compute_current_view() const
   current_view_ = PageAccessView{page_base, &page, AccessIterator(&page, false), AccessIterator(&page, true)};
 }
 
-void MemoryAccessRecord::AccessIterator::advance()
+void MemoryAccessTrace::AccessIterator::advance()
 {
   if (is_end_ || not page_) {
     is_end_ = true;

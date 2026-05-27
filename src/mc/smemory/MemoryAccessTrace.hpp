@@ -41,11 +41,11 @@ namespace simgrid::mc::smemory {
 
 XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 
-class MemoryAccessRecord {
+class MemoryAccessTrace {
 private:
   // __builtin_ctzll: long long log2 (number of trailing 0-bits in x) uintptr_t is a long long
   static constexpr uintptr_t page_shift_ = __builtin_ctzll(smemory::config::page_size);
-  static constexpr uintptr_t page_mask_ = smemory::config::page_size - 1;
+  static constexpr uintptr_t page_mask_  = smemory::config::page_size - 1;
 
   constexpr static uintptr_t bucket_shift_     = __builtin_ctzll(smemory::config::granularity);
   constexpr static uintptr_t word_shift_       = bucket_shift_ + 6;
@@ -72,7 +72,9 @@ private:
   bool was_marked(uintptr_t where, MemOpType type) const;
 
 public:
-  void create_memory_access(MemOpType type, uintptr_t where, unsigned char size);
+  /* Main input method. The observation uses this method only */
+  void create_memory_access(MemOpType type, uintptr_t where, unsigned short size);
+
   bool was_written(uintptr_t where) const { return was_marked(where, MemOpType::Write); }
   bool was_read(uintptr_t where) const
   {
@@ -101,7 +103,7 @@ public:
   class AccessIterator {
   private:
     const Page* page_              = nullptr;
-    uintptr_t bucket_pos_ = 0;
+    uintptr_t bucket_pos_          = 0;
     PageInterval current_interval_ = {};
     bool is_end_                   = true;
 

@@ -145,7 +145,9 @@ else()
   set(EXTRA_DIST ${EXTRA_DIST} ${MC_UNIT_TESTS})
 endif()
 
-set(SMEMORY_UNIT_TESTS src/mc/smemory/VectorClockPool_test.cpp)
+set(SMEMORY_UNIT_TESTS src/mc/smemory/MemoryAccessTrace_test.cpp
+                       src/mc/smemory/SlabTrackState_test.cpp
+                       src/mc/smemory/VectorClockPool_test.cpp)
 if(SIMGRID_HAVE_SMEMORY)
   set(UNIT_TESTS ${UNIT_TESTS} ${SMEMORY_UNIT_TESTS})
 else()
@@ -158,11 +160,6 @@ else()
   set(EXTRA_DIST ${EXTRA_DIST} src/kernel/lmm/bmf_test.cpp)
 endif()
 set(EXTRA_DIST ${EXTRA_DIST} src/kernel/routing/NetZone_test.hpp)
-if(SIMGRID_HAVE_SMEMORY)
-  set(UNIT_TESTS ${UNIT_TESTS} src/mc/smemory/MemoryAccessRecord_test.cpp)
-else()
-  set(EXTRA_DIST ${EXTRA_DIST} src/mc/smemory/MemoryAccessRecord_test.cpp)
-endif()
 
 add_executable       (unit-tests EXCLUDE_FROM_ALL ${UNIT_TESTS})
 add_dependencies     (tests unit-tests)

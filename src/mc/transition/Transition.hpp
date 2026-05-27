@@ -8,7 +8,7 @@
 
 #include "simgrid/forward.h" // aid_t
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/smemory/MemoryAccessRecord.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
 #include <atomic>
@@ -75,14 +75,14 @@ public:
 
 private:
   static const std::string empty_string; // Trick to return an empty string when no call_location was provided
-  std::unique_ptr<smemory::MemoryAccessRecord> memory_tracker_ = nullptr;
+  std::unique_ptr<smemory::MemoryAccessTrace> memory_trace_ = nullptr;
 
 public:
-  smemory::MemoryAccessRecord& get_memory_tracker()
+  smemory::MemoryAccessTrace& get_memory_trace()
   {
-    if (memory_tracker_ == nullptr)
-      memory_tracker_ = std::make_unique<smemory::MemoryAccessRecord>();
-    return *memory_tracker_;
+    if (memory_trace_ == nullptr)
+      memory_trace_ = std::make_unique<smemory::MemoryAccessTrace>();
+    return *memory_trace_;
   }
 
   /* Which transition was executed for this simcall

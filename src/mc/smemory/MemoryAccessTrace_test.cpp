@@ -342,6 +342,7 @@ TEST_CASE("Iterator: marking adjacent variables", "[MemoryAccessRecord]")
 
   if (MemoryAccessRecord::is_coalescing()) {
     REQUIRE(interval.end_offset - interval.start_offset == 6); // chunks were merged
+    ++access_it;
   } else {
     REQUIRE(interval.end_offset - interval.start_offset == std::max<size_t>(1, MemoryAccessRecord::get_bucket_size()));
     ++access_it;

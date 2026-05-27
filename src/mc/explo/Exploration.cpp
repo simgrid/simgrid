@@ -15,7 +15,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
-#include "src/mc/smemory/MemoryAccessRecord.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
@@ -139,7 +139,7 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
     if (race != nullptr) {
       if (transition->aid_ == race->first_mem_op_.get_aid()) {
         if (race->first_mem_op_.get_clock() == Clock(0) && actor_epoch[transition->aid_.value()] == 0) {
-          if (smemory::MemoryAccessRecord::is_coalescing())
+          if (smemory::MemoryAccessTrace::is_coalescing())
             trace.back().append(xbt::string_printf(
                 "     <== racy WRITE of size %ub on %p by actor %d between its creation and this operation",
                 race->sizes_[0], reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
@@ -158,7 +158,7 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
       }
       if (transition->aid_ == race->second_mem_op_.get_aid()) {
         if (race->second_mem_op_.get_clock() == 0 && actor_epoch[transition->aid_.value()] == 0) {
-          if (smemory::MemoryAccessRecord::is_coalescing())
+          if (smemory::MemoryAccessTrace::is_coalescing())
             trace.back().append(xbt::string_printf(
                 "     <== racy %s of size %ub on %p by actor %d between its creation and this operation",
                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],

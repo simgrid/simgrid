@@ -74,7 +74,7 @@ struct EventDataRace : public std::exception {
 void Event::initialize_epoch()
 {
   Aid event_aid_ = transition_->aid_;
-  for (const auto& access_it : transition_->get_memory_tracker())
+  for (const auto& access_it : transition_->get_memory_trace())
     for (auto [location, size, kind] : access_it)
       if (kind == smemory::MemOpType::Write)
         last_write_.insert_or_assign(location, Epoch{event_aid_, clock_vector_.get(event_aid_).value() - 1});
@@ -86,7 +86,7 @@ void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_ev
   last_write_      = prev_event.last_write_;
   Aid event_aid_   = transition_->aid_;
 
-  for (const auto& access_it : transition_->get_memory_tracker())
+  for (const auto& access_it : transition_->get_memory_trace())
     for (auto [location, size, kind] : access_it) {
 
       auto prev_write = last_write_.find(location);

@@ -52,10 +52,10 @@ public:
       : data_((static_cast<uint32_t>(aid.value()) << CLOCK_BITS) | (static_cast<uint32_t>(clock.value()) & CLOCK_MASK))
   {
   }
-  explicit constexpr Epoch(uint32_t idx) : data_(idx)
+  explicit constexpr Epoch(uint32_t idx) : data_(idx | SELECTOR_MASK)
   {
     if ((idx & SELECTOR_MASK) != 0)
-      throw EpochIsNotPureIndex("Cannot create an Epoch from an uint32 that is not a pure index.");
+      throw EpochIsNotPureIndex("Pool index exceeds 31 bits.");
   }
 
   // Differenciate between indexes and real epochs
