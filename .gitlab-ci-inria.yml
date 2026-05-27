@@ -3,6 +3,7 @@
 # TODO:
 # intelCC v2025.3 has -Denable_model-checking=OFF as it fails with lib/libsimgrid.so.4.0.1: undefined reference to '__atomic_compare_exchange'
 # debian-oldstable has -Denable_model-checking=OFF because it uses gcc12 that does not support std::format that is used in the MC
+# pip-oldstable is disabled because we cannot turn MC off easily in the pip build.
 
 coverage:
   image: debian:testing
@@ -143,28 +144,28 @@ pip-default-img:
     - dist/
     expire_in: 2 weeks
 
-pip-oldstable:
-  stage: test
-  image: debian:oldstable
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "stable"'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: on_success
-    - when: never  # By default, do not execute this job (so it's executed only daily)
-  tags: # Select a runner
-    - medium # Inria infra
-  script:
-  - apt-get --allow-releaseinfo-change update
-  - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
-  - cmake .
-  - make dist
-  - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
-  - cd simgrid-4* ; python3 -m build --outdir ../dist
-  artifacts:
-    paths:
-    - dist/
-    expire_in: 2 weeks
+# pip-oldstable:
+#   stage: test
+#   image: debian:oldstable
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "stable"'
+#       when: never
+#     - if: '$CI_PIPELINE_SOURCE == "schedule"'
+#       when: on_success
+#     - when: never  # By default, do not execute this job (so it's executed only daily)
+#   tags: # Select a runner
+#     - medium # Inria infra
+#   script:
+#   - apt-get --allow-releaseinfo-change update
+#   - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev python3-build python3-venv
+#   - cmake .
+#   - make dist
+#   - tar xf simgrid*tar.gz ; rm simgrid*tar.gz
+#   - cd simgrid-4* ; python3 -m build --outdir ../dist
+#   artifacts:
+#     paths:
+#     - dist/
+#     expire_in: 2 weeks
 
 
 # ###################################################################################################
