@@ -17,28 +17,32 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smemory);
 
-static std::vector<std::pair<uintptr_t, uintptr_t>> stacks_;
+struct MemRange {
+  uintptr_t start, end;
+};
+
+static std::vector<MemRange> stacks_;
 void smemory_add_stack(uintptr_t begin, uintptr_t end)
 {
-  auto elem = std::make_pair(reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end));
+  MemRange elem{reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end)};
   for (auto reg : stacks_)
-    xbt_assert(reg.second <= elem.first || reg.first >= elem.second,
-               "Newly added stack [%zu;%zu] intersects with previously added stack [%zu;%zu]", elem.first, elem.second,
-               reg.first, reg.second);
+    xbt_assert(reg.end <= elem.start || reg.start >= elem.end,
+               "Newly added stack [%zu;%zu] intersects with previously added stack [%zu;%zu]", elem.start, elem.end,
+               reg.start, reg.end);
   stacks_.push_back(elem);
-  std::sort(stacks_.begin(), stacks_.end());
+  std::ranges::sort(stacks_, {}, &MemRange::start);
 }
 void smemory_remove_stack(uintptr_t begin, uintptr_t end)
 {
-  auto elem = std::make_pair(reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end));
+  MemRange elem{reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end)};
   XBT_DEBUG("Removing stack %p-%p from a list of %lu stacks.", (void*)begin, (void*)end, stacks_.size());
   for (auto it = stacks_.begin(); it != stacks_.end(); it++)
-    if (it->first == elem.first && it->second == elem.second) {
+    if (it->start == elem.start && it->end == elem.end) {
       stacks_.erase(it);
-      std::sort(stacks_.begin(), stacks_.end());
+      std::ranges::sort(stacks_, {}, &MemRange::start);
       return;
     }
-  xbt_die("Cannot remove stack [%zu;%zu] from the list as it's not in it", elem.first, elem.second);
+  xbt_die("Cannot remove stack [%zu;%zu] from the list as it's not in it", elem.start, elem.end);
 }
 bool smemory_is_on_stack(uintptr_t ptr)
 {
@@ -51,9 +55,9 @@ bool smemory_is_on_stack(uintptr_t ptr)
   while (left < right) {
     size_t mid = left + (right - left) / 2;
 
-    if (addr < stacks_[mid].first)
+    if (addr < stacks_[mid].start)
       right = mid;
-    else if (addr >= stacks_[mid].second)
+    else if (addr >= stacks_[mid].end)
       left = mid + 1;
     else
       return true; // found
@@ -62,10 +66,7 @@ bool smemory_is_on_stack(uintptr_t ptr)
   return false;
 }
 
-struct RwRange {
-  uintptr_t start, end;
-};
-static std::vector<RwRange> rw_ranges;
+static std::vector<MemRange> rw_ranges;
 
 bool smemory_is_rw_segment(uintptr_t location)
 {
@@ -77,13 +78,13 @@ bool smemory_is_rw_segment(uintptr_t location)
         rw_ranges.emplace_back(seg.start_addr, seg.end_addr);
 
     // Not sure whether it's sorted by default. Play self.
-    std::ranges::sort(rw_ranges, {}, &RwRange::start);
+    std::ranges::sort(rw_ranges, {}, &MemRange::start);
     sthread_enable();
   }
 
-  // upper_bound gives the first element whose first element is above the location
+  // upper_bound gives the start element whose start element is above the location
   // The candidate is the element just before it (if any).
-  const auto it = std::ranges::upper_bound(rw_ranges, location, {}, &RwRange::start);
+  const auto it = std::ranges::upper_bound(rw_ranges, location, {}, &MemRange::start);
 
   if (it == rw_ranges.begin()) // No matching candidate
     return false;
