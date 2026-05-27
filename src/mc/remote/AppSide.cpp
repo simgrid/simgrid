@@ -80,13 +80,18 @@ AppSide* AppSide::get()
     // Also warm up the malloc areas by pre-reserving some pages
 #if HAVE_MALLOPT
     mallopt(M_TRIM_THRESHOLD, -1); // Never reduce brk() when free() is called
+    mallopt(M_MMAP_THRESHOLD, 16 * 1024 * 1024); // Don't use mmap for block smaller than 16M (default is 128k)
+    // This is rather radical to prefer brk() over mmap, but our applications are meant to be rather short-lived (so
+    // heap fragmentation is less of a problem), and our benchmarks show that zeroing mmap'ed pages is our performance
+    // killer
 #endif
-    char* blocks[100];
-    for (int i = 0; i < 100; i++) {
-      blocks[i]    = (char*)malloc(1024 * 64);
+    constexpr auto page_count = 4096; // 16M of data is 4096 chunks of 4k each
+    char* blocks[page_count];
+    for (int i = 0; i < page_count; i++) {
+      blocks[i]    = (char*)malloc(4096); // Use page-sized blocks to force the kernel to populate all pages
       blocks[i][0] = 0;
     }
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < page_count; i++)
       free(blocks[i]); // We just wanted to warm up the memory
   }
 
