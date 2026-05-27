@@ -13,4 +13,5 @@ void __mcsimgrid_deref(uintptr_t where, unsigned char size);
 bool smemory_is_on_stack(uintptr_t ptr);
 void smemory_add_stack(uintptr_t begin, uintptr_t end);
 void smemory_remove_stack(uintptr_t begin, uintptr_t end);
+bool smemory_is_rw_segment(uintptr_t location);
 };

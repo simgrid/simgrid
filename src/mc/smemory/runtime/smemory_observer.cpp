@@ -30,6 +30,13 @@ static void create_memory_access(MemOpType type, uintptr_t where, unsigned char 
     return;
   }
 
+  // Do not track data on read-only segments
+  if (not smemory_is_rw_segment(where)) {
+    XBT_DEBUG("%p is on a read-only segment, ignore it", (void*)where);
+    instrument = true;
+    return;
+  }
+
   bool watched = false;
   for (auto a : get_mc_watch_addresses()) {
     if (a == where) {

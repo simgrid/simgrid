@@ -5,14 +5,13 @@
 
 #include "smemory_observer.h"
 #include "src/sthread/sthread.h"
+#include "src/xbt/memory_map.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
 #include <algorithm>
 #include <cstdint>
-#include <fstream>
-#include <sstream>
-#include <string>
+#include <sys/mman.h>
 #include <utility>
 #include <vector>
 
@@ -61,4 +60,34 @@ bool smemory_is_on_stack(uintptr_t ptr)
   }
 
   return false;
+}
+
+struct RwRange {
+  uintptr_t start, end;
+};
+static std::vector<RwRange> rw_ranges;
+
+bool smemory_is_rw_segment(uintptr_t location)
+{
+  // Initialize the data if it's still empty
+  if (rw_ranges.empty()) [[unlikely]] {
+    sthread_disable();
+    for (const auto& seg : simgrid::xbt::get_memory_map(getpid()))
+      if (seg.prot & PROT_READ && seg.prot & PROT_WRITE)
+        rw_ranges.emplace_back(seg.start_addr, seg.end_addr);
+
+    // Not sure whether it's sorted by default. Play self.
+    std::ranges::sort(rw_ranges, {}, &RwRange::start);
+    sthread_enable();
+  }
+
+  // upper_bound gives the first element whose first element is above the location
+  // The candidate is the element just before it (if any).
+  const auto it = std::ranges::upper_bound(rw_ranges, location, {}, &RwRange::start);
+
+  if (it == rw_ranges.begin()) // No matching candidate
+    return false;
+
+  const auto& candidate = *std::prev(it);
+  return location < candidate.end; // open upper bound: [start, end)
 }
