@@ -57,7 +57,6 @@ TEST_CASE("SlabTrackState: Initial state", "[SlabTrackState]")
   REQUIRE(intervals[0].start_ == 0);
   REQUIRE(intervals[0].end_ == 4096);
 }
-
 TEST_CASE("SlabTrackState: First write triggers scratchpad/out-of-place", "[SlabTrackState]")
 {
   Epoch init_epoch(Aid{0}, Clock{0});
@@ -70,11 +69,14 @@ TEST_CASE("SlabTrackState: First write triggers scratchpad/out-of-place", "[Slab
   SlabTrackState::Page& page = state.get_or_create_page(reinterpret_cast<uintptr_t>(memory_page));
   const auto& intervals      = page.slabs_;
 
-  // Initial block [0, 4096] must be split into 3 segments
+  uint16_t expected_end =
+      MemoryAccessTrace::is_coalescing() ? (1024 + 16) : (1024 + MemoryAccessTrace::get_bucket_size());
+
   REQUIRE(intervals.size() == 3);
   REQUIRE(intervals[1].start_ == 1024);
-  REQUIRE(intervals[1].end_ == 1040);
+  REQUIRE(intervals[1].end_ == expected_end);
   REQUIRE(intervals[1].write_ == Epoch(Aid{1}, Clock{1}));
+  REQUIRE(intervals[2].start_ == expected_end);
 }
 
 TEST_CASE("SlabTrackState: Contiguous writes coalesce", "[SlabTrackState]")
@@ -94,12 +96,25 @@ TEST_CASE("SlabTrackState: Contiguous writes coalesce", "[SlabTrackState]")
   SlabTrackState::Page& page = state.get_or_create_page(reinterpret_cast<uintptr_t>(memory_page));
   const auto& intervals      = page.slabs_;
 
-  // Writes should merge into one [100, 132]
-  REQUIRE(intervals.size() == 3);
-  REQUIRE(intervals[1].start_ == 100);
-  REQUIRE(intervals[1].end_ == 132);
-}
+  if (MemoryAccessTrace::is_coalescing()) { // SlabTrack mode
+    REQUIRE(intervals.size() == 3);
+    REQUIRE(intervals[1].start_ == 100);
+    REQUIRE(intervals[1].end_ == 132); // 100 + 16 + 16
+  } else {                             // orignal FastTrack mode: isolated writes
+    uint16_t bucket_size = MemoryAccessTrace::get_bucket_size();
 
+    // Page: [0-100), [100-101), [101-116), [116-117), [117-4096)
+    REQUIRE(intervals.size() == 5);
+
+    REQUIRE(intervals[1].start_ == 100);
+    REQUIRE(intervals[1].end_ == 100 + bucket_size);
+    REQUIRE(intervals[1].write_ == Epoch(Aid{1}, Clock{1}));
+
+    REQUIRE(intervals[3].start_ == 116);
+    REQUIRE(intervals[3].end_ == 116 + bucket_size);
+    REQUIRE(intervals[3].write_ == Epoch(Aid{1}, Clock{1}));
+  }
+}
 // ============================================================================
 // Data Race Detection Tests
 // ============================================================================
@@ -113,8 +128,9 @@ TEST_CASE("SlabTrackState: Write-Write Data Race detection", "[SlabTrackState]")
   state.apply_transition(tracker1, Aid{1}, Clock{1}, make_vc(1, 1));
 
   MemoryAccessTrace tracker2;
-  tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 104, 4);
+  tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 100, 4);
 
+  // Works for both FastTrack and SlabTrack as both access are on the exact same address
   REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
 }
 
@@ -177,7 +193,7 @@ TEST_CASE("SlabTrackState: Write-Read race detection (unsynced read after write)
   REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
 }
 
-TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive", "[SlabTrackState]")
+TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive in SlabTrack", "[SlabTrackState]")
 {
   SlabTrackState state(Epoch(Aid{0}, Clock{0}));
 
@@ -190,7 +206,13 @@ TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive", "[Slab
   MemoryAccessTrace tracker2;
   tracker2.create_memory_access(MemOpType::Read, memory_page_addr + 112, 8);
 
-  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
+  if (MemoryAccessTrace::is_coalescing()) {
+    // SlabTrack detects the problem despite the partial overlap!
+    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
+  } else {
+    // FastTrack sees two distinct variables (100 & 112) and misses the datarace
+    REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)));
+  }
 }
 
 // ============================================================================
@@ -346,6 +368,9 @@ TEST_CASE("SlabTrackState: Split preserves epochs of untouched segments", "[Slab
   SlabTrackState::Page& page = state.get_or_create_page(memory_page_addr);
   const auto& intervals      = page.slabs_;
 
+  uint16_t expected_end =
+      MemoryAccessTrace::is_coalescing() ? (1000 + 24) : (1000 + MemoryAccessTrace::get_bucket_size());
+
   REQUIRE(intervals.size() == 3);
 
   // Prefix [0, 1000) — untouched, must keep init_epoch
@@ -353,13 +378,13 @@ TEST_CASE("SlabTrackState: Split preserves epochs of untouched segments", "[Slab
   REQUIRE(intervals[0].end_ == 1000);
   REQUIRE(intervals[0].write_ == init_epoch);
 
-  // Written segment [1000, 1024)
+  // Written segment [1000, expected_end)
   REQUIRE(intervals[1].start_ == 1000);
-  REQUIRE(intervals[1].end_ == 1024);
+  REQUIRE(intervals[1].end_ == expected_end);
   REQUIRE(intervals[1].write_ == Epoch(Aid{1}, Clock{1}));
 
-  // Suffix [1024, 4096) — untouched, must keep init_epoch
-  REQUIRE(intervals[2].start_ == 1024);
+  // Suffix [expected_end, 4096) — untouched, must keep init_epoch
+  REQUIRE(intervals[2].start_ == expected_end);
   REQUIRE(intervals[2].end_ == 4096);
   REQUIRE(intervals[2].write_ == init_epoch);
 }
@@ -377,7 +402,13 @@ TEST_CASE("SlabTrackState: Write-Write race is detected on partial overlap", "[S
   MemoryAccessTrace tracker2;
   tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 120, 32);
 
-  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
+  if (MemoryAccessTrace::is_coalescing()) {
+    // SlabTrack detects the problem
+    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)), DataRaceException);
+  } else {
+    // FastTrack sees 2 variables and misses the datarace
+    REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{2}, Clock{1}, make_vc(2, 1)));
+  }
 }
 
 TEST_CASE("SlabTrackState: Read on initial epoch never throws", "[SlabTrackState]")
