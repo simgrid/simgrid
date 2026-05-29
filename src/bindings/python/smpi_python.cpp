@@ -43,16 +43,13 @@ void wrap_mpi_alltoall(py::array_t<T> data, int sendcount, MPI_Datatype sendtype
 {
   py::buffer_info out_buffer = output.request();
   py::buffer_info in_buffer  = data.request();
-
   auto* output_ptr = static_cast<T*>(out_buffer.ptr);
-
   MPI_Alltoall(data.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
 }
 template <typename T> void wrap_mpi_bcast(py::array_t<T> output, int count, MPI_Datatype type, int root, MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-
   MPI_Bcast(output_ptr, count, type, root, comm);
 }
 template <typename T>
@@ -63,7 +60,6 @@ void wrap_mpi_reduce_scatter(py::array_t<T> input, py::array_t<T> output, std::v
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-
   MPI_Reduce_scatter(input_ptr, output_ptr, count.data(), type, op, comm);
 }
 template <typename T>
@@ -74,7 +70,6 @@ void wrap_mpi_reduce_scatter_block(py::array_t<T> input, py::array_t<T> output, 
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-
   MPI_Reduce_scatter_block(input_ptr, output_ptr, count, type, op, comm);
 }
 template <typename T>
@@ -85,7 +80,6 @@ void wrap_mpi_reduce(py::array_t<T> input, py::array_t<T> output, int count, MPI
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-
   MPI_Reduce(input_ptr, output_ptr, count, type, op, root, comm);
 }
 template <typename T>
@@ -96,7 +90,6 @@ void wrap_mpi_allreduce(py::array_t<T> input, py::array_t<T> output, int count, 
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-
   MPI_Allreduce(input_ptr, output_ptr, count, type, op, comm);
 }
 template <typename T>
@@ -107,7 +100,6 @@ void wrap_mpi_allgather(py::array_t<T> input, int send_count, MPI_Datatype send_
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-
   MPI_Allgather(input_ptr, send_count, send_type, output_ptr, output_count, output_type, comm);
 }
 } // namespace
