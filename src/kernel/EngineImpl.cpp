@@ -31,6 +31,9 @@
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
 #endif
+#if HAVE_PYTHON_RAW_CONTEXTS
+#include "src/kernel/context/ContextRawPython.hpp"
+#endif
 
 #include "xbt/log.hpp"
 
@@ -51,6 +54,9 @@ config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor sta
 constexpr std::initializer_list<std::pair<const char*, context::ContextFactory* (*)()>> context_factories = {
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
+#endif
+#if HAVE_PYTHON_RAW_CONTEXTS
+    {"raw-python", &context::raw_python_factory},
 #endif
 #if HAVE_BOOST_CONTEXTS
     {"boost", &context::boost_factory},
