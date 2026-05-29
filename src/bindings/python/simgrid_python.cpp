@@ -275,7 +275,6 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object fun) {
             fun.inc_ref(); // keep alive after return
             simgrid::s4u::this_actor::on_exit([fun_p = fun.ptr()](bool failed) {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(fun_p);
                 fun(failed);
@@ -334,7 +333,6 @@ PYBIND11_MODULE(simgrid, m)
           [](Engine* e, const std::string& name, py::object fun_or_class) {
             fun_or_class.inc_ref(); // keep alive after return
             e->register_actor(name, [fun_or_class_p = fun_or_class.ptr()](std::vector<std::string> args) {
-              const py::gil_scoped_acquire py_context;
               try {
                 /* Convert the std::vector into a py::tuple */
                 py::tuple params(args.size() - 1);
@@ -448,7 +446,6 @@ PYBIND11_MODULE(simgrid, m)
             return zone->set_host_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone,
                                                        const std::vector<unsigned long>& coord,
                                                        unsigned long id) -> simgrid::s4u::Host* {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 return py::cast<simgrid::s4u::Host*>(fun(zone, coord, id));
@@ -462,7 +459,6 @@ PYBIND11_MODULE(simgrid, m)
             return zone->set_netzone_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone,
                                                           const std::vector<unsigned long>& coord,
                                                           unsigned long id) -> simgrid::s4u::NetZone* {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 return py::cast<simgrid::s4u::NetZone*>(fun(zone, coord, id));
@@ -476,7 +472,6 @@ PYBIND11_MODULE(simgrid, m)
             return zone->set_loopback_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone,
                                                            const std::vector<unsigned long>& coord,
                                                            unsigned long id) -> simgrid::s4u::Link* {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
@@ -490,7 +485,6 @@ PYBIND11_MODULE(simgrid, m)
             return zone->set_limiter_cb([cb_p = cb.ptr()](simgrid::s4u::NetZone* zone,
                                                           const std::vector<unsigned long>& coord,
                                                           unsigned long id) -> simgrid::s4u::Link* {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 return py::cast<simgrid::s4u::Link*>(fun(zone, coord, id));
@@ -718,7 +712,6 @@ PYBIND11_MODULE(simgrid, m)
             fun.inc_ref();  // keep alive after return
             args.inc_ref(); // keep alive after return
             return host->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
-              const py::gil_scoped_acquire py_context;
               try {
                 const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
                 const auto args = py::reinterpret_borrow<py::args>(args_p);
@@ -776,7 +769,6 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             Host::on_creation_cb([cb_p = cb.ptr()](Host& h) {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 fun(&h);
@@ -1158,7 +1150,6 @@ PYBIND11_MODULE(simgrid, m)
             fun.inc_ref();  // keep alive after return
             args.inc_ref(); // keep alive after return
             return h->add_actor(name, [fun_p = fun.ptr(), args_p = args.ptr()]() {
-              const py::gil_scoped_acquire py_context;
               try {
                 const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
                 const auto args = py::reinterpret_borrow<py::args>(args_p);
@@ -1218,7 +1209,6 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             Task::on_start_cb([cb_p = cb.ptr()](Task* op) {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb_p)(op);
             });
           },
@@ -1228,7 +1218,6 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
             Task::on_completion_cb([cb_p = cb.ptr()](Task* op) {
-              const py::gil_scoped_acquire py_context; // need a new context for callback
               py::reinterpret_borrow<py::function>(cb_p)(op);
             });
           },

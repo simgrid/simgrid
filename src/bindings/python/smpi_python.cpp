@@ -144,7 +144,6 @@ void SMPI_bindings(py::module& m)
                 return SMPI_app_instance_start(
                     name.c_str(),
                     [fun_p = fun.ptr(), args_p = args.ptr()]() {
-                      const py::gil_scoped_acquire py_context;
                       try {
                         const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
                         const auto args = py::reinterpret_borrow<py::args>(args_p);
@@ -167,7 +166,6 @@ void SMPI_bindings(py::module& m)
                 return SMPI_app_instance_start(
                     name.c_str(),
                     [fun_p = fun.ptr()]() {
-                      const py::gil_scoped_acquire py_context;
                       try {
                         const auto fun = py::reinterpret_borrow<py::object>(fun_p);
                         fun();
