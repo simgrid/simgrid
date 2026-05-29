@@ -37,6 +37,7 @@ public:
     void* datastack_limit        = nullptr; // PyThreadState::datastack_limit (PyObject**)
     int   py_recursion_remaining = 0;       // PyThreadState::py_recursion_remaining
     int   c_recursion_remaining  = 0;       // PyThreadState::c_recursion_remaining
+    bool  tls_attached           = true;    // whether tstate is attached (GIL held) at suspension point
   };
 
   // Registered from simgrid_python.cpp (which has Python + pybind11 in scope).

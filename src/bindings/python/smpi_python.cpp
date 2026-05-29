@@ -45,14 +45,14 @@ void wrap_mpi_alltoall(py::array_t<T> data, int sendcount, MPI_Datatype sendtype
   py::buffer_info in_buffer  = data.request();
 
   auto* output_ptr = static_cast<T*>(out_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Alltoall(data.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
 }
 template <typename T> void wrap_mpi_bcast(py::array_t<T> output, int count, MPI_Datatype type, int root, MPI_Comm comm)
 {
   py::buffer_info out_buffer = output.request();
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Bcast(output_ptr, count, type, root, comm);
 }
 template <typename T>
@@ -63,7 +63,7 @@ void wrap_mpi_reduce_scatter(py::array_t<T> input, py::array_t<T> output, std::v
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Reduce_scatter(input_ptr, output_ptr, count.data(), type, op, comm);
 }
 template <typename T>
@@ -74,7 +74,7 @@ void wrap_mpi_reduce_scatter_block(py::array_t<T> input, py::array_t<T> output, 
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Reduce_scatter_block(input_ptr, output_ptr, count, type, op, comm);
 }
 template <typename T>
@@ -85,7 +85,7 @@ void wrap_mpi_reduce(py::array_t<T> input, py::array_t<T> output, int count, MPI
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Reduce(input_ptr, output_ptr, count, type, op, root, comm);
 }
 template <typename T>
@@ -96,7 +96,7 @@ void wrap_mpi_allreduce(py::array_t<T> input, py::array_t<T> output, int count, 
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Allreduce(input_ptr, output_ptr, count, type, op, comm);
 }
 template <typename T>
@@ -107,7 +107,7 @@ void wrap_mpi_allgather(py::array_t<T> input, int send_count, MPI_Datatype send_
   auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   py::buffer_info in_buffer  = input.request();
   auto* input_ptr            = static_cast<T*>(in_buffer.ptr);
-  py::gil_scoped_release release;
+
   MPI_Allgather(input_ptr, send_count, send_type, output_ptr, output_count, output_type, comm);
 }
 } // namespace
@@ -120,13 +120,12 @@ void SMPI_bindings(py::module& m)
   /* smpi namespace */
   auto smpi_m =
       m.def_submodule("smpi", "Bindings of the s4u::smpi namespace. See the C++ documentation for details.")
-          .def("replay_init", &smpi_replay_init, py::call_guard<py::gil_scoped_release>(), "Initialize the SMPI replay")
-          .def("replay_run", &smpi_replay_run, py::call_guard<py::gil_scoped_release>(), "Run the SMPI replay")
-          .def("replay_main", &smpi_replay_main, py::call_guard<py::gil_scoped_release>(), "Run the SMPI replay main")
-          .def("init", &SMPI_init, py::call_guard<py::gil_scoped_release>(), "Initialize the SMPI interface")
-          .def("finalize", &SMPI_finalize, py::call_guard<py::gil_scoped_release>(), "Finalize the SMPI interface")
-          .def("thread_create", &SMPI_thread_create, py::call_guard<py::gil_scoped_release>(),
-               "Initialize the SMPI interface with threads")
+          .def("replay_init", &smpi_replay_init, "Initialize the SMPI replay")
+          .def("replay_run", &smpi_replay_run, "Run the SMPI replay")
+          .def("replay_main", &smpi_replay_main, "Run the SMPI replay main")
+          .def("init", &SMPI_init, "Initialize the SMPI interface")
+          .def("finalize", &SMPI_finalize, "Finalize the SMPI interface")
+          .def("thread_create", &SMPI_thread_create, "Initialize the SMPI interface with threads")
           .def(
               "main",
               [](const std::string& name, std::vector<std::string> args) {
@@ -142,7 +141,6 @@ void SMPI_bindings(py::module& m)
               [](const std::string& name, std::vector<Host*> const hosts, py::object fun, py::args args) {
                 fun.inc_ref();  // keep alive after return
                 args.inc_ref(); // keep alive after return
-                const py::gil_scoped_release gil_release;
                 return SMPI_app_instance_start(
                     name.c_str(),
                     [fun_p = fun.ptr(), args_p = args.ptr()]() {
@@ -166,7 +164,6 @@ void SMPI_bindings(py::module& m)
               "app_instance_start",
               [](const std::string& name, py::object fun, std::vector<Host*> const hosts) {
                 fun.inc_ref(); // keep alive after return
-                const py::gil_scoped_release gil_release;
                 return SMPI_app_instance_start(
                     name.c_str(),
                     [fun_p = fun.ptr()]() {
@@ -185,33 +182,29 @@ void SMPI_bindings(py::module& m)
                     hosts);
               },
               "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.");
-  auto mpi_m =
-      smpi_m.def_submodule("MPI", "Bindings of MPI functions.")
-          .def(
-              "Init", []() { return MPI_Init(); }, py::call_guard<py::gil_scoped_release>(),
-              "Initialize the MPI interface")
-          .def(
-              "Init",
-              [](std::vector<std::string> args) {
-                auto argc = static_cast<int>(args.size());
-                std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
-                std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
-                // Currently this can be dangling, we should wrap this somehow.
-                char** argv_data = argv.data();
-                return MPI_Init(&argc, &argv_data);
-              },
-              "Initialize the MPI interface")
-          .def("Finalize", &MPI_Finalize, py::call_guard<py::gil_scoped_release>(), "Finalize the MPI interface");
+  auto mpi_m = smpi_m.def_submodule("MPI", "Bindings of MPI functions.")
+                   .def(
+                       "Init", []() { return MPI_Init(); }, "Initialize the MPI interface")
+                   .def(
+                       "Init",
+                       [](std::vector<std::string> args) {
+                         auto argc = static_cast<int>(args.size());
+                         std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
+                         std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
+                         // Currently this can be dangling, we should wrap this somehow.
+                         char** argv_data = argv.data();
+                         return MPI_Init(&argc, &argv_data);
+                       },
+                       "Initialize the MPI interface")
+                   .def("Finalize", &MPI_Finalize, "Finalize the MPI interface");
 
   py::class_<simgrid::smpi::Info, std::unique_ptr<simgrid::smpi::Info, py::nodelete>> mpi_info(
       mpi_m, "Info", "MPI Info object. See the C++ documentation for details.");
   py::class_<simgrid::smpi::Group, std::unique_ptr<simgrid::smpi::Group, py::nodelete>> mpi_group(
       mpi_m, "Group", "MPI Group object. See the C++ documentation for details.");
 
-  mpi_group
-      .def(
-          "free", [](simgrid::smpi::Group* group) { return MPI_Group_free(&group); },
-          py::call_guard<py::gil_scoped_release>(), "Free the group")
+  mpi_group.def(
+               "free", [](simgrid::smpi::Group* group) { return MPI_Group_free(&group); }, "Free the group")
       .def(
           "size",
           [](simgrid::smpi::Group* group) {
@@ -219,7 +212,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_size(group, &size);
             return size;
           },
-          py::call_guard<py::gil_scoped_release>(), "Get the group size")
+          "Get the group size")
       .def(
           "rank",
           [](simgrid::smpi::Group* group) {
@@ -227,7 +220,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_rank(group, &rank);
             return rank;
           },
-          py::call_guard<py::gil_scoped_release>(), "Get the rank within the group")
+          "Get the rank within the group")
       .def(
           "translate_ranks",
           [](simgrid::smpi::Group* group1, std::vector<int> ranks, simgrid::smpi::Group* group2) {
@@ -235,7 +228,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_translate_ranks(group1, ranks.size(), ranks.data(), group2, ranks2.data());
             return ranks2;
           },
-          py::call_guard<py::gil_scoped_release>(), "translate ranks from one group to another")
+          "translate ranks from one group to another")
       .def(
           "compare",
           [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
@@ -243,7 +236,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_compare(group, group2, &result);
             return result;
           },
-          py::call_guard<py::gil_scoped_release>(), "Compare two groups")
+          "Compare two groups")
       .def(
           "union",
           [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
@@ -251,7 +244,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_union(group, group2, &newgroup);
             return newgroup;
           },
-          py::call_guard<py::gil_scoped_release>(), "Return the union of two groups")
+          "Return the union of two groups")
       .def(
           "intersection",
           [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
@@ -259,7 +252,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_intersection(group, group2, &newgroup);
             return newgroup;
           },
-          py::call_guard<py::gil_scoped_release>(), "Return the intersection of two groups")
+          "Return the intersection of two groups")
       .def(
           "difference",
           [](simgrid::smpi::Group* group, simgrid::smpi::Group* group2) {
@@ -267,7 +260,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_difference(group, group2, &newgroup);
             return newgroup;
           },
-          py::call_guard<py::gil_scoped_release>(), "Return the difference of two groups")
+          "Return the difference of two groups")
       .def(
           "incl",
           [](simgrid::smpi::Group* group, std::vector<int> ranks) {
@@ -275,7 +268,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_incl(group, ranks.size(), ranks.data(), &newgroup);
             return newgroup;
           },
-          py::call_guard<py::gil_scoped_release>(), "Return a new group containing the specified ranks")
+          "Return a new group containing the specified ranks")
       .def(
           "excl",
           [](simgrid::smpi::Group* group, std::vector<int> ranks) {
@@ -283,7 +276,7 @@ void SMPI_bindings(py::module& m)
             MPI_Group_excl(group, ranks.size(), ranks.data(), &newgroup);
             return newgroup;
           },
-          py::call_guard<py::gil_scoped_release>(), "Return a new group excluding the specified ranks");
+          "Return a new group excluding the specified ranks");
 
   py::class_<simgrid::smpi::Comm, std::unique_ptr<simgrid::smpi::Comm, py::nodelete>> mpi_comm(
       mpi_m, "Comm", "MPI Communicator object. See the C++ documentation for details.");
@@ -296,7 +289,7 @@ void SMPI_bindings(py::module& m)
             MPI_Comm_size(comm, &size);
             return size;
           },
-          py::call_guard<py::gil_scoped_release>(), "Get the size of the communicator")
+          "Get the size of the communicator")
       .def(
           "rank",
           [](simgrid::smpi::Comm* comm) {
@@ -304,7 +297,7 @@ void SMPI_bindings(py::module& m)
             MPI_Comm_rank(comm, &rank);
             return rank;
           },
-          py::call_guard<py::gil_scoped_release>(), "Get the rank within the communicator");
+          "Get the rank within the communicator");
 
   mpi_comm.def(
       "get_name",
@@ -314,7 +307,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_get_name(comm, name, &len);
         return std::string(name);
       },
-      py::call_guard<py::gil_scoped_release>(), "Get the name of the communicator");
+      "Get the name of the communicator");
   mpi_comm.def(
       "set_name", [](simgrid::smpi::Comm* comm, const std::string& name) { MPI_Comm_set_name(comm, name.c_str()); },
       "Set the name of the communicator");
@@ -325,7 +318,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_dup(comm, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Duplicate the communicator");
+      "Duplicate the communicator");
   mpi_comm.def(
       "dup_with_info",
       [](simgrid::smpi::Comm* comm, MPI_Info info) {
@@ -333,7 +326,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_dup_with_info(comm, info, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Duplicate the communicator with info");
+      "Duplicate the communicator with info");
   mpi_comm.def(
       "group",
       [](simgrid::smpi::Comm* comm) {
@@ -341,7 +334,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_group(comm, &group);
         return group;
       },
-      py::call_guard<py::gil_scoped_release>(), "Create a group link to the communicator");
+      "Create a group link to the communicator");
   mpi_comm.def(
       "compare",
       [](simgrid::smpi::Comm* comm1, simgrid::smpi::Comm* comm2) {
@@ -349,7 +342,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_compare(comm1, comm2, &result);
         return result;
       },
-      py::call_guard<py::gil_scoped_release>(), "Compare two communicators");
+      "Compare two communicators");
   mpi_comm.def(
       "create",
       [](simgrid::smpi::Comm* comm, MPI_Group group) {
@@ -357,7 +350,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_create(comm, group, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Create a new communicator");
+      "Create a new communicator");
   mpi_comm.def(
       "create_group",
       [](simgrid::smpi::Comm* comm, MPI_Group group, int tag) {
@@ -365,9 +358,8 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_create_group(comm, group, tag, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Create a new communicator with a tag");
-  mpi_comm.def(
-      "free", [](simgrid::smpi::Comm* comm) { MPI_Comm_free(&comm); }, "Free the communicator");
+      "Create a new communicator with a tag");
+  mpi_comm.def("free", [](simgrid::smpi::Comm* comm) { MPI_Comm_free(&comm); }, "Free the communicator");
   mpi_comm.def(
       "disconnect", [](simgrid::smpi::Comm* comm) { MPI_Comm_disconnect(&comm); }, "Disconnect the communicator");
   mpi_comm.def(
@@ -377,7 +369,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_split(comm, color, key, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Split the communicator");
+      "Split the communicator");
   mpi_comm.def(
       "set_info", [](simgrid::smpi::Comm* comm, MPI_Info info) { MPI_Comm_set_info(comm, info); },
       "Set the info of the communicator");
@@ -388,7 +380,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_get_info(comm, &info);
         return info;
       },
-      py::call_guard<py::gil_scoped_release>(), "Get the info of the communicator");
+      "Get the info of the communicator");
   mpi_comm.def(
       "split_type",
       [](simgrid::smpi::Comm* comm, int split_type, int key, MPI_Info info) {
@@ -396,7 +388,7 @@ void SMPI_bindings(py::module& m)
         MPI_Comm_split_type(comm, split_type, key, info, &newcomm);
         return newcomm;
       },
-      py::call_guard<py::gil_scoped_release>(), "Split the communicator by type");
+      "Split the communicator by type");
   mpi_comm.def_property_readonly_static("WORLD",
                                         [](py::object /* self */) { return (simgrid::smpi::Comm*)MPI_COMM_WORLD; });
   mpi_comm.def_property_readonly_static("SELF",
