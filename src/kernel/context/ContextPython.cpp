@@ -2,7 +2,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/context/ContextRawPython.hpp"
+#include "src/kernel/context/ContextPython.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "xbt/log.h"
 
@@ -20,40 +20,40 @@ extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
 namespace simgrid::kernel::context {
 
-void (*RawPythonContext::py_switch_)(PyState*, PyState*) = nullptr;
+void (*PythonContext::py_switch_)(PyState*, PyState*) = nullptr;
 
-void RawPythonContext::register_py_switch(void (*fn)(PyState* from, PyState* to))
+void PythonContext::register_py_switch(void (*fn)(PyState* from, PyState* to))
 {
   py_switch_ = fn;
 }
 
-RawPythonContext::RawPythonContext(std::function<void()>&& code,
-                                    actor::ActorImpl* actor,
-                                    SwappedContextFactory* factory)
+PythonContext::PythonContext(std::function<void()>&& code,
+                              actor::ActorImpl* actor,
+                              SwappedContextFactory* factory)
     : SwappedContext(std::move(code), actor, factory)
 {
   if (has_code())
     stack_top_ = raw_makecontext(get_stack(), actor->get_stacksize(), smx_ctx_wrapper, this);
 }
 
-void RawPythonContext::swap_into_for_real(SwappedContext* to_)
+void PythonContext::swap_into_for_real(SwappedContext* to_)
 {
-  auto* to = static_cast<RawPythonContext*>(to_);
+  auto* to = static_cast<PythonContext*>(to_);
   if (py_switch_)
     py_switch_(&py_state_, &to->py_state_);
   raw_swapcontext(&stack_top_, to->stack_top_);
 }
 
-RawPythonContext* RawPythonContextFactory::create_context(std::function<void()>&& code,
-                                                           actor::ActorImpl* actor)
+PythonContext* PythonContextFactory::create_context(std::function<void()>&& code,
+                                                     actor::ActorImpl* actor)
 {
-  return new_context<RawPythonContext>(std::move(code), actor, this);
+  return new_context<PythonContext>(std::move(code), actor, this);
 }
 
-ContextFactory* raw_python_factory()
+ContextFactory* python_factory()
 {
-  XBT_DEBUG("Using RawPythonContextFactory (fast raw contexts + Python interpreter state isolation)");
-  return new RawPythonContextFactory();
+  XBT_DEBUG("Using PythonContextFactory (fast stack switching + Python interpreter state isolation)");
+  return new PythonContextFactory();
 }
 
 } // namespace simgrid::kernel::context

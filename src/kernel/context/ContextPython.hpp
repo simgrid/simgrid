@@ -2,7 +2,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* ContextRawPython: SwappedContext subclass for Python bindings.
+/* ContextPython: SwappedContext subclass for Python bindings.
  * Uses the same fast assembly stack-switch as ContextRaw, and saves/restores
  * per-actor Python interpreter state (PyThreadState fields + pybind11
  * loader_life_support TLS) in swap_into_for_real() so that all actors can
@@ -13,17 +13,17 @@
  * current_exception, datastack_chunk/top/limit) plus the pybind11 lls chain.
  */
 
-#ifndef SIMGRID_KERNEL_CONTEXT_RAWPYTHON_HPP
-#define SIMGRID_KERNEL_CONTEXT_RAWPYTHON_HPP
+#ifndef SIMGRID_KERNEL_CONTEXT_PYTHON_HPP
+#define SIMGRID_KERNEL_CONTEXT_PYTHON_HPP
 
 #include "src/kernel/context/ContextSwapped.hpp"
 
 namespace simgrid::kernel::context {
 
-class RawPythonContext final : public SwappedContext {
+class PythonContext final : public SwappedContext {
 public:
-  RawPythonContext(std::function<void()>&& code, actor::ActorImpl* actor,
-                   SwappedContextFactory* factory);
+  PythonContext(std::function<void()>&& code, actor::ActorImpl* actor,
+                SwappedContextFactory* factory);
   // Opaque save of per-actor Python interpreter state.
   // All fields are typed void* so this header needs no Python or pybind11 includes.
   // datastack_chunk == nullptr serves as "actor has never been suspended" sentinel.
@@ -40,7 +40,7 @@ public:
     bool  tls_attached           = true;    // whether tstate is attached (GIL held) at suspension point
   };
 
-  // Registered from simgrid_python.cpp (which has Python + pybind11 in scope).
+  // Registered from PyContextState.cpp (which has Python + pybind11 in scope).
   // fn(from, to): saves current interpreter state into *from and restores *to.
   static void register_py_switch(void (*fn)(PyState* from, PyState* to));
 
@@ -53,15 +53,15 @@ private:
   static void (*py_switch_)(PyState* from, PyState* to);
 };
 
-class RawPythonContextFactory final : public SwappedContextFactory {
+class PythonContextFactory final : public SwappedContextFactory {
 public:
-  const char* get_name() const override { return "raw-python"; }
-  RawPythonContext* create_context(std::function<void()>&& code,
-                                    actor::ActorImpl* actor) override;
+  const char* get_name() const override { return "python"; }
+  PythonContext* create_context(std::function<void()>&& code,
+                                actor::ActorImpl* actor) override;
 };
 
-XBT_PRIVATE ContextFactory* raw_python_factory();
+XBT_PRIVATE ContextFactory* python_factory();
 
 } // namespace simgrid::kernel::context
 
-#endif // SIMGRID_KERNEL_CONTEXT_RAWPYTHON_HPP
+#endif // SIMGRID_KERNEL_CONTEXT_PYTHON_HPP

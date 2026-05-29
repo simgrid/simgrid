@@ -13,7 +13,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/plugins/load.h"
-#include "src/internal_config.h" // HAVE_PYTHON_RAW_CONTEXTS and friends
+#include "src/bindings/python/PyContextState.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -37,126 +37,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#ifdef HAVE_PYTHON_RAW_CONTEXTS
-#include "src/kernel/context/ContextRawPython.hpp"
-#include <pybind11/detail/type_caster_base.h> // loader_life_support
-// _PyInterpreterFrame, _PyErr_StackItem, _PyStackChunk come in via pybind11's Python.h.
-
-// Access pybind11::detail::loader_life_support TLS frame (private API).
-// "Explicit template specialisation bypasses access control" (Rob Meyer / CWG DR 372).
-namespace {
-#if PYBIND11_VERSION_MAJOR >= 3
-// pybind11 3.x: tls_current_frame() returns a reference — one call for get and set.
-using LlsFrameFn = pybind11::detail::loader_life_support*& (*)();
-struct LlsFrameTag {
-  using type = LlsFrameFn;
-  friend LlsFrameFn simgrid_lls_frame(LlsFrameTag);
-};
-template <typename Tag, typename Tag::type Fn> struct AccessPrivate {
-  friend typename Tag::type simgrid_lls_frame(Tag) { return Fn; }
-};
-template struct AccessPrivate<LlsFrameTag, &pybind11::detail::loader_life_support::tls_current_frame>;
-inline pybind11::detail::loader_life_support* lls_get()
-{
-  return simgrid_lls_frame(LlsFrameTag{})();
-}
-inline void lls_set(pybind11::detail::loader_life_support* v)
-{
-  simgrid_lls_frame(LlsFrameTag{})() = v;
-}
-#else
-// pybind11 2.x: private get_stack_top() / set_stack_top()
-using LlsGetFn = pybind11::detail::loader_life_support* (*)();
-struct LlsGetTag {
-  using type = LlsGetFn;
-  friend LlsGetFn simgrid_lls_get(LlsGetTag);
-};
-template <typename Tag, typename Tag::type Fn> struct AccessPrivateGet {
-  friend typename Tag::type simgrid_lls_get(Tag) { return Fn; }
-};
-template struct AccessPrivateGet<LlsGetTag, &pybind11::detail::loader_life_support::get_stack_top>;
-using LlsSetFn = void (*)(pybind11::detail::loader_life_support*);
-struct LlsSetTag {
-  using type = LlsSetFn;
-  friend LlsSetFn simgrid_lls_set(LlsSetTag);
-};
-template <typename Tag, typename Tag::type Fn> struct AccessPrivateSet {
-  friend typename Tag::type simgrid_lls_set(Tag) { return Fn; }
-};
-template struct AccessPrivateSet<LlsSetTag, &pybind11::detail::loader_life_support::set_stack_top>;
-inline pybind11::detail::loader_life_support* lls_get()
-{
-  return simgrid_lls_get(LlsGetTag{})();
-}
-inline void lls_set(pybind11::detail::loader_life_support* v)
-{
-  simgrid_lls_set(LlsSetTag{})(v);
-}
-#endif
-
-using PyState = simgrid::kernel::context::RawPythonContext::PyState;
-
-// Captured at registration time (GIL held); stable for the lifetime of the
-// serial-mode simulation, so safe to dereference even when GIL is released.
-PyThreadState* s_tstate = nullptr;
-
-// Save/restore all per-actor Python interpreter state around each raw_swapcontext.
-// Mirrors what the greenlet library does for Python 3.11+.
-void py_switch_state(PyState* from, PyState* to)
-{
-  PyThreadState* tstate = s_tstate;
-
-  from->lls                    = lls_get();
-  from->current_frame          = tstate->current_frame;
-  from->current_exception      = tstate->current_exception;
-  from->exc_info               = tstate->exc_info;
-  from->datastack_chunk        = tstate->datastack_chunk;
-  from->datastack_top          = tstate->datastack_top;
-  from->datastack_limit        = tstate->datastack_limit;
-  from->py_recursion_remaining = tstate->py_recursion_remaining;
-  from->c_recursion_remaining  = tstate->c_recursion_remaining;
-  from->tls_attached           = (PyGILState_Check() != 0);
-
-  lls_set(static_cast<pybind11::detail::loader_life_support*>(to->lls));
-
-  if (to->datastack_chunk != nullptr) {
-    // Resumed actor: full restore.
-    tstate->current_frame          = static_cast<_PyInterpreterFrame*>(to->current_frame);
-    tstate->current_exception      = static_cast<PyObject*>(to->current_exception);
-    tstate->exc_info               = static_cast<_PyErr_StackItem*>(to->exc_info);
-    tstate->datastack_chunk        = static_cast<_PyStackChunk*>(to->datastack_chunk);
-    tstate->datastack_top          = static_cast<PyObject**>(to->datastack_top);
-    tstate->datastack_limit        = static_cast<PyObject**>(to->datastack_limit);
-    tstate->py_recursion_remaining = to->py_recursion_remaining;
-    tstate->c_recursion_remaining  = to->c_recursion_remaining;
-  } else {
-    // New actor (first run): fresh interpreter context with full recursion budget.
-    // exc_info is left as-is so the first frame chains onto the existing stack.
-    tstate->current_frame          = nullptr;
-    tstate->current_exception      = nullptr;
-    tstate->datastack_chunk        = nullptr;
-    tstate->datastack_top          = nullptr;
-    tstate->datastack_limit        = nullptr;
-    tstate->py_recursion_remaining = tstate->py_recursion_limit;
-    tstate->c_recursion_remaining  = Py_C_RECURSION_LIMIT;
-  }
-
-  // Restore GIL/TLS state to match what the actor had when it last suspended.
-  // tls_attached=true (the default) means the actor holds the GIL; TLS must be
-  // attached so that PyErr_* and PyThreadState_GET() work correctly.
-  // tls_attached=false means the actor suspended with GIL released (e.g. inside
-  // a py::gil_scoped_release that has not yet been destroyed); TLS must be NULL
-  // so that PyEval_RestoreThread in the destructor can reattach without hitting
-  // Python 3.13's "_PyThreadState_Attach: non-NULL old thread state" assertion.
-  bool current_attached = (PyGILState_Check() != 0);
-  if (to->tls_attached && !current_attached)
-    PyEval_RestoreThread(tstate);
-  else if (!to->tls_attached && current_attached)
-    PyEval_SaveThread();
-}
-} // namespace
-#endif // HAVE_PYTHON_RAW_CONTEXTS
 
 namespace py = pybind11;
 using simgrid::s4u::Activity;
@@ -218,13 +98,10 @@ PYBIND11_MODULE(simgrid, m)
   m.def("MC_random", &MC_random,
         "Explore every branches where that function returns a value between min and max (inclusive)");
 
-  // Use the Python-aware raw context factory: same fast stack switching as "raw",
-  // but saves/restores PyThreadState and pybind11 loader_life_support around each swap.
-  simgrid::s4u::Engine::set_config("contexts/factory:raw-python");
-#ifdef HAVE_PYTHON_RAW_CONTEXTS
-  s_tstate = PyThreadState_GET(); // capture while GIL is held; pointer is stable
-  simgrid::kernel::context::RawPythonContext::register_py_switch(py_switch_state);
-#endif
+  // Use the Python context factory: cooperative stack switching with per-actor
+  // PyThreadState and pybind11 loader_life_support save/restore around each swap.
+  simgrid::s4u::Engine::set_config("contexts/factory:python");
+  simgrid_register_python_context();
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));

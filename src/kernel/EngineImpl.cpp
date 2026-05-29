@@ -31,8 +31,8 @@
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
 #endif
-#if HAVE_PYTHON_RAW_CONTEXTS
-#include "src/kernel/context/ContextRawPython.hpp"
+#if SIMGRID_HAVE_PYTHON_BINDINGS
+#include "src/kernel/context/ContextPython.hpp"
 #endif
 
 #include "xbt/log.hpp"
@@ -55,8 +55,8 @@ constexpr std::initializer_list<std::pair<const char*, context::ContextFactory* 
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
 #endif
-#if HAVE_PYTHON_RAW_CONTEXTS
-    {"raw-python", &context::raw_python_factory},
+#if SIMGRID_HAVE_PYTHON_BINDINGS
+    {"python", &context::python_factory},
 #endif
 #if HAVE_BOOST_CONTEXTS
     {"boost", &context::boost_factory},

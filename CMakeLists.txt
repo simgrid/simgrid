@@ -923,19 +923,19 @@ if(enable_python)
   endif()
   if(pybind11_FOUND)
     message(STATUS "Python bindings will be built.")
-    if(HAVE_RAW_CONTEXTS)
-      set(HAVE_PYTHON_RAW_CONTEXTS 1)
-      # ContextRawPython.cpp lives in libsimgrid but calls the Python C API.
-      # MakeLib.cmake has already created the simgrid target, so use
-      # target_sources / target_include_directories directly.
-      target_sources(simgrid PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextRawPython.cpp
-        ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextRawPython.hpp)
-    endif()
+    set(SIMGRID_HAVE_PYTHON_BINDINGS 1)
+    add_compile_definitions(SIMGRID_HAVE_PYTHON_BINDINGS)
+    # ContextPython.cpp lives in libsimgrid and depends on the raw assembly
+    # context functions (raw_makecontext/raw_swapcontext) and the Python C API.
+    target_sources(simgrid PRIVATE
+      ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextPython.cpp
+      ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextPython.hpp)
     if(NOT enable_lto)
       set(pybind11_options NO_EXTRAS)
     endif()
-    set(python_files ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp)
+    set(python_files
+        ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp
+        ${CMAKE_SOURCE_DIR}/src/bindings/python/PyContextState.cpp)
 
     find_package(Python3 COMPONENTS NumPy)
 
