@@ -16,9 +16,6 @@
 
 namespace simgrid::kernel::context {
 
-// Forward declaration for before_context_switch_fn typedef
-class SwappedContext;
-
 class XBT_PUBLIC ContextFactory {
 public:
   explicit ContextFactory()             = default;
@@ -35,10 +32,6 @@ public:
   virtual Context* create_maestro(std::function<void()>&& code, actor::ActorImpl* actor);
 
   virtual void run_all(std::vector<actor::ActorImpl*> const& actors_list) = 0;
-
-  // Hook registration for language bindings (e.g., Python state management)
-  using before_context_switch_fn = std::function<void(SwappedContext*, SwappedContext*)>;
-  virtual void register_before_context_switch_hook(before_context_switch_fn fn) {} // no-op in base
 
   /* This allows Java to hijack the context factory (Java induces factories of factory :) */
   static std::function<ContextFactory*(void)> initializer;

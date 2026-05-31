@@ -25,7 +25,6 @@ public:
   void suspend() override;
   void attach_start() override;
   void attach_stop() override;
-  virtual void before_context_switch(Context* to) {} // no-op; overridden by language bindings
 
   void release(); // unblock context's start()
   void wait();    // wait for context's yield()

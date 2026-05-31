@@ -29,10 +29,10 @@ public:
   SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
   void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 
-  void register_before_context_switch_hook(before_context_switch_fn fn) override { before_context_switch_hook_ = fn; }
+  void register_before_context_switch_hook(void (*fn)(SwappedContext*, SwappedContext*)) { before_context_switch_hook_ = fn; }
 
 protected:
-  before_context_switch_fn before_context_switch_hook_;
+  void (*before_context_switch_hook_)(SwappedContext*, SwappedContext*) = nullptr;
 
 private:
   /* For the sequential execution */

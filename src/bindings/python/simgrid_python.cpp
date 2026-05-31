@@ -175,11 +175,11 @@ PYBIND11_MODULE(simgrid, m)
              auto* e = new simgrid::s4u::Engine(&argc, argv.data());
              // Register per-actor Python state save/restore.
              // Deferred here (not at module import) because the Engine must exist first.
-             auto* factory  = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
-             bool is_thread = (std::string(factory->get_name()) == "thread");
-             if (!is_thread) {
-               // Allocate PythonActorState for each actor at creation time (including maestro)
-               // and free it at destruction.  This ensures state is always valid when the hook fires.
+             auto* swapped = dynamic_cast<simgrid::kernel::context::SwappedContextFactory*>(
+                 e->get_impl()->get_context_factory());
+             if (swapped != nullptr) {
+               // Raw or Boost factory: allocate PythonActorState per actor and register the
+               // context-switch hook to save/restore Python interpreter state on each switch.
                simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
                  actor.get_impl()->py_state = new simgrid::python::PythonActorState();
                });
@@ -188,10 +188,9 @@ PYBIND11_MODULE(simgrid, m)
                  actor.get_impl()->py_state = nullptr;
                });
                // Allocate state for maestro now (it was created before on_creation_cb was registered)
-               simgrid::kernel::EngineImpl::get_instance()->get_maestro()->py_state =
+               e->get_impl()->get_maestro()->py_state =
                    new simgrid::python::PythonActorState();
-               // Register the context-switch hook; py_state is guaranteed non-null for every actor
-               factory->register_before_context_switch_hook(
+               swapped->register_before_context_switch_hook(
                    [](simgrid::kernel::context::SwappedContext* from, simgrid::kernel::context::SwappedContext* to) {
                      simgrid::python::py_switch_state(
                          static_cast<simgrid::python::PythonActorState*>(from->get_actor()->py_state),
