@@ -14,6 +14,7 @@
 
 #include <pybind11/detail/type_caster_base.h>
 #include <pybind11/pybind11.h>
+#include <simgrid/python.hpp>
 
 namespace simgrid::python {
 
@@ -34,18 +35,11 @@ struct PythonActorState {
 // Save/restore Python interpreter state around context switches (implemented in PythonContextHooks.cpp)
 void py_switch_state(PythonActorState* from, PythonActorState* to);
 
-// RAII guard for GIL release/acquire (used by thread factory and binding functions)
-// For raw/boost factories, this is a no-op (no GIL management needed).
-// For thread factory, this releases the GIL on construction and reacquires on destruction.
-struct SimGridGilGuard {
-  PyThreadState* saved_ = nullptr;
-
-  SimGridGilGuard();
-  ~SimGridGilGuard();
-};
-
 // Initialize Python context state (call from module init, before anything else uses py_switch_state)
 void simgrid_initialize_python_context_state();
+
+// Re-export SimGridGilGuard into the simgrid::python namespace for convenience
+using SimGridGilGuard = simgrid::SimGridGilGuard;
 
 } // namespace simgrid::python
 
