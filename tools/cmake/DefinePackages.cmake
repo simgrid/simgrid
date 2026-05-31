@@ -2,6 +2,8 @@
 
 set(EXTRA_DIST
   src/3rd-party/catch.hpp
+  src/bindings/python/PythonContextHooks.cpp
+  src/bindings/python/PythonContextHooks.hpp
   src/bindings/python/simgrid_python.cpp
   src/bindings/python/smpi_python.cpp
   src/bindings/java/MANIFEST.in
@@ -647,6 +649,7 @@ set(headers_to_install
   include/simgrid/plugins/load.h
   include/simgrid/plugins/solar_panel.hpp
   include/simgrid/plugins/ProducerConsumer.hpp
+  include/simgrid/python.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/modelchecker.h
