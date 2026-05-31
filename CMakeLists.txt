@@ -925,17 +925,12 @@ if(enable_python)
     message(STATUS "Python bindings will be built.")
     set(SIMGRID_HAVE_PYTHON_BINDINGS 1)
     add_compile_definitions(SIMGRID_HAVE_PYTHON_BINDINGS)
-    # ContextPython.cpp lives in libsimgrid and depends on the raw assembly
-    # context functions (raw_makecontext/raw_swapcontext) and the Python C API.
-    target_sources(simgrid PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextPython.cpp
-      ${CMAKE_SOURCE_DIR}/src/kernel/context/ContextPython.hpp)
     if(NOT enable_lto)
       set(pybind11_options NO_EXTRAS)
     endif()
     set(python_files
         ${CMAKE_SOURCE_DIR}/src/bindings/python/simgrid_python.cpp
-        ${CMAKE_SOURCE_DIR}/src/bindings/python/PyContextState.cpp)
+        ${CMAKE_SOURCE_DIR}/src/bindings/python/PythonContextHooks.cpp)
 
     find_package(Python3 COMPONENTS NumPy)
 

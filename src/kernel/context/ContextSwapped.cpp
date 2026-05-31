@@ -171,6 +171,11 @@ void SwappedContext::swap_into(SwappedContext* to)
   __tsan_switch_to_fiber(to->tsan_fiber_, 0);
 #endif
 
+  // Call the factory's before_context_switch hook if registered (for language bindings)
+  if (auto* factory = dynamic_cast<SwappedContextFactory*>(&factory_); factory && factory->before_context_switch_hook_)
+    factory->before_context_switch_hook_(this, to);
+
+  before_context_switch(to);
   swap_into_for_real(to);
 
 #if HAVE_SANITIZER_ADDRESS_FIBER_SUPPORT

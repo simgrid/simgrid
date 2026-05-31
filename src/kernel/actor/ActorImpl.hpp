@@ -101,6 +101,7 @@ public:
   void undaemonize();
 
   std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
+  void* py_state = nullptr;                    /* Python interpreter state (PythonActorState*), if using Python */
 
   std::exception_ptr exception_;
   bool suspended_ = false;

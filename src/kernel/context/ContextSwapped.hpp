@@ -29,6 +29,11 @@ public:
   SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
   void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 
+  void register_before_context_switch_hook(before_context_switch_fn fn) override { before_context_switch_hook_ = fn; }
+
+protected:
+  before_context_switch_fn before_context_switch_hook_;
+
 private:
   /* For the sequential execution */
   unsigned long process_index_     = 0;       // next actor to execute
@@ -49,6 +54,7 @@ public:
 
   void suspend() override;
   virtual void resume();
+  virtual void before_context_switch(SwappedContext* to) {} // no-op; overridden by language bindings
 
   void swap_into(SwappedContext* to);
 

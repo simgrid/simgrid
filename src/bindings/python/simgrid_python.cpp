@@ -13,7 +13,10 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/plugins/load.h"
-#include "src/bindings/python/PyContextState.hpp"
+#include "src/bindings/python/PythonContextHooks.hpp"
+#include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/context/ContextSwapped.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -98,10 +101,6 @@ PYBIND11_MODULE(simgrid, m)
   m.def("MC_random", &MC_random,
         "Explore every branches where that function returns a value between min and max (inclusive)");
 
-  // Use the Python context factory: cooperative stack switching with per-actor
-  // PyThreadState and pybind11 loader_life_support save/restore around each swap.
-  simgrid::s4u::Engine::set_config("contexts/factory:python");
-  simgrid_register_python_context();
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
@@ -174,7 +173,33 @@ PYBIND11_MODULE(simgrid, m)
              std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
              std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
              // Currently this can be dangling, we should wrap this somehow.
-             return new simgrid::s4u::Engine(&argc, argv.data());
+             auto* e = new simgrid::s4u::Engine(&argc, argv.data());
+             // Register per-actor Python state save/restore.
+             // Deferred here (not at module import) because the Engine must exist first.
+             auto* factory = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
+             bool is_thread = (std::string(factory->get_name()) == "thread");
+             if (!is_thread) {
+               // Allocate PythonActorState for each actor at creation time (including maestro)
+               // and free it at destruction.  This ensures state is always valid when the hook fires.
+               simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
+                 actor.get_impl()->py_state = new simgrid::python::PythonActorState();
+               });
+               simgrid::s4u::Actor::on_destruction_cb([](simgrid::s4u::Actor const& actor) {
+                 delete static_cast<simgrid::python::PythonActorState*>(actor.get_impl()->py_state);
+                 actor.get_impl()->py_state = nullptr;
+               });
+               // Allocate state for maestro now (it was created before on_creation_cb was registered)
+               simgrid::kernel::EngineImpl::get_instance()->get_maestro()->py_state =
+                   new simgrid::python::PythonActorState();
+               // Register the context-switch hook; py_state is guaranteed non-null for every actor
+               factory->register_before_context_switch_hook(
+                   [](simgrid::kernel::context::SwappedContext* from, simgrid::kernel::context::SwappedContext* to) {
+                     simgrid::python::py_switch_state(
+                         static_cast<simgrid::python::PythonActorState*>(from->get_actor()->py_state),
+                         static_cast<simgrid::python::PythonActorState*>(to->get_actor()->py_state));
+                   });
+             }
+             return e;
            }),
            "The constructor should take the parameters from the command line, as is ")
       .def_property_readonly_static(
@@ -1193,6 +1218,10 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__repr__", [](const ActivitySetPtr) { return "ActivitySet([...])"; },
           "Textual representation of the ActivitySet");
+
+  // Initialize Python context state (capture PyThreadState at import time while GIL is held)
+  simgrid::python::simgrid_initialize_python_context_state();
+
 #ifdef SIMGRID_HAVE_PYTHON_SMPI
   SMPI_bindings(m);
 #endif

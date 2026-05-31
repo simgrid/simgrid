@@ -1,22 +1,20 @@
 /* Copyright (c) 2026. The SimGrid Team. All rights reserved.          */
-
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* PyContextState.cpp — Python interpreter state save/restore for the Python context factory.
+/* PythonContextHooks.cpp — Implementation of Python context hooks for SimGrid.
  *
- * Lives in src/bindings/python/ rather than src/kernel/context/ because it depends
- * on pybind11 internals (loader_life_support) that the core library must not see.
- * The core only knows about PythonContext::PyState (all void*) and the
- * register_py_switch hook.
+ * Handles Python interpreter state save/restore for raw/boost factories and
+ * GIL management for all factories.
  */
 
-#include <pybind11/pybind11.h> // Must come before our own stuff
-#include <pybind11/detail/type_caster_base.h> // loader_life_support
-#include "src/bindings/python/PyContextState.hpp"
-#include "src/kernel/context/ContextPython.hpp"
-// _PyInterpreterFrame, _PyErr_StackItem, _PyStackChunk, PyGILState_Check, etc.
-// come in via pybind11/pybind11.h → Python.h.
+#include <pybind11/pybind11.h>
+#include <pybind11/detail/type_caster_base.h>
+#include "src/bindings/python/PythonContextHooks.hpp"
+#include "src/kernel/context/ContextSwapped.hpp"
+#include "src/kernel/EngineImpl.hpp"
+
+namespace simgrid::python {
 
 // Access pybind11::detail::loader_life_support TLS frame (private API).
 // "Explicit template specialisation bypasses access control" (Rob Meyer / CWG DR 372).
@@ -70,15 +68,17 @@ inline void lls_set(pybind11::detail::loader_life_support* v)
 }
 #endif
 
-using PyState = simgrid::kernel::context::PythonContext::PyState;
-
 // Captured at registration time (GIL held); stable for the lifetime of the
 // serial-mode simulation, so safe to dereference even when GIL is released.
 PyThreadState* s_tstate = nullptr;
 
+// Whether the active factory is thread-based (checked once and cached)
+int s_is_thread_factory = 0; // 0=unchecked, 1=no, 2=yes
+} // namespace
+
 // Save/restore all per-actor Python interpreter state around each context switch.
 // Mirrors what the greenlet library does for Python 3.11+.
-void py_switch_state(PyState* from, PyState* to)
+void py_switch_state(PythonActorState* from, PythonActorState* to)
 {
   PyThreadState* tstate = s_tstate;
 
@@ -121,7 +121,7 @@ void py_switch_state(PyState* from, PyState* to)
   // tls_attached=true (the default) means the actor holds the GIL; TLS must be
   // attached so that PyErr_* and PyThreadState_GET() work correctly.
   // tls_attached=false means the actor suspended with GIL released (e.g. inside
-  // a py::gil_scoped_release that has not yet been destroyed); TLS must be NULL
+  // a SimGridGilGuard that has not yet been destroyed); TLS must be NULL
   // so that PyEval_RestoreThread in the destructor can reattach without hitting
   // Python 3.13's "_PyThreadState_Attach: non-NULL old thread state" assertion.
   bool current_attached = (PyGILState_Check() != 0);
@@ -130,10 +130,34 @@ void py_switch_state(PyState* from, PyState* to)
   else if (!to->tls_attached && current_attached)
     PyEval_SaveThread();
 }
-} // namespace
 
-void simgrid_register_python_context()
+// SimGridGilGuard: RAII wrapper for GIL management
+// For thread factory: releases GIL on construction, reacquires on destruction
+// For raw/boost factories: no-op (GIL is not contested, single OS thread)
+SimGridGilGuard::SimGridGilGuard()
 {
-  s_tstate = PyThreadState_GET(); // capture while GIL is held; pointer is stable
-  simgrid::kernel::context::PythonContext::register_py_switch(py_switch_state);
+  if (s_is_thread_factory == 0) {
+    // Check once and cache the result
+    auto factory = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
+    s_is_thread_factory = (factory->get_name() == std::string("thread")) ? 2 : 1;
+  }
+  if (s_is_thread_factory == 2)
+    saved_ = PyEval_SaveThread();
 }
+
+SimGridGilGuard::~SimGridGilGuard()
+{
+  if (saved_)
+    PyEval_RestoreThread(saved_);
+}
+
+// Initialize the PyThreadState pointer (called from simgrid_python.cpp module init)
+void simgrid_initialize_python_context_state()
+{
+  if (s_tstate == nullptr) {
+    // Capture the current thread state while GIL is held (at module import time)
+    s_tstate = PyThreadState_GET();
+  }
+}
+
+} // namespace simgrid::python
