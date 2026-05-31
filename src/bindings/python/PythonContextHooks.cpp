@@ -8,6 +8,16 @@
  * GIL management for all factories.
  */
 
+// Py_BUILD_CORE must be defined before any Python.h inclusion to expose internal
+// PyThreadState fields (current_frame, datastack_chunk, etc.) that are gated
+// behind it on some Python 3.12+ distributions (Ubuntu 24.04 ARM, Fedora).
+// See https://bugzilla.redhat.com/show_bug.cgi?id=2245874 and greenlet PR #396.
+// We undefine it immediately after so pybind11 does not see it (Python.h's include
+// guard prevents re-inclusion, so the full struct remains visible).
+#define Py_BUILD_CORE
+#include <Python.h>
+#undef Py_BUILD_CORE
+
 #include "src/bindings/python/PythonContextHooks.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/context/ContextSwapped.hpp"
