@@ -43,7 +43,7 @@ void wrap_mpi_alltoall(py::array_t<T> data, int sendcount, MPI_Datatype sendtype
 {
   py::buffer_info out_buffer = output.request();
   py::buffer_info in_buffer  = data.request();
-  auto* output_ptr = static_cast<T*>(out_buffer.ptr);
+  auto* output_ptr           = static_cast<T*>(out_buffer.ptr);
   MPI_Alltoall(data.data(), sendcount, sendtype, output_ptr, recvcount, recvtype, comm);
 }
 template <typename T> void wrap_mpi_bcast(py::array_t<T> output, int count, MPI_Datatype type, int root, MPI_Comm comm)

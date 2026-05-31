@@ -101,7 +101,6 @@ PYBIND11_MODULE(simgrid, m)
   m.def("MC_random", &MC_random,
         "Explore every branches where that function returns a value between min and max (inclusive)");
 
-
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
@@ -176,7 +175,7 @@ PYBIND11_MODULE(simgrid, m)
              auto* e = new simgrid::s4u::Engine(&argc, argv.data());
              // Register per-actor Python state save/restore.
              // Deferred here (not at module import) because the Engine must exist first.
-             auto* factory = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
+             auto* factory  = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
              bool is_thread = (std::string(factory->get_name()) == "thread");
              if (!is_thread) {
                // Allocate PythonActorState for each actor at creation time (including maestro)
@@ -1110,18 +1109,14 @@ PYBIND11_MODULE(simgrid, m)
           "on_start_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
-            Task::on_start_cb([cb_p = cb.ptr()](Task* op) {
-              py::reinterpret_borrow<py::function>(cb_p)(op);
-            });
+            Task::on_start_cb([cb_p = cb.ptr()](Task* op) { py::reinterpret_borrow<py::function>(cb_p)(op); });
           },
           "Add a callback called when each task starts.")
       .def_static(
           "on_completion_cb",
           [](py::object cb) {
             cb.inc_ref(); // keep alive after return
-            Task::on_completion_cb([cb_p = cb.ptr()](Task* op) {
-              py::reinterpret_borrow<py::function>(cb_p)(op);
-            });
+            Task::on_completion_cb([cb_p = cb.ptr()](Task* op) { py::reinterpret_borrow<py::function>(cb_p)(op); });
           },
           "Add a callback called when each task ends.")
       .def_property_readonly("name", &Task::get_name, "The name of this task (read-only).")

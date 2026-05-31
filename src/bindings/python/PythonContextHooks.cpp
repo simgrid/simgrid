@@ -8,11 +8,11 @@
  * GIL management for all factories.
  */
 
-#include <pybind11/pybind11.h>
-#include <pybind11/detail/type_caster_base.h>
 #include "src/bindings/python/PythonContextHooks.hpp"
-#include "src/kernel/context/ContextSwapped.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/context/ContextSwapped.hpp"
+#include <pybind11/detail/type_caster_base.h>
+#include <pybind11/pybind11.h>
 
 namespace simgrid::python {
 
@@ -138,7 +138,7 @@ SimGridGilGuard::SimGridGilGuard()
 {
   if (s_is_thread_factory == 0) {
     // Check once and cache the result
-    auto factory = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
+    auto factory        = simgrid::kernel::EngineImpl::get_instance()->get_context_factory();
     s_is_thread_factory = (factory->get_name() == std::string("thread")) ? 2 : 1;
   }
   if (s_is_thread_factory == 2)
