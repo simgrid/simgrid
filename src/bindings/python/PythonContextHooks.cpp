@@ -123,8 +123,12 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 #else
     // Restore cframe pointer first so the current_frame write lands in the right struct
     // (not the from-actor's cframe which tstate->cframe still points to at this moment).
-    tstate->cframe                = static_cast<_PyCFrame*>(to->cframe_p);
-    tstate->cframe->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
+    // CAUTION: to->cframe_p points into the "to" actor's C stack, which may have been freed
+    // if the actor was cleaned up. Only restore cframe if we have a valid saved frame.
+    if (to->current_frame != nullptr) {
+      tstate->cframe                = static_cast<_PyCFrame*>(to->cframe_p);
+      tstate->cframe->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
+    }
 #endif
 #if PY_VERSION_HEX >= 0x030C0000
     tstate->current_exception = static_cast<PyObject*>(to->current_exception);
