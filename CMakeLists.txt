@@ -369,17 +369,20 @@ mark_as_advanced(Boost_INCLUDE_DIR)
 mark_as_advanced(Boost_STACKTRACE_ADDR2LINE_LIB)
 mark_as_advanced(Boost_STACKTRACE_BACKTRACE_LIB)
 
-find_package(Libdw)
-find_package(Libelf)
 set(HAVE_DWELF_STACKTRACE 0)
-if(Libdw_FOUND AND Libelf_FOUND)
-  message(STATUS "libdw and libelf found, activating the dwelf stacktrace implementation.")
-  set(HAVE_DWELF_STACKTRACE 1)
-  set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBDW_LIBRARIES} ${LIBELF_LIBRARIES}")
+if(minimal-bindings)
+  message(STATUS "Don't even look for libdw and libelf, as we build minimal binding libraries.")
 else()
-  message(STATUS "Missing dependencies for the dwelf stacktrace implementation. Run `apt install libdw-dev` to get them.")
+  find_package(Libdw)
+  find_package(Libelf)
+  if(Libdw_FOUND AND Libelf_FOUND)
+    message(STATUS "libdw and libelf found, activating the dwelf stacktrace implementation.")
+    set(HAVE_DWELF_STACKTRACE 1)
+    set(SIMGRID_DEP "${SIMGRID_DEP} ${LIBDW_LIBRARIES} ${LIBELF_LIBRARIES}")
+  else()
+    message(STATUS "Missing dependencies for the dwelf stacktrace implementation. Run `apt install libdw-dev` to get them.")
+  endif()
 endif()
-
 
 ## Can we build the Java bindings?
 if((NOT DEFINED enable_java) OR enable_java)  # We are only interested in finding jni.h, no need extended JVM functionality or the AWT library. So let's trick FindJNI
