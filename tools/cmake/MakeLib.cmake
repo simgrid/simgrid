@@ -27,8 +27,14 @@ set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 # The library can obviously use the internal headers
 set_property(TARGET simgrid
              APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-
 add_dependencies(simgrid maintainer_files)
+
+if(${enable_static_library})
+  add_library(simgrid-static STATIC ${simgrid_sources})
+  set_target_properties(simgrid-static PROPERTIES VERSION ${libsimgrid_version})
+  set_property(TARGET simgrid-static   APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  add_dependencies(simgrid-static maintainer_files)
+endif()
 
 if(${enable_sthread})
   # git grep 'dlsym(RTLD_NEXT'|sed 's/.*dlsym(RTLD_NEXT, "//'|sed 's/");/;/'|tr '\n' ' '|sed 's/$/\n/'
