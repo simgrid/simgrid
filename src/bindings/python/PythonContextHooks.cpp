@@ -80,10 +80,13 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
   PyThreadState* tstate = s_tstate;
 
   from->lls = lls_get();
-  // current_frame: promoted to direct PyThreadState field in 3.13 (was in cframe sub-struct before)
+  // current_frame: promoted to direct PyThreadState field in 3.13.
+  // Before 3.13 it lived in a _PyCFrame allocated on the C stack; save the cframe
+  // pointer too so we restore tstate->cframe before writing current_frame into it.
 #if PY_VERSION_HEX >= 0x030D0000
   from->current_frame = tstate->current_frame;
 #else
+  from->cframe_p      = tstate->cframe;
   from->current_frame = tstate->cframe->current_frame;
 #endif
   // current_exception: added to PyThreadState in 3.12
@@ -110,6 +113,9 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 #if PY_VERSION_HEX >= 0x030D0000
     tstate->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
 #else
+    // Restore cframe pointer first so the current_frame write lands in the right struct
+    // (not the from-actor's cframe which tstate->cframe still points to at this moment).
+    tstate->cframe                = static_cast<_PyCFrame*>(to->cframe_p);
     tstate->cframe->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
 #endif
 #if PY_VERSION_HEX >= 0x030C0000
@@ -126,10 +132,10 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
   } else {
     // New actor (first run): fresh interpreter context with full recursion budget.
     // exc_info is left as-is so the first frame chains onto the existing stack.
+    // For Python < 3.13, do NOT touch tstate->cframe: Python's eval loop will install
+    // a fresh _PyCFrame on the actor's C stack when its first function is called.
 #if PY_VERSION_HEX >= 0x030D0000
     tstate->current_frame = nullptr;
-#else
-    tstate->cframe->current_frame = nullptr;
 #endif
 #if PY_VERSION_HEX >= 0x030C0000
     tstate->current_exception = nullptr;

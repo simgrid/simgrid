@@ -21,7 +21,8 @@ namespace simgrid::python {
 // Per-actor Python interpreter state (mirrors what greenlet saves for Python 3.11+)
 struct PythonActorState {
   void* lls                  = nullptr; // pybind11 loader_life_support TLS frame
-  void* current_frame        = nullptr; // PyThreadState::current_frame
+  void* current_frame        = nullptr; // _PyInterpreterFrame* (from tstate or cframe, see below)
+  void* cframe_p             = nullptr; // PyThreadState::cframe pointer (Python < 3.13 only)
   void* current_exception    = nullptr; // PyThreadState::current_exception (3.12+)
   void* exc_info             = nullptr; // PyThreadState::exc_info
   void* datastack_chunk      = nullptr; // PyThreadState::datastack_chunk (nullptr = first-run sentinel)
