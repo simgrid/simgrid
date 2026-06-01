@@ -28,7 +28,7 @@ jobs:
       - name: Prepare for ubuntu
         if: matrix.config.name == 'Linux ARM'
         run: |
-          sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
+          sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev valgrind
       - name: Prepare for MacOS
         if: matrix.config.name == 'MacOS Intel' || matrix.config.name == 'MacOS ARM'
         run: |

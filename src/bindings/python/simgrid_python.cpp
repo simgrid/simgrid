@@ -183,18 +183,30 @@ PYBIND11_MODULE(simgrid, m)
                simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
                  actor.get_impl()->py_state = new simgrid::python::PythonActorState();
                });
+               // Free memory when actor is destroyed. Set py_state to nullptr after deletion to prevent
+               // any stale accesses during final cleanup context switches.
                simgrid::s4u::Actor::on_destruction_cb([](simgrid::s4u::Actor const& actor) {
-                 delete static_cast<simgrid::python::PythonActorState*>(actor.get_impl()->py_state);
-                 actor.get_impl()->py_state = nullptr;
+                 auto* py_state = static_cast<simgrid::python::PythonActorState*>(actor.get_impl()->py_state);
+                 delete py_state;
+                 const_cast<simgrid::s4u::Actor&>(actor).get_impl()->py_state = nullptr;
                });
-               // Allocate state for maestro now (it was created before on_creation_cb was registered)
-               e->get_impl()->get_maestro()->py_state =
-                   new simgrid::python::PythonActorState();
+               // Allocate state for maestro now (it was created before on_creation_cb was registered).
+               // Maestro is not destroyed via on_destruction_cb (ActorImpl::~ActorImpl skips the
+               // signal for maestro), so we free its py_state explicitly when the simulation ends.
+               auto* maestro        = e->get_impl()->get_maestro();
+               maestro->py_state    = new simgrid::python::PythonActorState();
+               simgrid::s4u::Engine::on_simulation_end_cb([maestro]() {
+                 delete static_cast<simgrid::python::PythonActorState*>(maestro->py_state);
+                 maestro->py_state = nullptr;
+               });
                swapped->register_before_context_switch_hook(
                    [](simgrid::kernel::context::SwappedContext* from, simgrid::kernel::context::SwappedContext* to) {
-                     simgrid::python::py_switch_state(
-                         static_cast<simgrid::python::PythonActorState*>(from->get_actor()->py_state),
-                         static_cast<simgrid::python::PythonActorState*>(to->get_actor()->py_state));
+                     auto* from_state = from->get_actor()->py_state;
+                     auto* to_state = to->get_actor()->py_state;
+                     if (from_state && to_state)
+                       simgrid::python::py_switch_state(
+                           static_cast<simgrid::python::PythonActorState*>(from_state),
+                           static_cast<simgrid::python::PythonActorState*>(to_state));
                    });
              }
              return e;
