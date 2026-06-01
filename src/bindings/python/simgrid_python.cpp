@@ -183,9 +183,16 @@ PYBIND11_MODULE(simgrid, m)
                simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
                  actor.get_impl()->py_state = new simgrid::python::PythonActorState();
                });
-               simgrid::s4u::Actor::on_destruction_cb([](simgrid::s4u::Actor const& actor) {
-                 delete static_cast<simgrid::python::PythonActorState*>(actor.get_impl()->py_state);
+               // Invalidate py_state when actor terminates (finishes executing but before full destruction).
+               // This prevents context switches during cleanup from accessing freed memory.
+               simgrid::s4u::Actor::on_termination_cb([](simgrid::s4u::Actor const& actor) {
                  actor.get_impl()->py_state = nullptr;
+               });
+               // Free memory during actual actor destruction (after all context switches complete).
+               simgrid::s4u::Actor::on_destruction_cb([](simgrid::s4u::Actor const& actor) {
+                 auto* py_state = static_cast<simgrid::python::PythonActorState*>(actor.get_impl()->py_state);
+                 if (py_state)
+                   delete py_state;
                });
                // Allocate state for maestro now (it was created before on_creation_cb was registered)
                e->get_impl()->get_maestro()->py_state =
