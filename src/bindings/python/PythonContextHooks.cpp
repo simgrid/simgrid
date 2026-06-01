@@ -8,16 +8,6 @@
  * GIL management for all factories.
  */
 
-// Py_BUILD_CORE must be defined before any Python.h inclusion to expose internal
-// PyThreadState fields (current_frame, datastack_chunk, etc.) that are gated
-// behind it on some Python 3.12+ distributions (Ubuntu 24.04 ARM, Fedora).
-// See https://bugzilla.redhat.com/show_bug.cgi?id=2245874 and greenlet PR #396.
-// We undefine it immediately after so pybind11 does not see it (Python.h's include
-// guard prevents re-inclusion, so the full struct remains visible).
-#define Py_BUILD_CORE
-#include <Python.h>
-#undef Py_BUILD_CORE
-
 #include "src/bindings/python/PythonContextHooks.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/context/ContextSwapped.hpp"
@@ -89,39 +79,71 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 {
   PyThreadState* tstate = s_tstate;
 
-  from->lls                    = lls_get();
-  from->current_frame          = tstate->current_frame;
-  from->current_exception      = tstate->current_exception;
+  from->lls = lls_get();
+  // current_frame: promoted to direct PyThreadState field in 3.13 (was in cframe sub-struct before)
+#if PY_VERSION_HEX >= 0x030D0000
+  from->current_frame = tstate->current_frame;
+#else
+  from->current_frame = tstate->cframe->current_frame;
+#endif
+  // current_exception: added to PyThreadState in 3.12
+#if PY_VERSION_HEX >= 0x030C0000
+  from->current_exception = tstate->current_exception;
+#else
+  from->current_exception = nullptr;
+#endif
   from->exc_info               = tstate->exc_info;
   from->datastack_chunk        = tstate->datastack_chunk;
   from->datastack_top          = tstate->datastack_top;
   from->datastack_limit        = tstate->datastack_limit;
   from->py_recursion_remaining = tstate->py_recursion_remaining;
-  from->c_recursion_remaining  = tstate->c_recursion_remaining;
-  from->tls_attached           = (PyGILState_Check() != 0);
+  // c_recursion_remaining: removed in Python 3.14
+#if PY_VERSION_HEX < 0x030E0000
+  from->c_recursion_remaining = tstate->c_recursion_remaining;
+#endif
+  from->tls_attached = (PyGILState_Check() != 0);
 
   lls_set(static_cast<pybind11::detail::loader_life_support*>(to->lls));
 
   if (to->datastack_chunk != nullptr) {
     // Resumed actor: full restore.
-    tstate->current_frame          = static_cast<_PyInterpreterFrame*>(to->current_frame);
-    tstate->current_exception      = static_cast<PyObject*>(to->current_exception);
+#if PY_VERSION_HEX >= 0x030D0000
+    tstate->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
+#else
+    tstate->cframe->current_frame = static_cast<_PyInterpreterFrame*>(to->current_frame);
+#endif
+#if PY_VERSION_HEX >= 0x030C0000
+    tstate->current_exception = static_cast<PyObject*>(to->current_exception);
+#endif
     tstate->exc_info               = static_cast<_PyErr_StackItem*>(to->exc_info);
     tstate->datastack_chunk        = static_cast<_PyStackChunk*>(to->datastack_chunk);
     tstate->datastack_top          = static_cast<PyObject**>(to->datastack_top);
     tstate->datastack_limit        = static_cast<PyObject**>(to->datastack_limit);
     tstate->py_recursion_remaining = to->py_recursion_remaining;
-    tstate->c_recursion_remaining  = to->c_recursion_remaining;
+#if PY_VERSION_HEX < 0x030E0000
+    tstate->c_recursion_remaining = to->c_recursion_remaining;
+#endif
   } else {
     // New actor (first run): fresh interpreter context with full recursion budget.
     // exc_info is left as-is so the first frame chains onto the existing stack.
-    tstate->current_frame          = nullptr;
-    tstate->current_exception      = nullptr;
+#if PY_VERSION_HEX >= 0x030D0000
+    tstate->current_frame = nullptr;
+#else
+    tstate->cframe->current_frame = nullptr;
+#endif
+#if PY_VERSION_HEX >= 0x030C0000
+    tstate->current_exception = nullptr;
+#endif
     tstate->datastack_chunk        = nullptr;
     tstate->datastack_top          = nullptr;
     tstate->datastack_limit        = nullptr;
     tstate->py_recursion_remaining = tstate->py_recursion_limit;
-    tstate->c_recursion_remaining  = Py_C_RECURSION_LIMIT;
+    // Recursion limit constant renamed Py_C_RECURSION_LIMIT in 3.13; field gone in 3.14
+#if PY_VERSION_HEX >= 0x030D0000 && PY_VERSION_HEX < 0x030E0000
+    tstate->c_recursion_remaining = Py_C_RECURSION_LIMIT;
+#elif PY_VERSION_HEX < 0x030D0000
+    tstate->c_recursion_remaining = C_RECURSION_LIMIT;
+#endif
   }
 
   // Restore GIL/TLS state to match what the actor had when it last suspended.
