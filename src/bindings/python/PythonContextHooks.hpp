@@ -16,6 +16,12 @@
 #include <pybind11/pybind11.h>
 #include <simgrid/python.hpp>
 
+// _PyCFrame is a CPython internal present in Python 3.11 and 3.12; it was merged
+// away in 3.13 (tstate->current_frame is now the direct equivalent).
+#if PY_VERSION_HEX >= 0x030B0000 && PY_VERSION_HEX < 0x030D0000
+#include <cpython/pystate.h> // for _PyCFrame definition
+#endif
+
 namespace simgrid::python {
 
 // Per-actor Python interpreter state (mirrors what greenlet saves for Python 3.11+)
@@ -31,6 +37,14 @@ struct PythonActorState {
   int py_recursion_remaining = 0;       // PyThreadState::py_recursion_remaining
   int c_recursion_remaining  = 0;       // PyThreadState::c_recursion_remaining
   bool tls_attached          = true;    // whether tstate is attached (GIL held) at suspension point
+
+  // Python 3.11/3.12 only: stable "root" cframe anchored to this heap object.
+  // Installed into tstate->cframe when a new actor starts its first run so that
+  // Python's cframe chain is never allowed to link back into a *previous* actor's
+  // (now potentially freed) C stack.  In 3.13+ tstate->cframe no longer exists.
+#if PY_VERSION_HEX >= 0x030B0000 && PY_VERSION_HEX < 0x030D0000
+  _PyCFrame root_cframe = {nullptr, nullptr};
+#endif
 };
 
 // Save/restore Python interpreter state around context switches (implemented in PythonContextHooks.cpp)
