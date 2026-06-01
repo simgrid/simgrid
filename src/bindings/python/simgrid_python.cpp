@@ -192,9 +192,12 @@ PYBIND11_MODULE(simgrid, m)
                    new simgrid::python::PythonActorState();
                swapped->register_before_context_switch_hook(
                    [](simgrid::kernel::context::SwappedContext* from, simgrid::kernel::context::SwappedContext* to) {
-                     simgrid::python::py_switch_state(
-                         static_cast<simgrid::python::PythonActorState*>(from->get_actor()->py_state),
-                         static_cast<simgrid::python::PythonActorState*>(to->get_actor()->py_state));
+                     auto* from_state = from->get_actor()->py_state;
+                     auto* to_state = to->get_actor()->py_state;
+                     if (from_state && to_state)
+                       simgrid::python::py_switch_state(
+                           static_cast<simgrid::python::PythonActorState*>(from_state),
+                           static_cast<simgrid::python::PythonActorState*>(to_state));
                    });
              }
              return e;
