@@ -16,12 +16,6 @@
 #include <pybind11/pybind11.h>
 #include <simgrid/python.hpp>
 
-// _PyCFrame is a CPython internal present in Python 3.11 and 3.12; it was merged
-// away in 3.13 (tstate->current_frame is now the direct equivalent).
-#if PY_VERSION_HEX >= 0x030B0000 && PY_VERSION_HEX < 0x030D0000
-#include <cpython/pystate.h> // for _PyCFrame definition
-#endif
-
 namespace simgrid::python {
 
 // Per-actor Python interpreter state (mirrors what greenlet saves for Python 3.11+)
