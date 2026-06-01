@@ -83,11 +83,19 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
   // current_frame: promoted to direct PyThreadState field in 3.13.
   // Before 3.13 it lived in a _PyCFrame allocated on the C stack; save the cframe
   // pointer too so we restore tstate->cframe before writing current_frame into it.
+  // CAUTION: In Python 3.12, tstate->cframe points into the actor's C stack.
+  // If the stack is being freed during context destruction, accessing cframe->current_frame
+  // will read from freed memory. Only save cframe state if we're sure it's valid
+  // (i.e., if from->datastack_chunk is non-null, meaning we're swapping an active actor).
 #if PY_VERSION_HEX >= 0x030D0000
   from->current_frame = tstate->current_frame;
 #else
   from->cframe_p      = tstate->cframe;
-  from->current_frame = tstate->cframe->current_frame;
+  // Only access cframe->current_frame if this actor is still active (has datastack_chunk).
+  // During cleanup/termination, cframe may point to a freed stack, so skip the access.
+  if (from->datastack_chunk != nullptr)
+    from->current_frame = tstate->cframe->current_frame;
+  // else: leave current_frame as-is (will be reset on next run if needed)
 #endif
   // current_exception: added to PyThreadState in 3.12
 #if PY_VERSION_HEX >= 0x030C0000
