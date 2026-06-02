@@ -16,7 +16,7 @@
 
 namespace simgrid::mc::odpor {
 
-struct DependentIfSameValueAction : public Transition {
+struct DependentIfSameValueAction final : public Transition {
 private:
   const int value;
 

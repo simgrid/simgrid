@@ -86,7 +86,7 @@ bool WaitAnyTransition::reversible_race(const Transition* other, const odpor::Ex
 {
   xbt_assert(type_ == Type::WAITANY, "Unexpected transition type %s", to_c_str(type_));
 
-  return this->reversible_race(other, exec, this_handle, other_handle);
+  return this->get_current_transition()->reversible_race(other, exec, this_handle, other_handle);
 }
 
 } // namespace simgrid::mc

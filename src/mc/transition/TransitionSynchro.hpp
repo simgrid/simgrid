@@ -11,10 +11,11 @@
 #include "src/mc/transition/Transition.hpp"
 
 #include <cstdint>
+#include <stdexcept>
 
 namespace simgrid::mc {
 
-class BarrierTransition : public Transition {
+class BarrierTransition final : public Transition {
   unsigned bar_;
 
 public:
@@ -22,28 +23,28 @@ public:
   BarrierTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   bool depends(const Transition* o) const override
   {
-    if (const auto* other = dynamic_cast<const BarrierTransition*>(o)) {
-      if (bar_ != other->bar_)
-        return false;
+    if (o->type_ != Type::BARRIER_ASYNC_LOCK && o->type_ != Type::BARRIER_WAIT)
+      return false; // barriers are INDEP with non-barrier transitions
 
-      // LOCK indep LOCK: requests are not ordered in a barrier
-      if (type_ == Type::BARRIER_ASYNC_LOCK && other->type_ == Type::BARRIER_ASYNC_LOCK)
-        return false;
+    const auto* other = static_cast<const BarrierTransition*>(o);
+    if (bar_ != other->bar_)
+      return false;
 
-      // WAIT indep WAIT: requests are not ordered
-      if (type_ == Type::BARRIER_WAIT && other->type_ == Type::BARRIER_WAIT)
-        return false;
+    // LOCK indep LOCK: requests are not ordered in a barrier
+    if (type_ == Type::BARRIER_ASYNC_LOCK && other->type_ == Type::BARRIER_ASYNC_LOCK)
+      return false;
 
-      return true; // LOCK/WAIT is dependent because lock may enable wait
-    }
+    // WAIT indep WAIT: requests are not ordered
+    if (type_ == Type::BARRIER_WAIT && other->type_ == Type::BARRIER_WAIT)
+      return false;
 
-    return false; // barriers are INDEP with non-barrier transitions
+    return true; // LOCK/WAIT is dependent because lock may enable wait
   }
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 };
 
-class CondvarTransition : public Transition {
+class CondvarTransition final : public Transition {
   unsigned int condvar_;
   unsigned int mutex_;
   bool granted_;
@@ -80,7 +81,7 @@ public:
   bool is_granted() const { return this->granted_; }
 };
 
-class MutexTransition : public Transition {
+class MutexTransition final : public Transition {
   uintptr_t mutex_;
   Aid owner_;
 
@@ -90,61 +91,93 @@ public:
   bool depends(const Transition* o) const override
   {
     // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
-
-    // Theorem 4.4.11: LOCK indep TEST/WAIT.
-    //  If both enabled, the result does not depend on their order. If WAIT is not enabled, LOCK won't enable it.
-    if (type_ == Type::MUTEX_ASYNC_LOCK && (o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_WAIT))
-      return false;
-
-    // Theorem 4.4.8: LOCK indep UNLOCK.
-    //  pop_front and push_back are independent.
-    if (type_ == Type::MUTEX_ASYNC_LOCK && o->type_ == Type::MUTEX_UNLOCK)
-      return false;
-
-    // Theorem 4.4.9: LOCK indep UNLOCK.
-    //  any combination of wait and test is indenpendent.
-    if ((type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_TEST) &&
-        (o->type_ == Type::MUTEX_WAIT || o->type_ == Type::MUTEX_TEST))
-      return false;
-
-    // TEST is a pure function; TEST/WAIT won't change the owner; TRYLOCK will always fail if TEST is enabled (because a
-    // request is queued)
-    if (type_ == Type::MUTEX_TEST &&
-        (o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK || o->type_ == Type::MUTEX_WAIT))
-      return false;
-
-    // TRYLOCK will always fail if TEST is enabled (because a request is queued), and may not overpass the WAITed
-    // request in the queue
-    if (type_ == Type::MUTEX_TRYLOCK && o->type_ == Type::MUTEX_WAIT)
-      return false;
-
-    // We are not considering the contextual dependency saying that UNLOCK is indep with WAIT/TEST
-    // iff wait/test are not first in the waiting queue, because the other WAIT are not enabled anyway so this optim is
-    // useless
-
-    // two unlock can never occur in the same state, or after one another. Hence, the independency is true by
-    // verifying a forall on an empty set.
-    if (type_ == Type::MUTEX_UNLOCK && o->type_ == Type::MUTEX_UNLOCK)
-      return false;
+    // xbt_assert(type_ <= o->type_);
 
     // A condvar_async_lock is behaving as a mutex_unlock, so it must have the same behavior regarding Mutex Wait
-    if (o->type_ == Type::CONDVAR_ASYNC_LOCK) {
+    if (o->type_ == Type::CONDVAR_ASYNC_LOCK) [[unlikely]] {
       if (type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_UNLOCK || type_ == Type::MUTEX_TRYLOCK)
         return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+      return false;
     }
     // A condvar_wait is behaving as a mutex_async_lock
-    if (o->type_ == Type::CONDVAR_WAIT) {
+    if (o->type_ == Type::CONDVAR_WAIT) [[unlikely]] {
       if (type_ == Type::MUTEX_ASYNC_LOCK || type_ == Type::MUTEX_TRYLOCK)
         return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
+      return false;
     }
 
-    // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
-    // Since it's the last rule in this file, we can use the contrapositive version of the theorem
-    if (o->type_ == Type::MUTEX_ASYNC_LOCK || o->type_ == Type::MUTEX_TEST || o->type_ == Type::MUTEX_TRYLOCK ||
-        o->type_ == Type::MUTEX_UNLOCK || o->type_ == Type::MUTEX_WAIT)
-      return (mutex_ == static_cast<const MutexTransition*>(o)->mutex_);
+    // Not a mutex transition: independent
+    if (o->type_ != Type::MUTEX_ASYNC_LOCK && o->type_ != Type::MUTEX_TEST && o->type_ != Type::MUTEX_TRYLOCK &&
+        o->type_ != Type::MUTEX_UNLOCK && o->type_ != Type::MUTEX_WAIT)
+      return false;
 
-    return false;
+    // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
+    if (mutex_ != static_cast<const MutexTransition*>(o)->mutex_)
+      return false;
+
+    // This is the same mutex and we have only mutex transitions. Use a constexpr look-up table so that the code remains
+    // small enough to be inlined
+    enum MIdx : int { LOCK = 0, TEST = 1, TRYLOCK = 2, UNLOCK = 3, WAIT = 4, N = 5 };
+
+    static constexpr auto to_idx = [](Type t) constexpr noexcept -> int {
+      switch (t) {
+        case Type::MUTEX_ASYNC_LOCK:
+          return LOCK;
+        case Type::MUTEX_TEST:
+          return TEST;
+        case Type::MUTEX_TRYLOCK:
+          return TRYLOCK;
+        case Type::MUTEX_UNLOCK:
+          return UNLOCK;
+        case Type::MUTEX_WAIT:
+          return WAIT;
+        default:
+          return -1;
+      }
+    };
+
+    static constexpr auto dep_table = []() consteval {
+      std::array<std::array<int8_t, N>, N> dep{};
+      for (auto& row : dep)
+        row.fill(-1); // -1 = undefined, checked below
+
+      auto indep  = [&](MIdx a, MIdx b) { dep[a][b] = dep[b][a] = 0; };
+      auto depend = [&](MIdx a, MIdx b) { dep[a][b] = dep[b][a] = 1; };
+
+      // Th 4.4.11 : LOCK indep with TEST and WAIT
+      indep(LOCK, TEST);
+      indep(LOCK, WAIT);
+      // Th 4.4.8 : LOCK indep UNLOCK (push_back and pop_front are independent)
+      indep(LOCK, UNLOCK);
+      // Th 4.4.9 : Any combination of WAIT and TEST are
+      indep(TEST, TEST);
+      indep(TEST, WAIT);
+      indep(WAIT, WAIT);
+      // TEST is a pure function: TRYLOCK always fail when TEST is actived
+      indep(TEST, TRYLOCK);
+      // TRYLOCK always fail when WAIT is actived
+      indep(TRYLOCK, WAIT);
+      // UNLOCK/UNLOCK: no more than one UNLOCK can be actived at a given point
+      indep(UNLOCK, UNLOCK);
+
+      // Any other cases are dependent
+      depend(LOCK, LOCK);
+      depend(LOCK, TRYLOCK);
+      depend(TEST, UNLOCK);
+      depend(TRYLOCK, TRYLOCK);
+      depend(TRYLOCK, UNLOCK);
+      depend(UNLOCK, WAIT);
+
+      // Raise a compilation error if a cell is left uninitialized
+      for (int i = 0; i < N; i++)
+        for (int j = i; j < N; j++)
+          if (dep[i][j] == -1)
+            throw std::logic_error(std::format("Missing (in)dep relation: {} {}", i, j));
+
+      return dep;
+    }();
+
+    return static_cast<bool>(dep_table[to_idx(type_)][to_idx(o->type_)]);
   }
 
   bool can_be_co_enabled(const Transition* other) const override;
@@ -155,7 +188,7 @@ public:
   Aid get_owner() const { return this->owner_; }
 };
 
-class SemaphoreTransition : public Transition {
+class SemaphoreTransition final : public Transition {
   unsigned int sem_; // ID
   bool granted_;
   int capacity_;

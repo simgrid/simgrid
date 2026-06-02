@@ -216,7 +216,7 @@ bool Transition::dispatch_depends(const Transition* other) const
           "properly extending the checker?",
           (int)type_);
 #else
-  xbt_die("Deserializing transitions is only interesting in MC mode.");
+  xbt_die("Computing dependencies between transitions is only interesting in MC mode.");
 #endif
 }
 
