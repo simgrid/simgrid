@@ -290,8 +290,8 @@ if(enable_smpi_papi)
 endif()
 mark_as_advanced(PAPI_PREFIX)
 
-if(CMAKE_VERSION VERSION_LESS 3.20 OR SONAR_ANALYSIS)
-  message(STATUS "cmake is too old to test for C++23 stacks (v${CMAKE_VERSION})")
+if(CMAKE_VERSION VERSION_LESS 3.20 OR SONAR_ANALYSIS OR minimal-bindings)
+  message(STATUS "cmake is too old to test for C++23 stacks (v${CMAKE_VERSION}, needs v3.20) or we build a minimal binding.")
   set(HAVE_STD_STACKTRACE 0) # CMake does not know about C++23, we cannot test it on the compiler
 else()
   try_compile(HAVE_STD_STACKTRACE ${CMAKE_BINARY_DIR}
