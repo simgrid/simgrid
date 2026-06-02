@@ -281,7 +281,7 @@ enable_python (enabled by default if installable)
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
-enable_static_library (on/OFF)
+enable_compile_static (on/OFF)
   Also build SimGrid as a static library. It is not possible to disable the build of dynamic libraries, but you can build both
   versions if you want. The static library is called libsimgrid-static.
 
