@@ -102,17 +102,18 @@ int main(int argc, char** argv)
   }
 
   sg_config_init(&argc, argv);
-  if (want_sthread) {
 #ifdef STHREAD_PATH /* only on Linux for now */
+  if (want_sthread) {
     auto val = simgrid::config::get_value<std::string>("model-check/setenv");
     if (not val.empty())
       val += ";";
     val = "LD_PRELOAD=" + val + STHREAD_PATH;
     simgrid::config::set_value("model-check/setenv", val);
-#else
-    xbt_die("sthread is not ported to that operating system yet. You should try it under Linux.");
-#endif
   }
+#else
+  xbt_assert(not want_sthread && not want_no_sthread,
+             "sthread is not ported to that operating system yet. You should try it under Linux.");
+#endif
 
   simgrid::xbt::install_exception_handler();
 
