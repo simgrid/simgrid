@@ -93,24 +93,6 @@ public:
     // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
     // xbt_assert(type_ <= o->type_);
 
-    // A condvar_async_lock is behaving as a mutex_unlock, so it must have the same behavior regarding Mutex Wait
-    if (o->type_ == Type::CONDVAR_ASYNC_LOCK) [[unlikely]] {
-      if (type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_UNLOCK || type_ == Type::MUTEX_TRYLOCK)
-        return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
-      return false;
-    }
-    // A condvar_wait is behaving as a mutex_async_lock
-    if (o->type_ == Type::CONDVAR_WAIT) [[unlikely]] {
-      if (type_ == Type::MUTEX_ASYNC_LOCK || type_ == Type::MUTEX_TRYLOCK)
-        return mutex_ == static_cast<const CondvarTransition*>(o)->get_mutex();
-      return false;
-    }
-
-    // Not a mutex transition: independent
-    if (o->type_ != Type::MUTEX_ASYNC_LOCK && o->type_ != Type::MUTEX_TEST && o->type_ != Type::MUTEX_TRYLOCK &&
-        o->type_ != Type::MUTEX_UNLOCK && o->type_ != Type::MUTEX_WAIT)
-      return false;
-
     // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
     if (mutex_ != static_cast<const MutexTransition*>(o)->mutex_)
       return false;
