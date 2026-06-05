@@ -156,7 +156,8 @@ public:
   {
     xbt_assert(times_considered < this->pending_transitions_.size() || _sg_mc_debug,
                "There is no transition in this ActorState. Try to activate --cfg=model-check/debug:true to see the "
-               "debug and error messages involving transitions.");
+               "debug and error messages involving transitions. This setting is supposedly set on need by simgrid-mc, "
+               "but you may have found a case where this auto-setting does not work.");
     xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %d does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for. Pending transitions are: %s",

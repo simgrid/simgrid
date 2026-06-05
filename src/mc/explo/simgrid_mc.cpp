@@ -26,6 +26,7 @@
 #include <iostream>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
+XBT_LOG_EXTERNAL_CATEGORY(mc_dfs);
 
 using namespace simgrid::mc;
 
@@ -116,6 +117,10 @@ int main(int argc, char** argv)
 #endif
 
   simgrid::xbt::install_exception_handler();
+
+  // Set the model-check/debug config item when the enabled logs require this setting to find the parts they need
+  if (XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_debug))
+    simgrid::s4u::Engine::set_config("model-check/debug:true");
 
   std::unique_ptr<Exploration> explo;
   std::unique_ptr<Reduction> reduction;
