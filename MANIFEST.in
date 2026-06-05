@@ -2214,6 +2214,7 @@ include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
 include include/simgrid/plugins/ns3.hpp
 include include/simgrid/plugins/solar_panel.hpp
+include include/simgrid/python.hpp
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
 include include/simgrid/s4u/ActivitySet.hpp
@@ -2330,6 +2331,8 @@ include src/bindings/java/org/simgrid/s4u/TimeoutException.java
 include src/bindings/java/org/simgrid/s4u/VirtualMachine.java
 include src/bindings/java/org/simgrid/s4u/simgridJNI.java
 include src/bindings/java/simgrid-java.cpp
+include src/bindings/python/PythonContextHooks.cpp
+include src/bindings/python/PythonContextHooks.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/bindings/python/smpi_python.cpp
 include src/dag/dax.dtd
