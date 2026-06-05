@@ -15,7 +15,7 @@
 
 namespace simgrid::mc {
 
-class ActorJoinTransition : public Transition {
+class ActorJoinTransition final : public Transition {
   bool timeout_;
   Aid target_;
 
@@ -43,7 +43,8 @@ public:
   /** Target ID */
   Aid get_target() const { return target_; }
 };
-class ActorExitTransition : public Transition {
+
+class ActorExitTransition final : public Transition {
 
 public:
   ActorExitTransition(Aid issuer, int times_considered, mc::Channel& channel);
@@ -59,7 +60,7 @@ public:
                        EventHandle other_handle) const override;
 };
 
-class ActorSleepTransition : public Transition {
+class ActorSleepTransition final : public Transition {
 
 public:
   ActorSleepTransition(Aid issuer, int times_considered, mc::Channel& channel);
@@ -73,7 +74,7 @@ public:
                        EventHandle other_handle) const override;
 };
 
-class ActorCreateTransition : public Transition {
+class ActorCreateTransition final : public Transition {
   Aid child_;
 
 public:

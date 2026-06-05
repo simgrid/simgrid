@@ -57,6 +57,28 @@ do
 done
 
 set +e # Don't fail
+echo
+(cd ../examples/cpp ;find -type d |grep -v CMakeFiles|sort)> /tmp/example-cpp
+(cd ../examples/java ; find -type d | grep -v CMakeFiles|sed 's/_/-/g'|sed 's/await/wait/'|sort)>/tmp/example-java
+(cd ../examples/python ; find -type d | grep -v CMakeFiles|sort)>/tmp/example-python
+
+echo "Missing examples in Java:"
+diff -u /tmp/example-cpp /tmp/example-java | grep '^-' | grep -v '^--' | sed 's|-./||'
+echo
+echo "Extraneous examples in Java:"
+diff -u /tmp/example-cpp /tmp/example-java | grep '^+' | grep -v '^++' | sed 's|\+./||'
+
+echo "Missing examples in Python:"
+diff -u /tmp/example-cpp /tmp/example-python | grep '^-' | grep -v '^--' | sed 's|-./||'
+echo
+echo "Extraneous examples in Python:"
+diff -u /tmp/example-cpp /tmp/example-python | grep '^+' | grep -v '^++' | sed 's|\+./||'
+
+rm /tmp/example-cpp /tmp/example-java /tmp/example-python
+echo
+
+set +e # Don't fail
+echo "Broken links:"
 if [[ -e /usr/bin/linkchecker ]] ; then
     linkchecker --no-status -o csv --ignore-url='.*\.css$' --ignore-url=build/html/_modules build/html \
      | grep -v '^#' \

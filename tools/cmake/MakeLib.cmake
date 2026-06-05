@@ -27,8 +27,14 @@ set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 # The library can obviously use the internal headers
 set_property(TARGET simgrid
              APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-
 add_dependencies(simgrid maintainer_files)
+
+if(${enable_compile_static})
+  add_library(simgrid-static STATIC ${simgrid_sources})
+  set_target_properties(simgrid-static PROPERTIES VERSION ${libsimgrid_version})
+  set_property(TARGET simgrid-static   APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  add_dependencies(simgrid-static maintainer_files)
+endif()
 
 if(${enable_sthread})
   # git grep 'dlsym(RTLD_NEXT'|sed 's/.*dlsym(RTLD_NEXT, "//'|sed 's/");/;/'|tr '\n' ' '|sed 's/$/\n/'
@@ -52,7 +58,11 @@ endif()
 
 if(SIMGRID_HAVE_MC)
   add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
-  target_link_libraries(simgrid-mc simgrid)
+  if(${enable_compile_static})
+    target_link_libraries(simgrid-mc simgrid-static)
+  else()
+    target_link_libraries(simgrid-mc simgrid)
+  endif()
   set_target_properties(simgrid-mc
                         PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
   set_property(TARGET simgrid-mc

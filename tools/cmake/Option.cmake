@@ -17,6 +17,7 @@ option(enable_lto                   "Whether we should try to activate the LTO (
 option(enable_mallocators           "Enable mallocators (disable only for debugging purpose)." on)
 option(enable_maintainer_mode       "Whether flex and flexml files should be rebuilt." off)
 option(enable_debug                 "Turn this off to remove all debug messages at compile time (faster, but no debug activatable)" on)
+option(enable_compile_static        "Also build SimGrid as a static library" off)
 
 # Optional modules
 ###

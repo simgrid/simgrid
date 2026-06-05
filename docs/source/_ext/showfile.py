@@ -31,7 +31,7 @@ class ShowFileDirective(Directive):
         if 'language' in self.options:
             language = self.options['language']
 
-        logger = logging.getLogger(__name__)
+#        logger = logging.getLogger(__name__)
 #        logger.info('showfile {} in {}'.format(filename, language))
 
         new_content = [
@@ -68,20 +68,19 @@ class ExampleTabDirective(Directive):
         filename = self.content[0].strip()
         self.content.trim_start(1)
 
-        (language, langcode) = (None, None)
-        if filename[-3:] == '.py':
+        if filename.endswith('.py'):
             language = 'Python'
             langcode = 'py'
-        elif filename[-2:] == '.c':
+        elif filename.endswith('.c'):
             language = 'C'
             langcode = 'c'
-        elif filename[-4:] == '.cpp':
+        elif filename.endswith('.cpp'):
             language = 'C++'
             langcode = 'cpp'
-        elif filename[-4:] == '.xml':
+        elif filename.endswith('.xml'):
             language = 'XML'
             langcode = 'xml'
-        elif filename[-5:] == '.java':
+        elif filename.endswith('.java'):
             language = 'Java'
             langcode = 'java'
         else:

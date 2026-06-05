@@ -10,7 +10,7 @@
 
 namespace simgrid::mc {
 
-class RandomTransition : public Transition {
+class RandomTransition final : public Transition {
   int min_;
   int max_;
 

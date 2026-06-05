@@ -607,7 +607,7 @@ bool ExtensionSetCalculator::is_mutex_available_before(const UnfoldingEvent* e, 
 
   auto* previous_mutex = dynamic_cast<MutexTransition*>(e->get_transition());
   if (previous_mutex != nullptr && e->get_transition()->type_ == Transition::Type::MUTEX_ASYNC_LOCK &&
-      mutex->depends(e->get_transition()))
+      mutex->dispatch_depends(e->get_transition()))
     requests_over_mutex++;
 
   for (const auto previous_event : e->get_history()) {

@@ -15,7 +15,7 @@
 
 namespace simgrid::mc {
 
-class TestAnyTransition : public Transition {
+class TestAnyTransition final : public Transition {
   std::vector<Transition*> transitions_;
 
 public:
@@ -39,7 +39,7 @@ public:
   }
 };
 
-class WaitAnyTransition : public Transition {
+class WaitAnyTransition final : public Transition {
   std::vector<Transition*> transitions_;
 
 public:

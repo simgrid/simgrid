@@ -176,7 +176,27 @@ bool Transition::dispatch_depends(const Transition* other) const
     case Transition::Type::MUTEX_ASYNC_LOCK:
     case Transition::Type::MUTEX_TEST:
     case Transition::Type::MUTEX_WAIT:
-    case Transition::Type::MUTEX_UNLOCK:
+    case Transition::Type::MUTEX_UNLOCK: {
+      auto mutex = static_cast<const MutexTransition*>(this)->get_mutex();
+      // A condvar_async_lock is behaving as a mutex_unlock, so it must have the same behavior regarding Mutex Wait
+      if (other->type_ == Type::CONDVAR_ASYNC_LOCK) [[unlikely]] {
+        if (type_ == Type::MUTEX_WAIT || type_ == Type::MUTEX_UNLOCK || type_ == Type::MUTEX_TRYLOCK)
+          return mutex == static_cast<const CondvarTransition*>(other)->get_mutex();
+        return false;
+      }
+      // A condvar_wait is behaving as a mutex_async_lock
+      if (other->type_ == Type::CONDVAR_WAIT) [[unlikely]] {
+        if (type_ == Type::MUTEX_ASYNC_LOCK || type_ == Type::MUTEX_TRYLOCK)
+          return mutex == static_cast<const CondvarTransition*>(other)->get_mutex();
+        return false;
+      }
+
+      // Not a mutex transition: independent
+      if (other->type_ != Type::MUTEX_ASYNC_LOCK && other->type_ != Type::MUTEX_TEST &&
+          other->type_ != Type::MUTEX_TRYLOCK && other->type_ != Type::MUTEX_UNLOCK && other->type_ != Type::MUTEX_WAIT)
+        return false;
+    }
+
       return static_cast<const MutexTransition*>(this)->depends(other);
 
     case Transition::Type::SEM_ASYNC_LOCK:
@@ -216,7 +236,7 @@ bool Transition::dispatch_depends(const Transition* other) const
           "properly extending the checker?",
           (int)type_);
 #else
-  xbt_die("Deserializing transitions is only interesting in MC mode.");
+  xbt_die("Computing dependencies between transitions is only interesting in MC mode.");
 #endif
 }
 

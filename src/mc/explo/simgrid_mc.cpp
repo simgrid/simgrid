@@ -44,12 +44,15 @@ int main(int argc, char** argv)
 #if HAVE_SMPI
   smpi_init_options(); // that's OK to call it twice, and we need it ASAP
 #endif
-  bool sthread = false;
+  bool want_sthread            = false;
+  bool want_no_sthread         = false;
   bool replay                  = false;
   const std::string replay_arg = "--cfg=model-check/replay:";
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--sthread") == 0)
-      sthread = true;
+      want_sthread = true;
+    if (strcmp(argv[i], "--no-sthread") == 0)
+      want_no_sthread = true;
 
     if (std::string(argv[i]).compare(0, replay_arg.size(), replay_arg) == 0)
       replay = true;
@@ -79,10 +82,12 @@ int main(int argc, char** argv)
 
     // Honor sthread
 #ifdef STHREAD_PATH /* only on Linux for now */
-    if (sthread) {
+    if (want_sthread) {
       char* env         = getenv("LD_PRELOAD");
       std::string value = std::string(STHREAD_PATH) + (env == nullptr ? "" : std::string(":") + env);
       setenv("LD_PRELOAD", value.c_str(), 1);
+    } else if (want_no_sthread) {
+      unsetenv("LD_PRELOAD");
     }
 #endif
 
@@ -97,7 +102,7 @@ int main(int argc, char** argv)
   }
 
   sg_config_init(&argc, argv);
-  if (sthread) {
+  if (want_sthread) {
 #ifdef STHREAD_PATH /* only on Linux for now */
     auto val = simgrid::config::get_value<std::string>("model-check/setenv");
     if (not val.empty())

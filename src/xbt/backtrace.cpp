@@ -255,8 +255,10 @@ public:
   {
     std::stringstream ss;
 
+#if HAVE_STD_STACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE || HAVE_DWELF_STACKTRACE
     int frame_count = 0;
     bool print      = cfg_fullstdstack; // Start printing right away if we are requested not to trim
+#endif
 
 #if HAVE_STD_STACKTRACE
     if (cfg_stacktrace_kind == "c++23") {

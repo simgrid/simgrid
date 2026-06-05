@@ -19,7 +19,7 @@ class CommRecvTransition;
 class CommSendTransition;
 class CommTestTransition;
 
-class CommWaitTransition : public Transition {
+class CommWaitTransition final : public Transition {
   bool timeout_;
   unsigned comm_;
   unsigned mbox_;
@@ -60,7 +60,7 @@ public:
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
 };
-class CommTestTransition : public Transition {
+class CommTestTransition final : public Transition {
   unsigned comm_;
   unsigned mbox_;
   Aid sender_;
@@ -99,7 +99,8 @@ public:
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
 };
-class CommIprobeTransition : public Transition {
+
+class CommIprobeTransition final : public Transition {
   bool is_sender_;
   unsigned mbox_;
   int tag_;
@@ -127,7 +128,7 @@ public:
   int get_tag() const { return tag_; }
 };
 
-class CommRecvTransition : public Transition {
+class CommRecvTransition final : public Transition {
   unsigned comm_; /* ID of the CommImpl or 0 if not known */
   unsigned mbox_;
   int tag_;
@@ -138,53 +139,55 @@ public:
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
-    if (other->type_ == Type::COMM_ASYNC_RECV)
-      return mbox_ == static_cast<const CommRecvTransition*>(other)->mbox_;
+    switch (other->type_) {
+      case Type::COMM_ASYNC_RECV:
+        return mbox_ == static_cast<const CommRecvTransition*>(other)->mbox_;
 
-    if (other->type_ == Type::COMM_ASYNC_SEND)
-      return false;
-
-    if (other->type_ == Type::COMM_IPROBE)
-      return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
-
-    if (other->type_ == Type::COMM_TEST) {
-      const auto* test = static_cast<const CommTestTransition*>(other);
-
-      if (mbox_ != test->mbox_)
+      case Type::COMM_ASYNC_SEND:
         return false;
 
-      if ((aid_ != test->sender_) && (aid_ != test->receiver_))
-        return false;
+      case Type::COMM_IPROBE:
+        return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
 
-      // If the test is checking a paired comm already, we're independent!
-      // If we happen to make up that pair, then we're dependent...
-      if (test->comm_ != comm_)
-        return false;
+      case Type::COMM_TEST: {
+        const auto* test = static_cast<const CommTestTransition*>(other);
 
-      return true; // DEP with other send transitions
+        if (mbox_ != test->mbox_)
+          return false;
+
+        if ((aid_ != test->sender_) && (aid_ != test->receiver_))
+          return false;
+
+        // If the test is checking a paired comm already, we're independent!
+        // If we happen to make up that pair, then we're dependent...
+        if (test->comm_ != comm_)
+          return false;
+
+        return true; // DEP with other send transitions
+      }
+
+      case Type::COMM_WAIT: {
+        const auto* wait = static_cast<const CommWaitTransition*>(other);
+
+        if (wait->timeout_)
+          return true;
+
+        if (mbox_ != wait->mbox_)
+          return false;
+
+        if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
+          return false;
+
+        // If the wait is waiting on a paired comm already, we're independent!
+        // If we happen to make up that pair, then we're dependent...
+        if ((aid_ != wait->aid_) && wait->comm_ != comm_)
+          return false;
+
+        return true; // DEP with other wait transitions
+      }
+      default:
+        return false; // Comm transitions are INDEP with non-comm transitions
     }
-
-    if (other->type_ == Type::COMM_WAIT) {
-      const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-      if (wait->timeout_)
-        return true;
-
-      if (mbox_ != wait->mbox_)
-        return false;
-
-      if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-        return false;
-
-      // If the wait is waiting on a paired comm already, we're independent!
-      // If we happen to make up that pair, then we're dependent...
-      if ((aid_ != wait->aid_) && wait->comm_ != comm_)
-        return false;
-
-      return true; // DEP with other wait transitions
-    }
-
-    return false; // Comm transitions are INDEP with non-comm transitions
   }
 
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
@@ -198,7 +201,7 @@ public:
   int get_tag() const { return tag_; }
 };
 
-class CommSendTransition : public Transition {
+class CommSendTransition final : public Transition {
   unsigned comm_;
   unsigned mbox_;
   int tag_;
@@ -209,53 +212,52 @@ public:
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override
   {
-    if (other->type_ == Type::COMM_ASYNC_SEND)
-      return mbox_ == static_cast<const CommSendTransition*>(other)->mbox_;
+    switch (other->type_) {
+      case Type::COMM_ASYNC_SEND:
+        return mbox_ == static_cast<const CommSendTransition*>(other)->mbox_;
 
-    if (other->type_ == Type::COMM_ASYNC_RECV)
-      return false;
-
-    if (other->type_ == Type::COMM_IPROBE)
-      return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
-
-    if (other->type_ == Type::COMM_TEST) {
-      const auto* test = static_cast<const CommTestTransition*>(other);
-
-      if (mbox_ != test->mbox_)
+      case Type::COMM_ASYNC_RECV:
         return false;
 
-      if ((aid_ != test->sender_) && (aid_ != test->receiver_))
-        return false;
+      case Type::COMM_IPROBE:
+        return mbox_ == static_cast<const CommIprobeTransition*>(other)->get_mailbox();
 
-      // If the test is checking a paired comm already, we're independent!
-      // If we happen to make up that pair, then we're dependent...
-      if (test->comm_ != comm_)
-        return false;
+      case Type::COMM_TEST: {
+        const auto* test = static_cast<const CommTestTransition*>(other);
 
-      return true; // DEP with other test transitions
+        if (mbox_ != test->mbox_)
+          return false;
+        if ((aid_ != test->sender_) && (aid_ != test->receiver_))
+          return false;
+
+        // If the test is checking a paired comm already, we're independent!
+        // If we happen to make up that pair, then we're dependent...
+        if (test->comm_ != comm_)
+          return false;
+
+        return true; // DEP with other test transitions
+      }
+
+      case Type::COMM_WAIT: {
+        const auto* wait = static_cast<const CommWaitTransition*>(other);
+
+        if (wait->timeout_)
+          return true;
+        if (mbox_ != wait->mbox_)
+          return false;
+        if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
+          return false;
+        // If the wait is waiting on a paired comm already, we're independent!
+        // If we happen to make up that pair, then we're dependent...
+        if ((aid_ != wait->aid_) && wait->comm_ != comm_)
+          return false;
+
+        return true; // DEP with other wait transitions
+      }
+
+      default:
+        return false; // Comm transitions are INDEP with non-comm transitions
     }
-
-    if (other->type_ == Type::COMM_WAIT) {
-      const auto* wait = static_cast<const CommWaitTransition*>(other);
-
-      if (wait->timeout_)
-        return true;
-
-      if (mbox_ != wait->mbox_)
-        return false;
-
-      if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-        return false;
-
-      // If the wait is waiting on a paired comm already, we're independent!
-      // If we happen to make up that pair, then we're dependent...
-      if ((aid_ != wait->aid_) && wait->comm_ != comm_)
-        return false;
-
-      return true; // DEP with other wait transitions
-    }
-
-    return false; // Comm transitions are INDEP with non-comm transitions
   }
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;

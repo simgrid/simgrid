@@ -16,7 +16,7 @@
 
 namespace simgrid::mc::udpor {
 
-struct IndependentAction : public Transition {
+struct IndependentAction final : public Transition {
   IndependentAction() = default;
   IndependentAction(Type type, Aid issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
   IndependentAction(Aid issuer, int times_considered = 0)
@@ -39,7 +39,7 @@ struct IndependentAction : public Transition {
   std::string dot_string() const override { return ""; }
 };
 
-struct DependentAction : public Transition {
+struct DependentAction final : public Transition {
   DependentAction() = default;
   DependentAction(Type type, Aid issuer, int times_considered = 0) : Transition(type, issuer, times_considered) {}
   DependentAction(Aid issuer, int times_considered = 0)
@@ -59,7 +59,7 @@ struct DependentAction : public Transition {
   std::string dot_string() const override { return ""; }
 };
 
-struct ConditionallyDependentAction : public Transition {
+struct ConditionallyDependentAction final : public Transition {
   ConditionallyDependentAction() = default;
   ConditionallyDependentAction(Type type, Aid issuer, int times_considered = 0)
       : Transition(type, issuer, times_considered)

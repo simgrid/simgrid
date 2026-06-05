@@ -88,24 +88,25 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  if (argc == 1 || (argc > 1 && (strcmp(argv[1], "-h") == 0))) {
-    std::cout << "USAGE:\nmc-centralized-mutex <platform file> <client count> <cs per process>\n";
+  if (argc == 0 || (argc > 1 && (strcmp(argv[1], "-h") == 0))) {
+    std::cout << "USAGE:\nmc-centralized-mutex <client count> <cs per process>\n";
     exit(0);
   }
-  e.load_platform(argv[1]);
-  if (argc == 4) {
-    AMOUNT_OF_CLIENTS = atoi(argv[2]);
-    CS_PER_PROCESS    = atoi(argv[3]);
+  auto* root      = e.get_netzone_root();
+  sg4::Host* host = root->add_host("TheHost", 1);
+  if (argc == 3) {
+    AMOUNT_OF_CLIENTS = atoi(argv[1]);
+    CS_PER_PROCESS    = atoi(argv[2]);
   }
 
-  e.host_by_name("Tremblay")->add_actor("coordinator", coordinator);
-  e.host_by_name("Fafard")->add_actor("client",client);
+  host->add_actor("coordinator", coordinator);
+  host->add_actor("client", client);
   if (AMOUNT_OF_CLIENTS > 1)
-    e.host_by_name("Boivin")->add_actor("client", client);
+    host->add_actor("client", client);
   if (AMOUNT_OF_CLIENTS > 2)
-    e.host_by_name("Jacquelin")->add_actor("client", client);
+    host->add_actor("client", client);
   for (int i = 3; i < AMOUNT_OF_CLIENTS; i++)
-    e.host_by_name("Ginette")->add_actor("client", client);
+    host->add_actor("client", client);
 
   e.run();
 
