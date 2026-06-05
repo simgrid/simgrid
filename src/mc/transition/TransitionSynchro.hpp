@@ -53,25 +53,6 @@ class CondvarTransition final : public Transition {
 public:
   std::string to_string(bool verbose) const override;
   CondvarTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
-  bool depends(const Transition* o) const override
-  {
-
-    // CondvarAsyncLock are dependent with wake up signals on the same condvar_
-    if (type_ == Type::CONDVAR_ASYNC_LOCK && (o->type_ == Type::CONDVAR_SIGNAL || o->type_ == Type::CONDVAR_BROADCAST))
-      return condvar_ == static_cast<const CondvarTransition*>(o)->condvar_;
-
-    // Broadcast and Signal are dependent with wait since they can enable it
-    if ((type_ == Type::CONDVAR_BROADCAST || type_ == Type::CONDVAR_SIGNAL) && o->type_ == Type::CONDVAR_WAIT)
-      return condvar_ == static_cast<const CondvarTransition*>(o)->condvar_;
-
-    // Wait is dependent with itself because it inserts a mutex_async_lock
-    if (type_ == Type::CONDVAR_WAIT && o->type_ == Type::CONDVAR_WAIT)
-      return mutex_ == static_cast<const CondvarTransition*>(o)->mutex_;
-
-    // Independent with transitions that are neither Condvar nor Mutex related
-    return false;
-  }
-
   bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
@@ -88,80 +69,6 @@ class MutexTransition final : public Transition {
 public:
   std::string to_string(bool verbose) const override;
   MutexTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
-  bool depends(const Transition* o) const override
-  {
-    // type_ <= other->type_ in  MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT,
-    // xbt_assert(type_ <= o->type_);
-
-    // Theorem 4.4.7: Any pair of synchronization actions of distinct actors concerning distinct mutexes are independent
-    if (mutex_ != static_cast<const MutexTransition*>(o)->mutex_)
-      return false;
-
-    // This is the same mutex and we have only mutex transitions. Use a constexpr look-up table so that the code remains
-    // small enough to be inlined
-    enum MIdx : int { LOCK = 0, TEST = 1, TRYLOCK = 2, UNLOCK = 3, WAIT = 4, N = 5 };
-
-    static constexpr auto to_idx = [](Type t) constexpr noexcept -> int {
-      switch (t) {
-        case Type::MUTEX_ASYNC_LOCK:
-          return LOCK;
-        case Type::MUTEX_TEST:
-          return TEST;
-        case Type::MUTEX_TRYLOCK:
-          return TRYLOCK;
-        case Type::MUTEX_UNLOCK:
-          return UNLOCK;
-        case Type::MUTEX_WAIT:
-          return WAIT;
-        default:
-          return -1;
-      }
-    };
-
-    static constexpr auto dep_table = []() consteval {
-      std::array<std::array<int8_t, N>, N> dep{};
-      for (auto& row : dep)
-        row.fill(-1); // -1 = undefined, checked below
-
-      auto indep  = [&](MIdx a, MIdx b) { dep[a][b] = dep[b][a] = 0; };
-      auto depend = [&](MIdx a, MIdx b) { dep[a][b] = dep[b][a] = 1; };
-
-      // Th 4.4.11 : LOCK indep with TEST and WAIT
-      indep(LOCK, TEST);
-      indep(LOCK, WAIT);
-      // Th 4.4.8 : LOCK indep UNLOCK (push_back and pop_front are independent)
-      indep(LOCK, UNLOCK);
-      // Th 4.4.9 : Any combination of WAIT and TEST are
-      indep(TEST, TEST);
-      indep(TEST, WAIT);
-      indep(WAIT, WAIT);
-      // TEST is a pure function: TRYLOCK always fail when TEST is actived
-      indep(TEST, TRYLOCK);
-      // TRYLOCK always fail when WAIT is actived
-      indep(TRYLOCK, WAIT);
-      // UNLOCK/UNLOCK: no more than one UNLOCK can be actived at a given point
-      indep(UNLOCK, UNLOCK);
-
-      // Any other cases are dependent
-      depend(LOCK, LOCK);
-      depend(LOCK, TRYLOCK);
-      depend(TEST, UNLOCK);
-      depend(TRYLOCK, TRYLOCK);
-      depend(TRYLOCK, UNLOCK);
-      depend(UNLOCK, WAIT);
-
-      // Raise a compilation error if a cell is left uninitialized
-      for (int i = 0; i < N; i++)
-        for (int j = i; j < N; j++)
-          if (dep[i][j] == -1)
-            throw std::logic_error(std::format("Missing (in)dep relation: {} {}", i, j));
-
-      return dep;
-    }();
-
-    return static_cast<bool>(dep_table[to_idx(type_)][to_idx(o->type_)]);
-  }
-
   bool can_be_co_enabled(const Transition* other) const override;
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
@@ -178,35 +85,6 @@ class SemaphoreTransition final : public Transition {
 public:
   std::string to_string(bool verbose) const override;
   SemaphoreTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
-  bool depends(const Transition* o) const override
-  {
-    // LOCK indep UNLOCK: pop_front and push_back are independent.
-    if (type_ == Type::SEM_ASYNC_LOCK && o->type_ == Type::SEM_UNLOCK)
-      return false;
-
-    // LOCK indep WAIT: If both enabled, ordering has no impact on the result. If WAIT is not enabled, LOCK won't enable
-    // it.
-    if (type_ == Type::SEM_ASYNC_LOCK && o->type_ == Type::SEM_WAIT)
-      return false;
-
-    // UNLOCK indep UNLOCK: ordering of two pop_front has no impact
-    if (type_ == Type::SEM_UNLOCK && o->type_ == Type::SEM_UNLOCK)
-      return false;
-
-    // WAIT indep WAIT:
-    // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
-    // If only one enabled, the other won't be enabled by the first one.
-    // If none enabled, well, nothing will change.
-    if (type_ == Type::SEM_WAIT && o->type_ == Type::SEM_WAIT)
-      return false;
-
-    if (o->type_ == Type::SEM_ASYNC_LOCK || o->type_ == Type::SEM_UNLOCK || o->type_ == Type::SEM_WAIT) {
-      return sem_ == static_cast<const SemaphoreTransition*>(o)->sem_;
-    }
-
-    return false; // semaphores are INDEP with non-semaphore transitions
-  }
-
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 

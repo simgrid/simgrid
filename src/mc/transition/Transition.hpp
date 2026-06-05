@@ -118,7 +118,7 @@ public:
   /* We ensure that all functions are properly inlined within dispatch_depends that does the real job.
    * The virtual function still exists for the tests that define some mock transition types, of type_ UNKNOWN
    */
-  virtual bool depends(const Transition* other) const { return true; }
+  virtual bool depends(const Transition* other) const { return false; }
 
   bool dispatch_depends(const Transition* other) const;
 

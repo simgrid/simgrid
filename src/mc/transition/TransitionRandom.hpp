@@ -17,7 +17,6 @@ class RandomTransition final : public Transition {
 public:
   std::string to_string(bool verbose) const override;
   RandomTransition(Aid issuer, int times_considered, mc::Channel& channel);
-  bool depends(const Transition* other) const override { return false; } // Independent with any other transition
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
 };
