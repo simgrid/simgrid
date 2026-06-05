@@ -31,7 +31,7 @@ RecordTrace DFSExplorer::get_record_trace() // override
   RecordTrace res;
 
   // Programm did nothing or crashed immediatly, nothing to see here
-  if (stack_->size() == 0)
+  if (stack_ == nullptr || stack_->size() == 0)
     return res;
 
   if (const auto trans = stack_->back()->get_transition_out(); trans != nullptr)
