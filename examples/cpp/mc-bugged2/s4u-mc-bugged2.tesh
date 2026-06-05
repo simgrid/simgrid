@@ -22,10 +22,10 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/
 > [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
 > [0.000000] [mc_ct/INFO] *********************************
 > [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
-> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=1, tag=0))
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=1, tag=0)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in Isend ==> simcall: iSend(mbox=0, comm=1, tag=0)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout, comm=1)
-> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=3, tag=0))
+> [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 1 in Irecv ==> simcall: iRecv(mbox=0, comm=3, tag=0)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout, comm=1)
 > [0.000000] [mc_ct/INFO]   (  CORRECT) Actor 3 in Isend ==> simcall: iSend(mbox=0, comm=3, tag=0)
 > [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in Wait ==> simcall: WaitComm(from 3 to 1, mbox=0, no timeout, comm=3)

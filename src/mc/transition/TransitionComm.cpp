@@ -121,7 +121,7 @@ std::string CommRecvTransition::to_string(bool verbose) const
   if (not verbose)
     return xbt::string_printf("iRecv(mbox=%u)", mbox_);
   else
-    return xbt::string_printf("iRecv(mbox=%u, comm=%u, tag=%d))", mbox_, comm_, tag_);
+    return xbt::string_printf("iRecv(mbox=%u, comm=%u, tag=%d)", mbox_, comm_, tag_);
 }
 bool CommRecvTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                          EventHandle other_handle) const
