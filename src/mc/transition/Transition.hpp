@@ -117,6 +117,10 @@ public:
 
   /* We ensure that all functions are properly inlined within dispatch_depends that does the real job.
    * The virtual function still exists for the tests that define some mock transition types, of type_ UNKNOWN
+   *
+   * This type UNKNWON and the virtual function is also used by CriticalTransition, which needs it to be
+   * universally independent. Introducing an AlwaysIndep transition for CriticalTransition would be cleaner,
+   * but I guess it's OK as is.
    */
   virtual bool depends(const Transition* other) const { return false; }
 
