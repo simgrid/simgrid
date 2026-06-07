@@ -120,13 +120,9 @@ void AppSide::send_executed_transition(kernel::actor::ActorImpl* actor, bool wan
   channel_.pack(answer);
 
   if (want_transition) {
-    if (actor->simcall_.observer_ != nullptr) {
-      XBT_DEBUG("Serialize a %s", actor->simcall_.observer_->to_string().c_str());
-      actor->simcall_.observer_->serialize(channel_);
-      actor->get_memory_trace()->serialize(channel_);
-    } else {
-      channel_.pack(mc::Transition::Type::UNKNOWN);
-    }
+    XBT_DEBUG("Serialize a %s", actor->simcall_.observer_->to_string().c_str());
+    actor->simcall_.observer_->serialize(channel_);
+    actor->get_memory_trace()->serialize(channel_);
     XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with a transition", actor->get_cname(), actor->get_pid());
   } else
     XBT_VERB("send SIMCALL_EXECUTE_REPLY(%s:%ld) with no transition inside", actor->get_cname(), actor->get_pid());
@@ -138,11 +134,10 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 {
   kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %d", message->aid_);
-  xbt_assert(
-      (actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
-          (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
-      "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
-      actor->simcall_.observer_->to_string().c_str());
+  xbt_assert((actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != kernel::actor::Simcall::Type::NONE) ||
+                 actor->simcall_.observer_->is_enabled(),
+             "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
+             actor->simcall_.observer_->to_string().c_str());
 
   // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
@@ -195,9 +190,8 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     XBT_VERB("MC asked to replay %d(nb_times=%d)", aid, times_considered);
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
     xbt_assert(actor != nullptr, "Invalid pid %d at depth %u of replay", aid, i);
-    xbt_assert((actor->simcall_.observer_ == nullptr &&
-                actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
-                   (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+    xbt_assert((actor->simcall_.observer_ == nullptr && actor->simcall_.call_ != kernel::actor::Simcall::Type::NONE) ||
+                   actor->simcall_.observer_->is_enabled(),
                "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
                actor->simcall_.observer_->to_string().c_str());
 
@@ -228,7 +222,7 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     xbt_assert(actor != nullptr, "Invalid pid %ld", aid);
     xbt_assert((actor->simcall_.observer_ == nullptr &&
                 actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
-                   (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+                   actor->simcall_.observer_->is_enabled(),
                "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
                actor->simcall_.observer_->to_string().c_str());
 
@@ -273,7 +267,7 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
     xbt_assert(actor != nullptr, "Invalid pid %ld", chosen_aid);
     xbt_assert((actor->simcall_.observer_ == nullptr &&
                 actor->simcall_.call_ != simgrid::kernel::actor::Simcall::Type::NONE) ||
-                   (actor->simcall_.observer_ != nullptr && actor->simcall_.observer_->is_enabled()),
+                   actor->simcall_.observer_->is_enabled(),
                "Please, model-checker, don't execute disabled transitions. You tried to execute %s which is disabled",
                actor->simcall_.observer_->to_string().c_str());
 
@@ -323,12 +317,8 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
           const int max_considered = status[i].max_considered;
 
           for (int times_considered = 0; times_considered < max_considered; times_considered++) {
-            if (actor->simcall_.observer_ != nullptr) {
-              actor->simcall_.observer_->prepare(times_considered);
-              actor->simcall_.observer_->serialize(channel_);
-            } else {
-              channel_.pack(mc::Transition::Type::UNKNOWN);
-            }
+            actor->simcall_.observer_->prepare(times_considered);
+            actor->simcall_.observer_->serialize(channel_);
           }
         }
       }
@@ -474,12 +464,8 @@ void AppSide::send_actor_status(bool want_transitions)
         const int max_considered = status[i].max_considered;
 
         for (int times_considered = 0; times_considered < max_considered; times_considered++) {
-          if (actor->simcall_.observer_ != nullptr) {
-            actor->simcall_.observer_->prepare(times_considered);
-            actor->simcall_.observer_->serialize(channel_);
-          } else {
-            channel_.pack(mc::Transition::Type::UNKNOWN);
-          }
+          actor->simcall_.observer_->prepare(times_considered);
+          actor->simcall_.observer_->serialize(channel_);
         }
         // NOTE: We do NOT need to reset `times_considered` for each actor's
         // simcall observer here to the "original" value (i.e. the value BEFORE
