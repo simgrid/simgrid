@@ -16,13 +16,19 @@
 
 namespace simgrid::python {
 
-// Access pybind11::detail::loader_life_support TLS frame (private API).
-// "Explicit template specialisation bypasses access control" (Rob Meyer / CWG DR 372).
-// pybind11 3.0.2 replaced get_stack_top()/set_stack_top() with tls_current_frame() (returns ref).
-// pybind11 2.x, 3.0.0, and 3.0.1 still use the old get_stack_top/set_stack_top pair.
+// Access pybind11::detail::loader_life_support TLS frame.
+//
+// The LLS state API changed across pybind11 versions:
+//   2.x:         private get_stack_top() / set_stack_top() static methods on loader_life_support
+//   3.0.0/3.0.1: get_internals().loader_life_support_tls — a public thread_specific_storage field
+//   3.0.2+:      private tls_current_frame() on loader_life_support — PR #5830 moved it back out of
+//                internals (the internals field survives but is marked OBSOLETE)
+//
+// We use explicit-specialisation access-control bypass (CWG DR 372) for the private-member cases.
 namespace {
+
 #if PYBIND11_VERSION_HEX >= 0x03000200
-// pybind11 >= 3.0.2: tls_current_frame() returns a reference — one call for get and set.
+// pybind11 >= 3.0.2: private tls_current_frame() returns a reference — one call for get and set.
 using LlsFrameFn = pybind11::detail::loader_life_support*& (*)();
 struct LlsFrameTag {
   using type = LlsFrameFn;
@@ -40,8 +46,21 @@ inline void lls_set(pybind11::detail::loader_life_support* v)
 {
   simgrid_lls_frame(LlsFrameTag{})() = v;
 }
+
+#elif PYBIND11_VERSION_HEX >= 0x03000000
+// pybind11 3.0.0/3.0.1: LLS state is in the public loader_life_support_tls field of internals.
+// get_internals() is accessible via the pybind11 headers already included.
+inline pybind11::detail::loader_life_support* lls_get()
+{
+  return pybind11::detail::get_internals().loader_life_support_tls.get();
+}
+inline void lls_set(pybind11::detail::loader_life_support* v)
+{
+  pybind11::detail::get_internals().loader_life_support_tls = v;
+}
+
 #else
-// pybind11 < 3.0.2 (2.x, 3.0.0, 3.0.1): private get_stack_top() / set_stack_top()
+// pybind11 2.x: private get_stack_top() / set_stack_top()
 using LlsGetFn = pybind11::detail::loader_life_support* (*)();
 struct LlsGetTag {
   using type = LlsGetFn;
