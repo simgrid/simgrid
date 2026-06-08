@@ -18,9 +18,11 @@ namespace simgrid::python {
 
 // Access pybind11::detail::loader_life_support TLS frame (private API).
 // "Explicit template specialisation bypasses access control" (Rob Meyer / CWG DR 372).
+// pybind11 3.0.2 replaced get_stack_top()/set_stack_top() with tls_current_frame() (returns ref).
+// pybind11 2.x, 3.0.0, and 3.0.1 still use the old get_stack_top/set_stack_top pair.
 namespace {
-#if PYBIND11_VERSION_MAJOR >= 3
-// pybind11 3.x: tls_current_frame() returns a reference — one call for get and set.
+#if PYBIND11_VERSION_HEX >= 0x03000200
+// pybind11 >= 3.0.2: tls_current_frame() returns a reference — one call for get and set.
 using LlsFrameFn = pybind11::detail::loader_life_support*& (*)();
 struct LlsFrameTag {
   using type = LlsFrameFn;
@@ -39,7 +41,7 @@ inline void lls_set(pybind11::detail::loader_life_support* v)
   simgrid_lls_frame(LlsFrameTag{})() = v;
 }
 #else
-// pybind11 2.x: private get_stack_top() / set_stack_top()
+// pybind11 < 3.0.2 (2.x, 3.0.0, 3.0.1): private get_stack_top() / set_stack_top()
 using LlsGetFn = pybind11::detail::loader_life_support* (*)();
 struct LlsGetTag {
   using type = LlsGetFn;
