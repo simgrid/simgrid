@@ -629,8 +629,8 @@ We hope this tool proves useful for debugging your multithreaded code. We encour
 or negative. Additionally, we would appreciate learning about any bugs you have identified using this tool. Our team will strive
 to address any challenges you encounter while working with Mc SimGrid.
 
-Lab2: race condition with sthread
----------------------------------
+Lab2: data race condition with sthread
+--------------------------------------
 
 This short lab aims at searching for race conditions with the latest version of SimGrid. It requires SimGrid v4.1 and was only
 tested with the Docker image. See above to pull and start the Docker image.
@@ -659,8 +659,8 @@ Do not forget the ``-g`` flag, or the messages will be less informative.
          $ mclang plusplus.c -o plusplus -g
          Successfully instrumented 4 read operations and 3 writes operations
 
-Looking at the `source code <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/philosophers.c>`_, there is a
-clear race condition between the two threads on the variable ``i``. This is because incrementing an integer is not an atomic
+Looking at the `source code <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/plusplus.c>`_, there is a
+clear data race condition between the two threads on the variable ``i``. This is because incrementing an integer is not an atomic
 operation, so ``i`` could have the value of ``1`` if the threads compete for its increment. But if you run the program, it is
 very unlikely that you observe any issue, even if you run it 10,000 times in a row. 
 
