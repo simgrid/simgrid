@@ -133,10 +133,15 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 #if PY_VERSION_HEX >= 0x030F0000
   from->datastack_cached_chunk = tstate->datastack_cached_chunk;
 #endif
+  // py_recursion_remaining / c_recursion_remaining: split out in Python 3.12
+#if PY_VERSION_HEX >= 0x030C0000
   from->py_recursion_remaining = tstate->py_recursion_remaining;
-  // c_recursion_remaining: removed in Python 3.14
-#if PY_VERSION_HEX < 0x030E0000
+  // c_recursion_remaining: added in 3.12, removed in 3.14
+#  if PY_VERSION_HEX < 0x030E0000
   from->c_recursion_remaining = tstate->c_recursion_remaining;
+#  endif
+#else
+  from->py_recursion_remaining = tstate->recursion_remaining;
 #endif
   from->tls_attached = (PyGILState_Check() != 0);
 
@@ -164,9 +169,13 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 #if PY_VERSION_HEX >= 0x030F0000
     tstate->datastack_cached_chunk = static_cast<_PyStackChunk*>(to->datastack_cached_chunk);
 #endif
+#if PY_VERSION_HEX >= 0x030C0000
     tstate->py_recursion_remaining = to->py_recursion_remaining;
-#if PY_VERSION_HEX < 0x030E0000
+#  if PY_VERSION_HEX < 0x030E0000
     tstate->c_recursion_remaining = to->c_recursion_remaining;
+#  endif
+#else
+    tstate->recursion_remaining = to->py_recursion_remaining;
 #endif
   } else {
     // New actor (first run): fresh interpreter context with full recursion budget.
@@ -205,12 +214,17 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
 #if PY_VERSION_HEX >= 0x030F0000
     tstate->datastack_cached_chunk = nullptr;
 #endif
+    // py_recursion_remaining / c_recursion_remaining: split out in Python 3.12
+#if PY_VERSION_HEX >= 0x030C0000
     tstate->py_recursion_remaining = tstate->py_recursion_limit;
-    // Recursion limit constant renamed Py_C_RECURSION_LIMIT in 3.13; field gone in 3.14
-#if PY_VERSION_HEX >= 0x030D0000 && PY_VERSION_HEX < 0x030E0000
+    // c_recursion_remaining: added in 3.12, constant renamed Py_C_RECURSION_LIMIT in 3.13, field gone in 3.14
+#  if PY_VERSION_HEX >= 0x030D0000 && PY_VERSION_HEX < 0x030E0000
     tstate->c_recursion_remaining = Py_C_RECURSION_LIMIT;
-#elif PY_VERSION_HEX < 0x030D0000
+#  elif PY_VERSION_HEX < 0x030D0000
     tstate->c_recursion_remaining = C_RECURSION_LIMIT;
+#  endif
+#else
+    tstate->recursion_remaining = tstate->recursion_limit;
 #endif
   }
 

@@ -40,7 +40,7 @@ struct PythonActorState {
   // Python's cframe chain is never allowed to link back into a *previous* actor's
   // (now potentially freed) C stack.  In 3.13+ tstate->cframe no longer exists.
 #if PY_VERSION_HEX >= 0x030B0000 && PY_VERSION_HEX < 0x030D0000
-  _PyCFrame root_cframe = {nullptr, nullptr};
+  _PyCFrame root_cframe = {};
 #endif
 };
 
