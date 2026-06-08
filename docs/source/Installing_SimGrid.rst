@@ -482,3 +482,13 @@ You can add those variables to your bash profile to not specify it each time by 
 
   export PYTHONPATH="$PYTHONPATH:/opt/simgrid/lib/python3/dist-packages"
   export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/simgrid/lib"
+
+Java-specific instructions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If ``cmake`` fails to find your Java installation, complaining that ``JNI not found, thus disabling Java,`` you may want to
+specify the ``JAVA_HOME`` to specify the location of your Java installation. For example:
+
+.. code-block:: console
+
+  export JAVA_HOME=/usr/lib64/jvm/java-21-openjdk
