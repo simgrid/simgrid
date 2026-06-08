@@ -28,6 +28,9 @@ struct PythonActorState {
   void* datastack_chunk      = nullptr; // PyThreadState::datastack_chunk (nullptr = first-run sentinel)
   void* datastack_top        = nullptr; // PyThreadState::datastack_top (PyObject**)
   void* datastack_limit      = nullptr; // PyThreadState::datastack_limit (PyObject**)
+#if PY_VERSION_HEX >= 0x030F0000
+  void* datastack_cached_chunk = nullptr; // PyThreadState::datastack_cached_chunk (3.15+)
+#endif
   int py_recursion_remaining = 0;       // PyThreadState::py_recursion_remaining
   int c_recursion_remaining  = 0;       // PyThreadState::c_recursion_remaining
   bool tls_attached          = true;    // whether tstate is attached (GIL held) at suspension point

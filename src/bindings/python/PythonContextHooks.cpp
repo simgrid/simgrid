@@ -130,6 +130,9 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
   from->datastack_chunk        = tstate->datastack_chunk;
   from->datastack_top          = tstate->datastack_top;
   from->datastack_limit        = tstate->datastack_limit;
+#if PY_VERSION_HEX >= 0x030F0000
+  from->datastack_cached_chunk = tstate->datastack_cached_chunk;
+#endif
   from->py_recursion_remaining = tstate->py_recursion_remaining;
   // c_recursion_remaining: removed in Python 3.14
 #if PY_VERSION_HEX < 0x030E0000
@@ -158,6 +161,9 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
     tstate->datastack_chunk        = static_cast<_PyStackChunk*>(to->datastack_chunk);
     tstate->datastack_top          = static_cast<PyObject**>(to->datastack_top);
     tstate->datastack_limit        = static_cast<PyObject**>(to->datastack_limit);
+#if PY_VERSION_HEX >= 0x030F0000
+    tstate->datastack_cached_chunk = static_cast<_PyStackChunk*>(to->datastack_cached_chunk);
+#endif
     tstate->py_recursion_remaining = to->py_recursion_remaining;
 #if PY_VERSION_HEX < 0x030E0000
     tstate->c_recursion_remaining = to->c_recursion_remaining;
@@ -185,7 +191,9 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
     to->root_cframe.previous      = nullptr;
     tstate->cframe                = &to->root_cframe;
 #endif
-#if PY_VERSION_HEX >= 0x030D0000
+#if PY_VERSION_HEX >= 0x030F0000
+    tstate->current_frame = tstate->base_frame;   // Python 3.15+ uses base_frame sentinel, not nullptr
+#elif PY_VERSION_HEX >= 0x030D0000
     tstate->current_frame = nullptr;
 #endif
 #if PY_VERSION_HEX >= 0x030C0000
@@ -194,6 +202,9 @@ void py_switch_state(PythonActorState* from, PythonActorState* to)
     tstate->datastack_chunk        = nullptr;
     tstate->datastack_top          = nullptr;
     tstate->datastack_limit        = nullptr;
+#if PY_VERSION_HEX >= 0x030F0000
+    tstate->datastack_cached_chunk = nullptr;
+#endif
     tstate->py_recursion_remaining = tstate->py_recursion_limit;
     // Recursion limit constant renamed Py_C_RECURSION_LIMIT in 3.13; field gone in 3.14
 #if PY_VERSION_HEX >= 0x030D0000 && PY_VERSION_HEX < 0x030E0000
