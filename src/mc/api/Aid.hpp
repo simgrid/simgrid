@@ -8,10 +8,10 @@
 
 #include "src/mc/smemory/smemory_config.hpp"
 #include "xbt/asserts.h"
+#include "xbt/string.hpp"
 
 #include <compare>
 #include <cstdint>
-#include <format>
 #include <functional> // std::hash
 #include <stdexcept>
 #include <string>
@@ -21,7 +21,8 @@ namespace simgrid::mc {
 class AidCannotBeNegative : public std::logic_error {
 public:
   explicit AidCannotBeNegative(int id)
-      : std::logic_error(std::format("Error: The value of an aid cannot be negative, so {} is invalid.", id))
+      : std::logic_error(
+            simgrid::xbt::string_printf("Error: The value of an aid cannot be negative, so %d is invalid.", id))
   {
     xbt_backtrace_display_current();
   }
@@ -29,9 +30,9 @@ public:
 class AidCannotBeAboveMaxThreads : public std::logic_error {
 public:
   explicit AidCannotBeAboveMaxThreads(int id)
-      : std::logic_error(std::format(
-            "The model-checker assumes that no actor ID will ever be larger than {}. Change max_threads in "
-            "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least {}), "
+      : std::logic_error(simgrid::xbt::string_printf(
+            "The model-checker assumes that no actor ID will ever be larger than %d. Change max_threads in "
+            "src/mc/smemory/smemory_config.hpp to verify larger applications (you seem to need at least %d), "
             "but be warned that it will slow down the exploration while the state space of such a large application is "
             "probably be too large to be explored anyway. Slowing down the exploration is thus both inevitable and a "
             "bad idea in this case.",
