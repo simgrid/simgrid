@@ -44,6 +44,9 @@ ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
 {
   simcall_.issuer_ = this;
   stacksize_       = context::Context::stack_size;
+#if SIMGRID_HAVE_MC
+  memory_accesses_trace_ = std::make_unique<mc::smemory::MemoryAccessTrace>();
+#endif
 }
 
 ActorImpl::~ActorImpl()
@@ -52,6 +55,9 @@ ActorImpl::~ActorImpl()
     s4u::Actor::on_destruction(*get_ciface());
     get_ciface()->on_this_destruction(*get_ciface());
   }
+#if SIMGRID_HAVE_MC
+  memory_accesses_trace_.reset();
+#endif
 }
 
 /* Become an actor in the simulation

@@ -254,6 +254,9 @@ class RemoteApp;
 namespace odpor {
 class Execution;
 }
+namespace smemory {
+class MemoryAccessTrace;
+}
 }
 } // namespace simgrid
 
