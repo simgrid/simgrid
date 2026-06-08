@@ -939,6 +939,10 @@ if(enable_python)
 
     target_compile_features(python-bindings PRIVATE cxx_std_14)
     target_link_libraries(python-bindings PUBLIC simgrid)
+    # SimGrid's cooperative contexts run all actors on a single OS thread and hold the
+    # GIL throughout; PyGILState_Check() may return 0 during context switches even though
+    # the GIL is never released, making pybind11 3.x's default assertion a false positive.
+    target_compile_definitions(python-bindings PRIVATE PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF)
     set_target_properties(python-bindings PROPERTIES
                           LIBRARY_OUTPUT_NAME simgrid
                           CXX_VISIBILITY_PRESET "default"
