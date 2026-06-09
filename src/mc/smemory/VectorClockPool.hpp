@@ -22,8 +22,8 @@
 #include <immintrin.h> /* x86-only*/
 #endif
 
-/* VectorClockPool centralizes the instances of VectorClocks to reduce the memory usage (See
- * https://en.wikipedia.org/wiki/String_interning)
+/* VectorClockPool centralizes the instances of VectorClocks to reduce the memory usage
+ * (see https://en.wikipedia.org/wiki/String_interning)
  *
  * This file is part of our super optimized implementation of FastTrack. It uses its own VectorClocks which store Epochs
  * rather than Clocks to reduce the amount of data conversions between the Epoch that FastTrack uses and Clock that

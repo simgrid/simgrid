@@ -25,13 +25,13 @@
  * to FastTrack anyway (the [FT WRITE] rule of the original article resets Rx to the bottom value).
  *
  * Another optimization is that several adjacent bytes of the observed memory can be compacted into a single bit of each
- * bit fields. If  MemoryAccessTrace::granularity == 32 for example, we save only one bit pair for 32 observed bytes.
- * This can induce false sharings, but it greatly decrease the memory compaction (this optimization naturally propagates
- * to the SlabTrackState). granularity == sizeof(int) is probably a good compromise.
+ * bit fields. If MemoryAccessTrace::granularity == 32 for example, we save only one pair of bits (R/W) for 32 observed
+ * bytes. This can induce false sharings (because the algorithm cannot distinguish between distinct memory accesses
+ * landing in the same slab), but this greatly decrease the memory usage in both MemoryAccessTrace and SlabTrackState.
+ * Setting granularity == sizeof(int) or maybe sizeof(long) is probably a good compromise.
  *
- * Finally, the  MemoryAccessTrace data structure is also layered as a sparse collection of continous pages, helping
- * with memory locality when integrating the  MemoryAccessTrace of a given system transition into the current
- * SlabTrackState.
+ * Finally, the SlabTrackState data structure is also layered as a sparse collection of continous pages, helping
+ * with memory locality when integrating the MemoryAccessTrace of a given system transition into the accumulator.
  *
  * The code is highly optimized. The first optimization is about memory compaction. The original FastTrack maintains 3
  * fields per Slab: a write epoch, a read epoch and a read vector clock (VC). The read epoch is used only for private
@@ -39,21 +39,33 @@
  * addition, VCs are rather large and often similar between locations, but only used in 20% of the read operations
  * (according to Flanagan's paper). As a solution, VCs are interned in an external data structure called
  * VectorClockPool, i.e. VectorClockPool stores each VC only once in big vector, and the index to that cell is stored in
- * the Slab instead of the full structure.
+ * the Slab instead of the full structure (see https://en.wikipedia.org/wiki/String_interning).
  *
  * Each Slab keeps only two epochs, each packed into a uint32_t. For shared reads, the reads_ "epoch" stores the VC
  * index in the VectorClockPool container instead. One bit of the read epoch is a selector:
  *
  *   - if the selector bit is 0, then the data is a real Epoch with 5 bits for the process ID (up to 32 processes) and
- * 26 bits for the clock (over 67M transitions, which is more than enough)
+ *     26 bits for the clock (over 67M transitions, which is more than enough)
  *   - if the selector bit is 1, then the other 31 bits are an index that uniquely represent a given VectorClock in the
  *     VectorClockPool (which boils down to a vector of VectorClock).
+ *
+ * This design allows to store each VectorClock only once in memory. In the future, we should remove old VCs when they
+ * become unused. Refcounting would be too expansive, but VectorClockPool contains all the needed code to remove all VCs
+ * that are in the past of a given reference vector clock. The idea is to regularly prune the VectorClockPool when the
+ * exploration clocks advance, re-merging the slabs that only differ in obsolete accesses. This is still TBD in
+ * SlabTrackState itself.
+ *
+ * Another future optimization would be to augment the code instrumentation so that padding bytes are merged into the
+ * observed memory accesses. The insight is that the padding byte content is completely transparent to the application,
+ * but we want to merge memory slabs separated only by padding bytes into a single slab to improve the time and memory
+ * efficiency of SlabTrack. These two optimizations shall reduce the amount of intervales to handle during the
+ * execution.
  *
  * One could argue that 32 processes is too few while 67M transitions is too much, but this setting (which can be
  * adjusted through the max_threads constant) ensure that each VC is only 128 bytes (one Epoch per thread, i.e. one
  * uint32 each). This enables the use of superfast AVX2 operations on these vector clocks. The VC stores Epochs rather
  * than Clocks even if the process ID is already known from the position in the VC vector, but this small data redudancy
- * greatly reduces the amount of data conversion along the path.
+ * greatly reduces the amount of data conversion along the hot code path.
  */
 
 #ifndef SIMGRID_MC_SHADOW_INTERVAL_MAP_HPP
