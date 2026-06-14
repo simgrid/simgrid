@@ -277,6 +277,9 @@ void EngineImpl::shutdown()
 #if HAVE_SMPI
     if (smpi_process() && smpi_process()->initialized()) {
       xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
+#elif SIMGRID_HAVE_MC
+    if (simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::APP_SIDE) {
+      return; // The verified application may close its socket ASAP and we don't care
 #else
     if (false) {
 #endif
