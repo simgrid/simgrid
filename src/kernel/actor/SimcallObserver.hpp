@@ -157,22 +157,6 @@ public:
   void set_child(aid_t child) { child_ = child; }
 };
 
-class ObjectAccessSimcallObserver final : public SimcallObserver {
-  ObjectAccessSimcallItem* const object_;
-
-public:
-  ObjectAccessSimcallObserver(ActorImpl* actor, ObjectAccessSimcallItem* object)
-      : SimcallObserver(actor), object_(object)
-  {
-  }
-  void serialize(mc::Channel& channel) const override;
-  std::string to_string() const override;
-  bool is_visible() const override;
-  bool is_enabled() override { return true; }
-
-  ActorImpl* get_owner() const;
-};
-
 /* Semi private template used by the to_string methods of various observer classes */
 template <typename A> static std::string ptr_to_id(A* ptr)
 {

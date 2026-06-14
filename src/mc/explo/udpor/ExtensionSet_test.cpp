@@ -6,8 +6,8 @@
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
-#include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/Unfolding.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 
 using namespace simgrid::mc;
 using namespace simgrid::mc::udpor;

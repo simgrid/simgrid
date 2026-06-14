@@ -241,8 +241,6 @@ set(STHREAD_SRC
   src/sthread/sthread_impl.cpp
   src/sthread/sthread_disk.cpp
   src/sthread/sthread_syscall.cpp
-
-  src/sthread/ObjectAccess.cpp
 )
 set(SMEMORY_SRC
   src/mc/smemory/runtime/smemory_observer.cpp
@@ -605,8 +603,6 @@ set(MC_SRC_STATELESS
   src/mc/transition/TransitionAny.hpp
   src/mc/transition/TransitionComm.cpp
   src/mc/transition/TransitionComm.hpp
-  src/mc/transition/TransitionObjectAccess.cpp
-  src/mc/transition/TransitionObjectAccess.hpp
   src/mc/transition/TransitionRandom.cpp
   src/mc/transition/TransitionRandom.hpp
   src/mc/transition/TransitionSynchro.cpp

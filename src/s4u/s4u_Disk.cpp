@@ -34,13 +34,13 @@ const char* Disk::get_cname() const
 
 Disk* Disk::set_read_bandwidth(double read_bw)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, read_bw] { pimpl_->set_read_bandwidth(read_bw); });
+  pimpl_->set_read_bandwidth(read_bw);
   return this;
 }
 
 Disk* Disk::set_write_bandwidth(double write_bw)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, write_bw] { pimpl_->set_write_bandwidth(write_bw); });
+  pimpl_->set_write_bandwidth(write_bw);
   return this;
 }
 
@@ -51,7 +51,7 @@ double Disk::get_read_bandwidth() const
 
 Disk* Disk::set_readwrite_bandwidth(double bw)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, bw] { pimpl_->set_readwrite_bandwidth(bw); });
+  pimpl_->set_readwrite_bandwidth(bw);
   return this;
 }
 
@@ -113,36 +113,34 @@ const char* Disk::get_property(const std::string& key) const
 
 Disk* Disk::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, &key, &value] { this->pimpl_->set_property(key, value); });
+  this->pimpl_->set_property(key, value);
   return this;
 }
 
 Disk* Disk::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, properties] { this->pimpl_->set_properties(properties); });
+  this->pimpl_->set_properties(properties);
   return this;
 }
 
 Disk* Disk::set_state_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a state profile once the Disk is sealed");
-  kernel::actor::simcall_object_access(pimpl_, [this, profile]() { this->pimpl_->set_state_profile(profile); });
+  this->pimpl_->set_state_profile(profile);
   return this;
 }
 
 Disk* Disk::set_read_bandwidth_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Disk is sealed");
-  kernel::actor::simcall_object_access(pimpl_,
-                                       [this, profile]() { this->pimpl_->set_read_bandwidth_profile(profile); });
+  this->pimpl_->set_read_bandwidth_profile(profile);
   return this;
 }
 
 Disk* Disk::set_write_bandwidth_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Disk is sealed");
-  kernel::actor::simcall_object_access(pimpl_,
-                                       [this, profile]() { this->pimpl_->set_write_bandwidth_profile(profile); });
+  this->pimpl_->set_write_bandwidth_profile(profile);
   return this;
 }
 int Disk::get_concurrency_limit() const
@@ -152,7 +150,7 @@ int Disk::get_concurrency_limit() const
 
 Disk* Disk::set_concurrency_limit(int limit)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, limit] { pimpl_->set_concurrency_limit(limit); });
+  pimpl_->set_concurrency_limit(limit);
   return this;
 }
 
@@ -201,7 +199,7 @@ sg_size_t Disk::write(sg_size_t size, double priority) const
 
 Disk* Disk::set_sharing_policy(Disk::Operation op, Disk::SharingPolicy policy, const NonLinearResourceCb& cb)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, op, policy, &cb] { pimpl_->set_sharing_policy(op, policy, cb); });
+  pimpl_->set_sharing_policy(op, policy, cb);
   return this;
 }
 
@@ -212,7 +210,7 @@ Disk::SharingPolicy Disk::get_sharing_policy(Operation op) const
 
 Disk* Disk::set_factor_cb(const std::function<IoFactorCb>& cb)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, &cb] { pimpl_->set_factor_cb(cb); });
+  pimpl_->set_factor_cb(cb);
   return this;
 }
 

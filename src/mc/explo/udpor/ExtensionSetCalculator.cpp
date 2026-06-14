@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/ExtensionSetCalculator.hpp"
-#include "simgrid/forward.h"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
@@ -12,6 +11,7 @@
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActor.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <deque>

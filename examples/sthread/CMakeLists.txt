@@ -109,8 +109,7 @@ endforeach()
 
 # C++ tests with sthread+MC that live in their own directory
 ########################################################
-foreach(example
-        stdobject)
+foreach(example)
 
   if(${enable_sthread})
 

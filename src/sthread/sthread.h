@@ -121,9 +121,6 @@ off_t sthread_lseek(int fd, off_t offset, int whence);
 int sthread_fstat(int fd, struct stat* buf);
 int sthread_unlink(const char* pathname);
 
-int sthread_access_begin(void* objaddr, const char* objname, const char* file, int line, const char* function);
-void sthread_access_end(void* objaddr, const char* objname, const char* file, int line, const char* function);
-
 #if defined(__cplusplus)
 }
 

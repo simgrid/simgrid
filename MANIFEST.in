@@ -824,8 +824,6 @@ include examples/sthread/smpi-mc-mutex-simpledeadlock.tesh
 include examples/sthread/smpi-mutex-simple.c
 include examples/sthread/smpi-mutex-simple.tesh
 include examples/sthread/smpi-mutex-simpledeadlock.c
-include examples/sthread/stdobject/stdobject.cpp
-include examples/sthread/stdobject/stdobject.tesh
 include teshsuite/catch_simgrid.hpp
 include teshsuite/kernel/context-defaults/context-defaults.cpp
 include teshsuite/kernel/context-defaults/factory_boost.tesh
@@ -2617,8 +2615,6 @@ include src/mc/transition/TransitionAny.cpp
 include src/mc/transition/TransitionAny.hpp
 include src/mc/transition/TransitionComm.cpp
 include src/mc/transition/TransitionComm.hpp
-include src/mc/transition/TransitionObjectAccess.cpp
-include src/mc/transition/TransitionObjectAccess.hpp
 include src/mc/transition/TransitionRandom.cpp
 include src/mc/transition/TransitionRandom.hpp
 include src/mc/transition/TransitionSynchro.cpp
@@ -2856,7 +2852,6 @@ include src/smpi/smpif90.in
 include src/smpi/smpiff.in
 include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
-include src/sthread/ObjectAccess.cpp
 include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_disk.cpp

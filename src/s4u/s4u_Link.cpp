@@ -78,7 +78,7 @@ double Link::get_latency() const
 
 Link* Link::set_latency(double value)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, value] { pimpl_->set_latency(value); });
+  pimpl_->set_latency(value);
   return this;
 }
 
@@ -100,7 +100,7 @@ double Link::get_bandwidth() const
 
 Link* Link::set_bandwidth(double value)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, value] { pimpl_->set_bandwidth(value); });
+  pimpl_->set_bandwidth(value);
   return this;
 }
 
@@ -110,7 +110,7 @@ Link* Link::set_sharing_policy(Link::SharingPolicy policy, const NonLinearResour
     throw std::invalid_argument("Impossible to set wifi or split-duplex for the link: " + get_name() +
                                 ". Use appropriate create function in NetZone.");
 
-  kernel::actor::simcall_object_access(pimpl_, [this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
+  pimpl_->set_sharing_policy(policy, cb);
   return this;
 }
 Link::SharingPolicy Link::get_sharing_policy() const
@@ -132,7 +132,7 @@ int Link::get_concurrency_limit() const
 
 Link* Link::set_concurrency_limit(int limit)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, limit] { pimpl_->set_concurrency_limit(limit); });
+  pimpl_->set_concurrency_limit(limit);
   return this;
 }
 
@@ -163,21 +163,21 @@ bool Link::is_on() const
 Link* Link::set_state_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a state profile once the Link is sealed");
-  kernel::actor::simcall_object_access(pimpl_, [this, profile]() { this->pimpl_->set_state_profile(profile); });
+  this->pimpl_->set_state_profile(profile);
   return this;
 }
 
 Link* Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Link is sealed");
-  kernel::actor::simcall_object_access(pimpl_, [this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
+  this->pimpl_->set_bandwidth_profile(profile);
   return this;
 }
 
 Link* Link::set_latency_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a latency profile once the Link is sealed");
-  kernel::actor::simcall_object_access(pimpl_, [this, profile]() { this->pimpl_->set_latency_profile(profile); });
+  this->pimpl_->set_latency_profile(profile);
   return this;
 }
 
@@ -187,7 +187,7 @@ const char* Link::get_property(const std::string& key) const
 }
 Link* Link::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, &key, &value] { this->pimpl_->set_property(key, value); });
+  this->pimpl_->set_property(key, value);
   return this;
 }
 
@@ -198,7 +198,7 @@ const std::unordered_map<std::string, std::string>* Link::get_properties() const
 
 Link* Link::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
-  kernel::actor::simcall_object_access(pimpl_, [this, &properties] { this->pimpl_->set_properties(properties); });
+  this->pimpl_->set_properties(properties);
   return this;
 }
 

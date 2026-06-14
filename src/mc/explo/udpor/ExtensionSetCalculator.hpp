@@ -6,15 +6,8 @@
 #ifndef SIMGRID_MC_UDPOR_EVENTSETCALCULATOR_HPP
 #define SIMGRID_MC_UDPOR_EVENTSETCALCULATOR_HPP
 
-#include "simgrid/forward.h"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
-#include "src/mc/transition/Transition.hpp"
-#include "src/mc/transition/TransitionActor.hpp"
-#include "src/mc/transition/TransitionAny.hpp"
-#include "src/mc/transition/TransitionComm.hpp"
-#include "src/mc/transition/TransitionObjectAccess.hpp"
-#include "src/mc/transition/TransitionRandom.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 
 #include <memory>

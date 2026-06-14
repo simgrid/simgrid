@@ -8,7 +8,6 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActor.hpp"
-#include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"

@@ -20,8 +20,6 @@ XBT_PUBLIC void simcall_run_answered(std::function<void()> const& code,
                                      simgrid::kernel::actor::SimcallObserver* observer);
 XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code,
                                      simgrid::kernel::actor::SimcallObserver* observer);
-XBT_PUBLIC void simcall_run_object_access(std::function<void()> const& code,
-                                          simgrid::kernel::actor::ObjectAccessSimcallItem* item);
 
 namespace simgrid::kernel::actor {
 

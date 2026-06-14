@@ -19,7 +19,6 @@
 #include "src/mc/transition/TransitionActor.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
-#include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "src/mc/transition/TransitionRandom.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 #endif
@@ -121,9 +120,6 @@ Transition* deserialize_transition(Aid issuer, int times_considered, mc::Channel
     case Transition::Type::ACTOR_SLEEP:
       return new ActorSleepTransition(issuer, times_considered, channel);
 
-    case Transition::Type::OBJECT_ACCESS:
-      return new ObjectAccessTransition(issuer, times_considered, channel);
-
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
 
@@ -197,7 +193,6 @@ enum class DependencyAction : uint8_t {
 
   // Encapsulated state evaluations because these depend on private fields (FIXME)
   EVAL_BARRIER_DEPENDS,
-  EVAL_OBJECT_DEPENDS,
 
   // Actor rules
   EVAL_T1_ACTOR_JOIN,
@@ -513,9 +508,6 @@ static constexpr auto dependency_table = []() consteval {
       // Global and Local Overrides
       // -----------------------------------------------------------------------
       .rule_all(Type::RANDOM, DependencyAction::ALWAYS_INDEP, true) // Overwrites every rules
-      .rule_all(Type::OBJECT_ACCESS, DependencyAction::ALWAYS_INDEP,
-                true) // Overwrites RANDOM intersection intentionally
-      .rule(Type::OBJECT_ACCESS, Type::OBJECT_ACCESS, DependencyAction::EVAL_OBJECT_DEPENDS, true)
 
       // -----------------------------------------------------------------------
       // Safety, Fallbacks & Error States (Applied LAST via intentional force-overwrites)
@@ -579,8 +571,6 @@ bool Transition::dispatch_depends(const Transition* other) const
     // Delegate explicitly via virtual calls when the depends function uses private fields
     case DependencyAction::EVAL_BARRIER_DEPENDS:
       return static_cast<const BarrierTransition*>(t1)->depends(t2);
-    case DependencyAction::EVAL_OBJECT_DEPENDS:
-      return static_cast<const ObjectAccessTransition*>(t1)->depends(t2);
 
     // Actor actions
     case DependencyAction::EVAL_T1_ACTOR_JOIN:
