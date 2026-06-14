@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/3rd-party/catch.hpp"
-#include "src/mc/smemory/smemory_config.hpp"
+#include "src/mc/api/static_config.hpp"
 
 #define private public
 #include "VectorClockPool.hpp"
@@ -21,7 +21,7 @@ TEST_CASE("VectorClockPool - Initialization and interning rules", "[VectorClockP
     REQUIRE(pool.size() == 1);
     const VectorClock& neutral = pool.get(0);
 
-    for (uint32_t i = 0; i < smemory::config::max_threads - 1; ++i) {
+    for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
       REQUIRE(neutral.clocks[i].get_clock().value() == 0);
       REQUIRE(neutral.clocks[i].get_aid().c_val() == static_cast<int>(i));
     }
@@ -67,7 +67,7 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
   VectorClockPool pool;
 
   VectorClock global_min;
-  for (uint32_t i = 0; i < smemory::config::max_threads - 1; ++i) {
+  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
     global_min.clocks[i] = Epoch(Aid(i), Clock(100u));
   }
 
@@ -104,13 +104,13 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
 
     // boundary limit: last used thread
     VectorClock bad_mid                     = global_min;
-    bad_mid.clocks[config::max_threads - 2] = Epoch(Aid(config::max_threads - 2), Clock(500u));
+    bad_mid.clocks[static_config::max_threads - 2] = Epoch(Aid(static_config::max_threads - 2), Clock(500u));
     index_t idx_mid                         = pool.get_or_insert(bad_mid);
     REQUIRE(pool.is_past(idx_mid, global_min) == false);
 
     // boundary limit: last thead position, which is not used in real code (because of INVALID value)
     VectorClock bad_end                     = global_min;
-    bad_end.clocks[config::max_threads - 1] = Epoch(Aid(config::max_threads - 2), Clock(500u));
+    bad_end.clocks[static_config::max_threads - 1] = Epoch(Aid(static_config::max_threads - 2), Clock(500u));
     index_t idx_end                         = pool.get_or_insert(bad_end);
     REQUIRE(pool.is_past(idx_end, global_min) == false);
   }
@@ -145,7 +145,7 @@ TEST_CASE("VectorClockPool - Garbage Collector (clean_before)", "[VectorClockPoo
 
   // Define a global_min obsoleting vc_old1 and vc_old2 but not vc_future
   VectorClock global_min;
-  for (uint32_t i = 0; i < simgrid::mc::smemory::config::max_threads - 1; ++i) {
+  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
     global_min.clocks[i] = Epoch(Aid(i), Clock(50u));
   }
 

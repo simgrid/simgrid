@@ -177,15 +177,15 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
 
     // The -1 value is used to indicate the part requiring transition and status
     if (aid == static_cast<Aid::storage_type>(-1) and
-        (int) times_considered == (int)(mc::smemory::config::max_time_considered - 1))
+        (int) times_considered == (int)(mc::static_config::max_time_considered - 1))
       break;
     xbt_assert(aid != static_cast<Aid::storage_type>(-1),
                "The time_considered array reached an end but not the AID one. Please fix me.");
-    xbt_assert((int)times_considered != (int)(static_cast<int>(mc::smemory::config::max_time_considered) - 1),
+    xbt_assert((int)times_considered != (int)(static_cast<int>(mc::static_config::max_time_considered) - 1),
                "The AID arrays reached an end (last value: %d -- invalid is %d) but not the time_considered one, which "
                "last value is %u == %u. Please fix me.",
                (int)aid, (int)static_cast<Aid::storage_type>(-1), static_cast<unsigned>(times_considered),
-               static_cast<unsigned>(mc::smemory::config::max_time_considered - 1));
+               static_cast<unsigned>(mc::static_config::max_time_considered - 1));
 
     XBT_VERB("MC asked to replay %d(nb_times=%d)", aid, times_considered);
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(aid);
@@ -427,11 +427,11 @@ void AppSide::send_actor_status(bool want_transitions)
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type                                       = MessageType::ACTORS_STATUS_REPLY_COUNT;
-  xbt_assert(actor_list.size() < mc::smemory::config::max_threads - 1, // -1 because of INVALID_AID consuming a value
+  xbt_assert(actor_list.size() < mc::static_config::max_threads - 1, // -1 because of INVALID_AID consuming a value
              "The applications has more than %d actors, which is the maximum amount of actors supported by the "
              "model-checker. Modify src/mc/smemory/smemory_config.hpp to increase this limit if you want, but be "
              "warned that this will slow down the exploration. Such app is probably too big for MC anyway.",
-             mc::smemory::config::max_threads - 1);
+             mc::static_config::max_threads - 1);
   answer.count                                      = static_cast<int>(actor_list.size());
 
   channel_.pack(answer);

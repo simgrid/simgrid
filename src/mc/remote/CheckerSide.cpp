@@ -317,7 +317,7 @@ void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to
   for (auto const& [aid, time] : to_replay) {
     // Aid are valid by construction, no need for an assert here
     xbt_assert(
-        (int)time < (int)(mc::smemory::config::max_time_considered - 1),
+        (int)time < (int)(mc::static_config::max_time_considered - 1),
         "Overflow on the time_considered value. %d is larger than max_time_considered defined in smemory_config.hpp",
         time);
     aids[i]  = aid.value();
@@ -326,12 +326,12 @@ void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to
   }
   // Signal the end of the first part
   aids[i]  = static_cast<Aid::storage_type>(-1);
-  times[i] = mc::smemory::config::max_time_considered - 1;
+  times[i] = mc::static_config::max_time_considered - 1;
   i++;
 
   for (auto const& [aid, time] : to_replay_and_actor_status) {
     xbt_assert(
-        (int)time < (int)mc::smemory::config::max_time_considered,
+        (int)time < (int)mc::static_config::max_time_considered,
         "Overflow on the time_considered value. %d is larger than max_time_considered defined in smemory_config.hpp",
         time);
     aids[i]  = aid.value();

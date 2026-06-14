@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_AID_HPP
 #define SIMGRID_MC_AID_HPP
 
-#include "src/mc/smemory/smemory_config.hpp"
+#include "src/mc/api/static_config.hpp"
 #include "xbt/asserts.h"
 #include "xbt/string.hpp"
 
@@ -36,7 +36,7 @@ public:
             "but be warned that it will slow down the exploration while the state space of such a large application is "
             "probably be too large to be explored anyway. Slowing down the exploration is thus both inevitable and a "
             "bad idea in this case.",
-            mc::smemory::config::max_threads - 1, id))
+            mc::static_config::max_threads - 1, id))
   {
   }
 };
@@ -49,7 +49,7 @@ public:
 // exception, which is forbidden in a constexpr, raising a compilation error
 static constexpr int verify_aid_is_valid(int val)
 {
-  if (val >= simgrid::mc::smemory::config::max_threads - 1) { // -1 because we need a value for the INVALID_VALUE
+  if (val >= simgrid::mc::static_config::max_threads - 1) { // -1 because we need a value for the INVALID_VALUE
     xbt_backtrace_display_current();
     throw AidCannotBeAboveMaxThreads(val);
   }
@@ -58,13 +58,13 @@ static constexpr int verify_aid_is_valid(int val)
 
 struct Aid {
   using storage_type =
-      std::conditional_t<(smemory::config::max_threads <= 256), std::uint8_t,
-                         std::conditional_t<(smemory::config::max_threads <= 65536), std::uint16_t, std::uint32_t>>;
+      std::conditional_t<(static_config::max_threads <= 256), std::uint8_t,
+                         std::conditional_t<(static_config::max_threads <= 65536), std::uint16_t, std::uint32_t>>;
 
 private:
   // Getting g++12 to consider this as a constexpr requires to give it a complete type such as storage_type. Aid cannot
   // be used
-  static constexpr storage_type INVALID_VALUE = static_cast<storage_type>(smemory::config::max_threads - 1);
+  static constexpr storage_type INVALID_VALUE = static_cast<storage_type>(static_config::max_threads - 1);
   storage_type value_;
 
 public:

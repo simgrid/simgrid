@@ -6,8 +6,9 @@
 #ifndef SIMGRID_MC_SMEMORY_MEMORYACCESSTRACKER_HPP
 #define SIMGRID_MC_SMEMORY_MEMORYACCESSTRACKER_HPP
 
+#include "src/mc/api/static_config.hpp"
 #include "src/mc/remote/Channel.hpp"
-#include "src/mc/smemory/smemory_config.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -44,12 +45,12 @@ XBT_DECLARE_ENUM_CLASS(MemOpType, Read, Write);
 class MemoryAccessTrace {
 private:
   // __builtin_ctzll: long long log2 (number of trailing 0-bits in x) uintptr_t is a long long
-  static constexpr uintptr_t page_shift_ = __builtin_ctzll(smemory::config::page_size);
-  static constexpr uintptr_t page_mask_  = smemory::config::page_size - 1;
+  static constexpr uintptr_t page_shift_ = __builtin_ctzll(static_config::page_size);
+  static constexpr uintptr_t page_mask_  = static_config::page_size - 1;
 
-  constexpr static uintptr_t bucket_shift_     = __builtin_ctzll(smemory::config::granularity);
+  constexpr static uintptr_t bucket_shift_     = __builtin_ctzll(static_config::granularity);
   constexpr static uintptr_t word_shift_       = bucket_shift_ + 6;
-  constexpr static uintptr_t buckets_per_page_ = smemory::config::page_size >> bucket_shift_;
+  constexpr static uintptr_t buckets_per_page_ = static_config::page_size >> bucket_shift_;
   constexpr static uintptr_t words_per_page_   = buckets_per_page_ / 64;
 
   static_assert(buckets_per_page_ % 64 == 0,
@@ -80,7 +81,7 @@ public:
   {
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
-  constexpr static size_t get_bucket_size() { return smemory::config::granularity; }
+  constexpr static size_t get_bucket_size() { return static_config::granularity; }
   constexpr static bool is_coalescing() { return coalescing_; }
 
   // ============================================================

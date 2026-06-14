@@ -11,8 +11,8 @@
 
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/Clock.hpp"
-#include "src/mc/smemory/smemory_config.hpp"
-#include "xbt/asserts.h"
+#include "src/mc/api/static_config.hpp"
+
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -39,7 +39,7 @@ private:
 
   static constexpr uint32_t SELECTOR_MASK = 1U << 31; // Bit 31 is the selector bit
 
-  static constexpr int AID_BITS   = __builtin_ctz(smemory::config::max_threads);
+  static constexpr int AID_BITS   = __builtin_ctz(static_config::max_threads);
   static constexpr int CLOCK_BITS = 31 - AID_BITS;
 
   static constexpr uint32_t CLOCK_MASK = (1U << CLOCK_BITS) - 1;

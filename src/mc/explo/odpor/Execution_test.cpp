@@ -8,8 +8,6 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/odpor_tests_private.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/smemory/smemory_config.hpp"
-#include "src/mc/transition/TransitionComm.hpp"
 
 using namespace simgrid::mc;
 using namespace simgrid::mc::odpor;

@@ -136,7 +136,7 @@ public:
 
     Page(Epoch init_W, Epoch init_R)
     {
-      slabs_.emplace_back(0, static_cast<uint16_t>(smemory::config::page_size), init_W, init_R);
+      slabs_.emplace_back(0, static_cast<uint16_t>(static_config::page_size), init_W, init_R);
     }
   };
 

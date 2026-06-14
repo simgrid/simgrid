@@ -40,7 +40,7 @@ using index_t = uint32_t;
  * It's aligned to allow for SIMD optimizations, and it's compact enough to fit in few cache lines */
 struct alignas(64) VectorClock {
   // We are storing Epoch rather than Clocks so that we don't have to convert our Epochs in Clocks in the calling code
-  ::std::array<Epoch, smemory::config::max_threads> clocks;
+  ::std::array<Epoch, static_config::max_threads> clocks;
 
   VectorClock() noexcept;
 

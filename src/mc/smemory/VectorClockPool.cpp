@@ -21,11 +21,11 @@ constexpr index_t INVALID_INDEX =
 template <std::size_t... Is>
 static std::array<Epoch, sizeof...(Is)> make_default_clocks_impl(std::index_sequence<Is...>) noexcept
 {
-  constexpr std::size_t Cap = smemory::config::max_threads - 2;
+  constexpr std::size_t Cap = static_config::max_threads - 2;
   return {Epoch(Aid(static_cast<uint32_t>(Is < Cap ? Is : Cap)), Clock(0u))...};
 }
-static const std::array<Epoch, smemory::config::max_threads> s_default_clocks =
-    make_default_clocks_impl(std::make_index_sequence<smemory::config::max_threads>{});
+static const std::array<Epoch, static_config::max_threads> s_default_clocks =
+    make_default_clocks_impl(std::make_index_sequence<static_config::max_threads>{});
 
 VectorClock::VectorClock() noexcept : clocks(s_default_clocks) {}
 
@@ -92,7 +92,7 @@ bool VectorClockPool::is_past(index_t index, const VectorClock& global_min) cons
 
   __m256i accumulator = _mm256_setzero_si256();
 
-  constexpr std::size_t simd_chunks = smemory::config::max_threads / 8;
+  constexpr std::size_t simd_chunks = static_config::max_threads / 8;
 #pragma unroll
   for (std::size_t i = 0; i < simd_chunks; ++i) {
     __m256i a = _mm256_load_si256(a_ptr + i);

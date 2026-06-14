@@ -288,7 +288,7 @@ void Exploration::debug_replay(uintptr_t location)
         "Transition of depth %u is about no defined actor, or your application makes over config::max_threads threads",
         i);
     xbt_assert(recipe[i].second >= 0, "Transition of depth %u is played %d times", i, recipe[i].second);
-    xbt_assert((int)recipe[i].second <= (int)mc::smemory::config::max_time_considered,
+    xbt_assert((int)recipe[i].second <= (int)mc::static_config::max_time_considered,
                "Transition of depth %u is played %d times, which is larger than max_time_considered defined in "
                "smemory_config.hpp",
                i, recipe[i].second);

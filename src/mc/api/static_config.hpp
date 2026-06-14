@@ -9,14 +9,14 @@
  * want to verify an application that is too large to fit the default limits (either too many threads or too long
  * traces), you want to change the limits in this file. */
 
-#ifndef SMEMORY_CONFIG_HPP
-#define SMEMORY_CONFIG_HPP
+#ifndef SIMGRID_MC_STATIC_CONFIG_HPP
+#define SIMGRID_MC_STATIC_CONFIG_HPP
 
 #include <cstdint>
 #include <type_traits>
 
 namespace simgrid::mc {
-namespace smemory::config {
+namespace static_config {
 /* Page size in bytes for the two-layer data structures (MemoryAccessTracker and ShadowIntervalMap).
  *
  * The tests assume that the pages are 4kb, but other values could work too, provided that they are powers of 2.
@@ -59,14 +59,14 @@ static_assert(granularity != 0 && ((granularity & (granularity - 1)) == 0),
 static_assert(max_time_considered != 0 && ((max_time_considered & (max_time_considered - 1)) == 0),
               "smemory::config::max_time_considered should be power of two. We are enforcing it for no reason, simply "
               "because doing otherwise brings no good.");
-}; // namespace smemory::config
+}; // namespace static_config
 
 // Define the mc::mc_aid_t type as the smallest integer that can contain the max_threads value
 
 // Define mc::time_considered_t as the smallest integer that can contain the max_times_considered value
-using time_considered_t = std::conditional_t<
-    (smemory::config::max_time_considered < 256), std::uint8_t,
-    std::conditional_t<(smemory::config::max_time_considered < 65536), std::uint16_t, std::uint32_t>>;
+using time_considered_t =
+    std::conditional_t<(static_config::max_time_considered < 256), std::uint8_t,
+                       std::conditional_t<(static_config::max_time_considered < 65536), std::uint16_t, std::uint32_t>>;
 
 }; // namespace simgrid::mc
 

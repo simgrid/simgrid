@@ -47,7 +47,7 @@ void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, un
     uintptr_t page_index = addr >> page_shift_;
 
     uintptr_t page_base = page_index << page_shift_;
-    uintptr_t page_end  = page_base + smemory::config::page_size;
+    uintptr_t page_end  = page_base + static_config::page_size;
 
     // The end of what can be written to a single page from what needs to be marked
     uintptr_t limit = (end < page_end) ? end : page_end;
@@ -283,8 +283,8 @@ void MemoryAccessTrace::AccessIterator::advance()
         }
       }
 
-      current_interval_ = {static_cast<uint16_t>(start_bucket * config::granularity),
-                           static_cast<uint16_t>(bucket_pos_ * config::granularity), type};
+      current_interval_ = {static_cast<uint16_t>(start_bucket * static_config::granularity),
+                           static_cast<uint16_t>(bucket_pos_ * static_config::granularity), type};
       return;
     }
 

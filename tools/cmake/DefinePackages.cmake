@@ -515,7 +515,6 @@ set(MC_SRC_BASE
   src/mc/mc_replay.hpp
 
   src/mc/smemory/runtime/smemory_memorymaps.cpp
-  src/mc/smemory/smemory_config.hpp
   src/mc/smemory/MemoryAccessTrace.cpp
   src/mc/smemory/MemoryAccessTrace.hpp
   src/mc/smemory/SlabTrackState.cpp
@@ -542,6 +541,7 @@ set(MC_SRC_STATELESS
   src/mc/api/RemoteApp.hpp
   src/mc/api/Strategy.cpp
   src/mc/api/Strategy.hpp
+  src/mc/api/static_config.hpp
   
   src/mc/explo/BeFSExplorer.cpp
   src/mc/explo/BeFSExplorer.hpp

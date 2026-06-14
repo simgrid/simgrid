@@ -2517,6 +2517,7 @@ include src/mc/api/states/State.cpp
 include src/mc/api/states/State.hpp
 include src/mc/api/states/WutState.cpp
 include src/mc/api/states/WutState.hpp
+include src/mc/api/static_config.hpp
 include src/mc/explo/BeFSExplorer.cpp
 include src/mc/explo/BeFSExplorer.hpp
 include src/mc/explo/CommunicationDeterminismChecker.cpp
@@ -2608,7 +2609,6 @@ include src/mc/smemory/pass/smemory_pass.cpp
 include src/mc/smemory/runtime/smemory_memorymaps.cpp
 include src/mc/smemory/runtime/smemory_observer.cpp
 include src/mc/smemory/runtime/smemory_observer.h
-include src/mc/smemory/smemory_config.hpp
 include src/mc/transition/Transition.cpp
 include src/mc/transition/Transition.hpp
 include src/mc/transition/TransitionActor.cpp
