@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/sthread/sthread.h"
 #include "xbt/config.hpp"
 #include "xbt/log.h"
@@ -498,7 +499,9 @@ void Backtrace::display() const
 {
   std::string backtrace = resolve();
   std::fprintf(stderr, "Backtrace (displayed in actor %s%s):\n%s\n",
-               simgrid::s4u::Actor::is_maestro() ? "maestro" : sg_actor_self_get_name(),
+               kernel::EngineImpl::get_instance() == nullptr
+                   ? "(null simulation engine -- something's fishy)"
+                   : (simgrid::s4u::Actor::is_maestro() ? "maestro" : sg_actor_self_get_name()),
                (xbt_log_no_loc ? " -- short trace because of --log=no_loc" : ""),
                backtrace.empty() ? "(the backtrace is empty -- please use a C++23 compiler or install Boost.Stacktrace)"
                                  : backtrace.c_str());
