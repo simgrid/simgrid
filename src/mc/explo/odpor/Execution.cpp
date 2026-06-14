@@ -7,6 +7,7 @@
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/ClockVector.hpp"
 #include "src/mc/api/states/SleepSetState.hpp"
+#include "src/mc/api/static_config.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -254,7 +255,7 @@ std::list<Execution::EventHandle> Execution::get_racing_events_of(Execution::Eve
   const auto evt_aid = evt.get_transition()->aid_;
   const auto& evt_cv = evt.get_clock_vector();
 
-  for (unsigned aid = 0; aid < evt_cv.size(); aid = aid + 1)
+  for (unsigned aid = 0; aid < static_config::max_threads - 1; aid++)
     if (aid != evt_aid.value() and evt_cv.get(aid).has_value())
       candidates.push_back(evt_cv.get(aid).value());
 
