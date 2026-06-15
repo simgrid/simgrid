@@ -159,9 +159,9 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
       lilibeth = zone->add_host("Lilibeth", 1e15);
       zone->seal();
     }
-    xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in sthread initialization.");
   }
 #endif
+  xbt_assert(lilibeth, "The host Lilibeth was not created. Something's wrong in the sthread initialization.");
   sg4::ActorPtr actor = lilibeth->add_actor(
       name,
       [](auto* user_function, auto* param) {
