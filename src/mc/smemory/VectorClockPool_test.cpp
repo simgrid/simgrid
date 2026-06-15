@@ -21,7 +21,7 @@ TEST_CASE("VectorClockPool - Initialization and interning rules", "[VectorClockP
     REQUIRE(pool.size() == 1);
     const VectorClock& neutral = pool.get(0);
 
-    for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+    for (uint32_t i = 1; i < static_config::max_threads; ++i) {
       REQUIRE(neutral.clocks[i].get_clock().value() == 0);
       REQUIRE(neutral.clocks[i].get_aid().c_val() == static_cast<int>(i));
     }
@@ -67,7 +67,7 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
   VectorClockPool pool;
 
   VectorClock global_min;
-  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+  for (uint32_t i = 1; i < static_config::max_threads; ++i) {
     global_min.clocks[i] = Epoch(Aid(i), Clock(100u));
   }
 
@@ -86,7 +86,7 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
   SECTION("A past VectorClock is recognized as such")
   {
     VectorClock smaller = global_min;
-    smaller.clocks[0]   = Epoch(Aid(0u), Clock(10u));
+    smaller.clocks[1]   = Epoch(Aid(1u), Clock(10u));
     smaller.clocks[2]   = Epoch(Aid(2u), Clock(50u));
     smaller.clocks[3]   = Epoch(Aid(3u), Clock(0u));
 
@@ -96,9 +96,9 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
 
   SECTION("Even a single component larger must invalidate the function")
   {
-    // boundary limit: index 0
+    // boundary limit: index 0, which is not used in real code (because of INVALID value)
     VectorClock bad_start = global_min;
-    bad_start.clocks[0]   = Epoch(Aid(0u), Clock(101u));
+    bad_start.clocks[0]   = Epoch(Aid(1u), Clock(101u));
     index_t idx_start     = pool.get_or_insert(bad_start);
     REQUIRE(pool.is_past(idx_start, global_min) == false);
 
@@ -108,7 +108,7 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
     index_t idx_mid                         = pool.get_or_insert(bad_mid);
     REQUIRE(pool.is_past(idx_mid, global_min) == false);
 
-    // boundary limit: last thead position, which is not used in real code (because of INVALID value)
+    // boundary limit: last thead position
     VectorClock bad_end                     = global_min;
     bad_end.clocks[static_config::max_threads - 1] = Epoch(Aid(static_config::max_threads - 2), Clock(500u));
     index_t idx_end                         = pool.get_or_insert(bad_end);
@@ -122,16 +122,16 @@ TEST_CASE("VectorClockPool - Garbage Collector (clean_before)", "[VectorClockPoo
 
   // Create some vector clocks
   VectorClock vc_old1;
-  vc_old1.clocks[0] = Epoch(Aid(0u), Clock(10u));
   vc_old1.clocks[1] = Epoch(Aid(1u), Clock(10u));
+  vc_old1.clocks[2] = Epoch(Aid(2u), Clock(10u));
 
   VectorClock vc_old2;
-  vc_old2.clocks[0] = Epoch(Aid(0u), Clock(20u));
   vc_old2.clocks[1] = Epoch(Aid(1u), Clock(20u));
+  vc_old2.clocks[2] = Epoch(Aid(2u), Clock(20u));
 
   VectorClock vc_future;
-  vc_future.clocks[0] = Epoch(Aid(0u), Clock(100u));
-  vc_future.clocks[1] = Epoch(Aid(1u), Clock(10u));
+  vc_future.clocks[1] = Epoch(Aid(1u), Clock(100u));
+  vc_future.clocks[2] = Epoch(Aid(2u), Clock(10u));
 
   // Insert them all in the pool
   index_t idx_old1   = pool.get_or_insert(vc_old1);   // Index 1
@@ -145,7 +145,7 @@ TEST_CASE("VectorClockPool - Garbage Collector (clean_before)", "[VectorClockPoo
 
   // Define a global_min obsoleting vc_old1 and vc_old2 but not vc_future
   VectorClock global_min;
-  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+  for (uint32_t i = 1; i < static_config::max_threads; ++i) {
     global_min.clocks[i] = Epoch(Aid(i), Clock(50u));
   }
 

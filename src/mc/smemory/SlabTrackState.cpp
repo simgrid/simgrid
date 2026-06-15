@@ -145,7 +145,7 @@ void SlabTrackState::Page::apply_batch_operations(const smemory::MemoryAccessTra
       if (access_it->type == smemory::MemOpType::Write) {
         check_write_race(overlap, t, thread_vc, pool);
         overlap.write_ = current_epoch;
-        overlap.reads_ = Epoch(Aid{0}, Clock{0}); // Wipe reads on successful write
+        overlap.reads_ = Epoch(t, Clock{0}); // Wipe reads on successful write. clock := 0
       } else {
         check_read_race(overlap, t, thread_vc);
         update_read_epoch(overlap, t, c, thread_vc, pool);
