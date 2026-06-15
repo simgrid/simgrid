@@ -124,7 +124,7 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
 {
   std::vector<Clock> actor_epoch;
   if (race != nullptr)
-    actor_epoch.resize(s4u::Engine::get_instance()->get_actor_max_pid() + 1);
+    actor_epoch.resize(kernel::actor::ActorImpl::get_maxpid() + 1);
 
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {

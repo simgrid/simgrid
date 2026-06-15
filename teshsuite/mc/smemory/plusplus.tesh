@@ -11,7 +11,6 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=mod
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > plusplus: plusplus.c:37: int main(): Assertion `i == 2' failed.
 > [0.000000] [mc_explo/INFO] Found a datarace at location 0xdeadbeaf between actor 2 and actor 3 after the following execution:
-> [0.000000] [config/WARNING] Call to sg_config_init() after initialization ignored
 > [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
 > [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
 > [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()     <== racy WRITE on 0xdeadbeaf by actor 2 between its creation and this operation
