@@ -5,6 +5,7 @@
 
 /* sg_config: configuration infrastructure for the simulation world         */
 
+#include <numeric>
 #include <simgrid/instr.h>
 #include <simgrid/version.h>
 #include <xbt/config.hpp>
@@ -20,6 +21,8 @@
 #include "src/simgrid/module.hpp"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_config.hpp"
+#include "xbt/asserts.h"
+#include "xbt/backtrace.hpp"
 
 #include <string_view>
 
@@ -46,7 +49,24 @@ void sg_config_continue_after_help()
  *    integrated also, platform construction ongoing or done.
  *    (Config cannot be changed anymore!)
  */
-int _sg_cfg_init_status = 0;
+static int _sg_cfg_init_status = 0;
+
+bool sg_configuration_is_not_started()
+{
+  return _sg_cfg_init_status == 0;
+}
+bool sg_configuration_is_ongoing()
+{
+  return _sg_cfg_init_status == 1;
+}
+bool sg_configuration_is_done()
+{
+  return _sg_cfg_init_status == 2;
+}
+void sg_configuration_set_step(int step)
+{
+  _sg_cfg_init_status = step;
+}
 
 /* Parse the command line, looking for options */
 static void sg_config_cmd_line(int *argc, char **argv)
@@ -128,14 +148,27 @@ static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
   }
 }
 
+static simgrid::xbt::Backtrace init_bt;
+
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
   /* Create the configuration support */
   if (_sg_cfg_init_status != 0) { /* Only create stuff if not already inited */
-    XBT_WARN("Call to sg_config_init() after initialization ignored");
+    std::vector<std::string> args(argv, argv + *argc);
+    std::string strargs =
+        std::accumulate(args.begin(), args.end(), std::string(""),
+                        [](const std::string& a, const std::string& b) { return a.empty() ? b : a + " " + b; });
+    XBT_WARN("Call to sg_config_init() after initialization ignored. Current step: %d; args: >>%s<< Here is the "
+             "current backtrace:",
+             _sg_cfg_init_status, strargs.c_str());
+    xbt_backtrace_display_current();
+    XBT_WARN("The previous initialization backtrace was the following");
+    init_bt.display();
     return;
   }
+
+  init_bt.reset(); // Capture the backtrace of the first initialization to make intersting error messages
   _sg_cfg_init_status = 1;
 
   /* Plugins and models configuration */

@@ -835,7 +835,7 @@ void STag_simgrid_parse_config()
 {
   property_sets.emplace_back();
   XBT_DEBUG("START configuration name = %s", A_simgrid_parse_config_id);
-  if (_sg_cfg_init_status == 2) {
+  if (sg_configuration_is_done()) {
     simgrid_parse_error(
         "All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
         "<link>, etc).");

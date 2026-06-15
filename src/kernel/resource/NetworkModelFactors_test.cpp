@@ -25,7 +25,7 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Factors invalid callbacks: exc
 #endif
 
   for (const auto& model : models) {
-    _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
+    sg_configuration_set_step(0); /* HACK: clear config global to be able to do set_config in unit tests */
     simgrid::s4u::Engine e("test");
     simgrid::s4u::Engine::set_config("network/model:" + model);
     e.get_netzone_root();
@@ -50,7 +50,7 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Invalid network/latency-factor
 #endif
 
   for (const auto& model : models) {
-    _sg_cfg_init_status = 0; /* HACK: clear config global to be able to do set_config in UTs */
+    sg_configuration_set_step(0); /* HACK: clear config global to be able to do set_config in unit tests */
     simgrid::s4u::Engine e("test");
     simgrid::s4u::Engine::set_config("network/model:" + model);
     simgrid::s4u::Engine::set_config("network/latency-factor:10");

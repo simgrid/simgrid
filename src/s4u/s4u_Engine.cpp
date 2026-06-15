@@ -90,6 +90,8 @@ Engine::~Engine()
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
+  if (Engine::instance_ != nullptr)
+    return Engine::instance_;
   int argc   = 0;
   char* argv = nullptr;
   return get_instance(&argc, &argv);
@@ -670,6 +672,10 @@ void Engine::run_until(double max_date) const
 {
   if (static bool callback_called = false; not callback_called) {
     on_simulation_start();
+
+    /* Forbid any further configuration changes */
+    sg_configuration_set_step(2);
+
     callback_called = true;
   }
   /* Clean IO before the run */
@@ -706,9 +712,8 @@ s4u::NetZone* Engine::get_netzone_root() const
     simgrid_host_models().init_from_flag_value();
     simgrid_vm_model_init_HL13();
 
-    /* HACK: direct access to the global controlling the level of configuration to prevent
-     * any further config now that we created some real content */
-    _sg_cfg_init_status = 2;
+    /* Now that the configuration was used to create some content, forbid any further changes */
+    sg_configuration_set_step(2);
   }
 
   return pimpl_->netzone_root_->get_iface();

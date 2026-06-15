@@ -141,7 +141,7 @@ static simgrid::config::Flag<std::string>
                       }),
 
                       [](std::string const&) {
-                        xbt_assert(_sg_cfg_init_status < 2,
+                        xbt_assert(not sg_configuration_is_done(),
                                    "Cannot change the optimization algorithm after the initialization");
                       });
 

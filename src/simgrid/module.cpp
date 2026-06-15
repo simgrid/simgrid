@@ -27,7 +27,7 @@ void ModuleGroup::create_flag(const std::string& opt_name, const std::string& de
 
   simgrid::config::declare_flag<std::string>(
       opt_name, description, default_value, [this, default_value, init_now](const std::string& value) {
-        xbt_assert(_sg_cfg_init_status < 2, "Cannot load a %s after the initialization", kind_.c_str());
+        xbt_assert(not sg_configuration_is_done(), "Cannot load a %s after the initialization", kind_.c_str());
 
         if (value == default_value)
           return;

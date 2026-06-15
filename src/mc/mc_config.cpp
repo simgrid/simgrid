@@ -28,7 +28,7 @@ void simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode mode)
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
-  xbt_assert(_sg_cfg_init_status == 0 || MC_is_active() || MC_record_replay_is_active() || not more_check,
+  xbt_assert(sg_configuration_is_not_started() || MC_is_active() || MC_record_replay_is_active() || not more_check,
              "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc, or specify this option "
              "after the replay path.",
              spec);
