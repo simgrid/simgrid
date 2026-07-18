@@ -143,18 +143,38 @@ Existing signals
 
 - In activities:
 
-  - :cpp:func:`Activity::on_veto <simgrid::s4u::Activity::on_veto_cb>`
-    :cpp:func:`Activity::on_this_veto <simgrid::s4u::Activity::on_this_veto_cb>`
-    :cpp:func:`Activity::on_start <simgrid::s4u::Activity::on_start_cb>`
-    :cpp:func:`Activity::on_this_start <simgrid::s4u::Activity::on_this_start_cb>`
-    :cpp:func:`Activity::on_suspend <simgrid::s4u::Activity::on_suspend_cb>`
-    :cpp:func:`Activity::on_this_suspend <simgrid::s4u::Activity::on_this_suspend_cb>`
-    :cpp:func:`Activity::on_resume <simgrid::s4u::Activity::on_resume_cb>`
-    :cpp:func:`Activity::on_this_resume <simgrid::s4u::Activity::on_this_resume_cb>`
-    :cpp:func:`Activity::on_completion <simgrid::s4u::Activity::on_completion_cb>`
-    :cpp:func:`Activity::on_this_completion <simgrid::s4u::Activity::on_this_completion_cb>`
-  - :cpp:func:`Comm::on_send <simgrid::s4u::Comm::on_send_cb>`
-    :cpp:func:`Comm::on_recv <simgrid::s4u::Comm::on_recv_cb>`
+  - :cpp:func:`Comm::on_veto            <simgrid::s4u::Comm::on_veto_cb>`
+    :cpp:func:`Comm::on_this_veto       <simgrid::s4u::Comm::on_this_veto_cb>`
+    :cpp:func:`Comm::on_start           <simgrid::s4u::Comm::on_start_cb>`
+    :cpp:func:`Comm::on_this_start      <simgrid::s4u::Comm::on_this_start_cb>`
+    :cpp:func:`Comm::on_suspend         <simgrid::s4u::Comm::on_suspend_cb>`
+    :cpp:func:`Comm::on_this_suspend    <simgrid::s4u::Comm::on_this_suspend_cb>`
+    :cpp:func:`Comm::on_resume          <simgrid::s4u::Comm::on_resume_cb>`
+    :cpp:func:`Comm::on_this_resume     <simgrid::s4u::Comm::on_this_resume_cb>`
+    :cpp:func:`Comm::on_completion      <simgrid::s4u::Comm::on_completion_cb>`
+    :cpp:func:`Comm::on_this_completion <simgrid::s4u::Comm::on_this_completion_cb>`
+    :cpp:func:`Comm::on_send            <simgrid::s4u::Comm::on_send_cb>`
+    :cpp:func:`Comm::on_recv            <simgrid::s4u::Comm::on_recv_cb>`
+  - :cpp:func:`Exec::on_veto            <simgrid::s4u::Exec::on_veto_cb>`
+    :cpp:func:`Exec::on_this_veto       <simgrid::s4u::Exec::on_this_veto_cb>`
+    :cpp:func:`Exec::on_start           <simgrid::s4u::Exec::on_start_cb>`
+    :cpp:func:`Exec::on_this_start      <simgrid::s4u::Exec::on_this_start_cb>`
+    :cpp:func:`Exec::on_suspend         <simgrid::s4u::Exec::on_suspend_cb>`
+    :cpp:func:`Exec::on_this_suspend    <simgrid::s4u::Exec::on_this_suspend_cb>`
+    :cpp:func:`Exec::on_resume          <simgrid::s4u::Exec::on_resume_cb>`
+    :cpp:func:`Exec::on_this_resume     <simgrid::s4u::Exec::on_this_resume_cb>`
+    :cpp:func:`Exec::on_completion      <simgrid::s4u::Exec::on_completion_cb>`
+    :cpp:func:`Exec::on_this_completion <simgrid::s4u::Exec::on_this_completion_cb>`
+  - :cpp:func:`Io::on_veto            <simgrid::s4u::Io::on_veto_cb>`
+    :cpp:func:`Io::on_this_veto       <simgrid::s4u::Io::on_this_veto_cb>`
+    :cpp:func:`Io::on_start           <simgrid::s4u::Io::on_start_cb>`
+    :cpp:func:`Io::on_this_start      <simgrid::s4u::Io::on_this_start_cb>`
+    :cpp:func:`Io::on_suspend         <simgrid::s4u::Io::on_suspend_cb>`
+    :cpp:func:`Io::on_this_suspend    <simgrid::s4u::Io::on_this_suspend_cb>`
+    :cpp:func:`Io::on_resume          <simgrid::s4u::Io::on_resume_cb>`
+    :cpp:func:`Io::on_this_resume     <simgrid::s4u::Io::on_this_resume_cb>`
+    :cpp:func:`Io::on_completion      <simgrid::s4u::Io::on_completion_cb>`
+    :cpp:func:`Io::on_this_completion <simgrid::s4u::Io::on_this_completion_cb>`
 
 Existing Plugins
 ****************

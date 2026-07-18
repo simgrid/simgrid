@@ -2336,6 +2336,12 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Activity::set_remaining(double remains)
       .. doxygenfunction:: simgrid::s4u::Activity::set_state(Activity::State state)
 
+   .. group-tab:: Java
+
+      .. doxygenfunction:: org::simgrid::s4u::Activity::get_name
+      .. doxygenfunction:: org::simgrid::s4u::Activity::get_remaining
+      .. doxygenfunction:: org::simgrid::s4u::Activity::get_state
+      .. doxygenfunction:: org::simgrid::s4u::Activity::get_state_str
 
 Activities life cycle
 ---------------------
@@ -2351,6 +2357,15 @@ Activities life cycle
       .. doxygenfunction:: simgrid::s4u::Activity::wait_for
       .. doxygenfunction:: simgrid::s4u::Activity::wait_until(double time_limit)
 
+   .. group-tab:: Java
+
+      .. doxygenfunction:: org::simgrid::s4u::Activity::start()
+      .. doxygenfunction:: org::simgrid::s4u::Activity::cancel()
+      .. doxygenfunction:: org::simgrid::s4u::Activity::test()
+      .. doxygenfunction:: org::simgrid::s4u::Activity::await_for(double timeout)
+      .. doxygenfunction:: org::simgrid::s4u::Activity::await_for_or_cancel(double timeout)
+      .. doxygenfunction:: org::simgrid::s4u::Activity::await_until(double time_limit)
+
 Suspending and resuming an activity
 -----------------------------------
 
@@ -2362,6 +2377,11 @@ Suspending and resuming an activity
       .. doxygenfunction:: simgrid::s4u::Activity::resume
       .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
+   .. group-tab:: Java
+
+      .. doxygenfunction:: org::simgrid::s4u::Activity::suspend()
+      .. doxygenfunction:: org::simgrid::s4u::Activity::resume()
+      .. doxygenfunction:: org::simgrid::s4u::Activity::is_suspended()
 
 .. _API_s4u_Comm:
 

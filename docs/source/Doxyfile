@@ -27,6 +27,7 @@ INPUT                 += ../../include/xbt/dynar.h
 INPUT                 += ../../src/xbt/dynar.cpp
 INPUT                 += ../../include/xbt/signal.hpp
 INPUT                 += ../../src/plugins/
+INPUT                 += ../../src/bindings/java/org/simgrid/s4u/
 RECURSIVE              = YES
 
 EXAMPLE_PATH           = ../../examples
@@ -36,6 +37,7 @@ OUTPUT_DIRECTORY       = ../build/
 GENERATE_XML           = YES
 GENERATE_HTML          = NO
 GENERATE_LATEX         = NO
+OPTIMIZE_OUTPUT_JAVA   = YES
 
 FULL_PATH_NAMES        = NO # Don't leak the path on which it was built
 XML_PROGRAMLISTING     = NO # No program listings, please
@@ -54,6 +56,13 @@ EXPAND_ONLY_PREDEF     = NO
 SKIP_FUNCTION_MACROS   = NO
 
 QUIET=YES
+
+# Java filters to rewrite the inner classes
+#
+# We are feeding Java definitions to the C++ breath domain, because javasphinx is a dead project.
+# It works because all Java definitions are under org:: so they cannot conflict with existing C++ ones.
+# The problem we are solving here is that Java inner classes cannot be parsed by the C++ sphinx domain, so we need to rewrite them on the fly
+FILTER_PATTERNS = *.java="sed 's/Activity\.State/Activity::State/g'"
 
 PREDEFINED             += \
     __cplusplus \
