@@ -12,9 +12,10 @@
 #include "src/simgrid/module.hpp"
 
 SIMGRID_REGISTER_PLUGIN(battery, "Battery management", nullptr)
+
 /** @defgroup plugin_battery plugin_battery Plugin Battery
 
-  @beginrst
+@beginrst
 
 This is the battery plugin, enabling management of batteries. For examples of use, see
 :ref:`plugins_solar_batteries_chiller`.
@@ -88,8 +89,9 @@ Connector
 A Battery can act as a connector to connect Solar Panels direcly to loads. Such Battery is created without any
 parameter, cannot store energy and has a transfer efficiency of 100%.
 
-  @endrst
- */
+@endrst
+*/
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Battery, kernel, "Logging specific to the battery plugin");
 
 namespace simgrid::plugins {

@@ -1,4 +1,4 @@
-.. _contrib_doc:
+.. _contributors:
 
 Contributor's Documentation
 ===========================

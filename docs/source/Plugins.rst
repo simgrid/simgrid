@@ -15,17 +15,19 @@ SimGrid Plugins
    <br>
    <br>
 
+
 You can extend SimGrid without modifying it, thanks to our plugin
 mechanism. This page describes how to write your own plugin, and
 documents some of the plugins distributed with SimGrid:
 
-  - :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
-  - :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
-  - :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
-  - :ref:`WiFi Energy <plugin_link_energy_wifi>`: models the energy dissipation of wifi links.
-  - :ref:`Battery <plugin_battery>`: models batteries that get discharged by the energy consumption of a given host.
-  - :ref:`Solar Panel <plugin_solar_panel>`: models solar panels which energy production depends on the solar irradiance.
-  - :ref:`Chiller <plugin_chiller>`: models chillers which dissipate heat by consuming energy.
+- :ref:`Host Load <plugin_host_load>`: monitors the load of the compute units.
+- :ref:`Host Energy <plugin_host_energy>`: models the energy dissipation of the compute units.
+- :ref:`Link Energy <plugin_link_energy>`: models the energy dissipation of the network.
+- :ref:`WiFi Energy <plugin_link_energy_wifi>`: models the energy dissipation of wifi links.
+- :ref:`Chiller <plugin_chiller>`: models chillers which dissipate heat by consuming energy.
+- :ref:`Battery <plugin_battery>`: models batteries that get discharged by the energy consumption of a given host.
+- :ref:`Solar Panel <plugin_solar_panel>`: models solar panels which energy production depends on the solar irradiance.
+- :ref:`Host carbon footprint <plugin_host_carbon_footprint>`: models the CO² emited by the computations.
 
 You can activate these plugins with the :ref:`--cfg=plugin <cfg=plugin>` command
 line option, for example with ``--cfg=plugin:host_energy``. You can get the full
@@ -261,5 +263,12 @@ Host carbon footprint
 =====================
 
 .. doxygengroup:: plugin_carbon_footprint
+
+.. doxygenfunction:: sg_host_carbon_footprint_plugin_init()
+.. doxygenfunction:: sg_host_get_carbon_footprint(const_sg_host_t host)
+.. doxygenfunction:: sg_host_get_carbon_intensity(const_sg_host_t host)
+.. doxygenfunction:: sg_host_set_carbon_intensity(const_sg_host_t host, double carbon_intensity)
+.. doxygenfunction:: sg_host_carbon_footprint_load_trace_file(const char* trace_file)
+
 
 ..  LocalWords:  SimGrid
