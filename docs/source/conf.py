@@ -48,6 +48,7 @@ version = u'4.1.1'
 extensions = [
     'sphinx.ext.todo',
     'breathe',
+    'javadomain',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
@@ -62,6 +63,10 @@ todo_include_todos = True
 # Setup the breath extension
 breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
+
+# Java domain: reuses the same Doxygen XML output as breathe, since the same
+# `doxygen` run (configured to also parse src/bindings/java/) produces both.
+javadomain_xml_dir = os.path.join(os.path.dirname(__file__), '../build/xml')
 
 # Setup the copybutton extension
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "

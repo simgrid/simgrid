@@ -504,6 +504,11 @@ Retrieving actors
       .. doxygenfunction:: sg_actor_self()
       .. doxygenfunction:: sg_actor_list()
 
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.by_pid
+      .. javamethod:: org.simgrid.s4u.Actor.self
+
 Querying info
 -------------
 
@@ -546,6 +551,16 @@ Querying info
       .. doxygenfunction:: sg_actor_get_data(const_sg_actor_t actor)
       .. doxygenfunction:: sg_actor_set_data(sg_actor_t actor, void *userdata)
 
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.get_name
+      .. javamethod:: org.simgrid.s4u.Actor.get_pid
+      .. javamethod:: org.simgrid.s4u.Actor.get_ppid
+      .. javamethod:: org.simgrid.s4u.Actor.get_property
+      .. javamethod:: org.simgrid.s4u.Actor.set_property
+      .. javamethod:: org.simgrid.s4u.Actor.get_host
+      .. javamethod:: org.simgrid.s4u.Actor.set_host
+
 Suspending and resuming actors
 ------------------------------
 
@@ -568,6 +583,12 @@ Suspending and resuming actors
       .. doxygenfunction:: sg_actor_suspend(sg_actor_t actor)
       .. doxygenfunction:: sg_actor_resume(sg_actor_t actor)
       .. doxygenfunction:: sg_actor_is_suspended(const_sg_actor_t actor)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.suspend
+      .. javamethod:: org.simgrid.s4u.Actor.resume
+      .. javamethod:: org.simgrid.s4u.Actor.is_suspended
 
 Specifying when actors should terminate
 ---------------------------------------
@@ -603,39 +624,15 @@ Specifying when actors should terminate
       .. doxygenfunction:: sg_actor_daemonize(sg_actor_t actor)
       .. doxygenfunction:: sg_actor_is_daemon
 
-   .. group-tab:: java
+   .. group-tab:: Java
 
-      .. js::method:: void org.simgrid.s4u.Actor.kill()
-
-         Ask the actor to die.
-
-         Any blocking activity will be canceled, and it will be rescheduled to free its memory.<br>
-         Being killed is not something that actors can defer or avoid.
-
-      .. js::method:: void org.simgrid.s4u.Actor.kill_all()
-
-         Kill all actors (but the issuer). Being killed is not something that actors can delay or avoid.
-
-      .. js::method:: void org.simgrid.s4u.Actor.set_kill_time(double time)
-
-         Sets the time at which that actor should be killed.
-
-      .. js::method:: double org.simgrid.s4u.Actor.set_kill_time()
-
-         Retrieves the time at which that actor will be killed (or -1 if not set)
-
-      .. js:method:: Actor org.simgrid.s4u.Actor.daemonize()
-
-         Change this actor into a daemon. Daemons are killed as soon as the last regular actor disappears. If another regular
-         actor gets restarted later on by a timer or when its host reboots, the daemons do not get restarted.
-
-      .. js::method:: boolean org.simgrid.s4u.Actor.is_daemon()
-
-         Returns whether or not this actor has been daemonized or not.
-
-      .. js::method:: Actor org.simgrid.s4u.Actor.restart()
-
-         Kill that actor and restart it from start.
+      .. javamethod:: org.simgrid.s4u.Actor.kill
+      .. javamethod:: org.simgrid.s4u.Actor.kill_all
+      .. javamethod:: org.simgrid.s4u.Actor.set_kill_time
+      .. javamethod:: org.simgrid.s4u.Actor.get_kill_time
+      .. javamethod:: org.simgrid.s4u.Actor.daemonize
+      .. javamethod:: org.simgrid.s4u.Actor.is_daemon
+      .. javamethod:: org.simgrid.s4u.Actor.restart
 
 .. _API_s4u_Actor_end:
 
@@ -662,6 +659,13 @@ Reacting to the end of actors
       .. doxygenfunction:: sg_actor_join(const_sg_actor_t actor, double timeout)
       .. doxygenfunction:: sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart)
 
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.on_exit
+      .. javamethod:: org.simgrid.s4u.Actor.join
+      .. javamethod:: org.simgrid.s4u.Actor.set_auto_restart
+      .. javamethod:: org.simgrid.s4u.Actor.get_restart_count
+
 Signals
 -------
 
@@ -684,6 +688,17 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Actor::on_this_wake_up_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_this_termination_cb
       .. doxygenfunction:: simgrid::s4u::Actor::on_this_destruction_cb
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.on_creation_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_this_host_change_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_this_sleep_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_this_suspend_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_this_resume_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_this_wake_up_cb
+      .. javamethod:: org.simgrid.s4u.Actor.on_termination_cb
+      .. javaclass:: CallbackActor
 
 .. _API_s4u_this_actor:
 
@@ -749,6 +764,11 @@ Suspending and resuming
 
       .. doxygenfunction:: sg_actor_yield()
 
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.suspend
+      .. javamethod:: org.simgrid.s4u.Actor.yield
+
 Logging messages
 ----------------
 
@@ -785,6 +805,10 @@ Sleeping
    .. group-tab:: C
 
       .. doxygenfunction:: sg_actor_sleep_for(double duration)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.sleep_until
 
 Simulating executions
 ---------------------
@@ -2379,9 +2403,9 @@ Suspending and resuming an activity
 
    .. group-tab:: Java
 
-      .. doxygenfunction:: org::simgrid::s4u::Activity::suspend()
-      .. doxygenfunction:: org::simgrid::s4u::Activity::resume()
-      .. doxygenfunction:: org::simgrid::s4u::Activity::is_suspended()
+      .. doxygenfunction:: org.simgrid.s4u.Activity.suspend
+      .. doxygenfunction:: org.simgrid.s4u.Activity.resume
+      .. doxygenfunction:: org.simgrid.s4u.Activity.is_suspended
 
 .. _API_s4u_Comm:
 
@@ -2455,6 +2479,16 @@ Querying info
       .. automethod:: simgrid.Comm.detach
       .. automethod:: simgrid.Comm.set_payload_size
       .. automethod:: simgrid.Comm.set_rate
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Comm.get_data
+      .. javamethod:: org.simgrid.s4u.Comm.detach
+      .. javamethod:: org.simgrid.s4u.Comm.get_mailbox
+      .. javamethod:: org.simgrid.s4u.Comm.get_payload
+      .. javamethod:: org.simgrid.s4u.Comm.get_receiver
+      .. javamethod:: org.simgrid.s4u.Comm.get_remaining
+      .. javamethod:: org.simgrid.s4u.Comm.get_sender
 
 Direct host-to-host communication
 ---------------------------------
@@ -3224,6 +3258,11 @@ Locking
       .. doxygenfunction:: sg_barrier_destroy(sg_bar_t bar)
       .. doxygenfunction:: sg_barrier_wait(sg_bar_t bar)
 
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Barrier.await
+      .. javamethod:: org.simgrid.s4u.Barrier.create
+      .. javamethod:: org.simgrid.s4u.Barrier.to_string
 
 .. _API_s4u_ConditionVariable:
 
