@@ -78,16 +78,16 @@ assembling and modifying some of the provided examples (see :ref:`this section <
 to compile with SimGrid). An extensive documentation is available from the left menu bar. If you want to get an idea of how
 SimGrid works you can read about its :ref:`design goals <design>`.
 
+You do not always need to write a simulator from scratch: several frameworks provide ready-to-use, higher-level simulation
+abstractions on top of SimGrid for specific use cases, so that you only have to write the part that is specific to your study.
+For instance, `WRENCH <https://wrench-project.org>`_ provides simulated compute, storage, and network services so you can focus
+on the workflow or application logic you want to study, while `Batsim <https://batsim.readthedocs.io>`_ targets the evaluation of
+batch scheduling algorithms for HPC platforms. Both are good starting points if your use case matches theirs.
+
 SimGrid Success Stories
 -----------------------
 
-SimGrid was cited in over 3,000 scientific papers (according to Google
-Scholar). Among them,
-`over 675 publications <https://simgrid.org/usages.html>`_
-(written by hundreds of individuals) use SimGrid as a scientific
-instrument to conduct experimental evaluations. These
-numbers do not include those articles that directly contribute to SimGrid itself.
-SimGrid was used in many research communities, such as
+SimGrid was cited in thousands of scientific papers (according to Google Scholar), in research communities as diverse as
 `High-Performance Computing <https://hal.inria.fr/inria-00580599/>`_,
 `Cloud Computing <http://dx.doi.org/10.1109/CLOUD.2015.125>`_,
 `Workflow Scheduling <http://dl.acm.org/citation.cfm?id=2310096.2310195>`_,
@@ -99,6 +99,8 @@ SimGrid was used in many research communities, such as
 `Network Architecture <http://dx.doi.org/10.1109/TPDS.2016.2613043>`_,
 `Fog Computing <http://ieeexplore.ieee.org/document/7946412/>`_, or
 `Batch Scheduling <https://hal.archives-ouvertes.fr/hal-01333471>`_.
+See the `usages page <https://simgrid.org/usages.html>`_ for a searchable, up-to-date list of the (over 706) publications that
+use SimGrid as a scientific instrument. Each of the listed papers was manually verified.
 
 If your platform description is accurate enough (see
 `here <http://hal.inria.fr/hal-00907887>`_ or
@@ -116,7 +118,7 @@ SimGrid is also used to debug, improve, and tune several large
 applications.
 `BigDFT <http://bigdft.org>`_ (a massively parallel code
 for computing the electronic structure of chemical elements developed by
-the CEA), `StarPU <http://starpu.gforge.inria.fr/>`_ (a
+the CEA), `StarPU <https://starpu.gitlabpages.inria.fr>`_ (a
 Unified Runtime System for Heterogeneous Multicore Architectures
 developed by Inria Bordeaux), and
 `TomP2P <https://tomp2p.net/dev/simgrid/>`_ (a high-performance
