@@ -59,7 +59,7 @@ public:
      *  @return The state of charge at which the Handler will happen.
      *  @note For Battery::Handler objects
      */
-    double get_state_of_charge() const { return state_of_charge_; }
+    double get_threshold() const { return state_of_charge_; }
     /** @ingroup plugin_battery
      *  @return The flow in which the Handler will happen, either when the Battery is charging or discharging.
      *  @note For Battery::Handler objects
@@ -138,7 +138,7 @@ public:
   double get_energy_provided() const;
   double get_energy_consumed() const;
   double get_energy_stored(const std::string& unit = "J") const;
-  std::shared_ptr<Handler> schedule_handler(double state_of_charge, Flow flow, Handler::Persistancy p,
+  std::shared_ptr<Handler> schedule_handler(double threshold, Flow flow, Handler::Persistancy p,
                                             std::function<void()> callback);
   std::vector<std::shared_ptr<Handler>> get_handlers();
   void delete_handler(std::shared_ptr<Handler> handler);

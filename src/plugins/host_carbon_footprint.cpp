@@ -50,7 +50,9 @@ Here is an example of XML declaration:
 
    <host id="Host1" speed="100.0Mf, 1e-9Mf, 0.5f, 0.05f" pstate="0">
        <prop id="wattage_per_state" value="30.0:30.0:100.0, 9.75:9.75:9.75, 200.996721311:200.996721311:200.996721311,
-425.1743849:425.1743849:425.1743849" /> <prop id="wattage_off" value="9.75" /> <prop id="carbon_intensity" value="30" />
+                                           425.1743849:425.1743849:425.1743849" />
+       <prop id="wattage_off" value="9.75" />
+       <prop id="carbon_intensity" value="30" />
    </host>
 
 In this example:

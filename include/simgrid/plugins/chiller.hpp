@@ -12,9 +12,7 @@
 
 namespace simgrid::plugins {
 
-/** @ingroup plugin_chiller */
 class Chiller;
-/** @ingroup plugin_chiller */
 using ChillerPtr = boost::intrusive_ptr<Chiller>;
 XBT_PUBLIC void intrusive_ptr_release(Chiller* o);
 XBT_PUBLIC void intrusive_ptr_add_ref(Chiller* o);

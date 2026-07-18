@@ -221,5 +221,10 @@ Chiller
 =======
 
 .. doxygengroup:: plugin_chiller
+  
+.. doxygentypedef:: simgrid::plugins::ChillerPtr
+
+.. doxygenclass:: simgrid::plugins::Chiller
+   :members:
 
 ..  LocalWords:  SimGrid

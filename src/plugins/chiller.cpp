@@ -145,7 +145,7 @@ Chiller::Chiller(const std::string& name, double air_mass_kg, double specific_he
   xbt_assert(max_power_w >= 0, ": maximal power must be >=0 (provided: %f)", max_power_w);
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param name The name of the Chiller.
  *  @param air_mass_kg The air mass of the room managed by the Chiller in kg (> 0).
  *  @param specific_heat_j_per_kg_per_c The specific heat of air in J per kg per °C (> 0).
@@ -172,7 +172,7 @@ ChillerPtr Chiller::init(const std::string& name, double air_mass_kg, double spe
   return chiller;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param name The new name of the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -182,7 +182,7 @@ ChillerPtr Chiller::set_name(std::string name)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param air_mass_kg The new air mass of the Chiller in kg.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -193,7 +193,7 @@ ChillerPtr Chiller::set_air_mass(double air_mass_kg)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param specific_heat_j_per_kg_per_c The specific heat of the Chiller in J per kg per °C.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -206,7 +206,7 @@ ChillerPtr Chiller::set_specific_heat(double specific_heat_j_per_kg_per_c)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param alpha The new alpha of the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -217,7 +217,7 @@ ChillerPtr Chiller::set_alpha(double alpha)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param cooling_efficiency The new coolingefficiency of the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -229,7 +229,7 @@ ChillerPtr Chiller::set_cooling_efficiency(double cooling_efficiency)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param goal_temp_c The new goal temperature of the Chiller in °C.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -239,7 +239,7 @@ ChillerPtr Chiller::set_goal_temp(double goal_temp_c)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param max_power_w The new maximal power of the Chiller in W.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -250,7 +250,7 @@ ChillerPtr Chiller::set_max_power(double max_power_w)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param active The new active status of the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -260,7 +260,7 @@ ChillerPtr Chiller::set_active(bool active)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param host The host to add to the room managed by the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -270,7 +270,7 @@ ChillerPtr Chiller::add_host(const s4u::Host* host)
   return this;
 }
 
-/** @ingroup plugin_chiller
+/**
  *  @param host The host to remove from the room managed by the Chiller.
  *  @return A ChillerPtr pointing to the modified Chiller.
  */
@@ -280,9 +280,7 @@ ChillerPtr Chiller::remove_host(const s4u::Host* host)
   return this;
 }
 
-/** @ingroup plugin_chiller
- *  @return The time to reach to goal temp, assuming that the system remain in the same state.
- */
+/** @return The time to reach to goal temp, assuming that the system remain in the same state. */
 double Chiller::get_time_to_goal_temp() const
 {
   if (goal_temp_c_ == temp_in_c_)
