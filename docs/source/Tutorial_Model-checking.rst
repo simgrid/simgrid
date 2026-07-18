@@ -158,6 +158,7 @@ recompile the C/C++ code with SimGrid.
       To use valgrind from within the container, you probably need to run the following command
 
       .. code-block:: console
+         
          $ ulimit -n 1024
 
 Lab1: Dining philosophers with sthread

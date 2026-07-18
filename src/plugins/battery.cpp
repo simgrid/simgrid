@@ -16,7 +16,8 @@ SIMGRID_REGISTER_PLUGIN(battery, "Battery management", nullptr)
 
   @beginrst
 
-This is the battery plugin, enabling management of batteries.
+This is the battery plugin, enabling management of batteries. For examples of use, see
+:ref:`plugins_solar_batteries_chiller`.
 
 Batteries
 .........
@@ -297,7 +298,7 @@ Battery::Battery(const std::string& name, double state_of_charge, double nominal
   xbt_assert(cycles > 0, " : cycles should be > 0 (provided: %d)", cycles);
 }
 
-/** @ingroup plugin_battery
+/**
  *  @brief Init a Battery with this constructor makes it only usable as a connector.
  *         A connector has no capacity and only delivers as much power as it receives
            with a transfer efficiency of 100%.
@@ -315,7 +316,7 @@ BatteryPtr Battery::init()
   return battery;
 }
 
-/** @ingroup plugin_battery
+/**
  *  @param name The name of the Battery.
  *  @param state_of_charge The initial state of charge of the Battery [0,1].
  *  @param nominal_charge_power_w The maximum power absorbed by the Battery in W (<= 0).
@@ -341,7 +342,7 @@ BatteryPtr Battery::init(const std::string& name, double state_of_charge, double
   return battery;
 }
 
-/** @ingroup plugin_battery
+/**
  *  @param name The name of the load
  *  @param power_w Power of the load in W. A positive value discharges the Battery while a negative value charges it.
  */
@@ -355,7 +356,7 @@ void Battery::set_load(const std::string& name, double power_w)
   });
 }
 
-/** @ingroup plugin_battery
+/**
  *  @param name The name of the load
  *  @param active Status of the load. If false then the load is ignored by the Battery.
  */
@@ -364,7 +365,7 @@ void Battery::set_load(const std::string& name, bool active)
   kernel::actor::simcall_answered([this, &name, &active] { named_loads_[name].first = active; });
 }
 
-/** @ingroup plugin_battery
+/**
  *  @param host The Host to connect.
  *  @param active Status of the connected Host (default true).
  *  @brief Connect a Host to the Battery with the status active. As long as the status is true the Host takes its energy
@@ -377,32 +378,26 @@ void Battery::connect_host(const s4u::Host* host, bool active)
   kernel::actor::simcall_answered([this, &host, &active] { host_loads_[host] = active; });
 }
 
-/** @ingroup plugin_battery
- *  @return The state of charge of the battery.
- */
+/** @return The state of charge of the battery. */
 double Battery::get_state_of_charge() const
 {
   return energy_stored_j_ / (3600 * capacity_wh_);
 }
 
-/** @ingroup plugin_battery
- *  @return The state of health of the Battery.
- */
+/** @return The state of health of the Battery. */
 double Battery::get_state_of_health() const
 {
   return 1 -
          ((energy_provided_j_ / discharge_efficiency_ + energy_consumed_j_ * charge_efficiency_) / energy_budget_j_);
 }
 
-/** @ingroup plugin_battery
- *  @return The current capacity of the Battery.
- */
+/** @return The current capacity of the Battery. */
 double Battery::get_capacity() const
 {
   return capacity_wh_;
 }
 
-/** @ingroup plugin_battery
+/**
  *  @return The energy provided by the Battery.
  *  @note It is the energy provided from an external point of view, after application of the discharge efficiency.
           It means that the Battery lost more energy than it has provided.
@@ -412,7 +407,7 @@ double Battery::get_energy_provided() const
   return energy_provided_j_;
 }
 
-/** @ingroup plugin_battery
+/**
  *  @return The energy consumed by the Battery.
  *  @note It is the energy consumed from an external point of view, before application of the charge efficiency.
           It means that the Battery consumed more energy than is has absorbed.
@@ -422,7 +417,7 @@ double Battery::get_energy_consumed() const
   return energy_consumed_j_;
 }
 
-/** @ingroup plugin_battery
+/**
  *  @param unit Valid units are J (default) and Wh.
  *  @return Energy stored in the Battery.
  */
@@ -436,7 +431,7 @@ double Battery::get_energy_stored(const std::string& unit) const
     xbt_die("Invalid unit. Valid units are J (default) or Wh.");
 }
 
-/** @ingroup plugin_battery
+/**
  *  @brief Schedule a new Handler.
  *  @param state_of_charge The state of charge at which the Handler will happen.
  *  @param flow The flow in which the Handler will happen, either when the Battery is charging or discharging.
@@ -452,17 +447,13 @@ std::shared_ptr<Battery::Handler> Battery::schedule_handler(double state_of_char
   return handler;
 }
 
-/** @ingroup plugin_battery
- *  @return A vector containing the Handlers associated to the Battery.
- */
+/** @return A vector containing the Handlers associated to the Battery. */
 std::vector<std::shared_ptr<Battery::Handler>> Battery::get_handlers()
 {
   return handlers_;
 }
 
-/** @ingroup plugin_battery
- *  @brief Remove an Handler from the Battery.
- */
+/** @brief Remove an Handler from the Battery. */
 void Battery::delete_handler(std::shared_ptr<Handler> handler)
 {
   handlers_.erase(std::remove_if(handlers_.begin(), handlers_.end(),

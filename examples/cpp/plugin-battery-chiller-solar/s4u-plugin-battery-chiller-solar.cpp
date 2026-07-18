@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
   /* Handlers create simulation events preventing the simulation from finishing
      To avoid this behaviour this actor sleeps for 2 days and then delete all handlers
   */
-  myhost1->add_actor("end_manager",end_manager, battery);
+  myhost1->add_actor("end_manager", end_manager, battery);
 
   // This actor updates the solar irradiance of the solar panel
   myhost1->add_actor("irradiance_manager", irradiance_manager, solar_panel)->daemonize();

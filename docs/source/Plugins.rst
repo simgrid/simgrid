@@ -185,8 +185,6 @@ WiFi Energy
 
 .. doxygengroup:: plugin_link_energy_wifi
 
-
-
 .. _plugin_host_load:
 
 Host Load
@@ -208,12 +206,10 @@ Battery
 
 .. doxygengroup:: plugin_battery
 
-.. _plugin_solar_panel:
+.. doxygentypedef:: simgrid::plugins::BatteryPtr
 
-Solar Panel
-===========
-
-.. doxygengroup:: plugin_solar_panel
+.. doxygenclass:: simgrid::plugins::Battery
+   :members:
 
 .. _plugin_chiller:
 
@@ -221,10 +217,29 @@ Chiller
 =======
 
 .. doxygengroup:: plugin_chiller
-  
+
 .. doxygentypedef:: simgrid::plugins::ChillerPtr
 
 .. doxygenclass:: simgrid::plugins::Chiller
    :members:
+
+.. _plugin_solar_panel:
+
+Solar Panel
+===========
+
+.. doxygengroup:: plugin_solar_panel
+
+.. doxygentypedef:: simgrid::plugins::SolarPanelPtr
+
+.. doxygenclass:: simgrid::plugins::SolarPanel
+   :members:
+
+.. _plugin_host_carbon_footprint:
+
+Host carbon footprint
+=====================
+
+.. doxygengroup:: plugin_carbon_footprint
 
 ..  LocalWords:  SimGrid

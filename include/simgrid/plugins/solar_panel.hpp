@@ -11,9 +11,7 @@
 
 namespace simgrid::plugins {
 
-/** @ingroup plugin_solar_panel */
 class SolarPanel;
-/** @ingroup plugin_solar_panel */
 using SolarPanelPtr = boost::intrusive_ptr<SolarPanel>;
 XBT_PUBLIC void intrusive_ptr_release(SolarPanel* o);
 XBT_PUBLIC void intrusive_ptr_add_ref(SolarPanel* o);

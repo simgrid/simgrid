@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-battery-energy ${platfdir}/energy_platform.xml
+$ ${bindir:=.}/s4u-plugin-battery-energy ${platfdir}/energy_platform.xml
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Battery state: SoC: 0.800000 SoH: 1.000000 Energy stored: 28800.000000J Energy provided: 0.000000J Energy consumed 0.000000J
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Connecting hosts MyHost1 and MyHost2 to the battery
 > [MyHost1:manager:(1) 0.000000] [battery_energy/INFO] Host MyHost1 will now execute 1000000000.000000 flops

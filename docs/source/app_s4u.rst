@@ -194,8 +194,8 @@ predecessor to start. Tokens can carry any user-defined data.
 instance_0 to instance_n. The dispatcher rely on a load balancing function to select
 the next instance to fire. Once this instance finishes it fires the collector.
 
-Each instance of an |API_s4u_ExecTask| can be placed on a different host.
-|API_s4u_Comm| activities are automatically created when an instance triggers
+Each instance of an :ref:`ExecTask <API_s4u_ExecTask>` can be placed on a different host.
+:ref:`Comm <API_s4u_Comm>` activities are automatically created when an instance triggers
 another instance on a different host. Each instance has its own parallelism degree
 to scale horizontally on several cores.
 
@@ -803,7 +803,8 @@ the execution, or start an asynchronous activity.
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop)
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop, double priority)
       .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute
+      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute(double flop_amounts, int thread_count)
+      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute(s4u::Host *host, double flop_amounts, int thread_count)
 
    .. group-tab:: Python
 
@@ -2096,9 +2097,12 @@ Zones
      .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_floyd
      .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_vivaldi
      .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_wifi
-     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_torus
-     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_fatTree
-     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_dragonfly
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_torus(const std::string &name, const std::vector<unsigned long> &dimensions, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_torus(const std::string &name, const std::vector<unsigned long> &dimensions, const std::string &bandwidth, const std::string &latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_fatTree(const std::string &name, unsigned int n_levels, const std::vector<unsigned int> &down_links, const std::vector<unsigned int> &up_links, const std::vector<unsigned int> &link_counts, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_fatTree(const std::string &name, unsigned int n_levels, const std::vector<unsigned int> &down_links, const std::vector<unsigned int> &up_links, const std::vector<unsigned int> &links_counts, const std::string &bandwidth, const std::string &latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_dragonfly(const std::string &name, const std::pair<unsigned int, unsigned int> &groups, const std::pair<unsigned int, unsigned int> &chassis, const std::pair<unsigned int, unsigned int> &routers, unsigned int nodes, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::NetZone::add_netzone_dragonfly(const std::string &name, const std::pair<unsigned int, unsigned int> &groups, const std::pair<unsigned int, unsigned int> &chassis, const std::pair<unsigned int, unsigned int> &routers, unsigned int nodes, const std::string &bandwidth, const std::string &latency, Link::SharingPolicy sharing_policy)
 
   .. group-tab:: Python
 

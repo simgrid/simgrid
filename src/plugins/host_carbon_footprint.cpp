@@ -27,9 +27,14 @@ SIMGRID_REGISTER_PLUGIN(host_carbon_footprint, "Host carbon footprint", &sg_host
 
 /** @addtogroup plugin_carbon_footprint
 
+  @beginrst
+
 This is the carbon footprint plugin, enabling the simulation of CO₂ emissions associated with the energy consumption of
 hosts in the simulated platform. It calculates the total CO₂ emissions of each host based on its energy consumption and
-the CO₂ emission rate. To activate this plugin, first call :cpp:func:`sg_host_carbon_footprint_plugin_init()` before
+the CO₂ emission rate. For a complete example, see :ref:`ex_plugin_host_carbon_footprint`.
+
+
+To activate this plugin, first call :cpp:func:`sg_host_carbon_footprint_plugin_init()` before
 loading your platform. Then, use :cpp:func:`sg_host_get_carbon_footprint()` to retrieve the total CO₂ emissions of a
 given host.
 
@@ -66,6 +71,8 @@ This model is still a work in progress and may not fully reflect real-world CO�
 depends on the quality of the input parameters, such as the energy profile of the host and the CO₂ emission rate
 (carbon_intensity). Further improvements and evaluations of the model are needed. Keep this in mind when using this
 plugin.
+
+  @endrst
 
 */
 

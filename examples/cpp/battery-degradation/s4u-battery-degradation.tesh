@@ -1,5 +1,0 @@
-#!/usr/bin/env tesh
-
-! output ignore 
-
-$ ${bindir:=.}/s4u-battery-degradation ${platfdir}/energy_platform.xml

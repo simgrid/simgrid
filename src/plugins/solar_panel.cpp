@@ -17,7 +17,8 @@ SIMGRID_REGISTER_PLUGIN(solar_panel, "Solar Panel management", nullptr)
 
   @beginrst
 
-This is the solar panel plugin, enabling management of solar panels on hosts.
+This is the solar panel plugin, enabling management of solar panels on hosts. For examples of use, see
+:ref:`plugins_solar_batteries_chiller`.
 
 This plugin allows the use of solar panels to generate power during simulation depending on size, solar
 irradiance and conversion factor.
@@ -84,7 +85,7 @@ SolarPanel::SolarPanel(std::string name, double area_m2, double conversion_effic
              min_power_w);
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param name The name of the Solar Panel.
  *  @param area_m2 The area of the Solar Panel in m² (> 0).
  *  @param conversion_efficiency The conversion efficiency of the Solar Panel [0,1].
@@ -102,7 +103,7 @@ SolarPanelPtr SolarPanel::init(const std::string& name, double area_m2, double c
   return solar_panel;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param name The new name of the Solar Panel.
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */
@@ -112,7 +113,7 @@ SolarPanelPtr SolarPanel::set_name(std::string name)
   return this;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param area_m2 The new area of the Solar Panel in m².
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */
@@ -124,7 +125,7 @@ SolarPanelPtr SolarPanel::set_area(double area_m2)
   return this;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param e The new convesion efficiency of the Solar Panel.
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */
@@ -136,7 +137,7 @@ SolarPanelPtr SolarPanel::set_conversion_efficiency(double e)
   return this;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param solar_irradiance_w_per_m2 The new solar irradiance of the Solar Panel in W/m².
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */
@@ -150,7 +151,7 @@ SolarPanelPtr SolarPanel::set_solar_irradiance(double solar_irradiance_w_per_m2)
   return this;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param power_w The new minimal power of the Solar Panel in W.
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */
@@ -164,7 +165,7 @@ SolarPanelPtr SolarPanel::set_min_power(double power_w)
   return this;
 }
 
-/** @ingroup plugin_solar_panel
+/**
  *  @param power_w The new maximal power of the Solar Panel in W.
  *  @return A SolarPanelPtr pointing to the modified SolarPanel.
  */

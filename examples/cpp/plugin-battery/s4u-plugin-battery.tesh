@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-battery-simple ${platfdir}/energy_platform.xml
+$ ${bindir:=.}/s4u-plugin-battery ${platfdir}/energy_platform.xml
 > [0.000000] [battery_simple/INFO] Initial state: SoC: 0.800000 SoH: 1.000000 Energy stored: 28800.000000J Energy provided: 0.000000J Energy consumed 0.000000J
 > [0.000000] [battery_simple/INFO] Set load to 150.000000W
 > [216.021602] [battery_simple/INFO] Discharged state: SoC: 0.200000 SoH: 0.999700 Energy stored: 7197.839784J Energy provided: 19441.944194J Energy consumed 0.000000J

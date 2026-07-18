@@ -55,29 +55,29 @@ public:
     static std::shared_ptr<Handler> init(double state_of_charge, Flow flow, Persistancy p,
                                          std::function<void()> callback);
 
-    /** @ingroup plugin_battery
+    /**
      *  @return The state of charge at which the Handler will happen.
      *  @note For Battery::Handler objects
      */
     double get_threshold() const { return state_of_charge_; }
-    /** @ingroup plugin_battery
+    /**
      *  @return The flow in which the Handler will happen, either when the Battery is charging or discharging.
      *  @note For Battery::Handler objects
      */
     Flow get_flow() const { return flow_; }
-    /** @ingroup plugin_battery
+    /**
      *  @return The time delta until the Handler happen.
      -1 means that is will never happen with the current state the Battery,
      for instance when there is no load connected to the Battery.
      *  @note For Battery::Handler objects
     */
     double get_time_delta() const { return time_delta_; }
-    /** @ingroup plugin_battery
+    /**
      *  @return The callback to trigger when the Handler happen.
      *  @note For Battery::Handler objects
      */
     std::function<void()> get_callback() { return callback_; }
-    /** @ingroup plugin_battery
+    /**
      *  @return true if its a recurrent Handler.
      *  @note For Battery::Handler objects
      */

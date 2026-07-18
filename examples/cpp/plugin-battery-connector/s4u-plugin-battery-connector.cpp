@@ -40,23 +40,30 @@ int main(int argc, char* argv[])
       [connector](const sp::SolarPanel* s) { connector->set_load("Solar Panel", s->get_power() * -1); });
 
   myhost1->add_actor("manager", [&myhost1, &solar_panel, &connector] {
-    XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides more than needed.", solar_panel->get_power(), sg_host_get_current_consumption(myhost1));
+    XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides more than needed.",
+             solar_panel->get_power(), sg_host_get_current_consumption(myhost1));
     simgrid::s4u::this_actor::sleep_for(100);
-    XBT_INFO("Energy consumption MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ", sg_host_get_consumed_energy(myhost1) / 1e3, connector->get_energy_provided() / 1e3);
+    XBT_INFO("Energy consumption MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ",
+             sg_host_get_consumed_energy(myhost1) / 1e3, connector->get_energy_provided() / 1e3);
 
     solar_panel->set_solar_irradiance(100);
-    XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides exactly what is needed.", solar_panel->get_power(), sg_host_get_current_consumption(myhost1));
-    double last_measure_host_energy = sg_host_get_consumed_energy(myhost1);
+    XBT_INFO("Solar Panel power = %.2fW, MyHost1 power = %.2fW. The Solar Panel provides exactly what is needed.",
+             solar_panel->get_power(), sg_host_get_current_consumption(myhost1));
+    double last_measure_host_energy      = sg_host_get_consumed_energy(myhost1);
     double last_measure_connector_energy = connector->get_energy_provided();
 
     simgrid::s4u::this_actor::sleep_for(100);
-    XBT_INFO("Energy consumption MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ", (sg_host_get_consumed_energy(myhost1) - last_measure_host_energy) / 1e3, (connector->get_energy_provided() - last_measure_connector_energy) / 1e3);
+    XBT_INFO("Energy consumption MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ",
+             (sg_host_get_consumed_energy(myhost1) - last_measure_host_energy) / 1e3,
+             (connector->get_energy_provided() - last_measure_connector_energy) / 1e3);
 
     XBT_INFO("MyHost1 executes something for 100s. The Solar Panel does not provide enough energy.");
-    last_measure_host_energy = sg_host_get_consumed_energy(myhost1);
+    last_measure_host_energy      = sg_host_get_consumed_energy(myhost1);
     last_measure_connector_energy = connector->get_energy_provided();
     myhost1->execute(100 * myhost1->get_speed());
-    XBT_INFO("Energy MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ", (sg_host_get_consumed_energy(myhost1) - last_measure_host_energy) / 1e3, (connector->get_energy_provided() - last_measure_connector_energy) / 1e3);
+    XBT_INFO("Energy MyHost1: %.2fkJ, Energy from the Solar Panel %.2fkJ",
+             (sg_host_get_consumed_energy(myhost1) - last_measure_host_energy) / 1e3,
+             (connector->get_energy_provided() - last_measure_connector_energy) / 1e3);
   });
 
   e.run();

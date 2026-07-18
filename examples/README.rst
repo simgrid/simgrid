@@ -1550,6 +1550,48 @@ Monitoring the link load
 
    .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 
+.. _plugins_solar_batteries_chiller:
+
+Solar panel, batteries and chillers
+===================================
+
+The corresponding plugins are documented here: :ref:`plugin_battery`, :ref:`plugin_chiller` and :ref:`plugin_solar_panel`.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-battery-chiller-solar/s4u-plugin-battery-chiller-solar.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-battery-connector/s4u-plugin-battery-connector.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-battery-degradation/s4u-plugin-battery-degradation.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-battery-energy/s4u-plugin-battery-energy.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-chiller/s4u-plugin-chiller.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/plugin-solar-panel/s4u-plugin-solar-panel.cpp
+
+.. _ex_plugin_host_carbon_footprint:
+
+Host carbon footprint
+=====================
+
+The corresponding plugin is documented here: :ref:`plugin_host_carbon_footprint`.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-co2/s4u-exec-co2.cpp
+
 ***********************
 Model-Checking examples
 ***********************

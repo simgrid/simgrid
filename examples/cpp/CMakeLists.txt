@@ -96,8 +96,6 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
-                 battery-chiller-solar battery-connector battery-degradation battery-simple battery-energy
-                 chiller-simple
                  comm-pingpong comm-ready comm-suspend comm-wait comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
@@ -113,9 +111,10 @@ foreach (example activityset-testany activityset-waitany activityset-waitall act
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  task-dispatch task-io task-microservice task-parallelism task-simple task-storm task-switch-host task-variable-load
-                 solar-panel-simple
                  platform-comm-serialize platform-failures platform-profile platform-properties
+                 plugin-battery-chiller-solar plugin-battery-connector plugin-battery-degradation plugin-battery plugin-battery-energy
                  plugin-host-load plugin-vm-load plugin-jbod plugin-link-load plugin-prodcons
+                 plugin-chiller plugin-solar-panel
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-condition-variable-waituntil synchro-mutex synchro-semaphore
@@ -244,7 +243,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
-set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/battery-degradation/plot_battery_degradation.py
+set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/plugin-battery-degradation/plot_battery_degradation.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py  PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml

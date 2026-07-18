@@ -18,7 +18,8 @@ SIMGRID_REGISTER_PLUGIN(chiller, "Chiller management", nullptr)
 
   @beginrst
 
-This is the chiller plugin, enabling management of chillers.
+This is the chiller plugin, enabling management of chillers. For examples of use, see
+:ref:`plugins_solar_batteries_chiller`.
 
 Chiller
 .......

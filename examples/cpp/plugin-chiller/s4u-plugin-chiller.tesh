@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-chiller-simple ${platfdir}/energy_platform.xml
+$ ${bindir:=.}/s4u-plugin-chiller ${platfdir}/energy_platform.xml
 > [MyHost1:manager:(1) 0.000000] [chiller_simple/INFO] Chiller: Power: 0.00W T_in: 23.00°C Energy consumed: 0.00J
 > [MyHost1:manager:(1) 821.566667] [chiller_simple/INFO] The input temperature is now equal to the goal temperature. After this point the Chiller will compensate heat with electrical power.
 > [MyHost1:manager:(1) 821.566667] [chiller_simple/INFO] Chiller: Power: 0.00W T_in: 24.00°C Energy consumed: 0.00J
