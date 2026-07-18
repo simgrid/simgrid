@@ -1137,6 +1137,181 @@ Please, use these two parameters (for comments) to make reproducible
 simulations. For additional details about this and all tracing
 options, check See the :ref:`tracing_tracing_options`.
 
+.. _tracing_tracing_options:
+
+Tracing configuration Options
+..............................
+
+To check which tracing options are available for your simulator, run it with ``--help-tracing`` to get a detailed
+and up-to-date explanation of each tracing parameter. These are the main options accepted by the tracing system of
+SimGrid, to be used with the ``--cfg=`` switch:
+
+- **tracing**: Safe switch. It activates (or deactivates) the tracing system. No other tracing option takes effect if
+  this one is not activated.
+
+  .. code-block:: none
+
+     --cfg=tracing:yes
+
+- **tracing/categorized**: Activates the categorized resource utilization tracing. It should be enabled if tracing
+  categories are used by the simulator.
+
+  .. code-block:: none
+
+     --cfg=tracing/categorized:yes
+
+- **tracing/uncategorized**: Activates the uncategorized resource utilization tracing. Use it if the simulator does
+  not use tracing categories and the resource usage still needs to be traced.
+
+  .. code-block:: none
+
+     --cfg=tracing/uncategorized:yes
+
+- **tracing/filename**: Name of the file where the trace is written, in the `Paje <http://github.com/schnorr/pajeng/>`_
+  format.
+
+  .. code-block:: none
+
+     --cfg=tracing/filename:mytracefile.trace
+
+  If this parameter is not provided, the trace file is named ``simgrid.trace``.
+
+- **tracing/smpi**: Only effective for SMPI-based simulators. Traces the MPI interface and generates a trace that can
+  be analyzed with Gantt-like visualizations. Every MPI function is turned into a state, and point-to-point
+  communications can be analyzed with arrows.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi:yes
+
+- **tracing/smpi/group**: Only effective for SMPI-based simulators. Groups the processes by the hosts on which they
+  were executed.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/group:yes
+
+- **tracing/smpi/computing**: Only effective for SMPI-based simulators. Also outputs the parts external to SMPI
+  (e.g. plain computations), which eases automated analysis of the resulting data.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/computing:yes
+
+- **tracing/smpi/internals**: Only effective for SMPI-based simulators. Displays the internal communications
+  happening during a collective MPI call.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/internals:yes
+
+- **tracing/smpi/display-sizes**: Only effective for SMPI-based simulators. Displays the sizes of the messages
+  exchanged in the trace, both on the links and on the states. For collective calls, the size is the total amount of
+  data sent by the process.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/display-sizes:yes
+
+- **tracing/actor**: Traces the behavior of every categorized actor, grouped by host. Useful to track actor location
+  when the simulator relies on actor migration.
+
+  .. code-block:: none
+
+     --cfg=tracing/actor:yes
+
+- **tracing/vm**: Traces the behavior of every virtual machine.
+
+  .. code-block:: none
+
+     --cfg=tracing/vm:yes
+
+- **tracing/platform**: Registers the platform in the trace as a hierarchy.
+
+  .. code-block:: none
+
+     --cfg=tracing/platform:yes
+
+- **tracing/platform/topology**: Registers the platform topology in the trace as a graph. Enabled by default; you may
+  want to disable it as computing the route between every pair of hosts of the same Autonomous System can be time
+  consuming on large platforms.
+
+  .. code-block:: none
+
+     --cfg=tracing/platform/topology:no
+
+- **tracing/disable-destroy**: Disables the destruction of containers at the end of the simulation. This can be used
+  with simulators that have a different notion of time (different from the simulated time).
+
+  .. code-block:: none
+
+     --cfg=tracing/disable-destroy:yes
+
+- **tracing/basic**: Avoids extended events, at the price of a less complete trace file. Some visualization tools are
+  not able to parse the Paje file format correctly; use this option if you rely on one of these tools. Keep in mind
+  that the resulting trace will be incomplete, without all the information that would be registered otherwise.
+
+  .. code-block:: none
+
+     --cfg=tracing/basic:yes
+
+- **tracing/comment**: Adds a comment line to the top of the trace file.
+
+  .. code-block:: none
+
+     --cfg=tracing/comment:my_string
+
+- **tracing/comment-file**: Adds the contents of a file to the top of the trace file, as a comment.
+
+  .. code-block:: none
+
+     --cfg=tracing/comment-file:textual_file.txt
+
+- **tracing/precision**: Determines the precision of the timings stored in the trace file, expressed as a number of
+  digits after the decimal point (defaults to 6). Make sure you set the :ref:`precision/timing <cfg=precision/timing>`
+  option to at least the same value as this one (traces cannot be more accurate than the simulation, but they can be
+  less accurate).
+
+  .. code-block:: none
+
+     --cfg=tracing/precision:10
+
+- **tracing/disable_link**: Do not trace link bandwidth and latency.
+
+  .. code-block:: none
+
+     --cfg=tracing/disable_link:yes
+
+- **tracing/disable_power**: Do not trace host power.
+
+  .. code-block:: none
+
+     --cfg=tracing/disable_power:yes
+
+The following options are specific to SMPI traces:
+
+- **tracing/smpi/format**: Selects the trace output format. Defaults to ``Paje``; the ``TI`` (Time-Independent)
+  format allows for trace replay instead.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/format:TI
+
+- **tracing/smpi/format/ti-one-file**: Only effective with the ``TI`` format above. By default, each process writes
+  its trace to a separate file inside a ``<tracing/filename>_files`` folder. Activating this option makes every
+  process write to a single file instead, to avoid opening thousands of files on large simulations.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/format/ti-one-file:yes
+
+- **tracing/smpi/sleeping**: Generates ``Sleeping`` states for the sleeps in the application that do not pertain to
+  SMPI.
+
+  .. code-block:: none
+
+     --cfg=tracing/smpi/sleeping:yes
+
 Configuring SMPI
 ----------------
 

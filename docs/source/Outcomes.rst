@@ -49,7 +49,30 @@ change the settings at runtime.
 Graphical and statistical logging
 *********************************
 
-To be written. For now, see `this page <https://simgrid.org/contrib/R_visualization.html>`_.
+SimGrid comes with an extensive support to trace and register what happens during the simulation, so that it can be
+either visualized or statistically analysed afterward. This is widely used to observe and understand the behavior of
+parallel applications and distributed algorithms: the user instruments the application, and the traces are analyzed
+after the execution to highlight unexpected behaviors and bottlenecks, or even to help correcting distributed
+algorithms.
+
+The tracing system records the resource (hosts and links) utilization over time. Traces can optionally be organized in
+user-defined *categories*, so that the utilization can be broken down per category (e.g. per algorithmic phase). SMPI
+simulations can also be traced at the level of the MPI calls, to produce Gantt-like visualizations of the
+communications.
+
+The resulting trace files are written in the `Paje <http://github.com/schnorr/pajeng/>`_ format, and can be
+explored with dedicated Paje visualization tools, or post-processed for statistical analysis. In addition to this
+general description, `this page <https://simgrid.org/contrib/R_visualization.html>`_ gives a concrete, hands-on
+example of importing and analyzing SimGrid traces with R.
+
+The tracing subsystem is entirely configured through the ``--cfg=`` command line switch; see the :ref:`Tracing
+configuration Options <tracing_tracing_options>` subsection of :ref:`options` for the full reference, or run your
+simulator with ``--help-tracing`` for a detailed and up-to-date description of every tracing parameter.
+
+.. note::
+   Some content from the historical Doxygen documentation (``doc/doxygen/outcomes_vizu.doc``) have not been ported
+   here yet. Most of it is probably obsolete and should be dropped, but he list of tools and tips to analyze the 
+   resulting trace files (``pj_dump``, R/ggplot2, PajeNG, ...) is probably still relevant.
 
 Building your own logging
 *************************
