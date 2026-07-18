@@ -1034,6 +1034,8 @@ failures in your code. See also :ref:`howto_churn`,
 
       .. showfile:: examples/platforms/profiles/fafard_state.profile
 
+.. _s4u_ex_speed_profile:
+
 Specifying speed profiles
 -------------------------
 
@@ -1058,6 +1060,8 @@ Shows how to specify an external load to resources, variating their peak speed o
 
 Modifying the platform
 ======================
+
+.. _s4u_ex_comm_serialize:
 
 Serializing communications
 --------------------------

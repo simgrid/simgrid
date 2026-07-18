@@ -554,6 +554,8 @@ use routes of length 1, and that any host is connected to the platform.
 Arguably, SimGrid could detect this situation and report it, but unfortunately,
 this still has to be done.
 
+.. _models_fmi:
+
 FMI-based models
 ****************
 

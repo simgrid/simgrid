@@ -27,8 +27,7 @@ make install
 [local version](docs/source).
 
 You can also ask your questions, or simply discuss with other users on
-to the [SimGrid mattermost](https://framateam.org/simgrid/channels/town-square)
-or on the #simgrid IRC channel of the oftc network.
+to the [SimGrid mattermost](https://framateam.org/simgrid/channels/town-square).
 
 Last, the main development of SimGrid is done on [Framagit](https://framagit.org/simgrid/simgrid/),
 but we also maintain a [GitHub mirror](https://github.com/simgrid/simgrid/) and an [Inria GitLab mirror](https://gitlab.inria.fr/simgrid/simgrid),

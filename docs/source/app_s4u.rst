@@ -15,15 +15,14 @@ The S4U Interface
    <br/>
    <br/>
 
-The S4U interface (SimGrid for you) mixes the full power of SimGrid
-with the full power of C++. This is the preferred interface to describe
-abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
-settings.
+The S4U interface (SimGrid for you) mixes the full power of SimGrid with the full power of C++. This is the preferred interface
+to describe abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar settings. 
 
-Since v3.33 (Spring 2023), S4U is the main interface of SimGrid for algorithms.
-It is feature complete, but may still evolve slightly in future releases.
-When this happens, compiling your code will produce deprecation warnings for 4
-releases (one year) before the removal of the old symbols.
+See the :ref:`usecase_simalgo` tutorial for an hands-on introduction.
+
+S4U is the main interface of SimGrid for algorithms. It is considered as stable but may still evolve slightly between releases.
+When this happens, compiling your code will produce deprecation warnings for 4 releases (at least one year) before the removal
+of the old symbols.
 
 .. _S4U_main_concepts:
 
@@ -1254,6 +1253,7 @@ Performance
 
       .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_factor_cb
 
    .. group-tab:: Python
 

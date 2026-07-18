@@ -89,6 +89,7 @@ of every page. Bugs in the code should be reported
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_application.rst>
          Simulation outcomes <Outcomes.rst>
+      Extending SimGrid <Extending_SimGrid.rst>
 
 .. toctree::
    :hidden:

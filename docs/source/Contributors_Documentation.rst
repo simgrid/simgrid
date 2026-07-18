@@ -5,9 +5,11 @@ Contributor's Documentation
 
 This page describes the software infrastructure for SimGrid potential contributors. It is particularly interesting if you plan to send some patches for
 inclusion in the project code.
+ 
+.. include:: ../../src/README.rst
 
 Enforcing the coding standards
-------------------------------
+##############################
 
 If you plan to contribute code to the SimGrid project, you must ensure that your changes follow our coding standards. For that, simply install the relevant
 tools and scripts.
@@ -26,7 +28,7 @@ and provide a ready to use patch that you can apply to improve your commit. Just
 If you prefer not to apply the fix on a specific commit (because the formatter fails on this case), then add ``--no-verify`` to your git commit command line.
 
 Interacting with cmake
-----------------------
+######################
 
 Configuring
 ^^^^^^^^^^^
@@ -54,8 +56,10 @@ the python building process, that does not use cmake to build the archive.
 When you add a new file, you should use the relevant build target to check that every files followed by git are included in the archive or properly excluded (by
 being listed in ``tools/internal/check_dist_archive.exclude``), and that all settings are consistent.
 
+.. _contrib_tests:
+
 Interacting with the tests
---------------------------
+##########################
 
 Breaking tests once in a while is completely OK in SimGrid. We accept temporarily breakages because we want things to evolve, but if you break something, it is
 your duty to fix it within 24 hours to not hinder the work of others.
@@ -154,7 +158,7 @@ release on several CPU architectures. We maintain some scripts to interact with 
 Note: the gitlab worker on the freebsd image can be restarted using `service gitlab_runner start` on this machine.
 
 Interacting with git
---------------------
+####################
 
 The SimGrid community is relatively small and active. We are not used to maintain long-standing branches but instead, we strive to do our changes in an
 incremental way, commiting all intermediary steps to the main branch. The only thing is to ensure that you don't break things on the path, i.e. that all tests
@@ -166,7 +170,7 @@ It is nice if your commit message could follow the git habits, explained in this
 <https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages>`_.
 
 Type naming standard
---------------------
+####################
 
 * Filenames shall be unique in the whole project (because of a bug in Sonar coverage computation).
 
@@ -188,7 +192,7 @@ In C:
 * Typedefs do not hide the pointers, i.e. the * must be explicit. ``char* sg_host_get_name(sg_host_t* host)``.
 
 Unsorted hints
---------------
+##############
 
 * To thoroughly test your changes before pushing your commits, use several cmake configurations under sub-trees of ``build/``
   (that is ignored by git) as explained in :ref:`install_cmake_outsrc`. For example, I have the following directories:

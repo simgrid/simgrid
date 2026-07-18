@@ -844,6 +844,7 @@ set(DOC_SOURCES
   doc/doxygen/outcomes_vizu.doc
 
   examples/README.rst
+  src/README.rst
 
   docs/manpages/smpicc.1
   docs/manpages/smpicxx.1
@@ -897,6 +898,7 @@ set(DOC_SOURCES
   docs/source/Contributors_Documentation.rst
   docs/source/Examples.rst
   docs/source/Experimental_setup.rst
+  docs/source/Extending_SimGrid.rst
   docs/source/index.rst
   docs/source/intl.rst
   docs/source/Introduction.rst
@@ -1019,6 +1021,7 @@ set(txt_files
   LICENSE-LGPL-2.1
   NEWS
   README.md
+  CONTRIBUTING.md
   )
 
 # The list of cmake build directories is constructed from the following list.
