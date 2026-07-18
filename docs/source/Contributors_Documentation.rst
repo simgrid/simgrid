@@ -31,7 +31,7 @@ Interacting with cmake
 ######################
 
 Configuring
-^^^^^^^^^^^
+***********
 
 The :ref:`default build configuration <install_src_config>` is intended for users, but contributors should change these settings for their comfort, and to
 produce better code. In particular, the default is to build highly optimized binaries, at the price of high compilation time and somewhat harder debug sessions.
@@ -47,7 +47,7 @@ As you can see, we advise to use Ninja instead of the good old Makefiles. In our
 commands as make for basic operations.
 
 Adding a new file
-^^^^^^^^^^^^^^^^^
+*****************
 
 The content of the archive is mostly built from the lists given in ``tools/cmake/DefinePackages.cmake``. The only exceptions are the files related to the
 examples, that are listed in the relevant ``CMakeLists.txt`` file, e.g. ``examples/cpp/CMakeLists.txt``. This information is duplicated in ``MANIFEST.in`` for
@@ -69,7 +69,7 @@ Note that need to build the tests with ``make examples`` or ``ninja examples`` b
 tests: any hint is welcome.
 
 Understanding the existing tests
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+********************************
 
 We use unit tests based on `Catch2 <https://github.com/catchorg/Catch2/>`_, but most of our testing is done through integration tests that launch a specific
 simulation example and enforce that the output remains unchanged. Since SimGrid displays the timestamp of every logged event, such integration tests ensure that
@@ -90,7 +90,7 @@ For this reason, we tend to avoid random testing that is difficult to reproduce.
 make the model intend clear, and the code easier to debug on need. The WiFi tests seem to be a good example of that trend.
 
 Adding a test
-^^^^^^^^^^^^^
+*************
 
 We often say that a feature that is not tested is a feature that could soon disappear. So you want to write tests for the features you add. To add new unit
 tests, please refer to the end of ``tools/cmake/Tests.cmake``) for some examples. Catch2 comes with a good documentation and many examples online. If you add a
@@ -101,7 +101,7 @@ by modifying for example the ``examples/cpp/CMakeLists.txt`` file. The test name
 ``make distcheck`` once you're done to check that you did not forget to add your new files to the distribution.
 
 Noteworthy tests
-^^^^^^^^^^^^^^^^
+****************
 
 Here is a short list of some typical tests in SimGrid, in the hope that they can give you some inspiration for your own tests.
 Note that good tests rarely involve randomness, which makes it difficult to understand and fix problems when they occur.
@@ -145,7 +145,7 @@ Note that good tests rarely involve randomness, which makes it difficult to unde
   Python) and a semaphore example (in C++ only) in ``teshsuite/s4u``.
 
 Continuous integrations
-^^^^^^^^^^^^^^^^^^^^^^^
+***********************
 
 We have many online build bots that launch the tests on various configurations and operating systems. The results are centralized on two Jenkins jobs: `the main
 one <https://ci.inria.fr/simgrid/job/SimGrid/>`_ runs all tests on a variety of systems for each commit, while `Nightly
@@ -190,6 +190,22 @@ In C:
 * Getters and setters are named ``sg_object_get_field()`` and ``sg_object_field()`` (e.g. ``sg_link_get_name()`` and ``sg_link_set_data()``);
 * Variables and functions are snake_case();
 * Typedefs do not hide the pointers, i.e. the * must be explicit. ``char* sg_host_get_name(sg_host_t* host)``.
+
+.. _contrib_doc:
+
+Interacting with the doc
+########################
+
+The documentation lives in ``docs/`` (``doc`` is an old leftover that should be removed once finally converted). It is compiled
+with sphinx. The API documentation of C, C++ and Java is extracted with doxygen and integrated into sphinx with breathe (check
+``docs/requirements.txt`` for the exact versions we need). Python is integrated directly by Sphinx, which needs the compiled
+plugin under ``lib/`` to that extend. The C, C++ and Java definitions are included in ``docs/source/app_s4u.rst`` through ``..
+doxygenfunction`` primitives and similar. Java is integrated as if it was C++, because javasphinx is a dead project and would
+not be flexible enough to be integrated in our documentation.
+
+The script ``docs/find-missing.py`` checks that all examples are converted in all languages, that all symbols extracted by
+doxygen are referenced in the doc, etc. We should improve the doc to ensure that everything is documented, but we are not there
+yet.
 
 Unsorted hints
 ##############
