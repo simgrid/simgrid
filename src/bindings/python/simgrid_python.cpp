@@ -9,6 +9,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include "simgrid/instr.h"
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
@@ -100,6 +101,86 @@ PYBIND11_MODULE(simgrid, m)
   m.def("MC_assert", &MC_assert, "Assertion for the model-checker: Defines a safety property to verify");
   m.def("MC_random", &MC_random,
         "Explore every branches where that function returns a value between min and max (inclusive)");
+
+  /* Tracing: host user-variables.
+   * time defaults to -1, meaning "now": the actual current clock is read at call time (inside the lambda),
+   * not when the module is loaded, unlike what a plain py::arg(...)=simgrid_get_clock() default would do. */
+  m.def("declare_host_variable", &simgrid::instr::declare_host_variable, py::arg("variable"), py::arg("color") = "",
+        "Declare a new user variable associated to hosts, and optionally give a color to use in the trace.");
+  m.def(
+      "set_host_variable",
+      [](const std::string& host, const std::string& variable, double value, double time) {
+        simgrid::instr::set_host_variable(host, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("host"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Set the value of a given host variable, possibly at a given timestamp (defaults to the current time).");
+  m.def(
+      "add_host_variable",
+      [](const std::string& host, const std::string& variable, double value, double time) {
+        simgrid::instr::add_host_variable(host, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("host"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Add a value to a given host variable, possibly at a given timestamp (defaults to the current time).");
+  m.def(
+      "sub_host_variable",
+      [](const std::string& host, const std::string& variable, double value, double time) {
+        simgrid::instr::sub_host_variable(host, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("host"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Subtract a value from a given host variable, possibly at a given timestamp (defaults to the current time).");
+  m.def("get_host_variables", &simgrid::instr::get_host_variables,
+        "Retrieve the set of user variables declared for hosts.");
+
+  /* Tracing: link user-variables */
+  m.def("declare_link_variable", &simgrid::instr::declare_link_variable, py::arg("variable"), py::arg("color") = "",
+        "Declare a new user variable associated to links, and optionally give a color to use in the trace.");
+  m.def(
+      "set_link_variable",
+      [](const std::string& link, const std::string& variable, double value, double time) {
+        simgrid::instr::set_link_variable(link, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("link"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Set the value of a given link variable, possibly at a given timestamp (defaults to the current time).");
+  m.def(
+      "add_link_variable",
+      [](const std::string& link, const std::string& variable, double value, double time) {
+        simgrid::instr::add_link_variable(link, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("link"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Add a value to a given link variable, possibly at a given timestamp (defaults to the current time).");
+  m.def(
+      "sub_link_variable",
+      [](const std::string& link, const std::string& variable, double value, double time) {
+        simgrid::instr::sub_link_variable(link, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("link"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Subtract a value from a given link variable, possibly at a given timestamp (defaults to the current time).");
+  m.def(
+      "set_link_variable",
+      [](const std::string& src, const std::string& dst, const std::string& variable, double value, double time) {
+        simgrid::instr::set_link_variable(src, dst, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("src"), py::arg("dst"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Set the value of a given link variable for the link(s) between src and dst, possibly at a given timestamp "
+      "(defaults to the current time).");
+  m.def(
+      "add_link_variable",
+      [](const std::string& src, const std::string& dst, const std::string& variable, double value, double time) {
+        simgrid::instr::add_link_variable(src, dst, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("src"), py::arg("dst"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Add a value to a given link variable for the link(s) between src and dst, possibly at a given timestamp "
+      "(defaults to the current time).");
+  m.def(
+      "sub_link_variable",
+      [](const std::string& src, const std::string& dst, const std::string& variable, double value, double time) {
+        simgrid::instr::sub_link_variable(src, dst, variable, value, time >= 0 ? time : simgrid_get_clock());
+      },
+      py::arg("src"), py::arg("dst"), py::arg("variable"), py::arg("value"), py::arg("time") = -1,
+      "Subtract a value from a given link variable for the link(s) between src and dst, possibly at a given "
+      "timestamp (defaults to the current time).");
+  m.def("get_link_variables", &simgrid::instr::get_link_variables,
+        "Retrieve the set of user variables declared for links.");
 
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
@@ -1105,6 +1186,9 @@ PYBIND11_MODULE(simgrid, m)
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")
       .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed.")
       .def_static("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
+      .def("get_property", &Actor::get_property, "Get an actor property")
+      .def("get_properties", &Actor::get_properties, "Get all actor properties")
+      .def("set_property", &Actor::set_property, "Set an actor property")
       .def(
           "__repr__", [](const ActorPtr a) { return "Actor(" + a->get_name() + ")"; },
           "Textual representation of the Actor");
