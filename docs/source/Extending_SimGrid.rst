@@ -58,7 +58,10 @@ Plugins
 For anything that does not fit the above (e.g., collecting statistics, modeling energy consumption, reacting to arbitrary
 simulation events), write a **plugin**: a piece of code, external to SimGrid's core, that attaches callbacks to signals fired by
 the simulation kernel and can store its own state on any actor, activity, or resource. This is how most of SimGrid's own
-optional features (energy, host load, batteries...) are implemented. See the dedicated :ref:`plugins` page.
+optional features (energy, host load, batteries...) are implemented. This makes it easier for you to modify the underlying
+models to fit your own assumptions, as each plugin is self-contained.
+
+See the dedicated :ref:`plugins` page for more information.
 
 Replacing a model entirely
 **************************
