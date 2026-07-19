@@ -46,7 +46,7 @@ public:
   /** Returns whether the mailbox contains queued communications */
   bool empty() const;
 
-  /* Returns the number of queued communications */
+  /** Returns the number of queued communications */
   size_t size() const;
 
   /** Check if there is a communication going on in a mailbox. */
@@ -127,12 +127,16 @@ public:
 
   /** Blocking data reception */
   template <typename T> T* get();
+  /** Blocking data reception, returning the data wrapped in a std::unique_ptr for automatic memory management */
   template <typename T> std::unique_ptr<T> get_unique() { return std::unique_ptr<T>(get<T>()); }
 
   /** Blocking data reception with timeout */
   template <typename T> T* get(double timeout);
+  /** Blocking data reception with timeout, returning the data wrapped in a std::unique_ptr for automatic memory
+   * management */
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 
+  /** Removes all the queued communications of this mailbox, cancelling them as needed. */
   void clear();
 };
 

@@ -26,6 +26,7 @@ namespace s4u {
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
+/** Returns whether the current actor is maestro, the actor internally used by SimGrid to drive the simulation. */
 XBT_PUBLIC bool is_maestro();
 
 /** Block the current actor sleeping for that amount of seconds */
@@ -148,7 +149,15 @@ XBT_PUBLIC const char* get_cname();
 
 /** Returns the name of the host on which the current actor is running. */
 XBT_PUBLIC s4u::Host* get_host();
-/** Migrate the current actor to a new host. */
+/** @brief Moves the current actor to another host
+ *
+ * If the actor is currently blocked on an execution activity, the activity is also
+ * migrated to the new host. If it's blocked on another kind of activity, an error is
+ * raised as the mandated code is not written yet. Please report that bug if you need it.
+ *
+ * Asynchronous activities started by the actor are not migrated automatically, so you have
+ * to take care of this yourself (only you knows which ones should be migrated).
+ */
 XBT_PUBLIC void set_host(s4u::Host* new_host);
 
 /** Suspend the current actor, that is blocked until resume()ed by another actor. */
@@ -357,6 +366,7 @@ public:
   /** Returns whether or not this actor has been daemonized or not **/
   bool is_daemon() const;
 
+  /** Returns whether this actor is maestro, the actor internally used by SimGrid to drive the simulation. */
   static bool is_maestro();
 
   /** Retrieves the name of that actor as a C++ string */
@@ -402,7 +412,7 @@ public:
    * blocking functions forbidden in this setting, but also modifications to the global state.
    *
    * The parameter of on_exit's callbacks denotes whether or not the actor's execution failed.
-   * It will be set to true if the actor was killed or failed because of an exception,
+   * It will be set to true if the actor was killed or failed because of an exception or if the simulation deadlocked,
    * while it will remain to false if the actor terminated gracefully.
    */
   void on_exit(const std::function<void(bool /*failed*/)>& fun) const;

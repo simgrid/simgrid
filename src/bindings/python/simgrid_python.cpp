@@ -214,18 +214,26 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
                              const std::vector<double>&>(&simgrid::s4u::this_actor::exec_init),
            "Initiate a parallel task (requires the 'ptask_L07' model)")
-      .def("get_engine", &simgrid::s4u::this_actor::get_engine,
-           "The engine on which this actor is running (read-only property).")
+      .def("get_engine", &simgrid::s4u::this_actor::get_engine, "Returns the engine instance this actor is running in.")
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
-      .def("set_host", &simgrid::s4u::this_actor::set_host, "Moves the current actor to another host.", py::arg("dest"))
+      .def("set_host", &simgrid::s4u::this_actor::set_host,
+           "Moves the current actor to another host.\n\n"
+           "If the actor is currently blocked on an execution activity, the activity is also migrated to the new "
+           "host. If it's blocked on another kind of activity, an error is raised as the mandated code is not "
+           "written yet. Please report that bug if you need it.\n\n"
+           "Asynchronous activities started by the actor are not migrated automatically, so you have to take care "
+           "of this yourself (only you knows which ones should be migrated).",
+           py::arg("dest"))
       .def("sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
            "Block the actor sleeping for that amount of seconds.", py::arg("duration"))
       .def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
            "Block the actor sleeping until the specified timestamp.", py::arg("duration"))
       .def("suspend", &simgrid::s4u::this_actor::suspend,
            "Suspend the current actor, that is blocked until resume()ed by another actor.")
-      .def("yield_", &simgrid::s4u::this_actor::yield, "Yield the actor")
-      .def("exit", &simgrid::s4u::this_actor::exit, "kill the current actor")
+      .def("yield_", &simgrid::s4u::this_actor::yield,
+           "Yield the current actor, give the control to the other actors. It will be executed again in the next "
+           "scheduling round.")
+      .def("exit", &simgrid::s4u::this_actor::exit, "Kill the current actor.")
       .def(
           "on_exit",
           [](py::object fun) {
@@ -292,12 +300,12 @@ PYBIND11_MODULE(simgrid, m)
              }
              return e;
            }),
-           "The constructor should take the parameters from the command line, as is ")
+           "Create the simulation engine, passing the command-line parameters of your main function.")
       .def_property_readonly_static(
           "clock", [](py::object /* self */) { return Engine::get_clock(); },
           "The simulation time, ie the amount of simulated seconds since the simulation start.")
       .def_property_readonly_static(
-          "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the simulation engine")
+          "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the engine singleton")
       .def("host_by_name", &Engine::host_by_name_or_null,
            "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
@@ -310,17 +318,23 @@ PYBIND11_MODULE(simgrid, m)
                              "Returns the list of all actors found in the platform")
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
-      .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
-      .def("netzone_by_name", &Engine::netzone_by_name_or_null)
+      .def("netpoint_by_name", &Engine::netpoint_by_name_or_null,
+           "Retrieve a netpoint by its name, or None if it does not exist in the platform.")
+      .def("netzone_by_name", &Engine::netzone_by_name_or_null,
+           "Retrieve a netzone by its name, or None if it does not exist in the platform.")
       .def_static("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
-                  "Change one of SimGrid's configurations")
-      .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
+                  "Set a configuration variable to the given value. Do --help on any SimGrid binary to see the list "
+                  "of currently existing configuration variables.")
+      .def("load_platform", &Engine::load_platform,
+           "Creates a new platform, including hosts, links, and the routing table (see also: the documentation on "
+           "platform files).")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
       .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create, py::arg("name"),
            "Find a mailbox from its name or create one if it does not exist")
       .def("run", &Engine::run, "Run the simulation until its end")
       .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
-           "Run the simulation until the given date", py::arg("max_date") = -1)
+           "Run the simulation until the given date, given in seconds since the simulation start",
+           py::arg("max_date") = -1)
       .def(
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
@@ -962,12 +976,12 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("link_down", &simgrid::s4u::SplitDuplexLink::get_link_down, "Get link direction down");
 
   /* Class Mailbox */
-  py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
-      m, "Mailbox", "Mailbox. See the C++ documentation for details.")
+  py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Network rendez-vous points.")
       .def(
           "__repr__", [](const Mailbox* self) { return "Mailbox(" + self->get_name() + ")"; },
           "Textual representation of the Mailbox")
-      .def_static("by_name", &Mailbox::by_name, py::arg("name"), "Retrieve a Mailbox from its name")
+      .def_static("by_name", &Mailbox::by_name, py::arg("name"),
+                  "Retrieve the mailbox associated to the given name. Mailboxes are created on demand.")
       .def_property_readonly("name", &Mailbox::get_name, "The name of that mailbox (read-only property).")
       .def_property_readonly("ready", &Mailbox::ready,
                              "Check if there is a communication ready to be consumed from a mailbox.")
@@ -991,21 +1005,25 @@ PYBIND11_MODULE(simgrid, m)
             auto* data_ptr = data.inc_ref().ptr();
             return self->put_async(data_ptr, size);
           },
-          "Non-blocking data transmission")
+          "Creates and start a data transmission to that mailbox.")
       .def(
           "put_init",
           [](Mailbox* self, py::object data, uint64_t size) {
             auto* data_ptr = data.inc_ref().ptr();
             return self->put_init(data_ptr, size);
           },
-          "Creates (but don’t start) a data transmission to that mailbox.")
+          "Creates (but don't start) a data transmission to that mailbox.")
       .def(
           "get", [](Mailbox* self) { return py::reinterpret_steal<py::object>(self->get<PyObject>()); },
           "Blocking data reception")
       .def(
           "get_async", [](Mailbox* self) -> CommPtr { return self->get_async(); },
           "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
-      .def("set_receiver", &Mailbox::set_receiver, "Sets the actor as permanent receiver");
+      .def("set_receiver", &Mailbox::set_receiver,
+           "Declare that the specified actor is a permanent receiver on this mailbox. It means that the "
+           "communications sent to this mailbox will start flowing to its host even before it does a get(). This "
+           "models the real behavior of TCP and MPI communications, amongst other, and improves the accuracy of "
+           "predictions, in particular if your application exhibits swarms of small messages.");
 
   /* class Activity */
   py::class_<Activity, ActivityPtr>(m, "Activity", "Activity. See the C++ documentation for details.");
@@ -1173,22 +1191,24 @@ PYBIND11_MODULE(simgrid, m)
       .def("set_auto_restart", &Actor::set_auto_restart,
            "Specify whether the actor shall restart when its host reboots.")
       .def("daemonize", &Actor::daemonize,
-           "This actor will be automatically terminated when the last non-daemon actor finishes (more info in the C++ "
-           "documentation).")
+           "This actor will be automatically terminated when the last non-daemon actor finishes.\n\n"
+           "Daemons are killed as soon as the last regular actor disappears. If another regular actor gets "
+           "restarted later on by a timer or when its host reboots, the daemons do not get restarted.")
       .def("is_daemon", &Actor::is_daemon,
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
       .def("join", py::overload_cast<double>(&Actor::join, py::const_),
-           "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout") = -1)
+           "Wait for the actor to finish. Blocks the calling actor until the joined actor is terminated.",
+           py::arg("timeout") = -1)
       .def("kill", &Actor::kill, "Kill that actor")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
       .def("suspend", &Actor::suspend, "Suspend that actor, that is blocked until resume()ed by another actor.")
       .def("resume", &Actor::resume, "Resume that actor, that was previously suspend()ed.")
       .def_static("kill_all", &Actor::kill_all, "Kill all actors but the caller.")
-      .def("get_property", &Actor::get_property, "Get an actor property")
-      .def("get_properties", &Actor::get_properties, "Get all actor properties")
-      .def("set_property", &Actor::set_property, "Set an actor property")
+      .def("get_property", &Actor::get_property, "Retrieve the value of an actor property (or None if not set)")
+      .def("get_properties", &Actor::get_properties, "Retrieve all actor properties")
+      .def("set_property", &Actor::set_property, "Set an actor property (old values will be overwritten)")
       .def(
           "__repr__", [](const ActorPtr a) { return "Actor(" + a->get_name() + ")"; },
           "Textual representation of the Actor");

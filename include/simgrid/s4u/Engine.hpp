@@ -29,9 +29,9 @@ class XBT_PUBLIC Engine {
 #endif
 
 public:
-  /** Constructor, taking only the name of your main function */
+  /** Create the simulation engine, passing the name of your main function */
   explicit Engine(std::string name);
-  /** Constructor, taking the command line parameters of your main function */
+  /** Create the simulation engine, passing the command-line parameters of your main function */
   explicit Engine(int* argc, char** argv);
 
 #ifndef DOXYGEN
@@ -44,10 +44,10 @@ public:
   /** Run the simulation until its end */
   void run() const;
 
-  /** Run the simulation until the specified date */
+  /** Run the simulation until the given date, given in seconds since the simulation start */
   void run_until(double max_date) const;
 
-  /** @brief Retrieve the simulation time (in seconds) */
+  /** @brief Retrieve the simulation time (in seconds since the simulation start) */
   static double get_clock();
   static void papi_start();
   static void papi_stop();
@@ -57,7 +57,9 @@ public:
   static s4u::Engine* get_instance();
   static s4u::Engine* get_instance(int* argc, char** argv);
   static bool has_instance() { return instance_ != nullptr && not shutdown_ongoing_; }
+  /** @brief Retrieve the command-line parameters that were passed to the engine's constructor */
   const std::vector<std::string>& get_cmdline() const;
+  /** @brief Retrieve the name of the context factory currently in use (eg "raw", "boost", "thread"...) */
   const char* get_context_factory_name() const;
 
   /**
@@ -119,7 +121,8 @@ public:
   /** If non-null, the provided set will be filled with all activities that fail to start because of a veto */
   void track_vetoed_activities(std::set<Activity*>* vetoed_activities) const;
 
-  /** @verbatim embed:rst:inline Load a deployment file. See:ref:`deploy` and the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
+  /** Load a deployment file, launching the actors that it contains.
+   *  @verbatim embed:rst:inline See:ref:`deploy` and the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   void load_deployment(const std::string& deploy) const;
 
 protected:
@@ -146,33 +149,50 @@ public:
    * table internally.
    */
   std::vector<s4u::Host*> get_all_hosts() const;
+  /** Returns the hosts for which @a filter returns true. */
   std::vector<s4u::Host*> get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const;
+  /** Returns the hosts listed in the given MPI hostfile, in the order they appear in the file. */
   std::vector<s4u::Host*> get_hosts_from_MPI_hostfile(const std::string& hostfile) const;
+  /** Find a host from its name. @throw std::invalid_argument if the searched host does not exist. */
   s4u::Host* host_by_name(const std::string& name) const;
+  /** Find a host from its name, or @c nullptr if it does not exist. */
   s4u::Host* host_by_name_or_null(const std::string& name) const;
 
+  /** Returns the amount of links existing in the platform. */
   size_t get_link_count() const;
+  /** Returns a vector of all links found in the platform. */
   std::vector<s4u::Link*> get_all_links() const;
+  /** Returns the links for which @a filter returns true. */
   std::vector<s4u::Link*> get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const;
+  /** Find a link from its name. @throw std::invalid_argument if the searched link does not exist. */
   s4u::Link* link_by_name(const std::string& name) const;
   /**
    * @brief Find a split-duplex link from its name.
    * @throw std::invalid_argument if the searched link does not exist.
    */
   SplitDuplexLink* split_duplex_link_by_name(const std::string& name) const;
+  /** Find a link from its name, or @c nullptr if it does not exist. */
   s4u::Link* link_by_name_or_null(const std::string& name) const;
 
+  /** Find a mailbox from its name, creating it if it does not exist yet. */
   s4u::Mailbox* mailbox_by_name_or_create(const std::string& name) const;
+  /** Find a message queue from its name, creating it if it does not exist yet. */
   s4u::MessageQueue* message_queue_by_name_or_create(const std::string& name) const;
 
+  /** Returns the amount of actors existing in the platform. */
   size_t get_actor_count() const;
+  /** Returns the highest PID ever given to an actor so far. */
   aid_t get_actor_max_pid() const;
+  /** Returns a vector of all actors found in the platform. */
   std::vector<ActorPtr> get_all_actors() const;
-  /* Display the status of all actors on the standard error stream */
+  /** Display the status of all actors on the standard error stream */
   void display_all_actors_status() const;
+  /** Returns the actors for which @a filter returns true. */
   std::vector<ActorPtr> get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const;
 
+  /** Returns a vector of all netpoints found in the platform. */
   std::vector<kernel::routing::NetPoint*> get_all_netpoints() const;
+  /** Find a netpoint from its name, or @c nullptr if it does not exist. */
   kernel::routing::NetPoint* netpoint_by_name_or_null(const std::string& name) const;
   /**
    * @brief Get netpoint by its name
@@ -182,9 +202,12 @@ public:
    */
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
+  /** Retrieve the root netzone, containing all others. */
   s4u::NetZone* get_netzone_root() const;
+  /** Returns a vector of all netzones found in the platform. */
   std::vector<s4u::NetZone*> get_all_netzones() const;
 
+  /** Find a netzone from its name, or @c nullptr if it does not exist. */
   s4u::NetZone* netzone_by_name_or_null(const std::string& name) const;
 
   /** @brief Retrieves all netzones of the type indicated by the template argument */
@@ -265,6 +288,8 @@ public:
   static void set_config(const std::string& name, double value);
   static void set_config(const std::string& name, const std::string& value);
 
+  /** Set the default function used to copy the data of a communication's payload to its destination. This callback is
+   *  used for every communication that doesn't specify its own copy function (see @c Comm::set_copy_data_callback). */
   Engine*
   set_default_comm_data_copy_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
 
