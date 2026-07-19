@@ -481,6 +481,13 @@ See also :ref:`the relevant example <s4u_ex_actors_create>`.
       .. doxygenfunction:: sg_actor_attach_pthread(const char *name, void *data, sg_host_t host)
       .. doxygenfunction:: sg_actor_detach()
 
+   .. group-tab:: Java
+
+      In Java, actors are created by subclassing ``Actor`` and implementing its ``run()`` method,
+      which plays the role of the ``code`` functions or lambdas used in the other languages.
+
+      .. javamethod:: org.simgrid.s4u.Actor.run
+
       See also :ref:`s4u_ex_actor_attach` for an example of use of ``sg_actor_attach_pthread()`` and ``sg_actor_detach()``.
 
 Retrieving actors
@@ -725,6 +732,7 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::this_actor::get_host()
       .. doxygenfunction:: simgrid::s4u::this_actor::set_host(Host *new_host)
+      .. doxygenfunction:: simgrid::s4u::this_actor::get_engine()
 
    .. group-tab:: Python
 
@@ -744,6 +752,10 @@ Querying info
       .. doxygenfunction:: sg_actor_self_get_ppid()
       .. doxygenfunction:: sg_host_self()
       .. doxygenfunction:: sg_host_self_get_name()
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Actor.get_engine
 
 Suspending and resuming
 -----------------------
@@ -784,6 +796,19 @@ Logging messages
        .. autofunction:: simgrid.this_actor.info
        .. autofunction:: simgrid.this_actor.warning
        .. autofunction:: simgrid.this_actor.error
+
+   .. group-tab:: C
+
+      Please refer to :ref:`the relevant documentation <logging_prog>`.
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.debug
+      .. javamethod:: org.simgrid.s4u.Engine.verbose
+      .. javamethod:: org.simgrid.s4u.Engine.info
+      .. javamethod:: org.simgrid.s4u.Engine.warn
+      .. javamethod:: org.simgrid.s4u.Engine.error
+      .. javamethod:: org.simgrid.s4u.Engine.critical
 
 Sleeping
 --------
@@ -943,6 +968,9 @@ Simulation setup
       .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const std::function< void(std::vector< std::string >)> &code)
       .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 
+      .. doxygenfunction:: simgrid::s4u::Engine::seal_platform() const
+      .. doxygenfunction:: simgrid::s4u::Engine::get_hosts_from_MPI_hostfile(const std::string& hostfile) const
+
    .. group-tab:: Python
 
        .. automethod:: simgrid.Engine.load_deployment
@@ -961,7 +989,9 @@ Simulation setup
       .. javamethod:: org.simgrid.s4u.Engine.set_config
       .. javamethod:: org.simgrid.s4u.Engine.load_deployment
       .. javamethod:: org.simgrid.s4u.Engine.load_platform
+      .. javamethod:: org.simgrid.s4u.Engine.seal_platform
       .. javamethod:: org.simgrid.s4u.Engine.flatify_platform
+      .. javamethod:: org.simgrid.s4u.Engine.get_hosts_from_MPI_hostfile
 
 
 Run the simulation
@@ -1003,6 +1033,7 @@ Retrieving actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_actor_count
       .. doxygenfunction:: simgrid::s4u::Engine::get_all_actors
       .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_actors
+      .. doxygenfunction:: simgrid::s4u::Engine::get_actor_max_pid() const
 
    .. group-tab:: Python
 
@@ -1016,6 +1047,7 @@ Retrieving actors
 
       .. javamethod:: org.simgrid.s4u.Engine.get_actor_count
       .. javamethod:: org.simgrid.s4u.Engine.get_all_actors
+      .. javamethod:: org.simgrid.s4u.Engine.get_actor_max_pid
 
 Retrieving hosts
 ----------------
@@ -1076,6 +1108,7 @@ Interacting with the routing
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Engine::get_all_netpoints
+      .. doxygenfunction:: simgrid::s4u::Engine::get_all_netzones
       .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_netzones
       .. doxygenfunction:: simgrid::s4u::Engine::get_netzone_root
       .. doxygenfunction:: simgrid::s4u::Engine::netpoint_by_name_or_null
@@ -1091,6 +1124,8 @@ Interacting with the routing
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Engine.get_netzone_root
+      .. javamethod:: org.simgrid.s4u.Engine.get_all_netzones
+      .. javamethod:: org.simgrid.s4u.Engine.netzone_by_name
 
 Signals
 -------
@@ -1114,6 +1149,70 @@ Signals
       .. javamethod:: org.simgrid.s4u.Engine.on_simulation_end_cb
       .. javamethod:: org.simgrid.s4u.Engine.on_time_advance_cb
       .. javamethod:: org.simgrid.s4u.Engine.on_deadlock_cb
+
+Retrieving mailboxes and message queues
+----------------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Engine::mailbox_by_name_or_create(const std::string& name) const
+      .. doxygenfunction:: simgrid::s4u::Engine::message_queue_by_name_or_create(const std::string& name) const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.mailbox_by_name
+      .. javamethod:: org.simgrid.s4u.Engine.message_queue_by_name
+
+Loading DAGs
+------------
+
+These free functions load a DAG of activities from a file, in various formats.
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::create_DAG_from_dot(const std::string& filename)
+      .. doxygenfunction:: simgrid::s4u::create_DAG_from_DAX(const std::string& filename)
+      .. doxygenfunction:: simgrid::s4u::create_DAG_from_json(const std::string& filename)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.create_DAG_from_dot
+      .. javamethod:: org.simgrid.s4u.Engine.create_DAG_from_DAX
+      .. javamethod:: org.simgrid.s4u.Engine.create_DAG_from_json
+
+Plugins
+-------
+
+These functions activate the optional plugins, that must be initialized before the platform gets loaded.
+They are only provided as plain C functions but are the way to go in C++ too.
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: sg_link_energy_plugin_init()
+      .. doxygenfunction:: sg_wifi_energy_plugin_init()
+      .. doxygenfunction:: sg_host_load_plugin_init()
+      .. doxygenfunction:: sg_link_load_plugin_init()
+      .. doxygenfunction:: sg_vm_live_migration_plugin_init()
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_link_energy_plugin_init()
+      .. doxygenfunction:: sg_wifi_energy_plugin_init()
+      .. doxygenfunction:: sg_host_load_plugin_init()
+      .. doxygenfunction:: sg_link_load_plugin_init()
+      .. doxygenfunction:: sg_vm_live_migration_plugin_init()
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.plugin_host_load_init
+      .. javamethod:: org.simgrid.s4u.Engine.plugin_link_load_init
+      .. javamethod:: org.simgrid.s4u.Engine.plugin_vm_live_migration_init
 
 .. _API_s4u_Mailbox:
 
@@ -1179,6 +1278,8 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_cname
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_name
+      .. doxygenfunction:: simgrid::s4u::Mailbox::size() const
+      .. doxygenfunction:: simgrid::s4u::Mailbox::clear()
 
    .. group-tab:: Python
 
@@ -1191,6 +1292,8 @@ Querying info
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Mailbox.get_name
+      .. javamethod:: org.simgrid.s4u.Mailbox.size
+      .. javamethod:: org.simgrid.s4u.Mailbox.clear
 
 Sending data
 ------------
@@ -1273,6 +1376,7 @@ See :ref:`s4u_receiving_actor`.
 
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_receiver
       .. doxygenfunction:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::listen_from() const
 
    .. group-tab:: C
 
@@ -1282,6 +1386,7 @@ See :ref:`s4u_receiving_actor`.
 
       .. javamethod:: org.simgrid.s4u.Mailbox.get_receiver
       .. javamethod:: org.simgrid.s4u.Mailbox.set_receiver
+      .. javamethod:: org.simgrid.s4u.Mailbox.listen_from
 
 .. _API_s4u_Resource:
 
@@ -1350,6 +1455,9 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Disk::get_cname() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_host() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_host(s4u::Host* host)
+      .. doxygenfunction:: simgrid::s4u::Disk::get_data
+      .. doxygenfunction:: simgrid::s4u::Disk::set_data
 
 
    .. group-tab:: Python
@@ -1360,6 +1468,9 @@ Querying info
 
       .. javamethod:: org.simgrid.s4u.Disk.get_host
       .. javamethod:: org.simgrid.s4u.Disk.get_name
+      .. javamethod:: org.simgrid.s4u.Disk.set_host
+      .. javamethod:: org.simgrid.s4u.Disk.get_data
+      .. javamethod:: org.simgrid.s4u.Disk.set_data
 
 
 Performance
@@ -1371,6 +1482,9 @@ Performance
 
       .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
+      .. doxygenfunction:: simgrid::s4u::Disk::set_read_bandwidth(double read_bw)
+      .. doxygenfunction:: simgrid::s4u::Disk::set_write_bandwidth(double write_bw)
+      .. doxygenfunction:: simgrid::s4u::Disk::set_readwrite_bandwidth(double bw)
       .. doxygenfunction:: simgrid::s4u::Disk::set_factor_cb
 
    .. group-tab:: Python
@@ -1387,6 +1501,9 @@ Performance
 
       .. javamethod:: org.simgrid.s4u.Disk.get_read_bandwidth
       .. javamethod:: org.simgrid.s4u.Disk.get_write_bandwidth
+      .. javamethod:: org.simgrid.s4u.Disk.set_read_bandwidth
+      .. javamethod:: org.simgrid.s4u.Disk.set_write_bandwidth
+      .. javamethod:: org.simgrid.s4u.Disk.set_readwrite_bandwidth
 
 Model policy
 ------------
@@ -1497,6 +1614,7 @@ Signals
       .. javamethod:: org.simgrid.s4u.Disk.on_this_destruction_cb
       .. javamethod:: org.simgrid.s4u.Disk.on_this_read_bandwidth_change_cb
       .. javamethod:: org.simgrid.s4u.Disk.on_this_write_bandwidth_change_cb
+
 .. _API_s4u_Host:
 
 =============
@@ -1550,6 +1668,22 @@ Basic management
 
          Pointer to a constant host object.
 
+Creating actors and VMs
+------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Host::add_actor(const std::string& name, const std::function<void()>& code)
+      .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string& name, int core_amount)
+      .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string& name, int core_amount, size_t ramsize)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Host.add_actor
+      .. javamethod:: org.simgrid.s4u.Host.create_vm
+
 Retrieving hosts
 ----------------
 
@@ -1592,6 +1726,7 @@ Modifying characteristics
       .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
       .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy
       .. doxygenfunction:: simgrid::s4u::Host::set_concurrency_limit(int limit)
+      .. doxygenfunction:: simgrid::s4u::Host::set_cpu_factor_cb
 
    .. group-tab:: Python
 
@@ -1604,6 +1739,7 @@ Modifying characteristics
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Host.set_concurrency_limit
+      .. javamethod:: org.simgrid.s4u.Host.set_cpu_factor_cb
 
 Querying info
 -------------
@@ -1619,6 +1755,8 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Host::get_load() const
       .. doxygenfunction:: simgrid::s4u::Host::get_speed() const
       .. doxygenfunction:: simgrid::s4u::Host::get_concurrency_limit() const
+      .. doxygenfunction:: simgrid::s4u::Host::get_data
+      .. doxygenfunction:: simgrid::s4u::Host::set_data
 
    .. group-tab:: Python
 
@@ -1641,6 +1779,8 @@ Querying info
       .. javamethod:: org.simgrid.s4u.Host.get_name
       .. javamethod:: org.simgrid.s4u.Host.get_load
       .. javamethod:: org.simgrid.s4u.Host.get_speed
+      .. javamethod:: org.simgrid.s4u.Host.get_data
+      .. javamethod:: org.simgrid.s4u.Host.set_data
 
 User data and properties
 ------------------------
@@ -1672,6 +1812,7 @@ User data and properties
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Host.get_property
+      .. javamethod:: org.simgrid.s4u.Host.get_properties_names
 
 Retrieving components
 ---------------------
@@ -1764,6 +1905,34 @@ See also the :ref:`relevant examples <s4u_ex_dvfs>`.
       .. javamethod:: org.simgrid.s4u.Host.get_pstate_speed
       .. javamethod:: org.simgrid.s4u.Host.set_pstate
 
+Energy
+------
+
+These functions are provided by the energy plugin (see :ref:`plugin_host_energy`).
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: sg_host_energy_plugin_init()
+      .. doxygenfunction:: sg_host_get_consumed_energy(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_wattmin_at(const_sg_host_t host, int pstate)
+      .. doxygenfunction:: sg_host_get_wattmax_at(const_sg_host_t host, int pstate)
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_host_energy_plugin_init()
+      .. doxygenfunction:: sg_host_get_consumed_energy(const_sg_host_t host)
+      .. doxygenfunction:: sg_host_get_wattmin_at(const_sg_host_t host, int pstate)
+      .. doxygenfunction:: sg_host_get_wattmax_at(const_sg_host_t host, int pstate)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.plugin_host_energy_init
+      .. javamethod:: org.simgrid.s4u.Host.get_consumed_energy
+      .. javamethod:: org.simgrid.s4u.Host.get_wattmin_at
+      .. javamethod:: org.simgrid.s4u.Host.get_wattmax_at
+
 Dynamic profiles
 ----------------
 
@@ -1787,12 +1956,14 @@ Execution
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Host::exec_async
+      .. doxygenfunction:: simgrid::s4u::Host::exec_init(double flops_amounts) const
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops) const
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops, double priority) const
 
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Host.exec_async
+      .. javamethod:: org.simgrid.s4u.Host.exec_init
 
 Disks
 -----
@@ -1840,6 +2011,13 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
       .. doxygenfunction:: sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
       .. doxygenfunction:: sg_host_get_route_latency(const_sg_host_t from, const_sg_host_t to)
       .. doxygenfunction:: sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Host.route_links_to
+      .. javamethod:: org.simgrid.s4u.Host.route_latency_to
+      .. javamethod:: org.simgrid.s4u.Comm.sendto_async
+      .. javamethod:: org.simgrid.s4u.Comm.sendto_init
 
 Signals
 -------
@@ -2016,6 +2194,7 @@ Model policy
 
       .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
       .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
+      .. doxygenfunction:: simgrid::s4u::Link::is_shared() const
 
    .. group-tab:: Python
 
@@ -2031,6 +2210,25 @@ Model policy
       .. javamethod:: org.simgrid.s4u.Link.get_sharing_policy
       .. javamethod:: org.simgrid.s4u.Link.get_concurrency_limit
       .. javamethod:: org.simgrid.s4u.Link.set_concurrency_limit
+      .. javamethod:: org.simgrid.s4u.Link.is_shared
+
+
+LinkInRoute
+-----------
+
+``LinkInRoute`` wraps a link together with the direction (``UP``/``DOWN``) it is used in a given route.
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::LinkInRoute::get_direction() const
+      .. doxygenfunction:: simgrid::s4u::LinkInRoute::get_link() const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.LinkInRoute.get_direction
+      .. javamethod:: org.simgrid.s4u.LinkInRoute.get_link
 
 
 User data and properties
@@ -2124,6 +2322,28 @@ WIFI links
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Link.set_host_wifi_rate
+
+Energy
+------
+
+These functions are provided by the energy plugin (see :ref:`plugin_host_energy`).
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: sg_link_energy_plugin_init()
+      .. doxygenfunction:: sg_link_get_consumed_energy(const_sg_link_t link)
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_link_energy_plugin_init()
+      .. doxygenfunction:: sg_link_get_consumed_energy(const_sg_link_t link)
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Engine.plugin_link_energy_init
+      .. javamethod:: org.simgrid.s4u.Link.get_consumed_energy
 
 Signals
 -------
@@ -2348,6 +2568,10 @@ Signals
      .. doxygenfunction:: simgrid::s4u::NetZone::on_creation_cb
      .. doxygenfunction:: simgrid::s4u::NetZone::on_seal_cb
 
+  .. group-tab:: Java
+
+     .. javamethod:: org.simgrid.s4u.NetZone.on_seal_cb
+
 Creating resources
 ------------------
 
@@ -2400,6 +2624,10 @@ Hosts
 
      .. automethod:: simgrid.NetZone.add_host
 
+  .. group-tab:: Java
+
+     .. javamethod:: org.simgrid.s4u.NetZone.add_host
+
 Links
 ^^^^^
 
@@ -2418,6 +2646,11 @@ Links
 
      .. automethod:: simgrid.NetZone.add_link
      .. automethod:: simgrid.NetZone.add_split_duplex_link
+
+  .. group-tab:: Java
+
+     .. javamethod:: org.simgrid.s4u.NetZone.add_link
+     .. javamethod:: org.simgrid.s4u.NetZone.add_split_duplex_link
 
 Router
 ^^^^^^
@@ -2502,6 +2735,32 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_ramsize(size_t ramsize)
 
+      VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
+
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_name() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_core_count() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_load() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_speed() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_data
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_data
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_property(const std::string &key) const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_properties_names
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_concurrency_limit(int limit)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_cpu_factor_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate_count() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate_speed(unsigned long pstate_index) const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_pstate(unsigned long pstate_index)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::is_on() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_disk
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_disks() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_latency_to
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_links_to
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_actor(const std::string& name, const std::function<void()>& code)
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_consumed_energy
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_wattmin_at
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_wattmax_at
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_vm_get_ramsize(const_sg_vm_t vm)
@@ -2522,6 +2781,30 @@ Querying info
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_bound
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_pm
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_ramsize
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_name
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_core_count
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_load
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_speed
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_data
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_data
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_property
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_properties_names
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_concurrency_limit
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_cpu_factor_cb
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate_count
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate_speed
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_pstate
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.is_on
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.add_disk
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_disks
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.route_latency_to
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.route_links_to
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.add_actor
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_consumed_energy
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_wattmin_at
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_wattmax_at
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.current
 
 Life cycle
 ----------
@@ -2534,6 +2817,12 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::shutdown()
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::start()
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::suspend()
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::start_migration() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::end_migration() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::turn_off() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::turn_on() const
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::exec_async
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::exec_init(double flops_amounts) const
 
    .. group-tab:: C
 
@@ -2548,6 +2837,17 @@ Life cycle
       .. javamethod:: org.simgrid.s4u.VirtualMachine.shutdown
       .. javamethod:: org.simgrid.s4u.VirtualMachine.start
       .. javamethod:: org.simgrid.s4u.VirtualMachine.suspend
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.start_migration
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.end_migration
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.turn_off
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.turn_on
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.exec_async
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.exec_init
+
+      ``migrate()`` is a Java-specific shortcut combining :cpp:func:`set_pm() <simgrid::s4u::VirtualMachine::set_pm>`
+      with ``start_migration()``/``end_migration()`` in a single call, to be used with the Live Migrationg plugin.
+
+      .. javamethod:: org.simgrid.s4u.VirtualMachine.migrate
 
 Signals
 -------
@@ -2638,8 +2938,20 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Activity::get_name() const
       .. doxygenfunction:: simgrid::s4u::Activity::get_remaining() const
       .. doxygenfunction:: simgrid::s4u::Activity::get_state() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_state_str() const
       .. doxygenfunction:: simgrid::s4u::Activity::set_remaining(double remains)
       .. doxygenfunction:: simgrid::s4u::Activity::set_state(Activity::State state)
+      .. doxygenfunction:: simgrid::s4u::Activity::get_start_time() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_finish_time() const
+      .. doxygenfunction:: simgrid::s4u::Activity::is_canceled() const
+      .. doxygenfunction:: simgrid::s4u::Activity::is_failed() const
+      .. doxygenfunction:: simgrid::s4u::Activity::is_done() const
+      .. doxygenfunction:: simgrid::s4u::Activity::is_assigned() const
+      .. doxygenfunction:: simgrid::s4u::Activity::is_detached() const
+      .. doxygenfunction:: simgrid::s4u::Activity::mark()
+      .. doxygenfunction:: simgrid::s4u::Activity::is_marked() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_data
+      .. doxygenfunction:: simgrid::s4u::Activity::set_data
 
    .. group-tab:: Java
 
@@ -2647,6 +2959,40 @@ Querying info
       .. javamethod:: org.simgrid.s4u.Activity.get_remaining
       .. javamethod:: org.simgrid.s4u.Activity.get_state
       .. javamethod:: org.simgrid.s4u.Activity.get_state_str
+      .. javamethod:: org.simgrid.s4u.Activity.get_start_time
+      .. javamethod:: org.simgrid.s4u.Activity.get_finish_time
+      .. javamethod:: org.simgrid.s4u.Activity.is_canceled
+      .. javamethod:: org.simgrid.s4u.Activity.is_failed
+      .. javamethod:: org.simgrid.s4u.Activity.is_done
+      .. javamethod:: org.simgrid.s4u.Activity.is_assigned
+      .. javamethod:: org.simgrid.s4u.Activity.is_detached
+      .. javamethod:: org.simgrid.s4u.Activity.mark
+      .. javamethod:: org.simgrid.s4u.Activity.is_marked
+      .. javamethod:: org.simgrid.s4u.Activity.get_data
+      .. javamethod:: org.simgrid.s4u.Activity.set_data
+
+Managing Dependencies
+----------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Activity::add_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Activity::remove_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Activity::get_successors() const
+      .. doxygenfunction:: simgrid::s4u::Activity::get_dependencies() const
+      .. doxygenfunction:: simgrid::s4u::Activity::dependencies_solved() const
+      .. doxygenfunction:: simgrid::s4u::Activity::has_no_successor() const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Activity.add_successor
+      .. javamethod:: org.simgrid.s4u.Activity.remove_successor
+      .. javamethod:: org.simgrid.s4u.Activity.get_successors
+      .. javamethod:: org.simgrid.s4u.Activity.get_dependencies
+      .. javamethod:: org.simgrid.s4u.Activity.dependencies_solved
+      .. javamethod:: org.simgrid.s4u.Activity.has_no_successor
 
 Activities life cycle
 ---------------------
@@ -2750,6 +3096,28 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data_size(size_t size)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_source() const
+      .. doxygenfunction:: simgrid::s4u::Comm::set_source(s4u::Host* from)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_destination() const
+      .. doxygenfunction:: simgrid::s4u::Comm::set_destination(s4u::Host* to)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_mailbox(s4u::Mailbox* mailbox)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Comm::set_name(std::string_view name)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_tracing_category() const
+      .. doxygenfunction:: simgrid::s4u::Comm::set_tracing_category(std::string_view category)
+      .. doxygenfunction:: simgrid::s4u::Comm::is_assigned() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_state() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_state_str() const
+      .. doxygenfunction:: simgrid::s4u::Comm::is_canceled() const
+      .. doxygenfunction:: simgrid::s4u::Comm::is_failed() const
+      .. doxygenfunction:: simgrid::s4u::Comm::is_done() const
+      .. doxygenfunction:: simgrid::s4u::Comm::is_detached() const
+      .. doxygenfunction:: simgrid::s4u::Comm::is_marked() const
+      .. doxygenfunction:: simgrid::s4u::Comm::mark()
+      .. doxygenfunction:: simgrid::s4u::Comm::get_start_time() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_finish_time() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_data
+      .. doxygenfunction:: simgrid::s4u::Comm::set_data
 
    .. group-tab:: Python
 
@@ -2764,6 +3132,7 @@ Querying info
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Comm.get_data
+      .. javamethod:: org.simgrid.s4u.Comm.set_data
       .. javamethod:: org.simgrid.s4u.Comm.detach
       .. javamethod:: org.simgrid.s4u.Comm.get_mailbox
       .. javamethod:: org.simgrid.s4u.Comm.get_payload
@@ -2773,6 +3142,49 @@ Querying info
       .. javamethod:: org.simgrid.s4u.Comm.set_payload_size
       .. javamethod:: org.simgrid.s4u.Comm.set_rate
       .. javamethod:: org.simgrid.s4u.Comm.set_src_data
+      .. javamethod:: org.simgrid.s4u.Comm.get_source
+      .. javamethod:: org.simgrid.s4u.Comm.set_source
+      .. javamethod:: org.simgrid.s4u.Comm.get_destination
+      .. javamethod:: org.simgrid.s4u.Comm.set_destination
+      .. javamethod:: org.simgrid.s4u.Comm.set_mailbox
+      .. javamethod:: org.simgrid.s4u.Comm.get_name
+      .. javamethod:: org.simgrid.s4u.Comm.set_name
+      .. javamethod:: org.simgrid.s4u.Comm.get_tracing_category
+      .. javamethod:: org.simgrid.s4u.Comm.set_tracing_category
+      .. javamethod:: org.simgrid.s4u.Comm.is_assigned
+      .. javamethod:: org.simgrid.s4u.Comm.get_state
+      .. javamethod:: org.simgrid.s4u.Comm.get_state_str
+      .. javamethod:: org.simgrid.s4u.Comm.is_canceled
+      .. javamethod:: org.simgrid.s4u.Comm.is_failed
+      .. javamethod:: org.simgrid.s4u.Comm.is_done
+      .. javamethod:: org.simgrid.s4u.Comm.is_detached
+      .. javamethod:: org.simgrid.s4u.Comm.is_marked
+      .. javamethod:: org.simgrid.s4u.Comm.mark
+      .. javamethod:: org.simgrid.s4u.Comm.get_start_time
+      .. javamethod:: org.simgrid.s4u.Comm.get_finish_time
+
+Managing Dependencies
+----------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Comm::add_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Comm::remove_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Comm::get_successors() const
+      .. doxygenfunction:: simgrid::s4u::Comm::get_dependencies() const
+      .. doxygenfunction:: simgrid::s4u::Comm::dependencies_solved() const
+      .. doxygenfunction:: simgrid::s4u::Comm::has_no_successor() const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Comm.add_successor
+      .. javamethod:: org.simgrid.s4u.Comm.remove_successor
+      .. javamethod:: org.simgrid.s4u.Comm.get_successors
+      .. javamethod:: org.simgrid.s4u.Comm.get_dependencies
+      .. javamethod:: org.simgrid.s4u.Comm.dependencies_solved
+      .. javamethod:: org.simgrid.s4u.Comm.has_no_successor
 
 Direct host-to-host communication
 ---------------------------------
@@ -2963,7 +3375,31 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Exec::get_start_time() const
       .. doxygenfunction:: simgrid::s4u::Exec::set_bound(double bound)
       .. doxygenfunction:: simgrid::s4u::Exec::set_host
+      .. doxygenfunction:: simgrid::s4u::Exec::set_hosts(const std::vector<s4u::Host*>& hosts)
+      .. doxygenfunction:: simgrid::s4u::Exec::unset_host()
       .. doxygenfunction:: simgrid::s4u::Exec::set_priority(double priority)
+      .. doxygenfunction:: simgrid::s4u::Exec::update_priority(double priority)
+      .. doxygenfunction:: simgrid::s4u::Exec::set_flops_amount(double flops_amount)
+      .. doxygenfunction:: simgrid::s4u::Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
+      .. doxygenfunction:: simgrid::s4u::Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
+      .. doxygenfunction:: simgrid::s4u::Exec::set_thread_count(int thread_count)
+      .. doxygenfunction:: simgrid::s4u::Exec::get_thread_count() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_parallel() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_assigned() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Exec::set_name(std::string_view name)
+      .. doxygenfunction:: simgrid::s4u::Exec::get_tracing_category() const
+      .. doxygenfunction:: simgrid::s4u::Exec::set_tracing_category(std::string_view category)
+      .. doxygenfunction:: simgrid::s4u::Exec::get_state() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_state_str() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_canceled() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_failed() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_done() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_detached() const
+      .. doxygenfunction:: simgrid::s4u::Exec::is_marked() const
+      .. doxygenfunction:: simgrid::s4u::Exec::mark()
+      .. doxygenfunction:: simgrid::s4u::Exec::get_data
+      .. doxygenfunction:: simgrid::s4u::Exec::set_data
 
    .. group-tab:: Python
 
@@ -2991,7 +3427,55 @@ Querying info
       .. javamethod:: org.simgrid.s4u.Exec.get_start_time
       .. javamethod:: org.simgrid.s4u.Exec.set_bound
       .. javamethod:: org.simgrid.s4u.Exec.set_host
+      .. javamethod:: org.simgrid.s4u.Exec.set_hosts
+      .. javamethod:: org.simgrid.s4u.Exec.unset_host
+      .. javamethod:: org.simgrid.s4u.Exec.unset_hosts
       .. javamethod:: org.simgrid.s4u.Exec.set_priority
+      .. javamethod:: org.simgrid.s4u.Exec.update_priority
+      .. javamethod:: org.simgrid.s4u.Exec.set_flops_amount
+      .. javamethod:: org.simgrid.s4u.Exec.set_flops_amounts
+      .. javamethod:: org.simgrid.s4u.Exec.set_bytes_amounts
+      .. javamethod:: org.simgrid.s4u.Exec.set_thread_count
+      .. javamethod:: org.simgrid.s4u.Exec.get_thread_count
+      .. javamethod:: org.simgrid.s4u.Exec.is_parallel
+      .. javamethod:: org.simgrid.s4u.Exec.is_assigned
+      .. javamethod:: org.simgrid.s4u.Exec.get_name
+      .. javamethod:: org.simgrid.s4u.Exec.set_name
+      .. javamethod:: org.simgrid.s4u.Exec.get_tracing_category
+      .. javamethod:: org.simgrid.s4u.Exec.set_tracing_category
+      .. javamethod:: org.simgrid.s4u.Exec.get_state
+      .. javamethod:: org.simgrid.s4u.Exec.get_state_str
+      .. javamethod:: org.simgrid.s4u.Exec.is_canceled
+      .. javamethod:: org.simgrid.s4u.Exec.is_failed
+      .. javamethod:: org.simgrid.s4u.Exec.is_done
+      .. javamethod:: org.simgrid.s4u.Exec.is_detached
+      .. javamethod:: org.simgrid.s4u.Exec.is_marked
+      .. javamethod:: org.simgrid.s4u.Exec.mark
+      .. javamethod:: org.simgrid.s4u.Exec.get_data
+      .. javamethod:: org.simgrid.s4u.Exec.set_data
+
+Managing Dependencies
+----------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Exec::add_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Exec::remove_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Exec::get_successors() const
+      .. doxygenfunction:: simgrid::s4u::Exec::get_dependencies() const
+      .. doxygenfunction:: simgrid::s4u::Exec::dependencies_solved() const
+      .. doxygenfunction:: simgrid::s4u::Exec::has_no_successor() const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Exec.add_successor
+      .. javamethod:: org.simgrid.s4u.Exec.remove_successor
+      .. javamethod:: org.simgrid.s4u.Exec.get_successors
+      .. javamethod:: org.simgrid.s4u.Exec.get_dependencies
+      .. javamethod:: org.simgrid.s4u.Exec.dependencies_solved
+      .. javamethod:: org.simgrid.s4u.Exec.has_no_successor
 
 Life cycle
 ----------
@@ -3004,6 +3488,8 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Exec::start
       .. doxygenfunction:: simgrid::s4u::Exec::test
       .. doxygenfunction:: simgrid::s4u::Exec::wait
+      .. doxygenfunction:: simgrid::s4u::Exec::init()
+      .. doxygenfunction:: simgrid::s4u::Exec::detach()
 
    .. group-tab:: Python
 
@@ -3028,6 +3514,8 @@ Life cycle
       .. javamethod:: org.simgrid.s4u.Exec.await_for
       .. javamethod:: org.simgrid.s4u.Exec.await_for_or_cancel
       .. javamethod:: org.simgrid.s4u.Exec.await_until
+      .. javamethod:: org.simgrid.s4u.Exec.init
+      .. javamethod:: org.simgrid.s4u.Exec.detach
 
 Suspending and resuming an execution
 ------------------------------------
@@ -3119,11 +3607,82 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::Io::get_performed_ioops() const
       .. doxygenfunction:: simgrid::s4u::Io::get_remaining
+      .. doxygenfunction:: simgrid::s4u::Io::set_disk(const s4u::Disk* disk)
+      .. doxygenfunction:: simgrid::s4u::Io::set_priority(double priority)
+      .. doxygenfunction:: simgrid::s4u::Io::update_priority(double priority)
+      .. doxygenfunction:: simgrid::s4u::Io::set_size(sg_size_t size)
+      .. doxygenfunction:: simgrid::s4u::Io::set_op_type(OpType type)
+      .. doxygenfunction:: simgrid::s4u::Io::set_source(s4u::Host* from, const Disk* from_disk)
+      .. doxygenfunction:: simgrid::s4u::Io::set_destination(s4u::Host* to, const Disk* to_disk)
+      .. doxygenfunction:: simgrid::s4u::Io::is_assigned() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_name() const
+      .. doxygenfunction:: simgrid::s4u::Io::set_name(std::string_view name)
+      .. doxygenfunction:: simgrid::s4u::Io::get_tracing_category() const
+      .. doxygenfunction:: simgrid::s4u::Io::set_tracing_category(std::string_view category)
+      .. doxygenfunction:: simgrid::s4u::Io::get_state() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_state_str() const
+      .. doxygenfunction:: simgrid::s4u::Io::is_canceled() const
+      .. doxygenfunction:: simgrid::s4u::Io::is_failed() const
+      .. doxygenfunction:: simgrid::s4u::Io::is_done() const
+      .. doxygenfunction:: simgrid::s4u::Io::is_detached() const
+      .. doxygenfunction:: simgrid::s4u::Io::is_marked() const
+      .. doxygenfunction:: simgrid::s4u::Io::mark()
+      .. doxygenfunction:: simgrid::s4u::Io::get_start_time() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_finish_time() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_data
+      .. doxygenfunction:: simgrid::s4u::Io::set_data
 
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Io.get_performed_ioops
       .. javamethod:: org.simgrid.s4u.Io.get_remaining
+      .. javamethod:: org.simgrid.s4u.Io.set_disk
+      .. javamethod:: org.simgrid.s4u.Io.set_priority
+      .. javamethod:: org.simgrid.s4u.Io.update_priority
+      .. javamethod:: org.simgrid.s4u.Io.set_size
+      .. javamethod:: org.simgrid.s4u.Io.set_op_type
+      .. javamethod:: org.simgrid.s4u.Io.set_source
+      .. javamethod:: org.simgrid.s4u.Io.set_destination
+      .. javamethod:: org.simgrid.s4u.Io.is_assigned
+      .. javamethod:: org.simgrid.s4u.Io.get_name
+      .. javamethod:: org.simgrid.s4u.Io.set_name
+      .. javamethod:: org.simgrid.s4u.Io.get_tracing_category
+      .. javamethod:: org.simgrid.s4u.Io.set_tracing_category
+      .. javamethod:: org.simgrid.s4u.Io.get_state
+      .. javamethod:: org.simgrid.s4u.Io.get_state_str
+      .. javamethod:: org.simgrid.s4u.Io.is_canceled
+      .. javamethod:: org.simgrid.s4u.Io.is_failed
+      .. javamethod:: org.simgrid.s4u.Io.is_done
+      .. javamethod:: org.simgrid.s4u.Io.is_detached
+      .. javamethod:: org.simgrid.s4u.Io.is_marked
+      .. javamethod:: org.simgrid.s4u.Io.mark
+      .. javamethod:: org.simgrid.s4u.Io.get_start_time
+      .. javamethod:: org.simgrid.s4u.Io.get_finish_time
+      .. javamethod:: org.simgrid.s4u.Io.get_data
+      .. javamethod:: org.simgrid.s4u.Io.set_data
+
+Managing Dependencies
+----------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Io::add_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Io::remove_successor(ActivityPtr a)
+      .. doxygenfunction:: simgrid::s4u::Io::get_successors() const
+      .. doxygenfunction:: simgrid::s4u::Io::get_dependencies() const
+      .. doxygenfunction:: simgrid::s4u::Io::dependencies_solved() const
+      .. doxygenfunction:: simgrid::s4u::Io::has_no_successor() const
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Io.add_successor
+      .. javamethod:: org.simgrid.s4u.Io.remove_successor
+      .. javamethod:: org.simgrid.s4u.Io.get_successors
+      .. javamethod:: org.simgrid.s4u.Io.get_dependencies
+      .. javamethod:: org.simgrid.s4u.Io.dependencies_solved
+      .. javamethod:: org.simgrid.s4u.Io.has_no_successor
 
 Life cycle
 ----------
@@ -3136,6 +3695,11 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Io::start
       .. doxygenfunction:: simgrid::s4u::Io::test
       .. doxygenfunction:: simgrid::s4u::Io::wait
+      .. doxygenfunction:: simgrid::s4u::Io::init()
+      .. doxygenfunction:: simgrid::s4u::Io::detach()
+      .. doxygenfunction:: simgrid::s4u::Io::streamto
+      .. doxygenfunction:: simgrid::s4u::Io::streamto_init
+      .. doxygenfunction:: simgrid::s4u::Io::streamto_async
 
    .. group-tab:: Python
 
@@ -3151,6 +3715,28 @@ Life cycle
       .. javamethod:: org.simgrid.s4u.Io.await_for
       .. javamethod:: org.simgrid.s4u.Io.await_for_or_cancel
       .. javamethod:: org.simgrid.s4u.Io.await_until
+      .. javamethod:: org.simgrid.s4u.Io.init
+      .. javamethod:: org.simgrid.s4u.Io.detach
+      .. javamethod:: org.simgrid.s4u.Io.streamto
+      .. javamethod:: org.simgrid.s4u.Io.streamto_init
+      .. javamethod:: org.simgrid.s4u.Io.streamto_async
+
+Suspending and resuming an I/O
+-------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Io::suspend
+      .. doxygenfunction:: simgrid::s4u::Io::resume
+      .. doxygenfunction:: simgrid::s4u::Io::is_suspended
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Io.suspend
+      .. javamethod:: org.simgrid.s4u.Io.resume
+      .. javamethod:: org.simgrid.s4u.Io.is_suspended
 
 
 Signals
@@ -3242,6 +3828,8 @@ Managing activities
       .. doxygenfunction:: simgrid::s4u::ActivitySet::erase
       .. doxygenfunction:: simgrid::s4u::ActivitySet::empty
       .. doxygenfunction:: simgrid::s4u::ActivitySet::size
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::at(unsigned int index)
+      .. doxygenfunction:: simgrid::s4u::ActivitySet::clear()
 
    .. group-tab:: Python
 
@@ -3263,6 +3851,8 @@ Managing activities
       .. javamethod:: org.simgrid.s4u.ActivitySet.erase
       .. javamethod:: org.simgrid.s4u.ActivitySet.empty
       .. javamethod:: org.simgrid.s4u.ActivitySet.size
+      .. javamethod:: org.simgrid.s4u.ActivitySet.at
+      .. javamethod:: org.simgrid.s4u.ActivitySet.clear
 
 Interacting with the set
 ------------------------
@@ -3297,6 +3887,10 @@ Interacting with the set
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.ActivitySet.test_any
+      .. javamethod:: org.simgrid.s4u.ActivitySet.await_all
+      .. javamethod:: org.simgrid.s4u.ActivitySet.await_all_for
+      .. javamethod:: org.simgrid.s4u.ActivitySet.await_any
+      .. javamethod:: org.simgrid.s4u.ActivitySet.await_any_for
 
 Dealing with failed activities
 ------------------------------
@@ -3600,6 +4194,7 @@ Locking
          .. doxygenfunction:: simgrid::s4u::Mutex::lock()
          .. doxygenfunction:: simgrid::s4u::Mutex::try_lock()
          .. doxygenfunction:: simgrid::s4u::Mutex::unlock()
+         .. doxygenfunction:: simgrid::s4u::Mutex::get_owner()
 
       .. group-tab:: Python
 
@@ -3618,6 +4213,7 @@ Locking
          .. javamethod:: org.simgrid.s4u.Mutex.lock
          .. javamethod:: org.simgrid.s4u.Mutex.try_lock
          .. javamethod:: org.simgrid.s4u.Mutex.unlock
+         .. javamethod:: org.simgrid.s4u.Mutex.get_owner
 
 .. _API_s4u_Barrier:
 
