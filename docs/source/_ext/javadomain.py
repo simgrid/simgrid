@@ -17,12 +17,17 @@ To render a class and its public methods (filtering out SWIG-generated content s
 To render one method as we do a lot in app_s4u.rst, do:
 
    .. javamethod:: org.simgrid.s4u.Activity.suspend
-   
+
 To link to a class or a method (similar to :cpp:class: and :cpp:func:) do:
 
    :java:class:`...`
 
-   :java:meth:`...`  
+   :java:meth:`...`
+
+Signatures are rendered through Sphinx's own ``desc``/``desc_signature`` node machinery (the same building blocks the C++ and
+Python domains use), instead of plain paragraphs. This means the HTML output picks up the exact same theme CSS as Breathe's C++
+output for free: the blue signature box, the "sig-name"/"sig-param" spans, the hover permalink, etc. See `setup()` at the bottom
+and `_build_method_signature_nodes`/`_build_class_signature_nodes` for the node-building side of this.
 
 ## What it deliberately doesn't do (yet)
 
@@ -37,10 +42,6 @@ To link to a class or a method (similar to :cpp:class: and :cpp:func:) do:
 1. Extend `DoxygenJavaReader` to also render fields/enums (`Activity.State` is referenced but not itself rendered here).
 2. Swap the regex-based Doxygen reading for something closer to Breathe's more defensive XML handling (missing files, malformed
    argstrings).
-3. Migrate `app_s4u.rst`'s Java tabs from `doxygenclass`/`doxygenfunction` to `javaclass`/`javamethod` — mechanical find/replace
-   given the two directives take the same dotted qualified name Doxygen already uses.
-4. Decide on visual styling (CSS) to match the rest of the SimGrid docs theme for the `xref java java-class` classes.
-
 
 """
 import os
@@ -48,7 +49,9 @@ import re
 import xml.etree.ElementTree as ET
 
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives
+from docutils.parsers.rst import directives
+from sphinx import addnodes
+from sphinx.directives import ObjectDescription
 from sphinx.domains import Domain, ObjType
 from sphinx.roles import XRefRole
 from sphinx.util.nodes import make_refnode
@@ -239,36 +242,135 @@ class DoxygenJavaReader:
 
 
 # ---------------------------------------------------------------------------
-# Rendering helpers shared by both directives
+# Signature node building
+#
+# These helpers build real sphinx.addnodes trees (desc_name, desc_parameterlist, desc_sig_name, desc_sig_keyword_type...), just
+# as the C++/Python domains. It's what makes the HTML output pick up the theme's existing "dl.<domain> <objtype>" / ".sig" /
+# ".sig-param" CSS for free: there is nothing Java-specific to style, we're reusing Breathe's styling as-is.
 # ---------------------------------------------------------------------------
 
-def _method_signature(m):
-    if m["raw_sig_fallback"] is not None:
-        sig = m["raw_sig_fallback"]
+# Java primitive types render like C++ keyword types ("kt" token, e.g. "double", "boolean") rather than as plain identifiers.
+_JAVA_PRIMITIVES = frozenset(
+    ["void", "boolean", "byte", "short", "int", "long", "char", "float", "double"]
+)
+
+# A handful of common java.lang types: never worth trying to cross-reference into our own "java" domain (they will never
+# resolve), so skip the attempt.
+_JAVA_LANG_NOISE = frozenset(
+    ["String", "Object", "Exception", "RuntimeException", "Throwable", "Error",
+     "Runnable", "Comparable", "CharSequence", "Void", "Integer", "Long",
+     "Double", "Float", "Boolean", "Byte", "Short", "Character"]
+)
+
+
+def _split_array_suffix(type_str):
+    """'Activity[]' -> ('Activity', '[]'); 'double' -> ('double', '')."""
+    base = type_str
+    brackets = ""
+    while base.endswith("[]"):
+        base = base[:-2].rstrip()
+        brackets += "[]"
+    return base, brackets
+
+
+def _guess_xref_target(base, class_qualname):
+    """Best-effort guess of the fully qualified name a short type name like 'Activity' refers to, so we can offer a clickable
+    cross-reference the same way Breathe links a C++ return type back to its class. Deliberately naive: good enough for a 
+    single flat `org.simgrid.s4u` style package, not general Java name resolution (see module docstring)."""
+    if not base or not base[:1].isupper() or base in _JAVA_LANG_NOISE:
+        return None
+    if "." in base:
+        return base  # already fully qualified
+    package = class_qualname.rsplit(".", 1)[0]
+    return f"{package}.{base}"
+
+
+# Modifiers that can prefix a type in the doxygen <type> text for a Java member (e.g. "synchronized void"). Rendered as
+# keywords, same token class Breathe/the C++ domain uses for "const"/"static"/etc.
+_JAVA_MODIFIERS = frozenset(["synchronized", "static", "final", "abstract", "native"])
+
+
+def _append_type_nodes(container, type_str, class_qualname):
+    """Append signature nodes rendering a Java type (primitive, class name, or array of either) to *container* (a desc_signature or desc_parameter)."""
+    type_str = (type_str or "").strip()
+    if not type_str:
+        return
+
+    # A doxygen <type> can carry leading modifiers ("synchronized void"): render each as a keyword, then handle the actual type
+    words = type_str.split()
+    while len(words) > 1 and words[0] in _JAVA_MODIFIERS:
+        word = words.pop(0)
+        container += addnodes.desc_sig_keyword(word, word)
+        container += addnodes.desc_sig_space()
+    type_str = " ".join(words)
+
+    base, brackets = _split_array_suffix(type_str)
+
+    if base in _JAVA_PRIMITIVES:
+        container += addnodes.desc_sig_keyword_type(base, base)
     else:
-        sig = "(" + ", ".join(f"{t} {n}".strip() for t, n in m["params"]) + ")"
-    label = m["name"] if m["is_ctor"] else f"{m['return_type']} {m['name']}".strip()
-    return f"{label}{sig}"
+        target = _guess_xref_target(base, class_qualname)
+        if target:
+            xref = addnodes.pending_xref(
+                "", refdomain="java", reftype="class", reftarget=target,
+                refexplicit=False, refwarn=False)
+            xref += addnodes.desc_sig_name(base, base)
+            container += xref
+        else:
+            container += addnodes.desc_sig_name(base, base)
+
+    if brackets:
+        container += addnodes.desc_sig_punctuation(brackets, brackets)
 
 
-def _render_method(m, domain, env, target_id=None):
-    target_id = target_id or f"java-method-{m['qualname']}-{id(m)}"
-    domain.data["methods"][m["qualname"]] = (env.docname, target_id)
-    para = nodes.paragraph(ids=[target_id])
-    para += nodes.literal(text=_method_signature(m))
-    if m["brief"]:
-        para += nodes.Text("  " + m["brief"])
-    return para
+def _build_method_signature_nodes(m, signode, class_qualname):
+    """Fill *signode* (a desc_signature) for one method/constructor, the Java equivalent of what Breathe's C++ signature parser does for a
+    ``doxygenfunction``."""
+    if not m["is_ctor"]:
+        _append_type_nodes(signode, m["return_type"], class_qualname)
+        signode += addnodes.desc_sig_space()
+
+    signode += addnodes.desc_name(m["name"], m["name"])
+
+    plist = addnodes.desc_parameterlist()
+    if m["raw_sig_fallback"] is not None:
+        # Can't parse structured params (rare edge case): show the raw argsstring as a single opaque parameter rather than a misleading "()" .
+        raw = m["raw_sig_fallback"].strip()
+        if raw.startswith("(") and raw.endswith(")"):
+            raw = raw[1:-1]
+        if raw:
+            param = addnodes.desc_parameter("", "")
+            param += addnodes.desc_sig_name(raw, raw)
+            plist += param
+    else:
+        for ptype, pname in m["params"]:
+            param = addnodes.desc_parameter("", "")
+            _append_type_nodes(param, ptype, class_qualname)
+            if pname:
+                param += addnodes.desc_sig_space()
+                param += addnodes.desc_sig_name(pname, pname)
+            plist += param
+    signode += plist
 
 
-def _render_field(f, domain, env):
-    target_id = f"java-field-{f['qualname']}"
-    domain.data["fields"][f["qualname"]] = (env.docname, target_id)
-    para = nodes.paragraph(ids=[target_id])
-    para += nodes.literal(text=f"{f['type']} {f['name']}".strip())
-    if f["brief"]:
-        para += nodes.Text("  " + f["brief"])
-    return para
+def _build_field_signature_nodes(f, signode, class_qualname):
+    _append_type_nodes(signode, f["type"], class_qualname)
+    signode += addnodes.desc_sig_space()
+    signode += addnodes.desc_name(f["name"], f["name"])
+
+
+def _build_class_signature_nodes(data, signode):
+    signode += addnodes.desc_sig_keyword("class", "class")
+    signode += addnodes.desc_sig_space()
+    package, _, simple_name = data["qualname"].rpartition(".")
+    if package:
+        signode += addnodes.desc_addname(package + ".", package + ".")
+    signode += addnodes.desc_name(simple_name, simple_name)
+
+
+def _content_nodes_for(brief, detailed):
+    text = (brief + " " + detailed).strip()
+    return [nodes.paragraph(text=text)] if text else []
 
 
 def _reader_error_node(state_machine, lineno, exc):
@@ -278,73 +380,164 @@ def _reader_error_node(state_machine, lineno, exc):
 
 
 # ---------------------------------------------------------------------------
+# Nested-member (`:members:`) helpers: build standalone `desc` nodes for a class's methods/fields, mimicking what a nested "..
+# cpp:function::" inside a ".. cpp:class::" content block produces, but driven by Doxygen XML data instead of parsed RST.
+# ---------------------------------------------------------------------------
+
+def _build_method_desc(m, domain, env, idx):
+    node = addnodes.desc()
+    node["domain"] = "java"
+    node["objtype"] = node["desctype"] = "method"
+    node["no-index"] = node["noindex"] = False
+    node["classes"] += ["java", "method"]
+
+    signode = addnodes.desc_signature("", "")
+    node += signode
+    class_qualname = m["qualname"].rsplit(".", 1)[0]
+    _build_method_signature_nodes(m, signode, class_qualname)
+
+    target_id = f"java-method-{m['qualname']}-{idx}"
+    signode["ids"].append(target_id)
+    domain.data["methods"][m["qualname"]] = (env.docname, target_id)
+
+    content = addnodes.desc_content("", *_content_nodes_for(m["brief"], m["detailed"]))
+    node += content
+    return node
+
+
+def _build_field_desc(f, domain, env):
+    node = addnodes.desc()
+    node["domain"] = "java"
+    node["objtype"] = node["desctype"] = "field"
+    node["no-index"] = node["noindex"] = False
+    node["classes"] += ["java", "field"]
+
+    signode = addnodes.desc_signature("", "")
+    node += signode
+    class_qualname = f["qualname"].rsplit(".", 1)[0]
+    _build_field_signature_nodes(f, signode, class_qualname)
+
+    target_id = f"java-field-{f['qualname']}"
+    signode["ids"].append(target_id)
+    domain.data["fields"][f["qualname"]] = (env.docname, target_id)
+
+    content = addnodes.desc_content("", *_content_nodes_for(f["brief"], f["detailed"]))
+    node += content
+    return node
+
+
+# ---------------------------------------------------------------------------
 # Directives
 # ---------------------------------------------------------------------------
 
-class JavaClassDirective(Directive):
+class JavaClassDirective(ObjectDescription):
     """.. javaclass:: org.simgrid.s4u.Activity
        :members:
     """
 
     has_content = False
     required_arguments = 1
-    option_spec = {"members": directives.flag}
+    option_spec = {"members": directives.flag, **ObjectDescription.option_spec}
 
     def run(self):
-        env = self.state.document.settings.env
+        reader = DoxygenJavaReader(self.env.config.javadomain_xml_dir)
         qualname = self.arguments[0].strip()
-        reader = DoxygenJavaReader(env.config.javadomain_xml_dir)
-        domain = env.get_domain("java")
-
         try:
-            data = reader.read_class(qualname)
+            self._data = reader.read_class(qualname)
         except JavaDoxygenError as exc:
             return [_reader_error_node(self.state_machine, self.lineno, exc)]
 
-        target_id = f"java-class-{qualname}"
-        domain.data["classes"][qualname] = (env.docname, target_id)
+        # Force domain/objtype so the <dl> gets "java class" as its CSS classes, the same way a "cpp:class" directive gets "cpp
+        # class". (We're registered as a bare top-level directive, so ObjectDescription would otherwise see domain='' from our
+        # directive name alone.)
+        self.name = "java:class"
+        result = super().run()
 
-        section = nodes.section(ids=[target_id])
-        section += nodes.title(text=f"class {qualname}")
-        if data["brief"] or data["detailed"]:
-            section += nodes.paragraph(text=(data["brief"] + " " + data["detailed"]).strip())
-
+        desc_node = result[-1]
+        content_node = desc_node[-1]
+        if self._data["brief"] or self._data["detailed"]:
+            content_node[:0] = _content_nodes_for(self._data["brief"], self._data["detailed"])
         if "members" in self.options:
-            if data["enum_constants"]:
-                section += nodes.paragraph(text="Enum constants: " + ", ".join(data["enum_constants"]))
-            for f in data["fields"]:
-                section += _render_field(f, domain, env)
-            for m in data["methods"]:
-                section += _render_method(m, domain, env, target_id=f"java-method-{m['qualname']}")
+            domain = self.env.get_domain("java")
+            if self._data["enum_constants"]:
+                content_node += nodes.paragraph(
+                    text="Enum constants: " + ", ".join(self._data["enum_constants"]))
+            for f in self._data["fields"]:
+                content_node += _build_field_desc(f, domain, self.env)
+            for idx, m in enumerate(self._data["methods"]):
+                content_node += _build_method_desc(m, domain, self.env, idx)
+        return result
 
-        return [section]
+    def get_signatures(self):
+        return [self._data["qualname"]]
+
+    def handle_signature(self, sig, signode):
+        _build_class_signature_nodes(self._data, signode)
+        return sig
+
+    def add_target_and_index(self, name, sig, signode):
+        target_id = f"java-class-{name}"
+        signode["ids"].append(target_id)
+        domain = self.env.get_domain("java")
+        domain.data["classes"][name] = (self.env.docname, target_id)
 
 
-class JavaFunctionDirective(Directive):
-    """.. javamethod:: org.simgrid.s4u.Activity.suspend"""
+class JavaMethodDirective(ObjectDescription):
+    """.. javamethod:: org.simgrid.s4u.Activity.suspend
+
+    Renders every overload found under that name (see module docstring: no overload disambiguation), one signature per `desc_signature`, 
+    the same way a bare ``doxygenfunction`` without an argument list would.
+    """
 
     has_content = False
     required_arguments = 1
 
     def run(self):
-        env = self.state.document.settings.env
         qualname = self.arguments[0].strip()
         class_qualname, _, method_name = qualname.rpartition(".")
-        reader = DoxygenJavaReader(env.config.javadomain_xml_dir)
-        domain = env.get_domain("java")
-
+        reader = DoxygenJavaReader(self.env.config.javadomain_xml_dir)
         try:
             data = reader.read_class(class_qualname)
         except JavaDoxygenError as exc:
             return [_reader_error_node(self.state_machine, self.lineno, exc)]
 
-        matches = [m for m in data["methods"] if m["name"] == method_name]
-        if not matches:
+        self._methods = [m for m in data["methods"] if m["name"] == method_name]
+        if not self._methods:
             msg = self.state_machine.reporter.error(
                 f"javamethod: '{method_name}' not found in {class_qualname}", line=self.lineno)
             return [msg]
 
-        return [_render_method(m, domain, env) for m in matches]
+        self.name = "java:method"
+        return super().run()
+
+    def get_signatures(self):
+        # One "signature" per overload; handle_signature() below re-fetches the matching method dict rather than parsing this string.
+        return [str(idx) for idx in range(len(self._methods))]
+
+    def handle_signature(self, sig, signode):
+        m = self._methods[int(sig)]
+        class_qualname = m["qualname"].rsplit(".", 1)[0]
+        _build_method_signature_nodes(m, signode, class_qualname)
+        content = _content_nodes_for(m["brief"], m["detailed"])
+        if content:
+            self._pending_content = getattr(self, "_pending_content", {})
+            self._pending_content[sig] = content
+        return (m["qualname"], sig)  # unique per overload, dedup-safe
+
+    def add_target_and_index(self, name, sig, signode):
+        qualname, idx = name
+        target_id = f"java-method-{qualname}-{idx}"
+        signode["ids"].append(target_id)
+        domain = self.env.get_domain("java")
+        # Last overload registered wins for xref purposes; matches the "no overload disambiguation" limitation documented above.
+        domain.data["methods"][qualname] = (self.env.docname, target_id)
+
+    def transform_content(self, content_node):
+        # has_content is False, so the directive has no nested rST content of its own: use this hook to attach each overload's
+        # brief/detailed description right under its own desc_signature instead.
+        pending = getattr(self, "_pending_content", {})
+        for nodelist in pending.values():
+            content_node += nodelist
 
 
 # ---------------------------------------------------------------------------
@@ -387,5 +580,5 @@ def setup(app):
     # Registered as bare top-level directives (not "java:javaclass") so the docs read like the existing ".. doxygenclass::"/"..
     # doxygenfunction::" directives, for a minimal-diff migration.
     app.add_directive("javaclass", JavaClassDirective)
-    app.add_directive("javamethod", JavaFunctionDirective)
-    return {"version": "0.2", "parallel_read_safe": True}
+    app.add_directive("javamethod", JavaMethodDirective)
+    return {"version": "0.3", "parallel_read_safe": True}
