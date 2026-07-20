@@ -31,7 +31,7 @@ XBT_PUBLIC void simgrid_load_platform(const char* filename);
 XBT_PUBLIC void simgrid_load_deployment(const char* filename);
 /** Run the simulation until its end */
 XBT_PUBLIC void simgrid_run();
-/** Run the simulation until the specified date */
+/** Run the simulation until the given date, given in seconds since the simulation start */
 XBT_PUBLIC void simgrid_run_until(double max_date);
 /** Registers the main function of an actor that will be launched from the deployment file */
 XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, char**));
@@ -41,14 +41,17 @@ XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, ch
  * It is used for trace-based simulations (see examples/cpp/replay-comms and similar).
  */
 XBT_PUBLIC void simgrid_register_default(void (*code)(int, char**));
-/** Retrieve the simulation time (in seconds) */
+/** Retrieve the simulation time (in seconds since the simulation start) */
 XBT_PUBLIC double simgrid_get_clock();
-/** PAPI */
+/** Retrieve the number of PAPI counters currently configured */
 XBT_PUBLIC int simgrid_papi_get_num_counters();
+/** Retrieve the current values of the configured PAPI counters */
 XBT_PUBLIC void simgrid_get_papi_counters( long long* );
+/** Start the configured PAPI counters */
 XBT_PUBLIC void simgrid_papi_start();
+/** Stop the configured PAPI counters */
 XBT_PUBLIC void simgrid_papi_stop();
-/* Set some code to execute in the maestro (must be used before the engine creation)
+/** Set some code to execute in the maestro (must be used before the engine creation)
  *
  * If no maestro code is registered (the default), the main thread
  * is assumed to be the maestro. */
