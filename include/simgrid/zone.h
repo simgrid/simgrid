@@ -15,8 +15,11 @@
 /* C interface */
 SG_BEGIN_DECL
 
+/** @brief Retrieve the root netzone, containing all others. */
 XBT_PUBLIC sg_netzone_t sg_zone_get_root();
+/** @brief Retrieves the name of that netzone */
 XBT_PUBLIC const char* sg_zone_get_name(const_sg_netzone_t zone);
+/** @brief Retrieve a netzone from its name */
 XBT_PUBLIC sg_netzone_t sg_zone_get_by_name(const char* name);
 #ifndef DOXYGEN
 XBT_ATTRIB_DEPRECATED_v403("Please use sg_zone_get_childs instead: we want to kill xbt_dict at some point") XBT_PUBLIC
@@ -28,9 +31,13 @@ XBT_ATTRIB_DEPRECATED_v403("Please use sg_zone_get_all_hosts instead: we want to
  * if @c size is not null, the child count is also stored in it
  */
 XBT_PUBLIC sg_netzone_t* sg_zone_get_childs(const_sg_netzone_t netzone, int* size);
+/** @brief Returns a NULL-terminated list of the names of the properties defined for this netzone */
 XBT_PUBLIC const char** sg_zone_get_property_names(const_sg_netzone_t zone);
+/** @brief Returns the value of a given netzone property (or nullptr if not set) */
 XBT_PUBLIC const char* sg_zone_get_property_value(const_sg_netzone_t as, const char* name);
+/** @brief Change the value of a given netzone property */
 XBT_PUBLIC void sg_zone_set_property_value(sg_netzone_t netzone, const char* name, const char* value);
+/** @brief Retrieve the list of all hosts included in this netzone (and its children netzones) */
 XBT_PUBLIC const_sg_host_t* sg_zone_get_all_hosts(const_sg_netzone_t zone, int* size);
 
 SG_END_DECL

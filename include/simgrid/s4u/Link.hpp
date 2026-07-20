@@ -69,6 +69,7 @@ public:
 
   /** \static @brief Retrieve a link from its name */
   static Link* by_name(const std::string& name);
+  /** \static @brief Retrieve a link from its name, or return nullptr */
   static Link* by_name_or_null(const std::string& name);
 
   /** @brief Returns the networking zone englobing that host */
@@ -118,9 +119,13 @@ public:
    * The profile must contain absolute values */
   Link* set_latency_profile(kernel::profile::Profile* profile);
 
+  /** @brief Retrieve the list of properties for this link */
   const std::unordered_map<std::string, std::string>* get_properties() const;
+  /** @brief Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
+  /** @brief Set several properties at once, adding to the ones already set */
   Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
+  /** @brief Set a property (old values will be overwritten) */
   Link* set_property(const std::string& key, const std::string& value);
 
   /**
@@ -166,6 +171,7 @@ public:
   /** Checks whether the link is on. */
   bool is_on() const;
 
+  /** Seals this link, finishing its configuration */
   Link* seal();
 
 private:

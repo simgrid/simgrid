@@ -67,28 +67,43 @@ public:
 #endif
 
   // enum class State { ... }
-  XBT_DECLARE_ENUM_CLASS(State,
-    CREATED, /**< created, but not yet started */
-    RUNNING,
-    SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-    DESTROYED
+  XBT_DECLARE_ENUM_CLASS(
+      State, CREATED, /**< created, but not yet started */
+      RUNNING,        /**< started and running */
+      SUSPENDED,      /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+      DESTROYED       /**< destroyed, its resources have been freed */
   );
 
   kernel::resource::VirtualMachineImpl* get_vm_impl() const { return pimpl_vm_; }
+  /** Immediately boots this virtual machine, which must be in the CREATED state */
   void start();
+  /** Suspends this virtual machine. Actors running on it are not scheduled anymore until resume() is called. */
   void suspend();
+  /** Resumes this virtual machine, previously suspended with suspend() */
   void resume();
+  /** Immediately shuts down this virtual machine. Actors running on it are forcefully stopped. */
   void shutdown();
+  /** Immediately destroys this virtual machine, freeing its resources */
   void destroy() override;
 
+  /** Retrieve the physical machine (the host) on which this virtual machine currently runs */
   Host* get_pm() const;
+  /** Sets the physical machine (the host) on which this virtual machine runs */
   VirtualMachine* set_pm(Host* pm);
+  /** Retrieve the amount of RAM dedicated to this virtual machine */
   size_t get_ramsize() const;
+  /** Sets the amount of RAM dedicated to this virtual machine */
   VirtualMachine* set_ramsize(size_t ramsize);
+  /** Sets the CPU utilization bound for this virtual machine, that is the max fraction of the underlying physical
+   *  host's CPU that this VM (and the actors it hosts) can use */
   VirtualMachine* set_bound(double bound);
+  /** Starts the migration of this virtual machine. Call set_pm() to change its physical host, then end_migration()
+   *  once you are done. */
   void start_migration() const;
+  /** Ends the migration of this virtual machine, previously started with start_migration() */
   void end_migration() const;
 
+  /** Retrieve the current state of this virtual machine */
   State get_state() const;
 
   /* Callbacks on signals */

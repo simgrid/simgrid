@@ -5,6 +5,12 @@
 
 package org.simgrid.s4u;
 
+/**
+ * Disk represent the disk resources associated to a host.
+ *
+ * By default, SimGrid does not keep track of the actual data being written but only computes the time taken by the
+ * corresponding data movement.
+ */
 public class Disk {
   private transient long swigCPtr;
 
@@ -14,125 +20,165 @@ public class Disk {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
+  /** Retrieves the name of this disk */
   public String get_name() {
     return simgridJNI.Disk_get_name(swigCPtr, this);
   }
 
+  /** Sets the read bandwidth of this disk, that is the max speed at which read operations progress */
   public Disk set_read_bandwidth(double read_bw) {
     simgridJNI.Disk_set_read_bandwidth(swigCPtr, this, read_bw);
     return this;
   }
 
+  /** The read bandwidth of this disk is the max speed at which read operations progress */
   public double get_read_bandwidth() {
     return simgridJNI.Disk_get_read_bandwidth(swigCPtr, this);
   }
 
+  /** Sets the write bandwidth of this disk, that is the max speed at which write operations progress */
   public Disk set_write_bandwidth(double write_bw) {
     simgridJNI.Disk_set_write_bandwidth(swigCPtr, this, write_bw);
     return this;
   }
 
+  /** The write bandwidth of this disk is the max speed at which write operations progress */
   public double get_write_bandwidth() {
     return simgridJNI.Disk_get_write_bandwidth(swigCPtr, this);
   }
 
+  /**
+   * Set limit for read/write operations.
+   *
+   * This determines the limit for read and write operation in the same disk. Usually, it's configured to
+   * max(read_bw, write_bw). You can change this behavior using this method.
+   */
   public Disk set_readwrite_bandwidth(double bw) {
     simgridJNI.Disk_set_readwrite_bandwidth(swigCPtr, this, bw);
     return this;
   }
 
+  /** Retrieve the property value (or null if not set) */
   public String get_property(String key) {
     return simgridJNI.Disk_get_property(swigCPtr, this, key);
   }
 
+  /** Set a property (old values will be overwritten) */
   public Disk set_property(String arg0, String value) {
     simgridJNI.Disk_set_property(swigCPtr, this, arg0, value);
     return this;
   }
 
+  /** Attaches this disk to the given host */
   public Disk set_host(Host host) {
     simgridJNI.Disk_set_host(swigCPtr, this, Host.getCPtr(host), host);
     return this;
   }
 
+  /** Retrieve the host to which this disk is attached */
   public Host get_host() {
     long cPtr = simgridJNI.Disk_get_host(swigCPtr, this);
     return (cPtr == 0) ? null : new Host(cPtr);
   }
 
+  /**
+   * Set the max amount of operations (either read or write) that can take place on this disk at the same time.
+   * Use -1 to set no limit.
+   */
   public Disk set_concurrency_limit(int limit) {
     simgridJNI.Disk_set_concurrency_limit(swigCPtr, this, limit);
     return this;
   }
 
+  /** The concurrency limit of this disk is the max amount of concurrent I/O operations (extra ones are queued) */
   public int get_concurrency_limit() {
     return simgridJNI.Disk_get_concurrency_limit(swigCPtr, this);
   }
 
+  /** Creates (but don't start) an I/O operation of the given type on this disk */
   public Io io_init(int size, Io.OpType type) {
     long cPtr = simgridJNI.Disk_io_init(swigCPtr, this, size, type.swigValue());
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
+  /** Non-blocking read of the given amount of bytes from this disk */
   public Io read_async(double size) { return read_async((long)size); }
+  /** Non-blocking read of the given amount of bytes from this disk */
   public Io read_async(long size) {
     long cPtr = simgridJNI.Disk_read_async(swigCPtr, this, size);
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
+  /** Blocking read of the given amount of bytes from this disk. Returns the amount of bytes actually read. */
   public long read(long size) {
     return simgridJNI.Disk_read__SWIG_0(swigCPtr, this, size);
   }
 
+  /** Blocking read of the given amount of bytes from this disk, at the given priority. */
   public long read(long size, double priority) {
     return simgridJNI.Disk_read__SWIG_1(swigCPtr, this, size, priority);
   }
 
+  /** Non-blocking write of the given amount of bytes to this disk */
   public Io write_async(long size) {
     long cPtr = simgridJNI.Disk_write_async(swigCPtr, this, size);
     return (cPtr == 0) ? null : new Io(cPtr, true);
   }
 
+  /** Blocking write of the given amount of bytes to this disk. Returns the amount of bytes actually written. */
   public long write(long size) {
     return simgridJNI.Disk_write__SWIG_0(swigCPtr, this, size);
   }
 
+  /** Blocking write of the given amount of bytes to this disk, at the given priority. */
   public long write(long size, double priority) {
     return simgridJNI.Disk_write__SWIG_1(swigCPtr, this, size, priority);
   }
 
+  /** Retrieve the sharing policy used for the given operation on this disk */
   public Disk.SharingPolicy get_sharing_policy(Disk.Operation op) {
     return Disk.SharingPolicy.swigToEnum(simgridJNI.Disk_get_sharing_policy(swigCPtr, this, op.swigValue()));
   }
 
+  /** Retrieve the user data associated to this disk (or null if not set) */
   public Object get_data() { return simgridJNI.Disk_get_data(swigCPtr, this); }
+  /** Set the user data associated to this disk */
   public void set_data(Object data) { simgridJNI.Disk_set_data(swigCPtr, this, data); }
 
+  /** Seals this disk, finishing its configuration */
   public Disk seal() {
     simgridJNI.Disk_seal(swigCPtr, this);
     return this;
   }
 
+  /** Add a callback fired when any Disk is turned on or off */
   public static void on_onoff_cb(CallbackDisk cb) { simgridJNI.Disk_on_onoff_cb(cb); }
 
+  /** Add a callback fired when this specific Disk is turned on or off */
   public void on_this_onoff_cb(CallbackDisk cb) { simgridJNI.Disk_on_this_onoff_cb(swigCPtr, this, cb); }
 
+  /** Add a callback fired when the read bandwidth of any Disk changes */
   public static void on_read_bandwidth_change_cb(CallbackDisk cb) { simgridJNI.Disk_on_read_bandwidth_change_cb(cb); }
 
+  /** Add a callback fired when the read bandwidth of this specific Disk changes */
   public void on_this_read_bandwidth_change_cb(CallbackDisk cb)
   {
     simgridJNI.Disk_on_this_read_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
+  /** Add a callback fired when the write bandwidth of any Disk changes */
   public static void on_write_bandwidth_change_cb(CallbackDisk cb) { simgridJNI.Disk_on_write_bandwidth_change_cb(cb); }
 
+  /** Add a callback fired when the write bandwidth of this specific Disk changes */
   public void on_this_write_bandwidth_change_cb(CallbackDisk cb)
   {
     simgridJNI.Disk_on_this_write_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
+  /** Add a callback fired when any Disk is destroyed */
   public static void on_destruction_cb(CallbackDisk cb) { simgridJNI.Disk_on_destruction_cb(cb); }
 
+  /** Add a callback fired when this specific Disk is destroyed */
   public void on_this_destruction_cb(CallbackDisk cb) { simgridJNI.Disk_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public final static class SharingPolicy {

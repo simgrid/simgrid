@@ -372,7 +372,10 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Netzone */
   py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(
-      m, "NetZone", "Networking Zones. See the C++ documentation for details.");
+      m, "NetZone",
+      "A netzone is a network container, in charge of routing information between elements (hosts) and to the "
+      "nearby netzones. In SimGrid, there is a hierarchy of netzones, with a unique root zone (that you can "
+      "retrieve from the Engine).");
   netzone
       .def_static(
           "create_full_zone",
@@ -541,19 +544,21 @@ PYBIND11_MODULE(simgrid, m)
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 hosts")
+           "Add a route between 2 hosts, and its symmetrical route in the other direction")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 hosts")
+           "Add a route between 2 hosts, and its symmetrical route in the other direction")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
                              const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netzones. The gateway of each zone gets used.")
+           "Add a route between 2 netzones, and its symmetrical route in the other direction. The gateway of each "
+           "zone gets used.")
       .def("add_route",
            py::overload_cast<const simgrid::s4u::NetZone*, const simgrid::s4u::NetZone*,
                              const std::vector<const simgrid::s4u::Link*>&>(&simgrid::s4u::NetZone::add_route),
-           "Add a route between 2 netzones. The gateway of each zone gets used.")
+           "Add a route between 2 netzones, and its symmetrical route in the other direction. The gateway of each "
+           "zone gets used.")
       .def("add_bypass_route", &simgrid::s4u::NetZone::add_bypass_route, "Add bypass route to NetZone.")
       .def("add_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::add_host),
            "Adds a host")
@@ -575,7 +580,7 @@ PYBIND11_MODULE(simgrid, m)
            "Adds a network link")
       .def("add_link",
            py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::add_link),
-           "Addss a network link")
+           "Adds a network link")
       .def("add_link",
            py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::add_link),
            "Adds a network link")
@@ -613,25 +618,29 @@ PYBIND11_MODULE(simgrid, m)
             throw std::logic_error("Please call Netzone.add_router() instead");
           },
           "Creates a router") // XBT_ATTRIB_DEPRECATED_v401 
-      .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent, "NetZone parent (read-only property).")
+      .def_property_readonly("parent", &simgrid::s4u::NetZone::get_parent,
+                             "The parent netzone, or None for the root netzone (read-only property).")
       // Keep `set_parent` method for backward compatibility.
-      .def("get_children", &simgrid::s4u::NetZone::get_children, "Get all children of this zone.")
-      .def("get_property", &simgrid::s4u::NetZone::get_property, "Retrieve NetZone property.")
-      .def("get_properties", &simgrid::s4u::NetZone::get_properties, "Retrieve NetZone all properties.")
-      .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
+      .def("get_children", &simgrid::s4u::NetZone::get_children, "Retrieve the list of direct children netzones.")
+      .def("get_property", &simgrid::s4u::NetZone::get_property,
+           "Retrieve the property value (or None if not set).")
+      .def("get_properties", &simgrid::s4u::NetZone::get_properties, "Retrieve all the properties of this netzone.")
+      .def("set_property", &simgrid::s4u::NetZone::set_property, "Set a property (old values will be overwritten)")
       .def("set_gateway", py::overload_cast<const simgrid::s4u::Host*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")
       .def("set_gateway", py::overload_cast<simgrid::kernel::routing::NetPoint*>(&simgrid::s4u::NetZone::set_gateway),
            "Specify the gateway of this zone, to be used for inter-zone routes")
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
-      .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
+      .def("seal", &simgrid::s4u::NetZone::seal, "Seals this netzone, finishing its configuration")
       .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
                              "The name of this network zone (read-only property).")
       .def_property_readonly("all_hosts", &simgrid::s4u::NetZone::get_all_hosts,
-                             "Retrieve all NetZone hosts (read-only property).")
+                             "The list of all hosts included in this netzone, and its children netzones (read-only "
+                             "property).")
       .def_property_readonly("host_count", &simgrid::s4u::NetZone::get_host_count,
-                             "Get NetZone host count (read-only property).")
+                             "The amount of hosts included in this netzone, and its children netzones (read-only "
+                             "property).")
       .def(
           "__repr__", [](const simgrid::s4u::NetZone net) { return "NetZone(" + net.get_name() + ")"; },
           "Textual representation of the NetZone");
@@ -654,7 +663,11 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(
-      m, "Host", "Simulated host. See the C++ documentation for details.");
+      m, "Host",
+      "Some physical resource with computing and networking capabilities on which Actors execute. All hosts are "
+      "automatically created when the platform is loaded. You cannot create a host yourself. You can retrieve a "
+      "particular host using Host.by_name() and actors can retrieve the host on which they run using Host.current() "
+      "or this_actor.get_host().");
   host.def_static("by_name", &Host::by_name, py::arg("name"), "Retrieves a host from its name, or die")
       .def_static("by_name_or_null", &Host::by_name_or_null, py::arg("name"),
                   "Retrieves a host from its name or None if there is no such host")
@@ -701,17 +714,25 @@ PYBIND11_MODULE(simgrid, m)
           "   \"\"\"\n\n"
           "The second function parameter is the periodicity: the time to wait after the last event to start again over "
           "the list. Set it to -1 to not loop over.")
-      .def_property_readonly("pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
-      .def("pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
+      .def_property_readonly("pstate_count", &Host::get_pstate_count,
+                             "Returns the total count of pstates defined "
+                             "for this host")
+      .def("pstate_speed", &Host::get_pstate_speed,
+           "Returns the peak computing speed in flops/s at the given pstate, NOT taking the external load into "
+           "account")
       .def_property_readonly("netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def_property_readonly("disks", &Host::get_disks, "The list of disks on this host (read-only).")
       .def_property_readonly("all_actors", &Host::get_all_actors, "Returns the list of all actors on the host")
-      .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
-      .def("get_disk_by_name", &Host::get_disk_by_name, "Retrieve the disk in this host by it's name")
+      .def("get_disks", &Host::get_disks, "Returns the list of disks attached to this host")
+      .def("get_disk_by_name", &Host::get_disk_by_name,
+           "Retrieve a disk attached to this host from its name, or None if it does not exist")
       .def_property("core_count", &Host::get_core_count, py::cpp_function(&Host::set_core_count),
-                    "Manage the number of cores in the CPU")
-      .def("set_coordinates", &Host::set_coordinates, "Set the coordinates of this host")
-      .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, "Describe how the CPU is shared",
+                    "The number of cores of the processor (read/write property).")
+      .def("set_coordinates", &Host::set_coordinates,
+           "Set the coordinates of this host, for use with the vivaldi routing model")
+      .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy,
+           "Describes how the CPU is shared between concurrent tasks. Note that the NONLINEAR callback is in the "
+           "critical path of the solver, so it should be fast.",
            py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def(
           "add_actor",
@@ -733,9 +754,10 @@ PYBIND11_MODULE(simgrid, m)
             });
           },
           "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
-      .def("add_disk", py::overload_cast<const std::string&, double, double>(&Host::add_disk), "Add a disk")
+      .def("add_disk", py::overload_cast<const std::string&, double, double>(&Host::add_disk),
+           "Add a disk to this host")
       .def("add_disk", py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::add_disk),
-           "Add a disk")
+           "Add a disk to this host")
       .def(
           "create_disk",
           [](std::string const& name) {
@@ -743,15 +765,22 @@ PYBIND11_MODULE(simgrid, m)
             throw std::logic_error("Please call Host.add_disk() instead");
           },
           "Creates a disk") // XBT_ATTRIB_DEPRECATED_v401
-      .def("get_property", &Host::get_property, "Get Host property")
-      .def("get_properties", &Host::get_properties, "Get all Host properties")
-      .def("set_property", &Host::set_property, "Set Host property")
-      .def("set_properties", &Host::set_properties, "Set Host properties")
+      .def("get_property", &Host::get_property, "Retrieve the value of a host property (or None if not set)")
+      .def("get_properties", &Host::get_properties, "Retrieve all the properties of this host")
+      .def("set_property", &Host::set_property, "Set a host property (old values will be overwritten)")
+      .def("set_properties", &Host::set_properties,
+           "Set several host properties at once, adding to the ones "
+           "already set")
       .def_property("concurrency_limit", &Host::get_concurrency_limit, py::cpp_function(&Host::set_concurrency_limit),
-                    "Concurrency limit (read/write property).")
-      .def("seal", &Host::seal, "Seal this host")
-      .def("turn_off", &Host::turn_off, "Turn off this host")
-      .def("turn_on", &Host::turn_on, "Turn on this host")
+                    "The max amount of executions that can take place on this host at the same time (read/write "
+                    "property). Use -1 to set no limit.")
+      .def("seal", &Host::seal,
+           "Seals this host, finishing its configuration. No more configuration is allowed "
+           "after the seal.")
+      .def("turn_off", &Host::turn_off, "Turns this host off. All actors are forcefully stopped.")
+      .def("turn_on", &Host::turn_on,
+           "Turns this host on if it was previously off. This call does nothing if the host is already on. If it "
+           "was off, all actors which were marked 'autorestart' on that host will be restarted automatically.")
       .def_property("pstate", &Host::get_pstate, py::cpp_function(&Host::set_pstate),
                     "The current pstate (read/write property).")
       .def_static("current", &Host::current, "Retrieves the host on which the running actor is located.")
@@ -816,28 +845,38 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Disk */
   py::class_<Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
-      m, "Disk", "Simulated disk. See the C++ documentation for details.");
-  disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_), "Read data from disk",
+      m, "Disk",
+      "Disk represent the disk resources associated to a host. By default, SimGrid does not keep track of the "
+      "actual data being written but only computes the time taken by the corresponding data movement.");
+  disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_),
+           "Blocking read of the given amount of bytes from this disk. Returns the amount of bytes actually read.",
            py::arg("size"), py::arg("priority") = 1)
-      .def("write", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::write, py::const_), "Write data in disk",
+      .def("write", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::write, py::const_),
+           "Blocking write of the given amount of bytes to this disk. Returns the amount of bytes actually written.",
            py::arg("size"), py::arg("priority") = 1)
-      .def("read_async", &simgrid::s4u::Disk::read_async, "Non-blocking read data from disk")
-      .def("write_async", &simgrid::s4u::Disk::write_async, "Non-blocking write data in disk")
+      .def("read_async", &simgrid::s4u::Disk::read_async,
+           "Non-blocking read of the given amount of bytes from this "
+           "disk")
+      .def("write_async", &simgrid::s4u::Disk::write_async,
+           "Non-blocking write of the given amount of bytes to this "
+           "disk")
       .def_property("read_bandwidth", py::cpp_function{&simgrid::s4u::Disk::get_read_bandwidth},
                     py::cpp_function{&simgrid::s4u::Disk::set_read_bandwidth},
                     "The read bandwidth of this disk is the max speed at which read operations progress")
       .def_property("write_bandwidth", py::cpp_function{&simgrid::s4u::Disk::get_write_bandwidth},
                     py::cpp_function{&simgrid::s4u::Disk::set_write_bandwidth},
                     "The write bandwidth of this disk is the max speed at which write operations progress")
-      .def_property(
-          "concurrency_limit", py::cpp_function{&simgrid::s4u::Disk::get_concurrency_limit},
-          py::cpp_function{&simgrid::s4u::Disk::set_concurrency_limit},
-          "The concurrency limit of this disk is the max amound of concurrent accesses (extra ones are queued)")
-      .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, "Set sharing policy for this disk",
+      .def_property("concurrency_limit", py::cpp_function{&simgrid::s4u::Disk::get_concurrency_limit},
+                    py::cpp_function{&simgrid::s4u::Disk::set_concurrency_limit},
+                    "The concurrency limit of this disk is the max amount of concurrent I/O operations (extra ones are "
+                    "queued). Use -1 to set no limit.")
+      .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy,
+           "Describes how this disk is shared between activities for the given operation (read, write, or both).",
            py::arg("op"), py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
-      .def("seal", &simgrid::s4u::Disk::seal, "Seal this disk")
-      .def("turn_on", &Disk::turn_on, "Turns the disk on.")
-      .def("turn_off", &Disk::turn_off, "Turns the disk off.")
+      .def("seal", &simgrid::s4u::Disk::seal, "Seals this disk, finishing its configuration")
+      .def("turn_on", &Disk::turn_on,
+           "Turns this disk on if it was previously off. This call does nothing if the disk is already on.")
+      .def("turn_off", &Disk::turn_off, "Turns this disk off. All I/O activities are forcefully stopped.")
       .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).")
       .def_property_readonly("host", &simgrid::s4u::Disk::get_host,
                              "The Host to which this disk is attached (read-only property)")
@@ -858,13 +897,13 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Link */
   py::class_<Link, std::unique_ptr<Link, py::nodelete>> link(m, "Link",
-                                                             "Network link. See the C++ documentation for details.");
+                                                             "A Link represents the network facilities between hosts.");
   link.def("set_latency", py::overload_cast<const std::string&>(&Link::set_latency),
-           "Set the latency as a string. Accepts values with units, such as ‘1s’ or ‘7ms’.\nFull list of accepted "
+           "Set the latency of this link. Accepts values with units, such as '1s' or '7ms'.\nFull list of accepted "
            "units: w (week), d (day), h, s, ms, us, ns, ps.")
       .def("set_latency", py::overload_cast<double>(&Link::set_latency), "Set the latency as a float (in seconds).")
       // Keep `set_bandwidth` for backward compatibility.
-      .def("set_bandwidth", &Link::set_bandwidth, "Set the bandwidth (in byte per second).")
+      .def("set_bandwidth", &Link::set_bandwidth, "Set the bandwidth of this link (in bytes per second).")
       .def(
           "set_bandwidth_profile",
           [](Link* l, const std::string& profile, double period) {
@@ -918,32 +957,41 @@ PYBIND11_MODULE(simgrid, m)
           "The second function parameter is the periodicity: the time to wait after the last event to start again over "
           "the list. Set it to -1 to not loop over.")
 
-      .def("turn_on", &Link::turn_on, "Turns the link on.")
-      .def("turn_off", &Link::turn_off, "Turns the link off.")
-      .def("is_on", &Link::is_on, "Check whether the link is on.")
-      .def_property_readonly("is_used", &Link::is_used, "Check if the link is used (at least one flow uses the link).")
-      .def("get_sharing_policy", &Link::get_sharing_policy, "Retrieve link sharing policy.")
-      .def("set_sharing_policy", &Link::set_sharing_policy, "Set sharing policy for this link")
+      .def("turn_on", &Link::turn_on, "Turns this link on.")
+      .def("turn_off", &Link::turn_off, "Turns this link off.")
+      .def("is_on", &Link::is_on, "Checks whether this link is on.")
+      .def_property_readonly("is_used", &Link::is_used, "Check if this link is used (at least one flow uses it).")
+      .def("get_sharing_policy", &Link::get_sharing_policy, "Describes how this link is shared between flows.")
+      .def("set_sharing_policy", &Link::set_sharing_policy,
+           "Describes how this link is shared between flows. Note that the NONLINEAR callback is in the critical "
+           "path of the solver, so it should be fast.")
       .def_property("concurrency_limit", &Link::get_concurrency_limit, py::cpp_function(&Link::set_concurrency_limit),
-                    "Concurrency limit (read/write property).")
+                    "The max amount of communications that can share this link at the same time (read/write "
+                    "property). Use -1 to set no limit.")
       // Keep `set_concurrency_limit` method for backward compatibility.
-      .def("set_concurrency_limit", &Link::set_concurrency_limit, "Set concurrency limit for this link")
+      .def("set_concurrency_limit", &Link::set_concurrency_limit,
+           "Set the number of communications that can share this link at the same time. Use this method to "
+           "serialize communication flows going through this link. Use -1 to set no limit.")
       .def("set_host_wifi_rate", &Link::set_host_wifi_rate,
-           "Set level of communication speed of given host on this Wi-Fi link")
-      .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
+           "Set the level of communication speed of the given host on this wifi link. By default, the first level "
+           "in the list is used, but this can be used to take the location of hosts into account, or even to model "
+           "mobility. Asserts that the link is actually a wifi link.")
+      .def_static("by_name", &Link::by_name, "Retrieves a link from its name, or dies")
       .def_static("by_name_or_null", &Link::by_name_or_null,
-                  "Retrieve a Link by its name, or None if it does not exist in the platform.")
-      .def("seal", &Link::seal, "Seal this link")
+                  "Retrieve a link by its name, or None if it does not exist in the platform.")
+      .def("seal", &Link::seal, "Seals this link, finishing its configuration")
       .def_property_readonly("name", &Link::get_name, "The name of this link")
       .def_property("bandwidth", &Link::get_bandwidth, py::cpp_function(&Link::set_bandwidth),
                     "The bandwidth (in bytes per second) (r/w property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).")
       .def_property_readonly("load", &Link::get_load,
                              "Returns the current load (in bytes per second) (read-only property).")
-      .def("get_property", &Link::get_property, "Retrieve link property.")
-      .def("get_properties", &Link::get_properties, "Retrieve link all properties.")
-      .def("set_property", &Link::set_property, "Set link property.")
-      .def("set_properties", &Link::set_properties, "Set multiple properties.")
+      .def("get_property", &Link::get_property, "Retrieve the property value (or None if not set).")
+      .def("get_properties", &Link::get_properties, "Retrieve all the properties of this link.")
+      .def("set_property", &Link::set_property, "Set a property (old values will be overwritten).")
+      .def("set_properties", &Link::set_properties,
+           "Set several properties at once, adding to the ones already "
+           "set.")
       .def(
           "__repr__", [](const Link* l) { return "Link(" + l->get_name() + ")"; },
           "Textual representation of the Link");

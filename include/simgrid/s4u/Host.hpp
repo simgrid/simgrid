@@ -130,7 +130,9 @@ public:
    */
   Host* set_cpu_factor_cb(const std::function<double(Host&, double)>& cb);
 
+  /** Returns the amount of actors currently running on this host. */
   size_t get_actor_count() const;
+  /** Returns the list of actors currently running on this host. */
   std::vector<ActorPtr> get_all_actors() const;
 
   /** Turns that host on if it was previously off
@@ -148,12 +150,20 @@ public:
   /** Returns if that host is currently up and running */
   bool is_on() const;
 
+  /** Returns the value of a given host property (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
+  /** Change the value of a given host property (old value overwritten) */
   Host* set_property(const std::string& key, const std::string& value);
+  /** Retrieve the list of properties for this host */
   const std::unordered_map<std::string, std::string>* get_properties() const;
+  /** Set several properties at once, adding to the ones already set */
   Host* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
+  /** Specify a profile modeling the churn, turning this host on and off according to an exhaustive list of dated
+   *  boolean events. */
   Host* set_state_profile(kernel::profile::Profile* p);
+  /** Specify a profile modeling the external load on this host, as a list of dated speed ratios (not absolute
+   *  values: multiply @ref get_speed() by the ratio given by this profile to get the currently available speed). */
   Host* set_speed_profile(kernel::profile::Profile* p);
 
   /**
@@ -212,6 +222,7 @@ public:
 
   /** Returns the number of core of the processor. */
   int get_core_count() const;
+  /** Sets the number of core of the processor. */
   Host* set_core_count(int core_count);
 
   enum class SharingPolicy { NONLINEAR = 1, LINEAR = 0 };
@@ -224,6 +235,7 @@ public:
    * @param cb Callback for NONLINEAR policies
    */
   Host* set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
+  /** Retrieve how the CPU of this host is shared between concurrent tasks */
   SharingPolicy get_sharing_policy() const;
 
   /** Returns the current computation load (in flops per second)
@@ -233,10 +245,15 @@ public:
    */
   double get_load() const;
 
+  /** Returns the total count of pstates defined for this host */
   unsigned long get_pstate_count() const;
+  /** Returns the current pstate of this host */
   unsigned long get_pstate() const;
+  /** Returns the peak computing speed in flops/s at the given pstate, NOT taking the external load into account */
   double get_pstate_speed(unsigned long pstate_index) const;
+  /** Sets the pstate at which this host runs */
   Host* set_pstate(unsigned long pstate_index);
+  /** Set the coordinates of this host, for use with the vivaldi routing model */
   Host* set_coordinates(const std::string& coords);
 
   /** Create an actor from a @c std::function<void()>.
@@ -270,7 +287,9 @@ public:
     return add_actor(name, std::bind(std::move(code), std::move(args)...));
   }
 
+  /** Returns the list of disks attached to this host */
   std::vector<Disk*> get_disks() const;
+  /** Retrieve a disk attached to this host from its name, or return nullptr */
   Disk* get_disk_by_name(const std::string& name) const;
 
   #ifndef DOXYGEN
@@ -296,16 +315,23 @@ public:
    * @throw std::invalid_argument if read/write speeds are incorrect
    */
   Disk* add_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth);
+  /** Registers an existing disk to this host */
   void register_disk(const Disk* disk);
+  /** Removes a disk from this host, by its name */
   void remove_disk(const std::string& disk_name);
 
+  /** Create a virtual machine on this host, with the given amount of cores */
   VirtualMachine* create_vm(const std::string& name, int core_amount);
+  /** Create a virtual machine on this host, with the given amount of cores and RAM */
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);
   /** Retrieve a VM running on this host from its name, or return nullptr */
   VirtualMachine* vm_by_name_or_null(const std::string& name);
 
+  /** Retrieves the list of links, and the latency, that are used when communicating with the given destination */
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
+  /** Retrieves the list of links, and the latency, that are used when communicating with the given destination */
   void route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const;
+  /** Retrieves the list of links, and the latency, that are used when communicating with the given destination */
   std::pair<std::vector<Link*>, double> route_to(const Host* dest) const;
 
   /**
@@ -314,6 +340,7 @@ public:
    */
   Host* seal();
 
+  /** Retrieve the netzone in which this host is located */
   NetZone* get_englobing_zone() const;
   /** Block the calling actor on an execution located on the called host
    *
@@ -323,6 +350,7 @@ public:
   void execute(double flops) const;
   /** Start an asynchronous computation on that host (possibly remote) */
   ExecPtr exec_init(double flops_amounts) const;
+  /** Start and detach an asynchronous computation on that host (possibly remote) */
   ExecPtr exec_async(double flops_amounts) const;
 
   /** Block the calling actor on an execution located on the called host (with explicit priority) */

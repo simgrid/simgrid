@@ -5,6 +5,7 @@
 
 package org.simgrid.s4u;
 
+/** A Link represents the network facilities between hosts. */
 public class Link {
   private transient long swigCPtr;
   protected transient boolean swigCMemOwn;
@@ -40,101 +41,142 @@ public class Link {
     }
   }
 
+  /** Retrieves the name of this link */
   public String get_name() {
     return simgridJNI.Link_get_name(swigCPtr, this);
   }
 
+  /** Get the bandwidth of this link (in bytes per second) */
   public double get_bandwidth() {
     return simgridJNI.Link_get_bandwidth(swigCPtr, this);
   }
 
+  /** Set the bandwidth of this link (in bytes per second) */
   public Link set_bandwidth(double value) {
     simgridJNI.Link_set_bandwidth(swigCPtr, this, value);
     return this;
   }
 
+  /** Get the latency of this link (in seconds) */
   public double get_latency() {
     return simgridJNI.Link_get_latency(swigCPtr, this);
   }
 
+  /** Set the latency of this link (in seconds) */
   public Link set_latency(double value) {
     simgridJNI.Link_set_latency__SWIG_0(swigCPtr, this, value);
     return this;
   }
 
+  /**
+   * Set the latency of this link. Accepts values with units, such as '1s' or '7ms'. Full list of accepted units:
+   * w (week), d (day), h, s, ms, us, ns, ps.
+   */
   public Link set_latency(String value) {
     simgridJNI.Link_set_latency__SWIG_1(swigCPtr, this, value);
     return this;
   }
 
+  /** Describes how this link is shared between flows */
   public Link.SharingPolicy get_sharing_policy() {
     return Link.SharingPolicy.swigToEnum(simgridJNI.Link_get_sharing_policy(swigCPtr, this));
   }
 
+  /** Retrieve the property value (or null if not set) */
   public String get_property(String key) {
     return simgridJNI.Link_get_property(swigCPtr, this, key);
   }
 
+  /** Set a property (old values will be overwritten) */
   public Link set_property(String key, String value) {
     simgridJNI.Link_set_property(swigCPtr, this, key, value);
     return this;
   }
 
+  /**
+   * Set the number of communications that can share this link at the same time. Use this method to serialize
+   * communication flows going through this link. Use -1 to set no limit.
+   */
   public Link set_concurrency_limit(int limit) {
     simgridJNI.Link_set_concurrency_limit(swigCPtr, this, limit);
     return this;
   }
 
+  /** The concurrency limit of this link is the max amount of communications that can share it at the same time */
   public int get_concurrency_limit() {
     return simgridJNI.Link_get_concurrency_limit(swigCPtr, this);
   }
 
+  /**
+   * Set the level of communication speed of the given host on this wifi link.
+   *
+   * The bandwidth of a wifi link for a given host depends on its SNR (signal to noise ratio), which ultimately
+   * depends on the distance between the host and the station and the material between them. This is modeled in
+   * SimGrid by providing several bandwidths to wifi links, one per SNR level. By default, the first level in the
+   * list is used, but you can use this function to specify that a given host uses another level of bandwidth. This
+   * can be used to take the location of hosts into account, or even to model mobility in your SimGrid simulation.
+   *
+   * Note that this function asserts that the link is actually a wifi link.
+   */
   public void set_host_wifi_rate(Host host, int level) {
     simgridJNI.Link_set_host_wifi_rate(swigCPtr, this, Host.getCPtr(host), host, level);
   }
 
+  /** Returns the current load (in bytes per second) */
   public double get_load() {
     return simgridJNI.Link_get_load(swigCPtr, this);
   }
 
+  /** Check if this link is used (at least one flow uses it) */
   public boolean is_used() {
     return simgridJNI.Link_is_used(swigCPtr, this);
   }
 
+  /** Check if this link is shared (not a FATPIPE) */
   public boolean is_shared() {
     return simgridJNI.Link_is_shared(swigCPtr, this);
   }
 
+  /** Turns this link on. */
   public void turn_on() {
     simgridJNI.Link_turn_on(swigCPtr, this);
   }
 
+  /** Turns this link off. */
   public void turn_off() {
     simgridJNI.Link_turn_off(swigCPtr, this);
   }
 
+  /** Checks whether this link is on. */
   public boolean is_on() {
     return simgridJNI.Link_is_on(swigCPtr, this);
   }
 
+  /** Seals this link, finishing its configuration */
   public Link seal() {
     simgridJNI.Link_seal(swigCPtr, this);
     return this;
   }
 
+  /** Add a callback fired when any Link is turned on or off */
   public static void on_onoff_cb(CallbackLink cb) { simgridJNI.Link_on_onoff_cb(cb); }
 
+  /** Add a callback fired when this specific Link is turned on or off */
   public void on_this_onoff_cb(CallbackLink cb) { simgridJNI.Link_on_this_onoff_cb(swigCPtr, this, cb); }
 
+  /** Add a callback fired when the bandwidth of any Link changes */
   public static void on_bandwidth_change_cb(CallbackLink cb) { simgridJNI.Link_on_bandwidth_change_cb(cb); }
 
+  /** Add a callback fired when the bandwidth of this specific Link changes */
   public void on_this_bandwidth_change_cb(CallbackLink cb)
   {
     simgridJNI.Link_on_this_bandwidth_change_cb(swigCPtr, this, cb);
   }
 
+  /** Add a callback fired when any Link is destroyed */
   public static void on_destruction_cb(CallbackLink cb) { simgridJNI.Link_on_destruction_cb(cb); }
 
+  /** Add a callback fired when this specific Link is destroyed */
   public void on_this_destruction_cb(CallbackLink cb) { simgridJNI.Link_on_this_destruction_cb(swigCPtr, this, cb); }
 
   public final static class SharingPolicy {
@@ -185,44 +227,55 @@ public class Link {
   }
 
   static boolean LoadPluginInited = false;
+  /**
+   * Access to the plugin gathering the load-related statistics of this link. Requires
+   * {@link Engine#plugin_link_load_init} to have been called before the platform was loaded.
+   */
   public class LoadPlugin {
 
+    /** Start tracking the load of this link */
     public void track()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_track(swigCPtr);
     }
+    /** Stop tracking the load of this link */
     public void untrack()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_untrack(swigCPtr);
     }
+    /** Reset the counters of the load plugin for this link */
     public void reset()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       simgridJNI.Link_load_reset(swigCPtr);
     }
+    /** Cumulative load of this link since it was tracked */
     public double get_cumulative()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_cum_load(swigCPtr);
     }
+    /** Average load of this link since it was tracked */
     public double get_average()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_avg_load(swigCPtr);
     }
+    /** Minimum instantaneous load of this link since it was tracked */
     public double get_min_instantaneous()
     {
       if (!LoadPluginInited)
         Engine.die("Please use Engine.plugin_host_load_init() before using this plugin");
       return simgridJNI.Link_get_min_instantaneous_load(swigCPtr);
     }
+    /** Maximum instantaneous load of this link since it was tracked */
     public double get_max_instantaneous()
     {
       if (!LoadPluginInited)
@@ -230,5 +283,6 @@ public class Link {
       return simgridJNI.Link_get_max_instantaneous_load(swigCPtr);
     }
   }
+  /** Access to the plugin gathering the load-related statistics of this link */
   public LoadPlugin load = new LoadPlugin();
 }

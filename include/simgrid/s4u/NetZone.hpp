@@ -117,14 +117,18 @@ public:
   const char* get_cname() const;
 
   kernel::routing::NetZoneImpl* get_pimpl() { return pimpl_; }
+  /** @brief Retrieve the parent netzone (or nullptr for the root netzone) */
   NetZone* get_parent() const;
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v403("Please stop using NetZone::set_parent(). It is useless with the new platform API.")
       NetZone* set_parent(const NetZone* parent);
 #endif
+  /** @brief Retrieve the list of direct children netzones */
   std::vector<NetZone*> get_children() const;
 
+  /** @brief Retrieve the list of all hosts included in this netzone (and its children netzones) */
   std::vector<Host*> get_all_hosts() const;
+  /** @brief Retrieve the amount of hosts included in this netzone (and its children netzones) */
   size_t get_host_count() const;
 
   kernel::routing::NetZoneImpl* get_impl() const { return pimpl_; }
@@ -135,11 +139,13 @@ public:
   NetZone* set_properties(const std::unordered_map<std::string, std::string>& properties);
   /** Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
+  /** Set a property (old values will be overwritten) */
   void set_property(const std::string& key, const std::string& value);
   /** @brief Get the netpoint associated to this netzone */
   kernel::routing::NetPoint* get_netpoint() const;
   /** @brief Get the gateway associated to this netzone */
   kernel::routing::NetPoint* get_gateway() const;
+  /** @brief Get the gateway associated to the given (possibly nested) zone within this netzone */
   kernel::routing::NetPoint* get_gateway(const std::string& name) const;
   void set_gateway(const s4u::Host* router) { set_gateway(router->get_netpoint()); }
   void set_gateway(kernel::routing::NetPoint* router);
@@ -284,7 +290,8 @@ public:
   }
 #endif
 
-  /*** @brief Add a host to a NetZone
+  /**
+   * @brief Add a host to a NetZone
    *
    * @param name Host name
    * @param speed_per_pstate Vector of CPU's speeds

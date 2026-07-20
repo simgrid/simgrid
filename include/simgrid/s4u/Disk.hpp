@@ -54,14 +54,19 @@ public:
   kernel::resource::DiskImpl* get_impl() const { return pimpl_; }
 #endif
 
+  /** @brief Retrieves the name of that disk */
   std::string const& get_name() const;
   /** @brief Retrieves the name of that disk as a C string */
   const char* get_cname() const;
 
+  /** @brief Sets the read bandwidth of this disk, that is the max speed at which read operations progress */
   Disk* set_read_bandwidth(double read_bw);
+  /** @brief The read bandwidth of this disk is the max speed at which read operations progress */
   double get_read_bandwidth() const;
 
+  /** @brief Sets the write bandwidth of this disk, that is the max speed at which write operations progress */
   Disk* set_write_bandwidth(double write_bw);
+  /** @brief The write bandwidth of this disk is the max speed at which write operations progress */
   double get_write_bandwidth() const;
 
   /**
@@ -82,17 +87,25 @@ public:
   /** Returns if that disk is currently up and running */
   bool is_on() const;
 
-
+  /** @brief Retrieve the list of properties for that disk */
   const std::unordered_map<std::string, std::string>* get_properties() const;
+  /** @brief Retrieve the property value (or nullptr if not set) */
   const char* get_property(const std::string& key) const;
+  /** @brief Set a property (old values will be overwritten) */
   Disk* set_property(const std::string&, const std::string& value);
+  /** @brief Set several properties at once, adding to the ones already set */
   Disk* set_properties(const std::unordered_map<std::string, std::string>& properties);
 
+  /** @brief Attaches this disk to the given host */
   Disk* set_host(s4u::Host* host);
+  /** @brief Retrieve the host to which this disk is attached */
   s4u::Host* get_host() const;
 
+  /** @brief Specify a profile turning this disk on and off according to an exhaustive list */
   Disk* set_state_profile(kernel::profile::Profile* profile);
+  /** @brief Specify a profile modeling the read bandwidth of this disk according to an exhaustive list */
   Disk* set_read_bandwidth_profile(kernel::profile::Profile* profile);
+  /** @brief Specify a profile modeling the write bandwidth of this disk according to an exhaustive list */
   Disk* set_write_bandwidth_profile(kernel::profile::Profile* profile);
   /**
    * @brief Set the max amount of operations (either read or write) that can take place on this disk at the same time
@@ -102,16 +115,25 @@ public:
    * @param limit  Number of concurrent I/O operations
    */
   Disk* set_concurrency_limit(int limit);
+  /** @brief The concurrency limit of this disk is the max amount of concurrent I/O operations (extra ones are
+   *  queued) */
   int get_concurrency_limit() const;
 
+  /** @brief Creates (but don't start) an I/O operation of the given type on this disk */
   IoPtr io_init(sg_size_t size, s4u::Io::OpType type) const;
 
+  /** @brief Non-blocking read of the given amount of bytes from this disk */
   IoPtr read_async(sg_size_t size) const;
+  /** @brief Blocking read of the given amount of bytes from this disk. Returns the amount of bytes actually read. */
   sg_size_t read(sg_size_t size) const;
+  /** @brief Blocking read of the given amount of bytes from this disk, at the given priority. */
   sg_size_t read(sg_size_t size, double priority) const;
 
+  /** @brief Non-blocking write of the given amount of bytes to this disk */
   IoPtr write_async(sg_size_t size) const;
+  /** @brief Blocking write of the given amount of bytes to this disk. Returns the amount of bytes actually written. */
   sg_size_t write(sg_size_t size) const;
+  /** @brief Blocking write of the given amount of bytes to this disk, at the given priority. */
   sg_size_t write(sg_size_t size, double priority) const;
 
   /** @brief Policy for sharing the disk among activities */
@@ -133,6 +155,7 @@ public:
    * @param cb Callback for NONLINEAR policies
    */
   Disk* set_sharing_policy(Operation op, SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
+  /** @brief Retrieve the sharing policy used for the given operation on this disk */
   SharingPolicy get_sharing_policy(Operation op) const;
   /**
    * @brief Callback to set IO factors
@@ -147,6 +170,7 @@ public:
   /** @brief Configure the factor callback */
   Disk* set_factor_cb(const std::function<IoFactorCb>& cb);
 
+  /** @brief Seals this disk, finishing its configuration */
   Disk* seal();
 
   /* The signals */

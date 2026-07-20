@@ -27,6 +27,7 @@ XBT_PUBLIC void* sg_host_extension_get(const_sg_host_t host, size_t rank);
 
 /** Finds a host from its name */
 XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
+/** Finds a VM running on the given host from its name */
 XBT_PUBLIC sg_vm_t sg_vm_by_name(sg_host_t host, const char* name);
 
 /** @brief Return the name of the sg_host_t. */
@@ -46,16 +47,20 @@ XBT_PUBLIC void* sg_host_get_data(const_sg_host_t host);
 XBT_PUBLIC void sg_host_set_data(sg_host_t host, void* userdata);
 
 // ========= storage related functions ============
+/** @brief Returns the list of disks attached to the given host */
 XBT_PUBLIC void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t** disks);
+/** @brief Retrieve a disk attached to the given host, by its name */
 XBT_PUBLIC sg_disk_t sg_host_get_disk_by_name(const_sg_host_t host, const char* name);
 
 // =========== user-level functions ===============
 /** @brief Return the speed of the processor (in flop/s), regardless of the current load on the machine. */
 XBT_PUBLIC double sg_host_get_speed(const_sg_host_t host);
+/** @brief Return the peak computing speed (in flop/s) at the given pstate, regardless of the current load. */
 XBT_PUBLIC double sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index);
 
 XBT_PUBLIC double sg_host_get_available_speed(const_sg_host_t host);
 
+/** @brief Return the number of cores of the processor. */
 XBT_PUBLIC int sg_host_core_count(const_sg_host_t host);
 
 /** @brief Returns the current computation load (in flops per second).
@@ -66,6 +71,7 @@ XBT_PUBLIC double sg_host_get_load(const_sg_host_t host);
 /** @brief Return the location on which the current process is running. */
 XBT_PUBLIC sg_host_t sg_host_self();
 
+/** @brief Return the name of the host on which the current process is running. */
 XBT_PUBLIC const char* sg_host_self_get_name();
 
 /** @brief Return the total count of pstates defined for a host.
@@ -78,11 +84,16 @@ XBT_PUBLIC const char* sg_host_self_get_name();
  */
 XBT_PUBLIC unsigned long sg_host_get_nb_pstates(const_sg_host_t host);
 
+/** @brief Return the current pstate of the host. */
 XBT_PUBLIC unsigned long sg_host_get_pstate(const_sg_host_t host);
+/** @brief Set the pstate at which the host runs. */
 XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, unsigned long pstate);
 
+/** @brief Turns that host on if it was previously off. Does nothing if the host is already on. */
 XBT_PUBLIC void sg_host_turn_on(sg_host_t host);
+/** @brief Turns that host off. All actors are forcefully stopped. */
 XBT_PUBLIC void sg_host_turn_off(sg_host_t host);
+/** @brief Returns if that host is currently up and running */
 XBT_PUBLIC int sg_host_is_on(const_sg_host_t host);
 
 #ifndef DOXYGEN
