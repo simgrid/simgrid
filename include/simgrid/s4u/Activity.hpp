@@ -31,8 +31,9 @@ namespace s4u {
 
 /** @brief Activities
  *
- * This class is the ancestor of every activities that an actor can undertake.
- * That is, activities are all the things that do take time to the actor in the simulated world.
+ * This class is the ancestor of every activity that an actor can undertake, i.e., anything that takes time in the
+ * simulated world: executions, communications and I/Os. You cannot create an Activity directly: use the relevant
+ * subclasses (Comm, Exec, Io) instead.
  */
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
 
@@ -49,13 +50,22 @@ class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
 #endif
 
 public:
-  // enum class State { ... }
+  /** @brief The states an activity can be in during its life cycle */
   XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, FAILED, CANCELED, FINISHED);
 
+  /** Returns whether this activity is assigned to the resource(s) that it needs to start (e.g., some Links for a
+   *  Comm, a Host for an Exec, a Disk for an Io). An activity cannot start before it is assigned. */
   virtual bool is_assigned() const = 0;
+  /** Returns whether all activities that this one depends on are completed, meaning that this activity can now
+   *  start (once it is also assigned). */
   bool dependencies_solved() const { return dependencies_.empty(); }
+  /** Returns whether no other activity depends on this one, meaning that this activity has nothing left to
+   *  unblock when it completes. */
   bool has_no_successor() const { return successors_.empty(); }
+  /** Retrieve the set of activities that this activity depends on, i.e., the ones that must complete before this
+   *  activity can start. See add_successor(). */
   const std::set<ActivityPtr>& get_dependencies() const { return dependencies_; }
+  /** Retrieve the list of activities that depend on this one, i.e., the ones added with add_successor(). */
   const std::vector<ActivityPtr>& get_successors() const { return successors_; }
 
 protected:
@@ -76,6 +86,9 @@ protected:
     }
   }
 
+  /** Add a dependency from this activity to activity @a: @a will not start before this activity is done.
+   *
+   * Raises an exception if @a is this activity itself, or if @a is already a successor of this activity. */
   void add_successor(ActivityPtr a)
   {
     if(this == a)
@@ -88,6 +101,7 @@ protected:
     a->dependencies_.insert({this});
   }
 
+  /** Remove a dependency previously declared with add_successor(). */
   void remove_successor(ActivityPtr a)
   {
     if(this == a)
@@ -160,7 +174,7 @@ public:
    * This function is optional: you can call wait() even if you didn't call start()
    */
   virtual Activity* do_start() = 0;
-  /** Tests whether the given activity is terminated yet. */
+  /** Tests whether this activity is terminated yet. This call does not block. */
   virtual bool test();
 
   /** Blocks the current actor until the activity is terminated */
@@ -178,14 +192,21 @@ public:
   Activity* cancel();
   /** Retrieve the current state of the activity */
   Activity::State get_state() const { return state_; }
-  /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED,
-   * DONE) */
+  /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, FAILED, CANCELED,
+   * FINISHED) */
   const char* get_state_str() const;
+  /** Returns whether this activity was canceled with cancel(). */
   bool is_canceled() const { return state_ == State::CANCELED; }
+  /** Returns whether this activity has failed, e.g. because of a resource failure. */
   bool is_failed() const { return state_ == State::FAILED; }
+  /** Returns whether this activity is successfully completed. */
   bool is_done() const { return state_ == State::FINISHED; }
+  /** Change the state of this activity. This is intended for internal use and should usually not be called
+   *  directly by users. */
   void set_state(Activity::State state) { state_ = state; }
   void set_detached (bool detached) { detached_ = detached; }
+  /** Returns whether this activity was detached, i.e. started with detach() rather than start(), meaning that no
+   *  actor is going to wait for its completion. */
   bool is_detached() const { return detached_;}
 
   /** Blocks the progression of this activity until it gets resumed */
@@ -195,15 +216,23 @@ public:
   /** Whether or not the progression of this activity is blocked */
   bool is_suspended() const { return suspended_; }
 
+  /** Retrieve the name of this activity, as a C string */
   virtual const char* get_cname() const       = 0;
+  /** Retrieve the name of this activity */
   virtual const std::string& get_name() const = 0;
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining() const;
 
+  /** Retrieve the simulated timestamp at which this activity started. */
   double get_start_time() const;
+  /** Retrieve the simulated timestamp at which this activity finished. */
   double get_finish_time() const;
+  /** Mark this activity, so that it can be recognized later on with is_marked(). This has no effect on the
+   *  simulation, it is only meant to help users track activities of interest, e.g. after retrieving them from an
+   *  ActivitySet. */
   void mark() { marked_ = true; }
+  /** Returns whether this activity was previously marked with mark(). */
   bool is_marked() const { return marked_; }
 
   /** Returns the internal implementation of this Activity */
@@ -299,6 +328,7 @@ public:
     Activity::remove_successor(a);
     return static_cast<AnyActivity*>(this);
   }
+  /** Set the name of this activity, for logging and tracing purposes. */
   AnyActivity* set_name(std::string_view name)
   {
     name_ = name;
@@ -307,6 +337,8 @@ public:
   const std::string& get_name() const override { return name_; }
   const char* get_cname() const override { return name_.c_str(); }
 
+  /** Set a user-defined tracing category on this activity, to be used when producing SimGrid traces (see
+   *  @ref outcomes_vizu). Must be called before the activity starts. */
   AnyActivity* set_tracing_category(std::string_view category)
   {
     xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
@@ -314,6 +346,8 @@ public:
     tracing_category_ = category;
     return static_cast<AnyActivity*>(this);
   }
+  /** Retrieve the tracing category previously set with set_tracing_category(), or an empty string if none was
+   *  set. */
   const std::string& get_tracing_category() const { return tracing_category_; }
   const std::function<void(void*)>& get_clean_function() const { return clean_fun_; }
 
@@ -332,6 +366,8 @@ public:
     return start();
   }
 
+  /** Start the activity, and ignore its result, calling @a clean_function on the activity's data once it
+   *  completes so that you can release any resource associated to it. See also detach(). */
   AnyActivity* detach(const std::function<void(void*)>& clean_function)
   {
     clean_fun_ = clean_function;

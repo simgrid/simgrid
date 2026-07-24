@@ -104,9 +104,12 @@ public:
     extension_set(rank.id(), value, use_dtor);
   }
   // void* version, for C users and nostalgics
+  /** Attach arbitrary user data to this object. SimGrid does not touch this data, but you can retrieve it later
+   *  with get_data(). */
   void set_data(void* data){
     extensions_[0]=data;
   }
+  /** Retrieve the user data previously attached to this object with set_data(), if any. */
   template <typename D> D* get_data() const { return static_cast<D*>(extensions_[0]); }
   template <typename D> std::unique_ptr<D> get_unique_data() { return std::unique_ptr<D>(get_data<D>()); }
 

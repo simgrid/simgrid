@@ -5,10 +5,16 @@
 
 package org.simgrid.s4u;
 
+/**
+ * A container of activities, allowing to wait for the completion of any or all activities in the set. This is
+ * somehow similar to the select(2) system call under UNIX, allowing you to wait for the next event about these
+ * activities.
+ */
 public class ActivitySet {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnBase;
 
+  /** Create an empty ActivitySet */
   public ActivitySet()
   {
     swigCMemOwnBase = true;
@@ -43,6 +49,7 @@ public class ActivitySet {
   public int size() { return simgridJNI.ActivitySet_size(swigCPtr, this); }
   /** Return whether the set is empty. Failed activities (if any) are not counted */
   public boolean empty() { return simgridJNI.ActivitySet_empty(swigCPtr, this); }
+  /** Remove all activities from the set. */
   public void clear() { simgridJNI.ActivitySet_clear(swigCPtr, this); }
 
   /** Access to one specific activity in the set */

@@ -1074,15 +1074,26 @@ PYBIND11_MODULE(simgrid, m)
            "predictions, in particular if your application exhibits swarms of small messages.");
 
   /* class Activity */
-  py::class_<Activity, ActivityPtr>(m, "Activity", "Activity. See the C++ documentation for details.");
+  py::class_<Activity, ActivityPtr>(m, "Activity",
+                                    "An Activity is the ancestor of every activity that an actor can undertake, "
+                                    "i.e., anything that takes time in the simulated world. See the relevant "
+                                    "subclasses (Comm, Exec, Io) for the activities that you can actually create.");
 
   /* Class Comm */
-  py::class_<Comm, CommPtr, Activity>(m, "Comm", "Communication. See the C++ documentation for details.")
+  py::class_<Comm, CommPtr, Activity>(
+      m, "Comm",
+      "Represents all communications, be they asynchronous or not, that you can start, test and wait for. Most "
+      "communications are created by exchanging data through a :py:class:`~simgrid.Mailbox`. You can also create "
+      "direct point-to-point communications between two arbitrary hosts, bypassing the mailbox and actor "
+      "mechanisms, with sendto(), sendto_init() and sendto_async().")
       .def_property_readonly("dst_data_size", py::cpp_function{&Comm::get_dst_data_size},
                              "Retrieve the size of the received data.")
       .def_property_readonly("mailbox", py::cpp_function{&Comm::get_mailbox},
-                             "Retrieve the mailbox on which this comm acts.")
-      .def_property_readonly("sender", py::cpp_function{&Comm::get_sender})
+                             "Retrieve the mailbox on which this comm acts. This is None if the comm was created "
+                             "through sendto().")
+      .def_property_readonly("sender", py::cpp_function{&Comm::get_sender},
+                             "Retrieve the actor which is sending this communication. Returns None if the "
+                             "communication has not started yet, or if it was created with sendto().")
       .def_property_readonly("state_str", py::cpp_function{&Comm::get_state_str}, "Retrieve the Comm state as string")
       .def_property_readonly("remaining", py::cpp_function{&Comm::get_remaining},
                              "Remaining amount of work that this Comm entails")
@@ -1091,7 +1102,7 @@ PYBIND11_MODULE(simgrid, m)
                              "Time at which this Comm finished")
       .def_property_readonly("is_suspended", py::cpp_function{&Comm::is_suspended}, "Whether this Comm is suspended")
       .def("set_tracing_category", &Comm::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category.")
+           "Set a user-defined tracing category. Must be called before start().")
       .def("set_payload_size", &Comm::set_payload_size, py::arg("bytes"),
            "Specify the amount of bytes which exchange should be simulated.")
       .def("set_rate", &Comm::set_rate, py::arg("rate"),
@@ -1100,8 +1111,10 @@ PYBIND11_MODULE(simgrid, m)
       .def("start", &Comm::start, py::return_value_policy::reference_internal,
            "Starts a previously created activity. This function is optional: you can call wait() even if you didn't "
            "call start()")
-      .def("suspend", &Comm::suspend, py::return_value_policy::reference_internal, "Suspend the activity.")
-      .def("resume", &Comm::resume, py::return_value_policy::reference_internal, "Resume the activity.")
+      .def("suspend", &Comm::suspend, py::return_value_policy::reference_internal,
+           "Blocks the progression of this activity until it gets resumed with resume().")
+      .def("resume", &Comm::resume, py::return_value_policy::reference_internal,
+           "Unblock the progression of this activity if it was suspended previously with suspend().")
       .def("test", &Comm::test, "Test whether the communication is terminated.")
       .def("wait", &Comm::wait, "Block until the completion of that communication.")
       .def("wait_for", &Comm::wait_for, py::arg("timeout"),
@@ -1115,7 +1128,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("detach", py::overload_cast<>(&Comm::detach), py::return_value_policy::reference_internal,
            "Start the comm, and ignore its result. It can be completely forgotten after that.")
       .def_static("sendto", &Comm::sendto, py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
-                  "Do a blocking communication between two arbitrary hosts.")
+                  "Do a blocking communication between two arbitrary hosts, bypassing the mailbox and actor "
+                  "mechanisms.")
       .def_static("sendto_init", py::overload_cast<Host*, Host*>(&Comm::sendto_init), py::arg("from"), py::arg("to"),
                   "Creates a communication between the two given hosts, bypassing the mailbox mechanism.")
       .def_static("sendto_async", &Comm::sendto_async, py::arg("from"), py::arg("to"),
@@ -1125,16 +1139,22 @@ PYBIND11_MODULE(simgrid, m)
                   "In particular, the actor does not have to be on one of the involved hosts.");
 
   /* Class Io */
-  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(m, "Io",
-                                                              "I/O activities. See the C++ documentation for details.")
+  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(
+      m, "Io",
+      "I/O activities, representing an asynchronous disk access. They are generated from the read/write methods "
+      "of :py:class:`~simgrid.Disk`.")
       .def("set_tracing_category", &simgrid::s4u::Io::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category.")
+           "Set a user-defined tracing category. Must be called before start().")
       .def("test", &simgrid::s4u::Io::test, "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, "Block until the completion of that I/O operation");
 
   /* Class Exec */
-  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity>(m, "Exec",
-                                                                  "Execution. See the C++ documentation for details.")
+  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity>(
+      m, "Exec",
+      "Computation Activity, representing an asynchronous execution. Most of them are created with "
+      "this_actor.exec_init() or Host.execute(), and represent a classical (sequential) execution. This can be "
+      "used to simulate some computation occurring in another thread when the calling actor is not blocked "
+      "during the execution.")
       .def_property_readonly("remaining", py::cpp_function{&simgrid::s4u::Exec::get_remaining},
                              "Amount of flops that remain to be computed until completion (read-only property).")
       .def_property_readonly("remaining_ratio", py::cpp_function{&simgrid::s4u::Exec::get_remaining_ratio},
@@ -1146,12 +1166,14 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("is_suspended", py::cpp_function{&simgrid::s4u::Exec::is_suspended},
                              "Whether this Exec is suspended")
       .def("set_tracing_category", &simgrid::s4u::Exec::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category.")
+           "Set a user-defined tracing category. Must be called before start().")
       .def("test", &simgrid::s4u::Exec::test, "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, "Cancel that execution.")
       .def("start", &simgrid::s4u::Exec::start, "Start that execution.")
-      .def("suspend", &simgrid::s4u::Exec::suspend, "Suspend that execution.")
-      .def("resume", &simgrid::s4u::Exec::resume, "Resume that execution.")
+      .def("suspend", &simgrid::s4u::Exec::suspend,
+           "Blocks the progression of this execution until it gets resumed with resume().")
+      .def("resume", &simgrid::s4u::Exec::resume,
+           "Unblock the progression of this execution if it was suspended previously with suspend().")
       .def("wait", &simgrid::s4u::Exec::wait, "Block until the completion of that execution.")
       .def("wait_for", &simgrid::s4u::Exec::wait_for, py::arg("timeout"),
            "Block until the completion of that activity, or raises TimeoutException after the specified timeout.");
@@ -1345,16 +1367,19 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the IoTask");
 
   /* Class ActivitySet */
-  py::class_<ActivitySet, ActivitySetPtr>(m, "ActivitySet", "ActivitySet. See the C++ documentation for details.")
+  py::class_<ActivitySet, ActivitySetPtr>(
+      m, "ActivitySet",
+      "A container of activities, allowing to wait for the completion of any or all activities in the set. This "
+      "is somehow similar to the select(2) system call under UNIX, allowing you to wait for the next event about "
+      "these activities.")
       .def(py::init([](const std::vector<simgrid::s4u::ActivityPtr>& activities) {
              auto* ret = new ActivitySet();
              for (auto a : activities)
                ret->push(a);
              return ActivitySetPtr(ret);
            }),
-           "The constructor should take the parameters from the command line, as is ")
-      .def(py::init([]() { return ActivitySetPtr(new ActivitySet()); }),
-           "The constructor should take the parameters from the command line, as is ")
+           "Create an ActivitySet containing the given activities.")
+      .def(py::init([]() { return ActivitySetPtr(new ActivitySet()); }), "Create an empty ActivitySet.")
 
       .def("push", &ActivitySet::push, py::arg("activity"), "Add an activity to the set")
       .def("erase", &ActivitySet::erase, py::arg("activity"), "Remove that activity from the set")

@@ -13,9 +13,16 @@
 #include <vector>
 
 namespace simgrid::s4u {
-/** @brief Communication async
+/** @brief Communication activity
  *
- * Represents all asynchronous communications, that you can test or wait onto.
+ * Represents all communications, be they asynchronous or not, that you can start, test and wait for.
+ *
+ * @beginrst
+ * Most communications are created by exchanging data through a :ref:`Mailbox <s4u_mailbox>`, as shown in the
+ * :ref:`relevant examples <s4u_ex_communication>`. You can also create direct point-to-point communications between
+ * two arbitrary hosts, bypassing the mailbox and actor mechanisms, with :cpp:func:`sendto`,
+ * :cpp:func:`sendto_init` and :cpp:func:`sendto_async`; see the :ref:`relevant examples <s4u_ex_comm_host2host>`.
+ * @endrst
  */
 class XBT_PUBLIC Comm : public Activity_T<Comm> {
   friend Mailbox; // Factory of comms
@@ -86,17 +93,35 @@ public:
    * the hosts involved. In particular, the actor creating such a communication does not have to be on one of the
    * involved hosts! Enjoy the comfort of the simulator :)
    */
-  static CommPtr sendto_init(); /* Source and Destination hosts have to be set before the communication can start */
+  /** Creates a direct host-to-host communication, bypassing the mailbox mechanism. Source and destination hosts
+   *  have to be set with set_source() and set_destination() before the communication can start. */
+  static CommPtr sendto_init();
+  /** Creates a direct communication between the two given hosts, bypassing the mailbox mechanism. */
   static CommPtr sendto_init(s4u::Host* from, s4u::Host* to);
+  /** Creates and starts a direct, asynchronous communication between the two given hosts, bypassing the mailbox
+   *  and actor mechanisms. There is no limit on the hosts involved: in particular, the calling actor does not
+   *  have to be on one of the involved hosts. */
   static CommPtr sendto_async(s4u::Host* from, s4u::Host* to, uint64_t simulated_size_in_bytes);
+  /** Do a blocking communication between two arbitrary hosts, bypassing the mailbox and actor mechanisms. This is
+   *  equivalent to `sendto_async(from, to, simulated_size_in_bytes)->wait()`. */
   static void sendto(s4u::Host* from, s4u::Host* to, uint64_t simulated_size_in_bytes);
 
+  /** Specify the source host of a direct host-to-host communication (see sendto()). Must be set together with
+   *  set_destination(), before the communication starts. */
   CommPtr set_source(s4u::Host* from);
+  /** Retrieve the source host of a direct host-to-host communication, or nullptr for mailbox-based communications
+   *  (see set_source()). */
   s4u::Host* get_source() const;
+  /** Specify the destination host of a direct host-to-host communication (see sendto()). Must be set together
+   *  with set_source(), before the communication starts. */
   CommPtr set_destination(s4u::Host* to);
+  /** Retrieve the destination host of a direct host-to-host communication, or nullptr for mailbox-based
+   *  communications (see set_destination()). */
   s4u::Host* get_destination() const;
 
   /* Mailbox-based communications */
+  /** Specify the mailbox on which this communication should be posted. Must be set before the communication
+   *  starts; not to be mixed with direct host-to-host communications (see set_source()/set_destination()). */
   CommPtr set_mailbox(s4u::Mailbox* mailbox);
   /** Retrieve the mailbox on which this comm acts. This is nullptr if the comm was created through sendto() */
   s4u::Mailbox* get_mailbox() const { return mailbox_; }
@@ -161,11 +186,19 @@ public:
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   CommPtr set_rate(double rate);
 
+  /** Returns whether this communication is assigned to a mailbox, or to a source and destination host (for direct
+   *  host-to-host communications). An unassigned communication cannot start. */
   bool is_assigned() const override;
+  /** Retrieve the actor which is sending this communication. Returns nullptr if the communication has not started
+   *  yet, or if it was created with sendto(). */
   Actor* get_sender() const;
+  /** Retrieve the actor which is receiving this communication. Returns nullptr if the communication has not
+   *  started yet, or if it was created with sendto(). */
   Actor* get_receiver() const;
 
   /* Comm life cycle */
+  /** Blocks the current actor until the communication is terminated, or until the timeout is elapsed. Raises a
+   *  TimeoutException on timeout. */
   Comm* wait_for(double timeout) override;
 };
 } // namespace simgrid::s4u

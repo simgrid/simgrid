@@ -61,14 +61,38 @@ public:
    *
    * This cannot be done once the activity is terminated, but it can be done on started executions. */
   ExecPtr set_host(s4u::Host* host);
+  /** @brief Change this sequential execution into a parallel one, spread over the given hosts.
+   *
+   * This turns the execution into a parallel one: use set_flops_amounts() and set_bytes_amounts() to specify the
+   * computations and communications involved. Cannot be done once the activity is terminated. */
   ExecPtr set_hosts(const std::vector<s4u::Host*>& hosts);
+  /** @brief Reset the execution to a state with no host assigned, so that it can be (re)assigned later on. */
   ExecPtr unset_host();
+  /** @brief Reset the execution to a state with no host assigned. Same as unset_host(). */
   ExecPtr unset_hosts() { return unset_host(); }
 
+  /** @brief Set the amount of flops to execute, for sequential executions.
+   *
+   * Cannot be changed once the exec has started. Not to be used on parallel executions: use set_flops_amounts()
+   * instead. */
   ExecPtr set_flops_amount(double flops_amount);
+  /** @brief Set the amount of flops to execute on each host, for parallel executions.
+   *
+   * This vector must have the same size as the vector of hosts given to set_hosts(). See also
+   * set_bytes_amounts() to specify the communications happening between these hosts. */
   ExecPtr set_flops_amounts(const std::vector<double>& flops_amounts);
+  /** @brief Set the amount of bytes to exchange between each pair of hosts, for parallel executions.
+   *
+   * This must be a host_count-square matrix, given as a flat vector: `bytes_amounts[i * host_count + j]`
+   * specifies the amount of bytes to send from host i to host j. See also set_flops_amounts() to specify the
+   * computations happening on each host. */
   ExecPtr set_bytes_amounts(const std::vector<double>& bytes_amounts);
 
+  /** @brief Change the amount of threads that this execution uses on its host.
+   *
+   * This models a multi-threaded execution, where the given amount of flops is spread over several cores of the
+   * host, potentially speeding up the execution when several cores are available. Defaults to 1 (sequential
+   * execution). Cannot be changed once the exec started. See also this_actor::thread_execute(). */
   ExecPtr set_thread_count(int thread_count);
 
   /** @brief change the execution bound
@@ -82,15 +106,24 @@ public:
    *
    * Currently, this cannot be changed once the exec started. */
   ExecPtr set_priority(double priority);
+  /** @brief Change the execution priority while it is already running, without touching its remaining amount of
+   *  flops. See also set_priority(). */
   ExecPtr update_priority(double priority);
 
   /** @brief Retrieve the host on which this activity takes place.
    *  If it runs on more than one host, only the first host is returned. */
   s4u::Host* get_host() const;
+  /** @brief Retrieve the amount of hosts involved in this execution.
+   *  This is 1 for sequential executions, and more for parallel ones. */
   unsigned int get_host_number() const;
+  /** @brief Retrieve the amount of threads used by this (sequential) execution. See set_thread_count(). */
   int get_thread_count() const;
+  /** @brief Retrieve the amount of flops that this execution will use, as specified with set_flops_amount(). */
   double get_cost() const;
+  /** @brief Returns whether this execution is a parallel one, i.e. whether it was created with several hosts. */
   bool is_parallel() const { return parallel_; }
+  /** @brief Returns whether this execution is assigned to the host(s) that it needs to start. An unassigned
+   *  execution cannot start. */
   bool is_assigned() const override;
 };
 

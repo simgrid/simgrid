@@ -43,6 +43,7 @@ public:
   int size() const { return activities_.size(); }
   /** Return whether the set is empty. Failed activities (if any) are not counted */
   int empty() const { return activities_.empty(); }
+  /** Remove all activities from the set. */
   void clear() { activities_.clear(); }
 
   /** Access to one specific activity in the set */
