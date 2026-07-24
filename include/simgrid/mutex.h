@@ -10,10 +10,16 @@
 
 /* C interface */
 SG_BEGIN_DECL
+/** Constructs a new (non-recursive) mutex */
 XBT_PUBLIC sg_mutex_t sg_mutex_init();
+/** Locks the mutex, blocking the current actor until it becomes available if needed. */
 XBT_PUBLIC void sg_mutex_lock(sg_mutex_t mutex);
+/** Unlocks the mutex. This must be called by the actor that currently owns the lock, or the behavior is
+ *  undefined. */
 XBT_PUBLIC void sg_mutex_unlock(sg_mutex_t mutex);
+/** Tries to lock the mutex and returns whether it succeeded, without blocking the current actor. */
 XBT_PUBLIC int sg_mutex_try_lock(sg_mutex_t mutex);
+/** Release the reference to that mutex. Once its refcount reaches 0, the mutex is destroyed. */
 XBT_PUBLIC void sg_mutex_destroy(const_sg_mutex_t mutex);
 
 SG_END_DECL

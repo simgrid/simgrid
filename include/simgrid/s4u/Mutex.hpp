@@ -14,7 +14,8 @@ namespace simgrid::s4u {
 
 /** @brief A classical mutex, but blocking in the simulation world.
  *
- * S4U mutexes are not recursive. If an actor tries to lock the same object twice, it deadlocks with itself.
+ * By default, S4U mutexes are not recursive: if an actor tries to lock the same object twice, it deadlocks with
+ * itself. Pass `true` to create() to get a recursive mutex instead.
  *
  * @beginrst
  * It is strictly impossible to use a real mutex, such as
@@ -50,13 +51,19 @@ class XBT_PUBLIC Mutex {
 #endif
 
 public:
-  /** \static Constructs a new mutex */
+  /** \static Constructs a new mutex. Pass `recursive=true` to get a mutex that the same actor can lock several times in
+   * a row (it then has to be unlocked as many times before another actor can lock it). */
   static MutexPtr create(bool recursive = false);
 
+  /** Locks the mutex, blocking the current actor until it becomes available if needed. */
   void lock();
+  /** Unlocks the mutex. This must be called by the actor that currently owns the lock (i.e. the one that called lock()
+   * or try_lock() successfully), or the behavior is undefined. */
   void unlock();
+  /** Tries to lock the mutex and returns whether it succeeded, without blocking the current actor. */
   bool try_lock();
 
+  /** Retrieve the actor that currently owns this mutex, or nullptr if it is not locked. */
   Actor* get_owner();
 };
 

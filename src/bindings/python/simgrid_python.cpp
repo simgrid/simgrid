@@ -1179,14 +1179,16 @@ PYBIND11_MODULE(simgrid, m)
            "Block until the completion of that activity, or raises TimeoutException after the specified timeout.");
 
   /* Class Semaphore */
-  py::class_<Semaphore, SemaphorePtr>(m, "Semaphore",
-                                      "A classical semaphore, but blocking in the simulation world. See the C++ "
-                                      "documentation for details.")
+  py::class_<Semaphore, SemaphorePtr>(
+      m, "Semaphore",
+      "A classical semaphore, but blocking in the simulation world. It is strictly impossible to use a real "
+      "semaphore here, because it would block the whole simulation. Instead, you should use the present class, "
+      "that offers a very similar interface.")
       .def(py::init<>(&Semaphore::create), py::arg("capacity"), "Semaphore constructor.")
       .def("acquire", &Semaphore::acquire,
            "Acquire on the semaphore object with no timeout. Blocks until the semaphore is acquired.")
       .def("acquire_timeout", &Semaphore::acquire_timeout, py::arg("timeout"),
-           "Acquire on the semaphore object with no timeout. Blocks until the semaphore is acquired or return "
+           "Acquire on the semaphore object with a timeout. Blocks until the semaphore is acquired, or returns "
            "true if it has not been acquired after the specified timeout.")
       .def("release", &Semaphore::release, "Release the semaphore.")
       .def_property_readonly("capacity", py::cpp_function{&Semaphore::get_capacity}, "Get the semaphore capacity.")
@@ -1199,9 +1201,11 @@ PYBIND11_MODULE(simgrid, m)
            [](Semaphore* self, const py::object&, const py::object&, const py::object&) { self->release(); });
 
   /* Class Mutex */
-  py::class_<Mutex, MutexPtr>(m, "Mutex",
-                              "A classical mutex, but blocking in the simulation world."
-                              "See the C++ documentation for details.")
+  py::class_<Mutex, MutexPtr>(
+      m, "Mutex",
+      "A classical mutex, but blocking in the simulation world. By default, mutexes are not recursive: if an "
+      "actor tries to lock the same object twice, it deadlocks with itself. Pass True to the constructor to get "
+      "a recursive mutex instead.")
       .def(py::init<>(&Mutex::create), "Mutex constructor (pass True as a parameter to get a recursive Mutex).",
            py::arg("recursive") = false)
       .def("lock", &Mutex::lock, "Block until the mutex is acquired.")
@@ -1213,10 +1217,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); });
 
   /* Class Barrier */
-  py::class_<Barrier, BarrierPtr>(m, "Barrier", "A classical barrier, but blocking in the simulation world.")
+  py::class_<Barrier, BarrierPtr>(
+      m, "Barrier",
+      "A classical barrier, but blocking in the simulation world. A fixed number of actors block in wait() until "
+      "all of them reached that point, after which they are all unblocked together.")
       .def(py::init<>(&Barrier::create), py::arg("expected_actors"), "Barrier constructor.")
       .def("wait", &Barrier::wait,
-           "Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches "
+           "Blocks into the barrier. Every waiting actor is unblocked once the expected amount of actors reaches "
            "the barrier.");
 
   /* Class Actor */

@@ -22,8 +22,13 @@ extern "C++"
 /* C interface */
 SG_BEGIN_DECL
 
+/** Creates a barrier for the given amount of actors */
 XBT_PUBLIC sg_bar_t sg_barrier_init(unsigned int count);
+/** Release the reference to that barrier. Once its refcount reaches 0, the barrier is destroyed. */
 XBT_PUBLIC void sg_barrier_destroy(sg_bar_t bar);
+/** @brief Performs a barrier already initialized.
+ *
+ * @return 0 for all actors but one: exactly one actor will get SG_BARRIER_SERIAL_THREAD as a return value. */
 XBT_PUBLIC int sg_barrier_wait(sg_bar_t bar);
 
 SG_END_DECL

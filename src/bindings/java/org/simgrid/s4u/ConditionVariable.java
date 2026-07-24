@@ -5,6 +5,10 @@
 
 package org.simgrid.s4u;
 
+/**
+ * SimGrid's condition variables are meant to be drop-in replacements of Java's own condition variables, but blocking in
+ * the simulation world instead of blocking real threads.
+ */
 public class ConditionVariable {
   private transient long swigCPtr;
   private transient boolean swigCMemOwnBase;
@@ -31,6 +35,7 @@ public class ConditionVariable {
     swigCPtr = 0;
   }
 
+  /** Create a new condition variable */
   public static ConditionVariable create() {
     long cPtr = simgridJNI.ConditionVariable_create();
     return (cPtr == 0) ? null : new ConditionVariable(cPtr, true);
@@ -47,20 +52,24 @@ public class ConditionVariable {
     }
   }
 
+  /** Wait until the given instant. Raises a TimeoutException on timeout. */
   public void await_until(Mutex lock, double timeout_time) throws TimeoutException
   {
     simgridJNI.ConditionVariable_await_until(swigCPtr, this, Mutex.getCPtr(lock), lock, timeout_time);
   }
 
+  /** Wait for the given amount of seconds. Raises a TimeoutException on timeout. */
   public void await_for(Mutex lock, double duration) throws TimeoutException
   {
     simgridJNI.ConditionVariable_await_for(swigCPtr, this, Mutex.getCPtr(lock), lock, duration);
   }
 
+  /** Unblock one actor blocked on that condition variable. If none was blocked, nothing happens. */
   public void notify_one() {
     simgridJNI.ConditionVariable_notify_one(swigCPtr, this);
   }
 
+  /** Unblock all actors blocked on that condition variable. If none was blocked, nothing happens. */
   public void notify_all() {
     simgridJNI.ConditionVariable_notify_all(swigCPtr, this);
   }

@@ -13,15 +13,14 @@ namespace simgrid::s4u {
 /** @brief A classical semaphore, but blocking in the simulation world
  *
  * @beginrst
- * It is strictly impossible to use a real semaphore, such as
- * `sem_init <http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html>`_,
- * because it would block the whole simulation.
- * Instead, you should use the present class, that offers a very similar interface.
+ * It is strictly impossible to use a real semaphore, such as `sem_init
+ * <http://pubs.opengroup.org/onlinepubs/9699919799/functions/sem_init.html>`_, because it would block the whole
+ * simulation. Instead, you should use the present class, that offers a very similar interface.
  *
  * An example is available in Section :ref:`s4u_ex_IPC`.
  *
- * As for any S4U object, you can use the :ref:`RAII idiom <s4u_raii>` for memory management of semaphores.
- * Use :cpp:func:`create() <simgrid::s4u::Mutex::create()>` to get a :cpp:type:`simgrid::s4u::SemaphorePtr` to a newly
+ * As for any S4U object, you can use the :ref:`RAII idiom <s4u_raii>` for memory management of semaphores. Use
+ * :cpp:func:`create() <simgrid::s4u::Semaphore::create()>` to get a :cpp:type:`simgrid::s4u::SemaphorePtr` to a newly
  * created semaphore, that will get automatically freed when the variable goes out of scope.
  * @endrst
  *
@@ -45,14 +44,21 @@ class XBT_PUBLIC Semaphore {
 #endif
 
 public:
-  /** \static Constructs a new semaphore */
+  /** \static Constructs a new semaphore, with the given initial capacity */
   static SemaphorePtr create(unsigned int initial_capacity);
 
+  /** Acquire the semaphore, blocking the current actor until it is available if needed (i.e. until its capacity is
+   * positive again). */
   void acquire();
-  /** Returns true if there was a timeout */
+  /** Just like acquire(), but with a timeout. Returns true if there was a timeout, false if the semaphore was acquired
+   *  normally. */
   bool acquire_timeout(double timeout);
+  /** Release the semaphore, increasing its capacity by one, and waking up a blocked actor if any. */
   void release();
+  /** Retrieve the current capacity of the semaphore, i.e. the amount of times it could still be acquire()d before
+   * blocking. */
   int get_capacity() const;
+  /** Returns whether calling acquire() would block the current actor, i.e. whether the capacity is not positive. */
   bool would_block() const;
 };
 
