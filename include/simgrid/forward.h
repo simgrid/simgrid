@@ -114,10 +114,13 @@ using TaskPtr = boost::intrusive_ptr<Task>;
 XBT_PUBLIC void intrusive_ptr_release(Task* o);
 XBT_PUBLIC void intrusive_ptr_add_ref(Task* o);
 class ExecTask;
+/** Smart pointer to a simgrid::s4u::ExecTask */
 using ExecTaskPtr = boost::intrusive_ptr<ExecTask>;
 class CommTask;
+/** Smart pointer to a simgrid::s4u::CommTask */
 using CommTaskPtr = boost::intrusive_ptr<CommTask>;
 class IoTask;
+/** Smart pointer to a simgrid::s4u::IoTask */
 using IoTaskPtr = boost::intrusive_ptr<IoTask>;
 
 /**

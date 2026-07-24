@@ -1289,7 +1289,16 @@ PYBIND11_MODULE(simgrid, m)
       .value("WRITE", simgrid::s4u::Io::OpType::WRITE);
 
   /* Class Task */
-  py::class_<Task, TaskPtr>(m, "Task", "Task. See the C++ documentation for details.")
+  py::class_<Task, TaskPtr>(
+      m, "Task",
+      "Repeatable activities, used to simulate Dataflow applications. A Dataflow is a graph of Tasks, where each "
+      "Task has a set of successors and predecessors. When a Task completes, it sends a Token to each of its "
+      "successors; a Task only fires once it received a token from each of its predecessors. See the concrete "
+      "subclasses that you can actually create: CommTask, ExecTask and IoTask.\n\n"
+      "Each Task is internally composed of several instances: a dispatcher, a collector, and instance_0 to "
+      "instance_n. The dispatcher relies on a user-provided load balancing function to select the instance that "
+      "fires next; once that instance completes, it fires the collector in turn. To start a Dataflow without "
+      "waiting for any token, use enqueue_firings().")
       .def_static(
           "on_start_cb",
           [](py::object cb) {
@@ -1329,11 +1338,15 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the Task");
 
   /* Class CommTask */
-  py::class_<CommTask, CommTaskPtr, Task>(m, "CommTask", "Communication Task. See the C++ documentation for details.")
+  py::class_<CommTask, CommTaskPtr, Task>(
+      m, "CommTask",
+      "A repeatable communication, i.e. a Task representing a communication in a Dataflow. See Task for the "
+      "general Task concepts (dispatcher, collector, instances, tokens).")
       .def_static("init", py::overload_cast<const std::string&>(&CommTask::init), py::arg("name"),
-                  "CommTask constructor")
+                  "Initiate the creation of a CommTask. Setters have to be called afterwards.")
       .def_static("init", py::overload_cast<const std::string&, double, Host*, Host*>(&CommTask::init), py::arg("name"),
-                  py::arg("bytes"), py::arg("source"), py::arg("destination"), "CommTask constructor")
+                  py::arg("bytes"), py::arg("source"), py::arg("destination"),
+                  "Initiate the creation of a CommTask, setting its amount of bytes, source and destination hosts.")
       .def_property("source", &CommTask::get_source, &CommTask::set_source, "The source of the communication.")
       .def_property("destination", &CommTask::get_destination, &CommTask::set_destination,
                     "The destination of the communication.")
@@ -1343,11 +1356,15 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the CommTask");
 
   /* Class ExecTask */
-  py::class_<ExecTask, ExecTaskPtr, Task>(m, "ExecTask", "Execution Task. See the C++ documentation for details.")
+  py::class_<ExecTask, ExecTaskPtr, Task>(
+      m, "ExecTask",
+      "A repeatable execution, i.e. a Task representing a computation in a Dataflow. See Task for the general "
+      "Task concepts (dispatcher, collector, instances, tokens).")
       .def_static("init", py::overload_cast<const std::string&>(&ExecTask::init), py::arg("name"),
-                  "ExecTask constructor")
+                  "Initiate the creation of an ExecTask. Setters have to be called afterwards.")
       .def_static("init", py::overload_cast<const std::string&, double, Host*>(&ExecTask::init), py::arg("name"),
-                  py::arg("flops"), py::arg("host"), "ExecTask constructor.")
+                  py::arg("flops"), py::arg("host"),
+                  "Initiate the creation of an ExecTask, setting its amount of flops and host.")
       .def_property("host", &ExecTask::get_host, &ExecTask::set_host, "The host of the execution.")
       .def_property("flops", &ExecTask::get_flops, &ExecTask::set_flops, "The amount of flops to execute.")
       .def(
@@ -1355,10 +1372,15 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the ExecTask");
 
   /* Class IoTask */
-  py::class_<IoTask, IoTaskPtr, Task>(m, "IoTask", "IO Task. See the C++ documentation for details.")
-      .def_static("init", py::overload_cast<const std::string&>(&IoTask::init), py::arg("name"), "IoTask constructor")
+  py::class_<IoTask, IoTaskPtr, Task>(
+      m, "IoTask",
+      "A repeatable I/O, i.e. a Task representing a disk access in a Dataflow. See Task for the general Task "
+      "concepts (dispatcher, collector, instances, tokens).")
+      .def_static("init", py::overload_cast<const std::string&>(&IoTask::init), py::arg("name"),
+                  "Initiate the creation of an IoTask. Setters have to be called afterwards.")
       .def_static("init", py::overload_cast<const std::string&, double, Disk*, Io::OpType>(&IoTask::init),
-                  py::arg("name"), py::arg("bytes"), py::arg("disk"), py::arg("type"), "IoTask constructor.")
+                  py::arg("name"), py::arg("bytes"), py::arg("disk"), py::arg("type"),
+                  "Initiate the creation of an IoTask, setting its amount of bytes, disk and operation type.")
       .def_property("disk", &IoTask::get_disk, &IoTask::set_disk, "The disk of the IO.")
       .def_property("bytes", &IoTask::get_bytes, &IoTask::set_bytes, "The amount of bytes to process.")
       .def_property("type", &IoTask::get_op_type, &IoTask::set_op_type, "The type of IO.")

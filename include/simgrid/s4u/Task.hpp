@@ -20,9 +20,33 @@
 
 namespace simgrid::s4u {
 
+/** A user-defined piece of data exchanged between Tasks upon completion.
+ *
+ * Every time a Task instance completes, it sends a Token to each of its successors. A Task instance needs to
+ * receive a token from each of its predecessors before it can fire. Tokens can carry arbitrary user-defined data,
+ * attached with @ref xbt::Extendable "the usual user-data mechanism". See Task::set_token(), Task::get_token_from()
+ * and Task::get_tokens_from(). */
 class XBT_PUBLIC Token : public xbt::Extendable<Token> {};
 
-/** Task class */
+/** @brief Repeatable activities, used to simulate Dataflow applications.
+ *
+ * @beginrst
+ * A Dataflow is a graph of Tasks, where each Task has a set of successors and predecessors. When a Task
+ * completes, it sends a :cpp:class:`Token <simgrid::s4u::Token>` to each of its successors; a Task only fires once
+ * it received a token from each of its predecessors. See :ref:`the relevant examples <s4u_ex_dag>` for more
+ * details, and the concrete subclasses that you can actually create: :cpp:class:`CommTask <simgrid::s4u::CommTask>`,
+ * :cpp:class:`ExecTask <simgrid::s4u::ExecTask>` and :cpp:class:`IoTask <simgrid::s4u::IoTask>`.
+ *
+ * Each Task is internally composed of several instances: a dispatcher, a collector, and ``instance_0`` to
+ * ``instance_n``. The dispatcher relies on a user-provided load balancing function (see
+ * set_load_balancing_function()) to select the instance that fires next; once that instance completes, it fires
+ * the collector in turn. Every instance can be placed on a different host, and communications between instances
+ * running on different hosts are automatically created for you. Each instance also has its own parallelism
+ * degree, to scale horizontally over several cores (see set_parallelism_degree()).
+ *
+ * To start a Dataflow without waiting for any token, use enqueue_firings().
+ * @endrst
+ */
 class XBT_PUBLIC Task {
 
   std::string name_;
@@ -163,7 +187,8 @@ public:
 #endif
 };
 
-/** CommTask class */
+/** A repeatable communication, i.e. a Task representing a communication in a Dataflow. See simgrid::s4u::Task
+ *  for the general Task concepts (dispatcher, collector, instances, tokens). */
 class CommTask : public Task {
   Host* source_;
   Host* destination_;
@@ -172,7 +197,9 @@ class CommTask : public Task {
   void fire(const std::string& instance) override;
 
 public:
+  /*! \static Initiate the creation of a CommTask. Setters have to be called afterwards. */
   static CommTaskPtr init(const std::string& name);
+  /*! \static Initiate the creation of a CommTask, setting its amount of bytes, source and destination hosts. */
   static CommTaskPtr init(const std::string& name, double bytes, Host* source, Host* destination);
 
   /** @param source The new source Host of this CommTask
@@ -191,7 +218,8 @@ public:
   double get_bytes() const { return get_amount("instance_0"); }
 };
 
-/** ExecTask class */
+/** A repeatable execution, i.e. a Task representing a computation in a Dataflow. See simgrid::s4u::Task for the
+ *  general Task concepts (dispatcher, collector, instances, tokens). */
 class ExecTask : public Task {
   std::map<std::string, Host*> host_ = {{"instance_0", nullptr}, {"dispatcher", nullptr}, {"collector", nullptr}};
 
@@ -199,7 +227,9 @@ class ExecTask : public Task {
   void fire(const std::string& instance) override;
 
 public:
+  /*! \static Initiate the creation of an ExecTask. Setters have to be called afterwards. */
   static ExecTaskPtr init(const std::string& name);
+  /*! \static Initiate the creation of an ExecTask, setting its amount of flops and host. */
   static ExecTaskPtr init(const std::string& name, double flops, Host* host);
 
   /** @param host The new host of this instance of this ExecTask
@@ -218,7 +248,8 @@ public:
   void remove_instances(int n) override;
 };
 
-/** IoTask class */
+/** A repeatable I/O, i.e. a Task representing a disk access in a Dataflow. See simgrid::s4u::Task for the
+ *  general Task concepts (dispatcher, collector, instances, tokens). */
 class IoTask : public Task {
   Disk* disk_;
   Io::OpType type_;
@@ -226,7 +257,9 @@ class IoTask : public Task {
   void fire(const std::string& instance) override;
 
 public:
+  /*! \static Initiate the creation of an IoTask. Setters have to be called afterwards. */
   static IoTaskPtr init(const std::string& name);
+  /*! \static Initiate the creation of an IoTask, setting its amount of bytes, disk and operation type. */
   static IoTaskPtr init(const std::string& name, double bytes, Disk* disk, Io::OpType type);
 
   /** @param disk The new disk of this IoTask
