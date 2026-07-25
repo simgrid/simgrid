@@ -26,3 +26,11 @@
     display: none;
     margin-bottom: 20px;
 }
+
+.showfile-apilink {
+    border-bottom: 1px dotted #2980b9;
+    text-decoration: none;
+}
+.showfile-apilink:hover {
+    border-bottom-style: solid;
+}

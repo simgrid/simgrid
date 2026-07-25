@@ -163,6 +163,12 @@ nitpick_ignore = [
   ('cpp:identifier', 'xbt::signal<void(void)>'),
 ]
 
+# Configure the showfile API-link extension
+showfile_hints = {
+    'mailbox': 'Mailbox',
+    'mbox': 'Mailbox',
+}
+
 # For cross-ref generation
 primary_domain = 'cpp'
 

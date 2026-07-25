@@ -10,6 +10,8 @@ from docutils.statemachine import StringList
 from sphinx.util.osutil import copyfile
 from sphinx.util import logging
 
+import showfile_apilinks
+
 CSS_FILE = 'showfile.css'
 JS_FILE = 'showfile.js'
 
@@ -21,7 +23,8 @@ class ShowFileDirective(Directive):
     has_content = False
     optional_arguments = 1
     option_spec = {
-        'language': directives.unchanged
+        'language': directives.unchanged,
+        'hints': directives.unchanged
     }
 
     def run(self):
@@ -30,6 +33,17 @@ class ShowFileDirective(Directive):
         language = "python"
         if 'language' in self.options:
             language = self.options['language']
+
+        # :hints: var1=Type1, var2=Type2  -- used by showfile_apilinks.py to
+        # disambiguate `var.method()` calls when auto-linking to the API docs.
+        hints = {}
+        for pair in self.options.get('hints', '').split(','):
+            pair = pair.strip()
+            if not pair:
+                continue
+            var, _, type_name = pair.partition('=')
+            if var and type_name:
+                hints[var.strip()] = type_name.strip()
 
 #        logger = logging.getLogger(__name__)
 #        logger.info('showfile {} in {}'.format(filename, language))
@@ -52,6 +66,13 @@ class ShowFileDirective(Directive):
 
         node = nodes.container()
         self.state.nested_parse(self.content, self.content_offset, node)
+
+        for literal_block in node.findall(nodes.literal_block):
+            literal_block['showfile_apilink'] = True
+            literal_block['showfile_source_file'] = filename
+            if hints:
+                literal_block['showfile_hints'] = hints
+
         return node.children
 
 class ExampleTabDirective(Directive):
@@ -61,6 +82,9 @@ class ExampleTabDirective(Directive):
     has_content = True
     optional_arguments = 0
     mandatory_argument = 0
+    option_spec = {
+        'hints': directives.unchanged
+    }
 
     def run(self):
         self.assert_has_content()
@@ -95,11 +119,16 @@ class ExampleTabDirective(Directive):
             self.content.data.insert(idx, line)
             self.content.items.insert(idx, (None, idx))
 
-        for line in [
+        generated_lines = [
             '',
             '   .. showfile:: {}'.format(filename),
             '      :language: {}'.format(langcode),
-            '']:
+        ]
+        if 'hints' in self.options:
+            generated_lines.append('      :hints: {}'.format(self.options['hints']))
+        generated_lines.append('')
+
+        for line in generated_lines:
             idx = len(self.content.data)
             self.content.data.insert(idx, line)
             self.content.items.insert(idx, (None, idx))
@@ -166,3 +195,5 @@ def setup(app):
 
     app.connect('builder-inited', add_assets)
     app.connect('build-finished', copy_assets)
+
+    showfile_apilinks.setup(app)
