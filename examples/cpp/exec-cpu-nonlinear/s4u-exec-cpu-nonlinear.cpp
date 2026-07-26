@@ -3,9 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to simulate a non-linear resource sharing for
- * CPUs.
- */
+/* This example shows how to simulate a non-linear resource sharing for CPUs. */
 
 #include <simgrid/s4u.hpp>
 
@@ -36,8 +34,7 @@ static void runner()
 /** @brief Non-linear resource sharing for CPU */
 static double cpu_nonlinear(const sg4::Host* host, double capacity, int n)
 {
-  /* emulates a degradation in CPU according to the number of tasks
-   * totally unrealistic but for learning purposes */
+  /* emulates a degradation in CPU according to the number of tasks totally unrealistic but for learning purposes */
   capacity = n > 1 ? capacity / 2 : capacity;
   XBT_INFO("Host %s, %d concurrent tasks, new capacity %lf", host->get_cname(), n, capacity);
   return capacity;

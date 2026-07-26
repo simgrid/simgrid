@@ -3,8 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to simulate a non-linear resource sharing for disk
- * operations.
+/* This example shows how to simulate a non-linear resource sharing for disk operations.
  *
  * It is inspired on the paper
  * "Adding Storage Simulation Capacities to the SimGridToolkit: Concepts, Models, and API"

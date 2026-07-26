@@ -2754,8 +2754,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::is_on() const
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_disk
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_disks() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_latency_to
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_links_to
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_to
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_actor(const std::string& name, const std::function<void()>& code)
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_consumed_energy
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_wattmin_at

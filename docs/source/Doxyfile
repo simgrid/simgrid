@@ -26,7 +26,7 @@ INPUT                 += ../../include/xbt/function_types.h
 INPUT                 += ../../include/xbt/dynar.h
 INPUT                 += ../../src/xbt/dynar.cpp
 INPUT                 += ../../include/xbt/signal.hpp
-INPUT                 += ../../src/plugins/
+INPUT                 += ../../include/simgrid/plugins/
 INPUT                 += ../../src/bindings/java/org/simgrid/s4u/
 RECURSIVE              = YES
 

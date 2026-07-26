@@ -7,11 +7,10 @@
  *
  * It uses the netzone interface to register 2 callbacks that are called for every communications.
  *
- * These factors are used to change the communication time depending on the message size
- * and destination.
+ * These factors are used to change the communication time depending on the message size and destination.
  *
- * This example uses factors obtained by some experiments on dahu cluster in Grid'5000.
- * You should change the values according to the calibration of your enviroment.
+ * This example uses factors obtained by some experiments on dahu cluster in Grid'5000. You should change the values
+ * according to the calibration of your enviroment.
  */
 
 #include <map>

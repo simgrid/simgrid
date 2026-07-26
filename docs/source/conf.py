@@ -165,8 +165,10 @@ nitpick_ignore = [
 
 # Configure the showfile API-link extension
 showfile_hints = {
-    'mailbox': 'Mailbox',
+    'Mailbox': 'Mailbox',
     'mbox': 'Mailbox',
+    'mb_in': 'Mailbox',
+    'mb_out': 'Mailbox',
 }
 
 # For cross-ref generation
