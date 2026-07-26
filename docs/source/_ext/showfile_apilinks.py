@@ -329,7 +329,10 @@ def _patched_highlight_block(self, source, lang, opts=None, force=False, locatio
     ignore_qualified, ignore_bare = location.get('showfile_ignore', (set(), set()))
 
     source_file = location.get('showfile_source_file', '<unknown file>')
-    source_label = "'{}'".format(source_file)
+    rst_source = getattr(location, 'source', None) or '<unknown rst file>'
+    rst_line = getattr(location, 'line', None)
+    rst_label = "{}:{}".format(rst_source, rst_line) if rst_line else rst_source
+    source_label = "'{}' (directive at {})".format(source_file, rst_label)
 
     from_docname = app.builder.current_docname
     return link_identifiers(canonical_lang, source, html, hints, ignore_qualified, ignore_bare,
