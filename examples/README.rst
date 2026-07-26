@@ -52,6 +52,8 @@ also create them directly from your code.
         or :cpp:func:`simgrid::s4u::Engine::register_function` (if your actor is a function)
         and then :cpp:func:`simgrid::s4u::Engine::load_deployment`
 
+   .. example-tab:: examples/java/actor_create/actor_create.java
+
    .. example-tab:: examples/python/actor-create/actor-create.py
 
       You create actors either:
@@ -66,11 +68,9 @@ also create them directly from your code.
       - Directly with :cpp:func:`sg_actor_create` followed by :cpp:func:`sg_actor_start`.
       - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
 
-   .. example-tab:: examples/java/actor_create/actor_create.java
-
    .. example-tab:: examples/python/actor-create/actor-create_d.xml
 
-      This configuration file is all languages.
+      This configuration file is the same for all languages.
 
 Reacting to actors' end
 -----------------------
@@ -91,12 +91,12 @@ actors.
       - the end of any actor: :cpp:func:`simgrid::s4u::Actor::on_termination_cb`
       - the destruction of any actor: :cpp:func:`simgrid::s4u::Actor::on_destruction_cb`
 
+   .. example-tab:: examples/java/actor_exiting/actor_exiting.java
+
    .. example-tab:: examples/c/actor-exiting/actor-exiting.c
 
       This example shows how to attach a callback to the end of a specific actor with
       :cpp:func:`sg_actor_on_exit()`.
-
-   .. example-tab:: examples/java/actor_exiting/actor_exiting.java
 
 Killing actors
 --------------
@@ -110,6 +110,8 @@ Actors can forcefully stop other actors.
       See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
       :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::Actor::on_exit`.
 
+   .. example-tab:: examples/java/actor_kill/actor_kill.java
+
    .. example-tab:: examples/python/actor-kill/actor-kill.py
 
       See also :py:func:`simgrid.Actor.kill()`, :py:func:`simgrid.Actor.kill_all()`, :py:func:`simgrid.this_actor.exit()`,
@@ -118,8 +120,6 @@ Actors can forcefully stop other actors.
    .. example-tab:: examples/c/actor-kill/actor-kill.c
 
       See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
-
-   .. example-tab:: examples/java/actor_kill/actor_kill.java
 
 Actors' life cycle from XML_reference
 -------------------------------------
@@ -132,9 +132,9 @@ You can specify a start time and a kill time in the deployment file.
 
       This file is not really interesting: the important matter is in the XML file.
 
-   .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime_d.xml
+   .. example-tab:: examples/java/actor_lifetime/actor_lifetime.java
 
-      This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
+      This file is not really interesting: the important matter is in the XML file.
 
    .. example-tab:: examples/python/actor-lifetime/actor-lifetime.py
 
@@ -144,9 +144,9 @@ You can specify a start time and a kill time in the deployment file.
 
       This file is not really interesting: the important matter is in the XML file.
 
-   .. example-tab:: examples/java/actor_lifetime/actor_lifetime.java
+   .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime_d.xml
 
-      This file is not really interesting: the important matter is in the XML file.
+      This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
 
 Daemon actors
 -------------
@@ -161,6 +161,8 @@ actor into a daemon that will be automatically killed once the simulation is ove
 
       See also :cpp:func:`simgrid::s4u::Actor::daemonize()` and :cpp:func:`simgrid::s4u::Actor::is_daemon()`.
 
+   .. example-tab:: examples/java/actor_daemon/actor_daemon.java
+
    .. example-tab:: examples/python/actor-daemon/actor-daemon.py
 
       See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
@@ -168,8 +170,6 @@ actor into a daemon that will be automatically killed once the simulation is ove
    .. example-tab:: examples/c/actor-daemon/actor-daemon.c
 
       See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
-
-   .. example-tab:: examples/java/actor_daemon/actor_daemon.java
 
 Specifying the stack size
 -------------------------
@@ -226,6 +226,8 @@ Actors can move or be moved from a host to another very easily. It amounts to se
 
       See also :cpp:func:`simgrid::s4u::this_actor::set_host()` and :cpp:func:`simgrid::s4u::Actor::set_host()`.
 
+   .. example-tab:: examples/java/actor_migrate/actor_migrate.java
+
    .. example-tab:: examples/python/actor-migrate/actor-migrate.py
 
       See also :py:attr:`simgrid.Actor.host`.
@@ -233,8 +235,6 @@ Actors can move or be moved from a host to another very easily. It amounts to se
    .. example-tab:: examples/c/actor-migrate/actor-migrate.c
 
       See also :cpp:func:`sg_actor_set_host()`.
-
-   .. example-tab:: examples/java/actor_migrate/actor_migrate.java
 
 Waiting for the termination of an actor (joining on it)
 -------------------------------------------------------
@@ -247,6 +247,8 @@ You can block the current actor until the end of another actor.
 
       See also :cpp:func:`simgrid::s4u::Actor::join()`.
 
+   .. example-tab:: examples/java/actor_join/actor_join.java
+
    .. example-tab:: examples/python/actor-join/actor-join.py
 
       See also :py:func:`simgrid.Actor.join()`.
@@ -254,8 +256,6 @@ You can block the current actor until the end of another actor.
    .. example-tab:: examples/c/actor-join/actor-join.c
 
       See also :cpp:func:`sg_actor_join`.
-
-   .. example-tab:: examples/java/actor_join/actor_join.java
 
 Yielding to other actors
 ------------------------
@@ -270,6 +270,8 @@ at this timestamp.
 
       See also :cpp:func:`simgrid::s4u::this_actor::yield()`.
 
+   .. example-tab:: examples/java/actor_yield/actor_yield.java
+
    .. example-tab:: examples/python/actor-yield/actor-yield.py
 
       See also :py:func:`simgrid.this_actor.yield_()`.
@@ -277,8 +279,6 @@ at this timestamp.
    .. example-tab:: examples/c/actor-yield/actor-yield.c
 
       See also :cpp:func:`sg_actor_yield()`.
-
-   .. example-tab:: examples/java/actor_yield/actor_yield.java
 
 Traces Replay as a Workload
 ===========================
@@ -337,11 +337,11 @@ the simulators (as detailed in Section :ref:`options`).
 
    .. example-tab:: examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
 
+   .. example-tab:: examples/java/comm_pingpong/comm_pingpong.java
+
    .. example-tab:: examples/python/comm-pingpong/comm-pingpong.py
 
    .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
-
-   .. example-tab:: examples/java/comm_pingpong/comm_pingpong.java
 
 Basic asynchronous communications
 ---------------------------------
@@ -354,6 +354,8 @@ free to do something else during their completion.
    .. example-tab:: examples/cpp/comm-wait/s4u-comm-wait.cpp
 
       See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
+
+   .. example-tab:: examples/java/comm_await/comm_await.java
 
    .. example-tab:: examples/python/comm-wait/comm-wait.py
 
@@ -376,6 +378,8 @@ This example is very similar to the previous one, simply adding how to declare t
 
       See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
+   .. example-tab:: examples/java/comm_awaituntil/comm_awaituntil.java
+
    .. example-tab:: examples/python/comm-waituntil/comm-waituntil.py
 
       See also :py:func:`simgrid.Comm.wait_until()`
@@ -394,10 +398,11 @@ is arrived, so you know that ``Mailbox.get()`` will complete immediately. This i
 
       See also :cpp:func:`simgrid::s4u::Mailbox::ready()`.
 
+   .. example-tab:: examples/java/comm_ready/comm_ready.java
+
    .. example-tab:: examples/python/comm-ready/comm-ready.py
 
       See also :py:func:`simgrid.Mailbox.ready()`
-
 
 Suspending communications
 -------------------------
@@ -413,12 +418,12 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
       :cpp:func:`simgrid::s4u::Activity::resume()` and
       :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
 
+   .. example-tab:: examples/java/actor_suspend/actor_suspend.java
+
    .. example-tab:: examples/python/comm-suspend/comm-suspend.py
 
       See also :py:func:`simgrid.Comm.suspend()` and
       :py:func:`simgrid.Comm.resume()`.
-
-   .. example-tab:: examples/java/actor_suspend/actor_suspend.java
 
 .. _s4u_ex_comm_failure:
 
@@ -434,6 +439,8 @@ you communicate fails because its host is turned off. In this case, any blocking
 .. tabs::
 
    .. example-tab:: examples/cpp/comm-failure/s4u-comm-failure.cpp
+
+   .. example-tab:: examples/java/comm_failure/comm_failure.java
 
    .. example-tab:: examples/python/comm-failure/comm-failure.py
 
@@ -451,6 +458,8 @@ relying on the mailbox mechanism.
 
       See also :cpp:func:`simgrid::s4u::Comm::sendto_init()` and  :cpp:func:`simgrid::s4u::Comm::sendto_async()`.
 
+   .. example-tab:: examples/java/comm_host2host/comm_host2host.java
+
    .. example-tab:: examples/python/comm-host2host/comm-host2host.py
 
       See also :py:func:`simgrid.Comm.sendto_init()` and  :py:func:`simgrid.Comm.sendto_async()`.
@@ -463,11 +472,9 @@ Executions on the CPU
 Basic execution
 ---------------
 
-The computations done in your program are not reported to the
-simulated world unless you explicitly request the simulator to pause
-the actor until a given amount of flops gets computed on its simulated
-host. Some executions can be given a higher priority so that they
-get more resources.
+The computations done in your program are not reported to the simulated world unless you explicitly request the simulator to
+pause the actor until a given amount of flops gets computed on its simulated host. Some executions can be given a higher
+priority so that they get more resources.
 
 .. tabs::
 
@@ -475,6 +482,8 @@ get more resources.
 
       See also :cpp:func:`void simgrid::s4u::this_actor::execute(double)`
       and :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`.
+
+   .. example-tab:: examples/java/exec_basic/exec_basic.java
 
    .. example-tab:: examples/python/exec-basic/exec-basic.py
 
@@ -502,6 +511,8 @@ You can start asynchronous executions, just like you would fire background threa
       :cpp:func:`simgrid::s4u::this_actor::exec_async()` and
       :cpp:func:`simgrid::s4u::Activity::cancel()`.
 
+   .. example-tab:: examples/java/exec_async/exec_async.java
+
    .. example-tab:: examples/python/exec-async/exec-async.py
 
       See also :py:func:`simgrid.this_actor.exec_init()`,
@@ -520,7 +531,31 @@ You can start asynchronous executions, just like you would fire background threa
       :cpp:func:`sg_exec_get_remaining()`,
       :cpp:func:`sg_exec_get_remaining_ratio()`,
       :cpp:func:`sg_actor_exec_async()` and
-      :cpp:func:`sg_exec_cancel()`,
+      :cpp:func:`sg_exec_cancel()`.
+
+Asynchronous executions can be suspended and then resumed to stop and start their progress.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-suspend/s4u-exec-suspend.cpp
+
+Once started, asynchronous executions can be waited for, meaning that the calling actor is blocked until the completion of the
+given asynchronous execution. It is also possible to specify a timeout.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
+
+Multi-threaded executions
+-------------------------
+
+By default, executions leverage only one core of their host, even if the host is multicore. This can be changed by using
+`thread_execute` and `thread_execute_async` to specify that they can leverage more than one core of the simulated platform.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-threads/s4u-exec-threads.cpp
+
 
 Remote execution
 ----------------
@@ -533,6 +568,8 @@ This is naturally not very realistic, but it's something handy to have.
    .. example-tab:: examples/cpp/exec-remote/s4u-exec-remote.cpp
 
       See also :cpp:func:`simgrid::s4u::Exec::set_host()`.
+
+   .. example-tab:: examples/java/exec_remote/exec_remote.java
 
    .. example-tab:: examples/python/exec-remote/exec-remote.py
 
@@ -565,9 +602,27 @@ This allows simulating malleable tasks.
 
       See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
 
+   .. example-tab:: examples/java/exec_ptask/exec_ptask.java
+
    .. example-tab:: examples/python/exec-ptask/exec-ptask.py
 
       See also :ref:`simgrid.this_actor.parallel_execute()`
+
+A parallel task can also run several instances on the very same host, using several of its cores.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.cpp
+
+   .. example-tab:: examples/java/exec_ptask_multicore/exec_ptask_multicore.java
+
+The latency of the involved communications can also be taken into account.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency.cpp
+
+   .. example-tab:: examples/java/exec_ptask_multicore_latency/exec_ptask_multicore_latency.java
 
 Ptasks play well with the host energy plugin, as shown in this example.
 There is not much new compared to the above ptask example or the
@@ -576,6 +631,8 @@ There is not much new compared to the above ptask example or the
 .. tabs::
 
    .. example-tab:: examples/cpp/energy-exec-ptask/s4u-energy-exec-ptask.cpp
+
+   .. example-tab:: examples/java/energy_exec_ptask/energy_exec_ptask.java
 
    .. example-tab:: examples/c/energy-exec-ptask/energy-exec-ptask.c
 
@@ -595,6 +652,8 @@ failing hosts however, any blocking operation such as ``exec`` or ``wait`` will 
 
    .. example-tab:: examples/cpp/exec-failure/s4u-exec-failure.cpp
 
+   .. example-tab:: examples/java/exec_failure/exec_failure.java
+
 .. _s4u_ex_dvfs:
 
 DVFS and pstates
@@ -609,13 +668,15 @@ of a host can then be accessed and changed from the program.
 
       See also :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
 
-   .. example-tab:: examples/c/exec-dvfs/exec-dvfs.c
-
-      See also :cpp:func:`sg_host_get_pstate_speed` and :cpp:func:`sg_host_set_pstate`.
+   .. example-tab:: examples/java/exec_dvfs/exec_dvfs.java
 
    .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
 
       See also :py:func:`simgrid.Host.pstate_speed()` and :py:attr:`simgrid.Host.pstate`.
+
+   .. example-tab:: examples/c/exec-dvfs/exec-dvfs.c
+
+      See also :cpp:func:`sg_host_get_pstate_speed` and :cpp:func:`sg_host_set_pstate`.
 
    .. example-tab:: examples/platforms/energy_platform.xml
 
@@ -641,11 +702,20 @@ This example illustrates how to simply read and write data on a simulated disk r
 
    .. example-tab:: examples/cpp/io-disk-raw/s4u-io-disk-raw.cpp
 
+   .. example-tab:: examples/java/io_disk_raw/io_disk_raw.java
+
    .. example-tab:: examples/c/io-disk-raw/io-disk-raw.c
 
    .. example-tab:: examples/platforms/hosts_with_disks.xml
 
       This shows how to declare disks in XML.
+
+One can specify the priority of a disk access: an activity with priority 2 will be twice as fast as a regular one, that is of
+priority 1.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/io-priority/s4u-io-priority.cpp
 
 Asynchronous raw accesses
 -------------------------
@@ -655,6 +725,8 @@ As most other activities, raw IO accesses can be used asynchronously, as illustr
 .. tabs::
 
    .. example-tab:: examples/cpp/io-async/s4u-io-async.cpp
+
+   .. example-tab:: examples/java/io_async/io_async.java
 
 Filesystem plugin
 -----------------
@@ -672,6 +744,8 @@ result in short reads and short writes, as in reality.
 
        .. example-tab:: examples/cpp/io-file-system/s4u-io-file-system.cpp
 
+       .. example-tab:: examples/java/io_file_system/io_file_system.java
+
        .. example-tab:: examples/c/io-file-system/io-file-system.c
 
   - **Remote I/O:**
@@ -681,6 +755,8 @@ result in short reads and short writes, as in reality.
     .. tabs::
 
        .. example-tab:: examples/cpp/io-file-remote/s4u-io-file-remote.cpp
+
+       .. example-tab:: examples/java/io_file_remote/io_file_remote.java
 
        .. example-tab:: examples/c/io-file-remote/io-file-remote.c
 
@@ -703,6 +779,8 @@ The ``wait_all()`` function is useful when you want to block until all activitie
 
       See also :cpp:func:`simgrid::s4u::ActivitySet::wait_all()`.
 
+   .. example-tab:: examples/java/activityset_awaitall/activityset_awaitall.java
+
    .. example-tab:: examples/python/activityset-waitall/activityset-waitall.py
 
       See also :py:func:`simgrid.ActivitySet.wait_all()`.
@@ -710,8 +788,6 @@ The ``wait_all()`` function is useful when you want to block until all activitie
    .. example-tab:: examples/c/activityset-waitall/activityset-waitall.c
 
       See also :cpp:func:`sg_activity_set_wait_all()`.
-
-   .. example-tab:: examples/java/activityset_awaitall/activityset_awaitall.java
 
 Waiting for all activities in a set (with timeout)
 --------------------------------------------------
@@ -724,6 +800,8 @@ The ``wait_all_for()`` function is very similar to ``wait_all()`` but allows to 
 
       See also :cpp:func:`simgrid::s4u::ActivitySet::wait_all_for()`.
 
+   .. example-tab:: examples/java/activityset_awaitallfor/activityset_awaitallfor.java
+
    .. example-tab:: examples/python/activityset-waitallfor/activityset-waitallfor.py
 
       See also :py:func:`simgrid.ActivitySet.wait_all_for()`.
@@ -731,8 +809,6 @@ The ``wait_all_for()`` function is very similar to ``wait_all()`` but allows to 
    .. example-tab:: examples/c/activityset-waitallfor/activityset-waitallfor.c
 
       See also :cpp:func:`sg_activity_set_wait_all_for()`.
-
-   .. example-tab:: examples/java/activityset_awaitallfor/activityset_awaitallfor.java
 
 Waiting for the first completed activity in a set
 -------------------------------------------------
@@ -745,6 +821,8 @@ The ``wait_any()`` blocks until one activity of the set completes, no matter whi
 
       See also :cpp:func:`simgrid::s4u::ActivitySet::wait_any()`.
 
+   .. example-tab:: examples/java/activityset_awaitany/activityset_awaitany.java
+
    .. example-tab:: examples/python/activityset-waitany/activityset-waitany.py
 
       See also :py:func:`simgrid.ActivitySet.wait_any()`.
@@ -752,8 +830,6 @@ The ``wait_any()`` blocks until one activity of the set completes, no matter whi
    .. example-tab:: examples/c/activityset-waitany/activityset-waitany.c
 
       See also :cpp:func:`sg_activity_set_wait_any`.
-
-   .. example-tab:: examples/java/activityset_awaitany/activityset_awaitany.java
 
 Testing whether at least one activity completed
 -----------------------------------------------
@@ -766,6 +842,8 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 
       See also :cpp:func:`simgrid::s4u::ActivitySet::test_any()`.
 
+   .. example-tab:: examples/java/activityset_testany/activityset_testany.java
+
    .. example-tab:: examples/python/activityset-testany/activityset-testany.py
 
       See also :py:func:`simgrid.ActivitySet.test_any()`.
@@ -773,8 +851,6 @@ The ``test_any()`` returns whether at least one activity of the set has complete
    .. example-tab:: examples/c/activityset-testany/activityset-testany.c
 
       See also :cpp:func:`sg_activity_set_test_any`.
-
-   .. example-tab:: examples/java/activityset_testany/activityset_testany.java
 
 .. _s4u_ex_dag:
 
@@ -796,9 +872,19 @@ dependencies between communications. You could declare such dependencies between
 
    .. example-tab:: examples/cpp/exec-dependent/s4u-exec-dependent.cpp
 
+   .. example-tab:: examples/java/exec_dependent/exec_dependent.java
+
 .. tabs::
 
    .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
+
+   .. example-tab:: examples/java/comm_dependent/comm_dependent.java
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/io-dependent/s4u-io-dependent.cpp
+
+   .. example-tab:: examples/java/io_dependent/io_dependent.java
 
 Assigning activities
 --------------------
@@ -811,6 +897,8 @@ dependency that can withdraw their execution.
 
    .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 
+   .. example-tab:: examples/java/exec_unassigned/exec_unassigned.java
+
 Simple DAG of activities
 ------------------------
 
@@ -821,6 +909,8 @@ activities as a DAG (direct acyclic graph), and start them. Each activity will s
 
    .. example-tab:: examples/cpp/dag-simple/s4u-dag-simple.cpp
 
+   .. example-tab:: examples/java/dag_simple/dag_simple.java
+
 DAG with communication
 ----------------------
 
@@ -830,6 +920,8 @@ This is a little example showing how add communication activities to your DAG, r
 
    .. example-tab:: examples/cpp/dag-comm/s4u-dag-comm.cpp
 
+   .. example-tab:: examples/java/dag_comm/dag_comm.java
+
 DAG with I/O 
 ------------
 
@@ -838,6 +930,8 @@ This is a little example showing how add I/O activities to your DAG, representin
 .. tabs::
 
    .. example-tab:: examples/cpp/dag-io/s4u-dag-io.cpp
+
+   .. example-tab:: examples/java/dag_io/dag_io.java
 
 Scheduling activities
 ---------------------
@@ -849,6 +943,8 @@ to determine which host is the better fit for a given activity, and this example
 
    .. example-tab:: examples/cpp/dag-scheduling/s4u-dag-scheduling.cpp
 
+   .. example-tab:: examples/java/dag_scheduling/dag_scheduling.java
+
 Loading DAGs from file
 ----------------------
 
@@ -857,6 +953,8 @@ There is currently two file formats that you can load directly in SimGrid, but w
 .. tabs::
 
    .. example-tab:: examples/cpp/dag-from-dax/s4u-dag-from-dax.cpp
+
+   .. example-tab:: examples/java/dag_from_dax/dag_from_dax.java
 
    .. group-tab:: input
 
@@ -867,10 +965,47 @@ There is currently two file formats that you can load directly in SimGrid, but w
 
    .. example-tab:: examples/cpp/dag-from-dot/s4u-dag-from-dot.cpp
 
+   .. example-tab:: examples/java/dag_from_dot/dag_from_dot.java
+
    .. group-tab:: input
 
       .. showfile:: examples/cpp/dag-from-dot/dag.dot
          :language: xml
+
+A leaner API is also available when you do not need to place the loaded activities by hand, letting the scheduler assign them automatically.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-from-dax-simple/s4u-dag-from-dax-simple.cpp
+
+   .. example-tab:: examples/java/dag_from_dax_simple/dag_from_dax_simple.java
+
+   .. group-tab:: input
+
+      .. showfile:: examples/cpp/dag-from-dax-simple/dag.xml
+         :language: xml
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-from-dot-simple/s4u-dag-from-dot-simple.cpp
+
+   .. example-tab:: examples/java/dag_from_dot_simple/dag_from_dot_simple.java
+
+   .. group-tab:: input
+
+      .. showfile:: examples/cpp/dag-from-dot-simple/dag.dot
+         :language: xml
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-from-json-simple/s4u-dag-from-json-simple.cpp
+
+   .. example-tab:: examples/java/dag_from_json_simple/dag_from_json_simple.java
+
+   .. group-tab:: input
+
+      .. showfile:: examples/cpp/dag-from-json-simple/dag.json
+         :language: json
 
 Simulating a time slice
 -----------------------
@@ -892,6 +1027,8 @@ This example shows how to deal with host or network failures while scheduling DA
 
    .. example-tab:: examples/cpp/dag-failure/s4u-dag-failure.cpp
 
+   .. example-tab:: examples/java/dag_failure/dag_failure.java
+
 .. _s4u_ex_IPC:
 
 Classical synchronization objects
@@ -906,6 +1043,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
 
    .. example-tab:: examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 
+   .. example-tab:: examples/java/synchro_barrier/synchro_barrier.java
+
    .. example-tab:: examples/python/synchro-barrier/synchro-barrier.py
 
 Condition variable: basic usage
@@ -917,6 +1056,8 @@ Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization obj
 
    .. example-tab:: examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 
+   .. example-tab:: examples/java/synchro_condition_variable/synchro_condition_variable.java
+
 Condition variable: timeouts
 ----------------------------
 
@@ -926,6 +1067,8 @@ Shows how to specify timeouts when blocking on condition variables.
 
    .. example-tab:: examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
 
+   .. example-tab:: examples/java/synchro_condition_variable_awaituntil/synchro_condition_variable_awaituntil.java
+
 Mutex
 -----
 
@@ -934,6 +1077,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
 .. tabs::
 
    .. example-tab:: examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
+
+   .. example-tab:: examples/java/synchro_mutex/synchro_mutex.java
 
    .. example-tab:: examples/python/synchro-mutex/synchro-mutex.py
 
@@ -945,6 +1090,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
 .. tabs::
 
    .. example-tab:: examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
+
+   .. example-tab:: examples/java/synchro_semaphore/synchro_semaphore.java
 
    .. example-tab:: examples/python/synchro-semaphore/synchro-semaphore.py
 
@@ -969,6 +1116,8 @@ your simulation.
       - :cpp:func:`simgrid::s4u::Host::get_property()` and :cpp:func:`simgrid::s4u::Host::set_property()`
       - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
       - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
+
+   .. example-tab:: examples/java/platform_properties/platform_properties.java
 
    .. example-tab:: examples/c/platform-properties/platform-properties.c
 
@@ -1021,9 +1170,11 @@ failures in your code. See also :ref:`howto_churn`,
 
    .. example-tab:: examples/cpp/platform-failures/s4u-platform-failures.cpp
 
-   .. example-tab:: examples/c/platform-failures/platform-failures.c
+   .. example-tab:: examples/java/platform_failures/platform_failures.java
 
    .. example-tab:: examples/python/platform-failures/platform-failures.py
+
+   .. example-tab:: examples/c/platform-failures/platform-failures.c
 
    .. group-tab:: XML
 
@@ -1044,6 +1195,8 @@ Shows how to specify an external load to resources, variating their peak speed o
    .. tabs::
 
       .. example-tab:: examples/cpp/platform-profile/s4u-platform-profile.cpp
+
+      .. example-tab:: examples/java/platform_profile/platform_profile.java
 
       .. example-tab:: examples/python/platform-profile/platform-profile.py
 
@@ -1077,6 +1230,8 @@ messages can travel through the link at the same time.
    .. example-tab:: examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
 
       See also :cpp:func:`simgrid::s4u::Link::set_concurrency_limit()`.
+
+   .. example-tab:: examples/java/platform_comm_serialize/platform_comm_serialize.java
 
    .. example-tab:: examples/python/platform-comm-serialize/platform-comm-serialize.py
 
@@ -1120,6 +1275,8 @@ This example shows how to retrieve the amount of energy consumed by the CPU duri
 
    .. example-tab:: examples/cpp/energy-exec/s4u-energy-exec.cpp
 
+   .. example-tab:: examples/java/energy_exec/energy_exec.java
+
    .. example-tab:: examples/c/energy-exec/energy-exec.c
 
 Virtual machines consumption
@@ -1130,6 +1287,8 @@ This example is very similar to the previous one, adding VMs to the picture.
 .. tabs::
 
    .. example-tab:: examples/cpp/energy-vm/s4u-energy-vm.cpp
+
+   .. example-tab:: examples/java/energy_vm/energy_vm.java
 
    .. example-tab:: examples/c/energy-vm/energy-vm.c
 
@@ -1142,6 +1301,8 @@ This example shows how to retrieve and display the energy consumed by the wired 
 
    .. example-tab:: examples/cpp/energy-link/s4u-energy-link.cpp
 
+   .. example-tab:: examples/java/energy_link/energy_link.java
+
 WiFi network energy consumption
 -------------------------------
 
@@ -1151,6 +1312,8 @@ This example shows how to retrieve and display the energy consumed by the wirele
 
    .. example-tab:: examples/cpp/energy-wifi/s4u-energy-wifi.cpp
 
+   .. example-tab:: examples/java/energy_wifi/energy_wifi.java
+
 Modeling the shutdown and boot of hosts
 ---------------------------------------
 
@@ -1158,9 +1321,11 @@ Simple example of a model for the energy consumption during the host boot and sh
 
 .. tabs::
 
-   .. example-tab:: examples/platforms/energy_boot.xml
-
    .. example-tab:: examples/cpp/energy-boot/s4u-energy-boot.cpp
+
+   .. example-tab:: examples/java/energy_boot/energy_boot.java
+
+   .. example-tab:: examples/platforms/energy_boot.xml
 
 ***********************
 Tracing and Visualizing
@@ -1256,7 +1421,7 @@ knowing the name of each specific link.
 
 .. tabs::
 
-   .. example-tab::  examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
+   .. example-tab:: examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 
 ************************
 Larger SimGrid Exemplars
@@ -1300,12 +1465,12 @@ This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
       .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
          :language: cpp
 
+   .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
+
    .. group-tab:: C
 
       .. showfile:: examples/c/app-masterworker/app-masterworker.c
          :language: cpp
-
-   .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
 
 Data diffusion
 ==============
@@ -1438,6 +1603,8 @@ This example starts some computations both on PMs and VMs and migrates some VMs 
 
    .. example-tab:: examples/cpp/cloud-simple/s4u-cloud-simple.cpp
 
+   .. example-tab:: examples/java/cloud_simple/cloud_simple.java
+
    .. example-tab:: examples/c/cloud-simple/cloud-simple.c
 
 Migrating VMs
@@ -1449,11 +1616,81 @@ This example shows how to migrate VMs between PMs.
 
    .. example-tab:: examples/cpp/cloud-migration/s4u-cloud-migration.cpp
 
+   .. example-tab:: examples/java/cloud_migration/cloud_migration.java
+
    .. example-tab:: examples/c/cloud-migration/cloud-migration.c
+
+Capping the computing power of VMs
+-----------------------------------
+
+This example shows how to cap (or bound) the computing power that a VM can get from its physical host, and how this bound can be changed at runtime.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/cloud-capping/s4u-cloud-capping.cpp
+
+   .. example-tab:: examples/c/cloud-capping/cloud-capping.c
+
+Master/Workers on VMs
+----------------------
+
+This is a Master/Workers example deployed over a set of VMs instead of directly over the physical hosts.
+
+.. tabs::
+
+   .. example-tab:: examples/c/cloud-masterworker/cloud-masterworker.c
 
 ***********************
 Model-Related Examples
 ***********************
+
+Resource variability
+====================
+
+By default, SimGrid models the speed as a constant: it assumes that a given host delivers exactly the same amount of flops per
+second. This is only true up to a certain point, and you may want to add a linear factor depending on the flop amount. This is
+useful to model the fact that small computations progress at a speed that is different from the one of large computations. This
+mechanism exists for all resources: CPU, Link or Disk. The correcting factor can be either linear in the activity size (e.g. to
+model the speed as a piecewise linear function), or even non-linear (to let the factor change as a function of the amount of
+competing activities on the resource).
+
+  .. tabs::
+
+     .. example-tab:: examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.cpp
+
+        Multiplicative factors for CPUs using :cpp:func:`simgrid::s4u::Host::set_cpu_factor_cb`.
+
+
+  .. tabs::
+
+     .. example-tab:: examples/cpp/network-factors/s4u-network-factors.cpp
+
+        Multiplicative factors for Links using :cpp:func:`simgrid::s4u::NetZone::set_latency_factor_cb` and
+        :cpp:func:`simgrid::s4u::NetZone::set_bandwidth_factor_cb`.
+
+
+Alternatively, you can use non-linear factors for the resource variability.
+
+  .. tabs::
+
+     .. example-tab:: examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear.cpp
+
+        Non-linear variability for CPUs.
+
+  .. tabs::
+
+     .. example-tab:: examples/cpp/network-nonlinear/s4u-network-nonlinear.cpp
+
+        Non-linear variability for Links.
+
+  .. tabs::
+
+     .. example-tab:: examples/cpp/io-degradation/s4u-io-degradation.cpp
+
+        Non-linear variability for Disks, which was shown realistic in this paper: `https://hal.inria.fr/hal-01197128`_.
+
+
+
 
 ns-3 as a model
 ===============
@@ -1471,7 +1708,7 @@ start a simulation in these settings.
 
    .. group-tab:: XML
 
-      **Platform files:**
+      **Platform file**
 
       .. showfile:: examples/platforms/small_platform_one_link_routes.xml
          :language: xml
@@ -1541,6 +1778,10 @@ Monitoring the host load
 
    .. example-tab:: examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 
+   .. example-tab:: examples/java/plugin_host_load/plugin_host_load.java
+
+   .. example-tab:: examples/python/plugin-host-load/plugin-host-load.py
+
    .. example-tab:: examples/c/plugin-host-load/plugin-host-load.c
 
 Monitoring the link load
@@ -1549,6 +1790,8 @@ Monitoring the link load
 .. tabs::
 
    .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
+
+   .. example-tab:: examples/java/plugin_link_load/plugin_link_load.java
 
 .. _plugins_solar_batteries_chiller:
 
@@ -1608,6 +1851,8 @@ This is wrong, and the model-checker correctly finds a counter-example to that a
 .. tabs::
 
    .. example-tab:: examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
+
+   .. example-tab:: examples/python/mc-failing-assert/mc-failing-assert.py
 
 *****************
 Advanced examples
