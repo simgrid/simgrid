@@ -207,6 +207,90 @@ The script ``docs/find-missing.py`` checks that all examples are converted in al
 doxygen are referenced in the doc, etc. We should improve the doc to ensure that everything is documented, but we are not there
 yet.
 
+Custom directives
+*****************
+
+A few Sphinx directives, defined in ``docs/source/_ext/showfile.py``, are specific to our documentation.
+
+``toggle-header``
+   Wraps its content in a collapsible block, closed by default. Used as the building block of ``showfile`` and ``example-tab``
+   below, but can also be used directly::
+
+      .. toggle-header::
+         :header: Click to expand
+
+         Hidden content, revealed on click.
+
+   The optional ``:show:`` flag is currently non-functional (see the comment in the source), so blocks are always collapsed by
+   default regardless of it.
+
+``showfile``
+   Displays the content of a source file in a collapsible block, with a download link to the file on the FramaGit repository.
+
+   .. code-block:: rst
+
+      .. showfile:: examples/cpp/actor-create/s4u-actor-create.cpp
+         :language: cpp
+         :hints: mbox=Mailbox
+         :ignore: msg.size
+
+   :language: (optional, default ``python``)
+      The Pygments lexer to use for syntax highlighting, e.g. ``python``, ``cpp``, ``c`` or ``java``.
+
+   :hints: (optional)
+      Comma-separated ``variable=Type`` pairs, e.g. ``:hints: mbox=Mailbox, act=Activity``. Used to resolve calls like
+      ``mbox.get_name()`` to the right API entry when auto-linking identifiers to the API documentation (see below);
+      ``Type`` should be the short (unqualified) class name.
+
+   :ignore: (optional)
+      Comma-separated list of ``variable.method`` pairs (or bare function names) that auto-linking must never attempt to
+      resolve, e.g. ``:ignore: msg.size, some_helper``. Useful when a local variable happens to share a method/function name
+      with an unrelated API member (``msg->size()`` on a ``std::string`` shouldn't link to ``Mailbox::size()``). Matches
+      regardless of whether the call is written with ``.``, ``->`` or ``::`` in the source.
+
+``example-tab``
+   Used within a ``.. tabs::`` block (from ``sphinx-tabs``) to show the same example in several languages, one tab per
+   language. It wraps a ``showfile`` call and infers the language and tab title from the file extension
+   (``.py``/``.c``/``.cpp``/``.java``/``.xml``).
+
+   .. code-block:: rst
+
+      .. tabs::
+
+         .. example-tab:: examples/cpp/actor-create/s4u-actor-create.cpp
+            :hints: mbox=Mailbox
+            :ignore: msg.size
+
+         .. example-tab:: examples/python/actor-create/actor-create.py
+
+   :hints: and :ignore: (both optional)
+      Same meaning and syntax as on ``showfile`` above; forwarded as-is to the underlying ``showfile`` call for this tab.
+
+Auto-linking identifiers to the API documentation
+**************************************************
+
+Code shown through ``showfile``/``example-tab`` has its identifiers automatically linked to the matching entry in the C, C++,
+Java or Python API documentation, when the resolution is unambiguous (implemented in ``docs/source/_ext/showfile_apilinks.py``).
+A qualified call such as ``mbox.get_name()``, ``mbox->get_name()`` or ``Mailbox::get_name()`` is linked when either:
+
+* a ``:hints:`` (or a global ``showfile_hints`` entry in ``conf.py``, see below) says what type the variable is, or
+* the method name is unambiguous project-wide (only one class defines a method with that name).
+
+A bare call such as ``sg_actor_self()`` is linked the same way, by unambiguous short name.
+
+When a call can't be resolved unambiguously, a build warning is emitted naming the file and line, and all the candidate API
+entries -- that's the signal to add a ``:hints:`` (or ``:ignore:``, if the call isn't actually an API call at all) entry to the
+relevant block.
+
+Global hints, applying to every ``showfile``/``example-tab`` block in the whole documentation, can be set once in ``conf.py``::
+
+   showfile_hints = {
+       'mbox': 'Mailbox',
+       'mailbox': 'Mailbox',
+   }
+
+Per-block ``:hints:`` take precedence over the global ones.
+
 Unsorted hints
 ##############
 
