@@ -62,10 +62,8 @@ fully-functioning example of SimGrid simulation: the Master/Workers
 application. We will detail each part of the code and the necessary
 configuration to make it work.  After this tour, several exercises
 are proposed to let you discover some of the SimGrid features, hands
-on the keyboard. This practical session will be given in C++ or Python,
+on the keyboard. This practical session will be given in C++, Java or Python,
 which you are supposed to know beforehand.
-
-.. TODO:: Add the Java version to this tutorial. Drop us an email if you would like to read it, so that we raise this issue in our TODO list.
 
 Discover the Master/Workers
 ---------------------------
@@ -117,10 +115,25 @@ workers should stop when encountering such a negative compute_size.
             :start-after: master-begin
             :end-before: master-end
 
+      .. group-tab:: Java
+ 
+         In Java, the actor code must be provided as a class extending `Actor <API_s4u_Actor>`_, whose constructor receives the
+         deployment-file parameters as a ``String[]``. The SimGrid specific functions used here are
+         :java:meth:`Engine.mailbox_by_name() <org.simgrid.s4u.Engine.mailbox_by_name>` (to retrieve or create a mailbox) ,
+         :java:meth:`Mailbox.put() <org.simgrid.s4u.Mailbox.put>` (to send something over a mailbox) and
+         :java:meth:`Mailbox.get <org.simgrid.s4u.Mailbox.get>` (to retrieve what was sent to a mailbox). Also,
+         :java:meth:`Engine.info() <org.simgrid.s4u.Engine.info>` is used as a replacement to ``System.out.println()`` to ensure that the messages are nicely
+         logged along with the simulated time and actor name.
+ 
+         .. literalinclude:: ../../examples/java/app_masterworkers/app_masterworkers.java
+            :language: java
+            :start-after: master-begin
+            :end-before: master-end
+
       .. group-tab:: Python
 
          At the end of the day, the only SimGrid specific functions used in
-         this example are :py:func:`simgrid.Mailbox.by_name` (to retrieve or create a mailbox) and
+         this example are :py:func:`simgrid.Engine.mailbox_by_name` (to retrieve or create a mailbox) and
          :py:func:`simgrid.Mailbox.put` (so send something over a mailbox). Also, :py:func:`simgrid.this_actor.info` is used
          as a replacement to `print` to ensure that the messages
          are nicely logged along with the simulated time and actor name.
@@ -147,6 +160,16 @@ this task and waits for the next one.
 
       .. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
          :language: c++
+         :start-after: worker-begin
+         :end-before: worker-end
+
+   .. group-tab:: Java
+
+      The worker retrieves its own host with :java:meth:`Actor.get_host() <org.simgrid.s4u.Actor.get_host>`, that it can use
+      directly since its code extends the class `Actor <API_s4u_Actor>`_. This class contains many such helping functions.
+
+      .. literalinclude:: ../../examples/java/app_masterworkers/app_masterworkers.java
+         :language: java
          :start-after: worker-begin
          :end-before: worker-end
 
@@ -179,6 +202,21 @@ And this is it. In only a few lines, we defined the algorithm of our master/work
 
       .. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
          :language: c++
+         :start-after: main-begin
+         :end-before: main-end
+         :linenos:
+
+   .. group-tab:: Java
+
+      That being said, an algorithm alone is not enough to define a simulation:
+      you need a main block to setup the simulation and its components as follows.
+      This code creates a SimGrid simulation engine (on line 4), registers the actor
+      functions to the engine (on lines 7 and 8), loads the simulated platform
+      from its description file (on line 11), map actors onto that platform
+      (on line 12) and run the simulation until its completion on line 15.
+
+      .. literalinclude:: ../../examples/java/app_masterworkers/app_masterworkers.java
+         :language: java
          :start-after: main-begin
          :end-before: main-end
          :linenos:
@@ -256,8 +294,19 @@ This time, we have all parts: once the program is compiled, we can execute it as
       .. literalinclude:: ../../examples/cpp/app-masterworkers/s4u-app-masterworkers.tesh
          :language: shell
          :start-after: s4u-app-masterworkers-fun
-         :prepend: $$$ ./masterworkers platform.xml deploy.xml
-         :append: $$$
+         :prepend: $ ./masterworkers platform.xml deploy.xml
+         :append: $
+         :dedent: 2
+
+   .. group-tab:: Java
+
+      Note how the :java:meth:`Engine.info() <org.simgrid.s4u.Engine.info>` calls turned into informative messages.
+
+      .. literalinclude:: ../../examples/java/app_masterworkers/app_masterworkers.java.tesh
+         :language: shell
+         :start-after: app_masterworkers_d.xml
+         :prepend: $ java -cp simgrid.jar app_masterworkers small_platform.xml deploy.xml
+         :append: $
          :dedent: 2
 
    .. group-tab:: Python
@@ -267,8 +316,8 @@ This time, we have all parts: once the program is compiled, we can execute it as
       .. literalinclude:: ../../examples/python/app-masterworkers/app-masterworkers.tesh
          :language: shell
          :start-after: app-masterworkers_d.xml
-         :prepend: $$$ python ./app-masterworkers.py platform.xml deploy.xml
-         :append: $$$
+         :prepend: $ python ./app-masterworkers.py platform.xml deploy.xml
+         :append: $
          :dedent: 2
 
 Each example included in the SimGrid distribution comes with a `tesh`
@@ -294,8 +343,7 @@ This very simple setting raises many interesting questions:
 .. image:: /tuto_s4u/img/question.svg
    :align: center
 
-- Which algorithm should the master use? Or should the worker decide
-  by themselves?
+- Which algorithm should the master use? Or should the worker decide by themselves?
 
     Round Robin is not an efficient algorithm when all tasks are not
     processed at the same speed.  It would probably be more efficient
@@ -309,8 +357,7 @@ This very simple setting raises many interesting questions:
     load balancing will likely get uneven, in particular when
     distributing the last tasks.
 
-- How does the quality of such an algorithm dependent on the platform
-  characteristics and on the task characteristics?
+- How does the quality of such an algorithm dependent on the platform characteristics and on the task characteristics?
 
     Whenever the input communication time is very small compared to
     processing time and workers are homogeneous, it is likely that the

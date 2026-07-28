@@ -410,6 +410,9 @@ Simulation objects
 
       .. doxygentypedef:: aid_t
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Actor
 
    .. group-tab:: Python
 
@@ -914,6 +917,10 @@ Exiting
 
       .. doxygenclass:: simgrid::s4u::Engine
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Engine
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.Engine
@@ -1203,10 +1210,15 @@ They are only provided as plain C functions but are the way to go in C++ too.
    .. group-tab:: C
 
       .. doxygenfunction:: sg_link_energy_plugin_init()
+         :noindex:
       .. doxygenfunction:: sg_wifi_energy_plugin_init()
+         :noindex:
       .. doxygenfunction:: sg_host_load_plugin_init()
+         :noindex:
       .. doxygenfunction:: sg_link_load_plugin_init()
+         :noindex:
       .. doxygenfunction:: sg_vm_live_migration_plugin_init()
+         :noindex:
 
    .. group-tab:: Java
 
@@ -1225,6 +1237,10 @@ They are only provided as plain C functions but are the way to go in C++ too.
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Mailbox
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Mailbox
 
    .. group-tab:: Python
 
@@ -1250,13 +1266,21 @@ Basic management
 
       .. doxygenfunction:: simgrid::s4u::Mailbox::by_name(const std::string &name)
 
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.Mailbox;
+
+      .. automethod:: Engine.mailbox_by_name
+
    .. group-tab:: Python
 
-      .. code-block:: C++
+      .. code-block:: Python
 
-         #include <simgrid/mailbox.h>
+         from simgrid import Engine, Mailbox
 
-      .. automethod:: simgrid.Mailbox.by_name
+      .. automethod:: Engine.mailbox_by_name
 
    .. group-tab:: C
 
@@ -1405,6 +1429,10 @@ Resources
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Disk
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Disk
 
    .. group-tab:: Python
 
@@ -1626,6 +1654,10 @@ Signals
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Host
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Host
 
    .. group-tab:: Python
 
@@ -2049,6 +2081,9 @@ Signals
       .. doxygenclass:: simgrid::s4u::SplitDuplexLink
       .. doxygenclass:: simgrid::s4u::LinkInRoute
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Link
 
    .. group-tab:: Python
 
@@ -2382,6 +2417,10 @@ Signals
 
       .. doxygenclass:: simgrid::s4u::NetZone
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.NetZone
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.NetZone
@@ -2671,8 +2710,15 @@ Router
 ⁣  class VirtualMachine
 =======================
 
+.. tabs::
 
-.. doxygenclass:: simgrid::s4u::VirtualMachine
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::VirtualMachine
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.VirtualMachine
 
 Basic management
 ----------------
@@ -2685,7 +2731,13 @@ Basic management
          #include <simgrid/s4u/VirtualMachine.hpp>
 
       Note that there is no VirtualMachinePtr type, and that you cannot use the RAII
-      idiom on virtual machines. There is no good reason for that and should change in the future.
+      idiom on virtual machines. There is no good reason for that and could change in the future.
+
+      .. doxygenclass:: simgrid::s4u::VirtualMachine
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.VirtualMachine
 
    .. group-tab:: C
 
@@ -2706,7 +2758,9 @@ Creating VMs
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string &name, int core_amount)
+         :noindex:
       .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string &name, int core_amount, size_t ramsize)
+         :noindex:
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::destroy
 
    .. group-tab:: C
@@ -2737,29 +2791,6 @@ Querying info
 
       VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
 
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_name() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_core_count() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_load() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_speed() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_data
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_data
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_property(const std::string &key) const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_properties_names
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_concurrency_limit(int limit)
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_cpu_factor_cb
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate_count() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_pstate_speed(unsigned long pstate_index) const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_pstate(unsigned long pstate_index)
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::is_on() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_disk
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_disks() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::route_to
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::add_actor(const std::string& name, const std::function<void()>& code)
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_consumed_energy
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_wattmin_at
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::get_wattmax_at
-
    .. group-tab:: C
 
       .. doxygenfunction:: sg_vm_get_ramsize(const_sg_vm_t vm)
@@ -2772,6 +2803,8 @@ Querying info
       .. doxygenfunction:: sg_vm_is_running
       .. doxygenfunction:: sg_vm_is_suspended
 
+      VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pm
@@ -2780,30 +2813,8 @@ Querying info
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_bound
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_pm
       .. javamethod:: org.simgrid.s4u.VirtualMachine.set_ramsize
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_name
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_core_count
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_load
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_speed
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_data
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_data
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_property
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_properties_names
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_concurrency_limit
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_cpu_factor_cb
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate_count
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_pstate_speed
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.set_pstate
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.is_on
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.add_disk
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_disks
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.route_latency_to
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.route_links_to
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.add_actor
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_consumed_energy
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_wattmin_at
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.get_wattmax_at
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.current
+
+      VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
 
 Life cycle
 ----------
@@ -2818,10 +2829,6 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::suspend()
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::start_migration() const
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::end_migration() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::turn_off() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::turn_on() const
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::exec_async
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::exec_init(double flops_amounts) const
 
    .. group-tab:: C
 
@@ -2838,10 +2845,6 @@ Life cycle
       .. javamethod:: org.simgrid.s4u.VirtualMachine.suspend
       .. javamethod:: org.simgrid.s4u.VirtualMachine.start_migration
       .. javamethod:: org.simgrid.s4u.VirtualMachine.end_migration
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.turn_off
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.turn_on
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.exec_async
-      .. javamethod:: org.simgrid.s4u.VirtualMachine.exec_init
 
       ``migrate()`` is a Java-specific shortcut combining :cpp:func:`set_pm() <simgrid::s4u::VirtualMachine::set_pm>`
       with ``start_migration()``/``end_migration()`` in a single call, to be used with the Live Migrationg plugin.
@@ -2900,7 +2903,15 @@ Activities
 class Activity
 ==============
 
-.. doxygenclass:: simgrid::s4u::Activity
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Activity
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Activity
 
 **Known subclasses:**
 :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
@@ -2920,6 +2931,12 @@ Basic management
          #include <simgrid/s4u/Activity.hpp>
 
       .. doxygentypedef:: ActivityPtr
+
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.Activity;
 
    .. group-tab:: C
 
@@ -3044,6 +3061,10 @@ Suspending and resuming an activity
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Comm
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Comm
 
    .. group-tab:: Python
 
@@ -3324,6 +3345,10 @@ Signals
 
       .. doxygenclass:: simgrid::s4u::Exec
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Exec
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.Exec
@@ -3580,6 +3605,10 @@ Signals
 
       .. doxygenclass:: simgrid::s4u::Io
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Io
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.Io
@@ -3779,6 +3808,10 @@ Signals
 
       .. doxygenclass:: simgrid::s4u::ActivitySet
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.ActivitySet
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.ActivitySet
@@ -3916,7 +3949,15 @@ Tasks
 class Task
 ==============
 
-.. doxygenclass:: simgrid::s4u::Task
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Task
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Task
 
 **Known subclasses:**
 :ref:`Communication Tasks <API_s4u_CommTask>`,
@@ -3936,6 +3977,12 @@ Basic management
          #include <simgrid/s4u/Task.hpp>
 
       .. doxygentypedef:: TaskPtr
+
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.Task;
 
 Querying info
 -------------
@@ -4009,6 +4056,10 @@ Signals
 
       .. doxygenclass:: simgrid::s4u::CommTask
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.CommTask
+
 Basic management
 ----------------
 
@@ -4021,6 +4072,12 @@ Basic management
          #include <simgrid/s4u/Task.hpp>
 
       .. doxygentypedef:: CommTaskPtr
+
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.CommTask;
 
 Querying info
 -------------
@@ -4048,6 +4105,10 @@ Querying info
 
       .. doxygenclass:: simgrid::s4u::ExecTask
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.ExecTask
+
 Basic management
 ----------------
 
@@ -4060,6 +4121,12 @@ Basic management
          #include <simgrid/s4u/Task.hpp>
 
       .. doxygentypedef:: ExecTaskPtr
+
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.ExecTask;
 
 Querying info
 -------------
@@ -4085,6 +4152,10 @@ Querying info
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::IoTask
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.IoTask
 
 Basic management
 ----------------
@@ -4130,6 +4201,10 @@ Synchronization Objects
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Mutex
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Mutex
 
    .. group-tab:: Python
 
@@ -4226,6 +4301,10 @@ Locking
 
       .. doxygenclass:: simgrid::s4u::Barrier
 
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Barrier
+
    .. group-tab:: Python
 
       .. autoclass:: simgrid.Barrier
@@ -4278,7 +4357,15 @@ Locking
 ⁣  Condition variable
 ==========================
 
-.. doxygenclass:: simgrid::s4u::ConditionVariable
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::ConditionVariable
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.ConditionVariable
 
 Basic management
 ----------------
@@ -4353,6 +4440,10 @@ Waiting and notifying
    .. group-tab:: C++
 
       .. doxygenclass:: simgrid::s4u::Semaphore
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Semaphore
 
    .. group-tab:: Python
 
