@@ -20,7 +20,7 @@ class sender extends Actor {
     /* - ... then send it again but throttle the Comm */
     payload = Engine.get_clock();
     /* get a handler on the comm first */
-    Comm comm = mailbox.put_init(payload, 2.5e8);
+    Comm comm = mailbox.put_init(payload, 250_000_000L);
 
     /* let throttle the communication. It amounts to set the rate of the comm to half the nominal bandwidth of the link,
      * i.e., 1.25e8 / 2. This second communication will thus take approximately twice as long as the first one*/

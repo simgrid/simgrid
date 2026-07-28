@@ -731,7 +731,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::this_actor::is_maestro()
 
       .. doxygenfunction:: simgrid::s4u::this_actor::get_host()
-      .. doxygenfunction:: simgrid::s4u::this_actor::set_host(Host *new_host)
+      .. doxygenfunction:: simgrid::s4u::this_actor::set_host
       .. doxygenfunction:: simgrid::s4u::this_actor::get_engine()
 
    .. group-tab:: Python

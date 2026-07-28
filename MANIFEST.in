@@ -455,6 +455,10 @@ include examples/java/actor_suspend/actor_suspend.java
 include examples/java/actor_suspend/actor_suspend.java.tesh
 include examples/java/actor_yield/actor_yield.java
 include examples/java/actor_yield/actor_yield.java.tesh
+include examples/java/app_chainsend/app_chainsend.java
+include examples/java/app_chainsend/app_chainsend.java.tesh
+include examples/java/app_token_ring/app_token_ring.java
+include examples/java/app_token_ring/app_token_ring.java.tesh
 include examples/java/cloud_migration/cloud_migration.java
 include examples/java/cloud_migration/cloud_migration.java.tesh
 include examples/java/cloud_simple/cloud_simple.java
@@ -1969,9 +1973,11 @@ include docs/source/Tutorial_DAG.rst
 include docs/source/Tutorial_MPI_Applications.rst
 include docs/source/Tutorial_Model-checking.rst
 include docs/source/XML_reference.rst
+include docs/source/_ext/javadomain.py
 include docs/source/_ext/showfile.css
 include docs/source/_ext/showfile.js
 include docs/source/_ext/showfile.py
+include docs/source/_ext/showfile_apilinks.py
 include docs/source/_static/css/custom.css
 include docs/source/_templates/breadcrumbs.html
 include docs/source/app_s4u.rst

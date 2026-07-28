@@ -19,6 +19,7 @@ endif()
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
                  actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
+                 app_chainsend app_token_ring 
                  cloud_migration cloud_simple #cloud_capping
                  dag_comm dag_failure dag_from_dax_simple dag_from_dax dag_from_dot_simple dag_from_dot dag_from_json_simple dag_io dag_scheduling dag_simple dag_tuto
                  energy_boot energy_exec energy_exec_ptask energy_link energy_vm energy_wifi

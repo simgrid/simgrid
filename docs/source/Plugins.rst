@@ -15,7 +15,6 @@ SimGrid Plugins
    <br>
    <br>
 
-
 You can extend SimGrid without modifying it, thanks to our plugin
 mechanism. This page describes how to write your own plugin, and
 documents some of the plugins distributed with SimGrid:

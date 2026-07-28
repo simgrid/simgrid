@@ -13,7 +13,7 @@ class Sender extends Actor {
     Double computationAmount = get_host().get_speed();
 
     Exec exec = exec_init(2 * computationAmount);
-    Comm comm = mailbox.put_init(computationAmount, 7e6);
+    Comm comm = mailbox.put_init(computationAmount, 7_000_000L);
 
     exec.set_name("exec on sender").add_successor(comm).start();
     comm.set_name("comm to receiver").start();
