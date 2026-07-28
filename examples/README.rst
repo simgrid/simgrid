@@ -546,11 +546,15 @@ given asynchronous execution. It is also possible to specify a timeout.
 
    .. example-tab:: examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
 
+.. _s4u_ex_threaded:
+
 Multi-threaded executions
 -------------------------
 
 By default, executions leverage only one core of their host, even if the host is multicore. This can be changed by using
-`thread_execute` and `thread_execute_async` to specify that they can leverage more than one core of the simulated platform.
+`thread_execute` and `thread_execute_async` to specify that they can leverage more than one core of the simulated platform. This
+is not to be mixed with `parallel executions <s4u_ex_ptasks>` below, that provide a coarse model of applications leveraging
+several computers at once, and their interconnect.
 
 .. tabs::
 
@@ -584,17 +588,15 @@ This is naturally not very realistic, but it's something handy to have.
 Parallel executions
 -------------------
 
-These objects are convenient abstractions of parallel
-computational kernels that span over several machines, such as a
-PDGEM and the other ScaLAPACK routines. Note that this only works
-with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
+These objects are convenient abstractions of parallel computational kernels that span over several machines, such as a PDGEM and
+the other ScaLAPACK routines. Note that this only works with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``),
+because a single activity can span over both the execution and network models. Parallel executions are not to be mixed with
+`multi-threaded executions <s4u_ex_threaded>` above, that provide regular execution activities spanning over several cores of
+the same machine.
 
-This example demonstrates several kinds of parallel tasks: regular
-ones, communication-only (without computation), computation-only
-(without communication), synchronization-only (neither
-communication nor computation). It also shows how to reconfigure a
-task after its start, to change the number of hosts it runs onto.
-This allows simulating malleable tasks.
+This example demonstrates several kinds of parallel tasks: regular ones, communication-only (without computation),
+computation-only (without communication), synchronization-only (neither communication nor computation). It also shows how to
+reconfigure a task after its start, to change the number of hosts it runs onto. This allows simulating malleable tasks.
 
 .. tabs::
 
@@ -624,9 +626,8 @@ The latency of the involved communications can also be taken into account.
 
    .. example-tab:: examples/java/exec_ptask_multicore_latency/exec_ptask_multicore_latency.java
 
-Ptasks play well with the host energy plugin, as shown in this example.
-There is not much new compared to the above ptask example or the
-:ref:`examples about energy <s4u_ex_energy>`. It just works.
+Ptasks play well with the host energy plugin, as shown in this example. There is not much new compared to the above ptask
+example or the :ref:`examples about energy <s4u_ex_energy>`. It just works.
 
 .. tabs::
 
@@ -1687,7 +1688,7 @@ Alternatively, you can use non-linear factors for the resource variability.
 
      .. example-tab:: examples/cpp/io-degradation/s4u-io-degradation.cpp
 
-        Non-linear variability for Disks, which was shown realistic in this paper: `https://hal.inria.fr/hal-01197128`_.
+        Non-linear variability for Disks, which was shown realistic in this paper: `<https://hal.inria.fr/hal-01197128>`_.
 
 
 
