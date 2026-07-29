@@ -97,7 +97,7 @@ public class Activity {
   }
 
   /** Just like await_for(), but the activity is first canceled if a timeout exception is raised. */
-  public Activity await_for_or_cancel(double timeout) throws SimgridException
+  public Activity await_for_or_cancel(double timeout) throws TimeoutException
   {
     simgridJNI.Activity_await_for_or_cancel(swigCPtr, this, timeout);
     return this;

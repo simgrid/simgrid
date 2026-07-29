@@ -1,0 +1,23 @@
+#!/usr/bin/env tesh
+
+p Testing the Bittorrent implementation with S4U
+
+! timeout 10
+$ ${javacmd} -cp ../../simgrid.jar:app_bittorrent.jar app_bittorrent ${platfdir}/cluster_backbone.xml ${srcdir}/app_bittorrent/app_bittorrent_d.xml "--log=root.fmt:[%12.6r]%e(%i:%a@%h)%e%m%n"
+> [    0.000000] (0:maestro@) Using regular java threads.
+> [    0.000000] (1:Tracker@node-0.simgrid.org) Tracker launched.
+> [    0.000000] (2:Peer@node-1.simgrid.org) Hi, I'm joining the network with id 2
+> [    0.000000] (3:Peer@node-2.simgrid.org) Hi, I'm joining the network with id 3
+> [    0.000000] (4:Peer@node-3.simgrid.org) Hi, I'm joining the network with id 4
+> [    0.000000] (5:Peer@node-4.simgrid.org) Hi, I'm joining the network with id 5
+> [    0.000000] (6:Peer@node-5.simgrid.org) Hi, I'm joining the network with id 6
+> [    0.000000] (7:Peer@node-6.simgrid.org) Hi, I'm joining the network with id 7
+> [    0.000000] (8:Peer@node-7.simgrid.org) Hi, I'm joining the network with id 8
+> [ 3000.000000] (9:Tracker@node-0.simgrid.org) Tracker is leaving
+> [ 5000.007806] (13:Peer@node-4.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (14:Peer@node-5.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (10:Peer@node-1.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (12:Peer@node-3.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (16:Peer@node-7.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (15:Peer@node-6.simgrid.org) Here is my current status: 1111111111
+> [ 5000.007806] (11:Peer@node-2.simgrid.org) Here is my current status: 1111111111

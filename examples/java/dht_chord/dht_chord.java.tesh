@@ -1,0 +1,130 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:dht_chord.jar dht_chord -nb_bits=3 ${platfdir}/cluster_backbone.xml ${srcdir}/dht_chord/dht_chord_d.xml "--log=root.fmt:[%10.5r]%e(%a@%h)%e%m%n"
+> [   0.00000] (maestro@) Using regular java threads.
+> [   0.00000] (Node@node-0.simgrid.org) My finger table:
+> [   0.00000] (Node@node-0.simgrid.org) Start | Succ
+> [   0.00000] (Node@node-0.simgrid.org)    3  |  42
+> [   0.00000] (Node@node-0.simgrid.org)    4  |  42
+> [   0.00000] (Node@node-0.simgrid.org)    6  |  42
+> [   0.00000] (Node@node-0.simgrid.org) Predecessor: -1
+> [  10.00000] (Node@node-1.simgrid.org) Joining the ring with id 366680, knowing node 42
+> [  15.00751] (Node@node-1.simgrid.org) My new finger #0 is 42
+> [  15.00751] (Node@node-1.simgrid.org) My finger table:
+> [  15.00751] (Node@node-1.simgrid.org) Start | Succ
+> [  15.00751] (Node@node-1.simgrid.org)    1  |  42
+> [  15.00751] (Node@node-1.simgrid.org)    2  | 366680
+> [  15.00751] (Node@node-1.simgrid.org)    4  | 366680
+> [  15.00751] (Node@node-1.simgrid.org) Predecessor: -1
+> [  20.00000] (Node@node-2.simgrid.org) Joining the ring with id 533744, knowing node 366680
+> [  30.00000] (Node@node-3.simgrid.org) Joining the ring with id 1319738, knowing node 42
+> [  30.00721] (Node@node-2.simgrid.org) My new finger #0 is 42
+> [  30.00721] (Node@node-2.simgrid.org) My finger table:
+> [  30.00721] (Node@node-2.simgrid.org) Start | Succ
+> [  30.00721] (Node@node-2.simgrid.org)    1  |  42
+> [  30.00721] (Node@node-2.simgrid.org)    2  | 533744
+> [  30.00721] (Node@node-2.simgrid.org)    4  | 533744
+> [  30.00721] (Node@node-2.simgrid.org) Predecessor: -1
+> [  35.00711] (Node@node-3.simgrid.org) My new finger #0 is 42
+> [  35.00711] (Node@node-3.simgrid.org) My finger table:
+> [  35.00711] (Node@node-3.simgrid.org) Start | Succ
+> [  35.00711] (Node@node-3.simgrid.org)    3  |  42
+> [  35.00711] (Node@node-3.simgrid.org)    4  | 1319738
+> [  35.00711] (Node@node-3.simgrid.org)    6  | 1319738
+> [  35.00711] (Node@node-3.simgrid.org) Predecessor: -1
+> [  40.00000] (Node@node-4.simgrid.org) Joining the ring with id 16509405, knowing node 366680
+> [  44.99910] (Node@node-0.simgrid.org) My new predecessor is 366680
+> [  44.99910] (Node@node-0.simgrid.org) My finger table:
+> [  44.99910] (Node@node-0.simgrid.org) Start | Succ
+> [  44.99910] (Node@node-0.simgrid.org)    3  |  42
+> [  44.99910] (Node@node-0.simgrid.org)    4  |  42
+> [  44.99910] (Node@node-0.simgrid.org)    6  |  42
+> [  44.99910] (Node@node-0.simgrid.org) Predecessor: 366680
+> [  49.99900] (Node@node-0.simgrid.org) My new finger #0 is 366680
+> [  55.00671] (Node@node-4.simgrid.org) My new finger #0 is 366680
+> [  55.00671] (Node@node-4.simgrid.org) My finger table:
+> [  55.00671] (Node@node-4.simgrid.org) Start | Succ
+> [  55.00671] (Node@node-4.simgrid.org)    6  | 366680
+> [  55.00671] (Node@node-4.simgrid.org)    7  | 16509405
+> [  55.00671] (Node@node-4.simgrid.org)    1  | 16509405
+> [  55.00671] (Node@node-4.simgrid.org) Predecessor: -1
+> [  60.00000] (Node@node-6.simgrid.org) Joining the ring with id 16728096, knowing node 1319738
+> [  65.00651] (Node@node-3.simgrid.org) My new finger #0 is 366680
+> [  65.01431] (Node@node-6.simgrid.org) My new finger #0 is 366680
+> [  65.01431] (Node@node-6.simgrid.org) My finger table:
+> [  65.01431] (Node@node-6.simgrid.org) Start | Succ
+> [  65.01431] (Node@node-6.simgrid.org)    1  | 366680
+> [  65.01431] (Node@node-6.simgrid.org)    2  | 16728096
+> [  65.01431] (Node@node-6.simgrid.org)    4  | 16728096
+> [  65.01431] (Node@node-6.simgrid.org) Predecessor: -1
+> [  75.00631] (Node@node-1.simgrid.org) My new predecessor is 16509405
+> [  75.00631] (Node@node-1.simgrid.org) My finger table:
+> [  75.00631] (Node@node-1.simgrid.org) Start | Succ
+> [  75.00631] (Node@node-1.simgrid.org)    1  |  42
+> [  75.00631] (Node@node-1.simgrid.org)    2  | 366680
+> [  75.00631] (Node@node-1.simgrid.org)    4  | 366680
+> [  75.00631] (Node@node-1.simgrid.org) Predecessor: 16509405
+> [  80.01401] (Node@node-0.simgrid.org) My new finger #0 is 16509405
+> [  90.01381] (Node@node-6.simgrid.org) My new finger #0 is 16509405
+> [  95.01371] (Node@node-3.simgrid.org) My new finger #0 is 16509405
+> [ 115.01331] (Node@node-4.simgrid.org) My new predecessor is 42
+> [ 115.01331] (Node@node-4.simgrid.org) My finger table:
+> [ 115.01331] (Node@node-4.simgrid.org) Start | Succ
+> [ 115.01331] (Node@node-4.simgrid.org)    6  | 366680
+> [ 115.01331] (Node@node-4.simgrid.org)    7  | 16509405
+> [ 115.01331] (Node@node-4.simgrid.org)    1  | 16509405
+> [ 115.01331] (Node@node-4.simgrid.org) Predecessor: 42
+> [ 120.02102] (Node@node-6.simgrid.org) My new finger #0 is 42
+> [ 180.03543] (Node@node-3.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 215.03573] (Node@node-1.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 240.04304] (Node@node-0.simgrid.org) My new predecessor is 16509405
+> [ 250.00000] (Node@node-5.simgrid.org) Joining the ring with id 10874876, knowing node 533744
+> [ 270.04344] (Node@node-4.simgrid.org) My new predecessor is 42
+> [ 270.04344] (Node@node-4.simgrid.org) My finger table:
+> [ 270.04344] (Node@node-4.simgrid.org) Start | Succ
+> [ 270.04344] (Node@node-4.simgrid.org)    6  | 366680
+> [ 270.04344] (Node@node-4.simgrid.org)    7  | 16509405
+> [ 270.04344] (Node@node-4.simgrid.org)    1  | 16509405
+> [ 270.04344] (Node@node-4.simgrid.org) Predecessor: 42
+> [ 275.04334] (Node@node-4.simgrid.org) My new finger #0 is 42
+> [ 280.05104] (Node@node-0.simgrid.org) My new predecessor is 533744
+> [ 280.05104] (Node@node-0.simgrid.org) My finger table:
+> [ 280.05104] (Node@node-0.simgrid.org) Start | Succ
+> [ 280.05104] (Node@node-0.simgrid.org)    3  | 16509405
+> [ 280.05104] (Node@node-0.simgrid.org)    4  |  42
+> [ 280.05104] (Node@node-0.simgrid.org)    6  |  42
+> [ 280.05104] (Node@node-0.simgrid.org) Predecessor: 533744
+> [ 280.05104] (Node@node-0.simgrid.org) My new finger #1 is 16509405
+> [ 280.05104] (Node@node-0.simgrid.org) My finger table:
+> [ 280.05104] (Node@node-0.simgrid.org) Start | Succ
+> [ 280.05104] (Node@node-0.simgrid.org)    3  | 16509405
+> [ 280.05104] (Node@node-0.simgrid.org)    4  | 16509405
+> [ 280.05104] (Node@node-0.simgrid.org)    6  |  42
+> [ 280.05104] (Node@node-0.simgrid.org) Predecessor: 533744
+> [ 285.04314] (Node@node-4.simgrid.org) My new finger #1 is 42
+> [ 285.04314] (Node@node-4.simgrid.org) My finger table:
+> [ 285.04314] (Node@node-4.simgrid.org) Start | Succ
+> [ 285.04314] (Node@node-4.simgrid.org)    6  |  42
+> [ 285.04314] (Node@node-4.simgrid.org)    7  |  42
+> [ 285.04314] (Node@node-4.simgrid.org)    1  | 16509405
+> [ 285.04314] (Node@node-4.simgrid.org) Predecessor: 42
+> [ 295.04294] (Node@node-2.simgrid.org) My new finger #1 is 42
+> [ 295.04294] (Node@node-2.simgrid.org) My finger table:
+> [ 295.04294] (Node@node-2.simgrid.org) Start | Succ
+> [ 295.04294] (Node@node-2.simgrid.org)    1  |  42
+> [ 295.04294] (Node@node-2.simgrid.org)    2  |  42
+> [ 295.04294] (Node@node-2.simgrid.org)    4  | 533744
+> [ 295.04294] (Node@node-2.simgrid.org) Predecessor: -1
+> [ 300.00781] (Node@node-5.simgrid.org) Cannot join the ring.
+> [ 340.04304] (Node@node-4.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 380.05004] (Node@node-6.simgrid.org) My new finger #1 is 42
+> [ 380.05004] (Node@node-6.simgrid.org) My finger table:
+> [ 380.05004] (Node@node-6.simgrid.org) Start | Succ
+> [ 380.05004] (Node@node-6.simgrid.org)    1  |  42
+> [ 380.05004] (Node@node-6.simgrid.org)    2  |  42
+> [ 380.05004] (Node@node-6.simgrid.org)    4  | 16728096
+> [ 380.05004] (Node@node-6.simgrid.org) Predecessor: -1
+> [ 445.04194] (Node@node-2.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [ 880.04804] (Node@node-6.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [1030.05785] (Node@node-0.simgrid.org) Well Guys! I Think it's time for me to leave ;)
+> [1130.05785] (maestro@) Simulated time: 1130.06

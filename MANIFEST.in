@@ -455,8 +455,14 @@ include examples/java/actor_suspend/actor_suspend.java
 include examples/java/actor_suspend/actor_suspend.java.tesh
 include examples/java/actor_yield/actor_yield.java
 include examples/java/actor_yield/actor_yield.java.tesh
+include examples/java/app_bittorrent/app_bittorrent.java
+include examples/java/app_bittorrent/app_bittorrent.java.tesh
+include examples/java/app_bittorrent/app_bittorrent_d.xml
 include examples/java/app_chainsend/app_chainsend.java
 include examples/java/app_chainsend/app_chainsend.java.tesh
+include examples/java/app_masterworkers/app_masterworkers.java
+include examples/java/app_masterworkers/app_masterworkers.java.tesh
+include examples/java/app_masterworkers/app_masterworkers_d.xml
 include examples/java/app_token_ring/app_token_ring.java
 include examples/java/app_token_ring/app_token_ring.java.tesh
 include examples/java/cloud_migration/cloud_migration.java
@@ -511,6 +517,12 @@ include examples/java/dag_simple/dag_simple.java
 include examples/java/dag_simple/dag_simple.java.tesh
 include examples/java/dag_tuto/dag_tuto.java
 include examples/java/dag_tuto/dag_tuto.java.tesh
+include examples/java/dht_chord/dht_chord.java
+include examples/java/dht_chord/dht_chord.java.tesh
+include examples/java/dht_chord/dht_chord_d.xml
+include examples/java/dht_kademlia/dht_kademlia.java
+include examples/java/dht_kademlia/dht_kademlia.java.tesh
+include examples/java/dht_kademlia/dht_kademlia_d.xml
 include examples/java/energy_boot/energy_boot.java
 include examples/java/energy_boot/energy_boot.java.tesh
 include examples/java/energy_exec/energy_exec.java

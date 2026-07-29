@@ -19,9 +19,10 @@ endif()
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
                  actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
-                 app_chainsend app_masterworkers app_token_ring 
+                 app_bittorrent app_chainsend app_masterworkers app_token_ring 
                  cloud_migration cloud_simple #cloud_capping
                  dag_comm dag_failure dag_from_dax_simple dag_from_dax dag_from_dot_simple dag_from_dot dag_from_json_simple dag_io dag_scheduling dag_simple dag_tuto
+                 dht_chord dht_kademlia
                  energy_boot energy_exec energy_exec_ptask energy_link energy_vm energy_wifi
                  exec_async exec_awaitfor exec_basic exec_cpu_factors exec_dependent exec_dvfs exec_threads exec_ptask exec_ptask_multicore exec_ptask_multicore_latency exec_remote exec_suspend exec_unassigned
 #                 exec_cpu_nonlinear
@@ -67,7 +68,11 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}                                                                            PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/actor_lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor_create/actor_create_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/app_bittorrent/app_bittorrent_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/app_masterworkers/app_masterworkers_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_scheduling/Montage_25.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht_chord/dht_chord_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht_kademlia/dht_kademlia_d.xml
                   PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/smalldax.xml
