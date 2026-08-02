@@ -14,6 +14,25 @@ if (NOT SIMGRID_HAVE_JSON)
   set(_dag_from_json_simple_disable 1)
 endif()
 
+if(SIMGRID_HAVE_NS3)
+  if(NS3_VERSION VERSION_GREATER_EQUAL 3.37)
+    set(_network_ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_timed.java.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_notime.java.tesh)
+  else()
+    set(_network_ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_notime.java.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_timed.java.tesh)
+  endif()
+
+else()
+  # Even if ns3 is not found, we need to override the teshfile name and make sure that everything gets included in the archive
+  set(_network_ns3_teshfile         ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_notime.java.tesh)
+  set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/java/network_ns3/network_ns3_timed.java.tesh)
+
+  foreach (example network_ns3 network_ns3_wifi)
+    set(_${example}_disable 1)
+  endforeach()
+endif()
+
 # io_dependent io_file_system io_file_remote: need a plugin
 # exec_failure: needs state profiles
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
@@ -29,6 +48,7 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
                  io_async io_disk_raw io_priority # io_degradation 
                  mess_await
+                 network_ns3 network_ns3_wifi network_wifi
                  platform_comm_serialize # platform_failures  platform_profile  platform_properties
                  synchro_barrier synchro_condition_variable synchro_condition_variable_awaituntil synchro_mutex synchro_semaphore
                  #task_dispatch  task_io  task_microservice  task_parallelism  task_simple  task_storm  task_switch_host  task_variable_load
@@ -57,11 +77,11 @@ foreach (example activityset_awaitall activityset_awaitallfor activityset_awaita
     else()
       set(LIB_PATH LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH})
     endif()
-    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{SAN_LIBS} --setenv ${LIB_PATH} --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+    ADD_TESH(java-${example} --setenv LD_PRELOAD=$ENV{SAN_LIBS} --setenv ${LIB_PATH} --setenv LC_CTYPE=C --setenv javacmd="${Java_JAVA_EXECUTABLE} -Xcheck:jni ${javac_args}" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} ${_${example}_teshfile})
   endif()
 
   set(examples_src  ${examples_src}  ${_${example}_sources})
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java.tesh)
+  set(tesh_files    ${tesh_files}    ${_${example}_teshfile})
 endforeach()
 
 set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
@@ -73,6 +93,13 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor_lifetime/act
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht_chord/dht_chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht_kademlia/dht_kademlia_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/3hosts_2links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/3links-timer_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/3links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/crosstraffic_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/dogbone_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/onelink_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network_ns3/one_cluster_d.xml
                   PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag_from_dax/smalldax.xml

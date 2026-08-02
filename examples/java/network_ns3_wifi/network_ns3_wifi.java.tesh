@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3_wifi.jar network_ns3_wifi ${platfdir}/wifi_ns3.xml "--log=root.fmt:[%h:%a(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [java/INFO] Using regular java threads.
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [STA0-1:receiver(2)] [java/INFO] [1] STA0-1 received 100000 bytes from STA0-0
+> [STA0-0:receiver(4)] [java/INFO] [2] STA0-0 received 100000 bytes from STA0-1
+> [STA1-2:receiver(6)] [java/INFO] [3] STA1-2 received 100000 bytes from STA1-1
+> [STA1-1:receiver(8)] [java/INFO] [4] STA1-1 received 100000 bytes from STA1-2
+> [STA1-0:receiver(10)] [java/INFO] [5] STA1-0 received 100000 bytes from STA0-0
+> [STA0-0:receiver(12)] [java/INFO] [6] STA0-0 received 100000 bytes from STA1-0
+> [STA1-2:receiver(14)] [java/INFO] [7] STA1-2 received 100000 bytes from STA0-1
+> [STA0-1:receiver(16)] [java/INFO] [8] STA0-1 received 100000 bytes from STA1-2

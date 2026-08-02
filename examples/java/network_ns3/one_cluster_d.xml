@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <actor host="node-2.simgrid.org" function="Master">
+    <argument value="100"/>
+    <argument value="node-6.simgrid.org"/>
+    <argument value="1"/>
+  </actor>
+  <actor host="node-6.simgrid.org" function="Worker">
+    <argument value="1"/>
+  </actor>
+</platform>

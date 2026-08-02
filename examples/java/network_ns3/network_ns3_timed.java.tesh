@@ -1,0 +1,101 @@
+#!/usr/bin/env tesh
+
+p In the ns-3 tests, the timings are valid only with the very latest version of ns3 (the exact values may vary with your ns-3 version).
+
+p 3hosts 2links
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network_ns3/3hosts_2links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [Jupiter:Worker(4) 0.000249] [java/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
+
+p 6hosts 3links
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network_ns3/3links_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [Jupiter:Worker(8) 0.000498] [java/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:Worker(10) 0.007323] [java/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:Worker(12) 0.037450] [java/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/small_platform_one_link_routes.xml ${srcdir}/network_ns3/3links-timer_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [Jupiter:Worker(9) 0.000498] [java/INFO] FLOW[1] : Receive 10000 bytes from Tremblay to Jupiter
+> [Ginette:Worker(11) 0.007323] [java/INFO] FLOW[2] : Receive 10000 bytes from Fafard to Ginette
+> [Lovelace:Worker(13) 0.037450] [java/INFO] FLOW[3] : Receive 10000 bytes from Bourassa to Lovelace
+> [Lovelace:Worker(14) 2.037450] [java/INFO] FLOW[4] : Receive 10000 bytes from Bourassa to Lovelace
+
+p One cluster
+
+! output ignore
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/cluster_backbone.xml ${srcdir}/network_ns3/one_cluster_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [node-6.simgrid.org:Worker(2) 0.021502] [java/INFO] FLOW[1] : Receive 100 bytes from node-2.simgrid.org to node-6.simgrid.org
+
+p Dogbone
+
+! timeout 10
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/dogbone.xml ${srcdir}/network_ns3/dogbone_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [:maestro(0) 0.000000] [res_ns3/WARNING] Ignoring a route between S1 and C1 of length 3: Only routes of length 1 are considered with ns-3.
+> WARNING: You can ignore this warning if your hosts can still communicate when only considering routes of length 1.
+> WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently ignored.
+> [C1:Worker(7) 0.120224] [java/INFO] FLOW[0] : Receive 10000 bytes from S1 to C1
+> [C2:Worker(8) 0.120234] [java/INFO] FLOW[1] : Receive 10000 bytes from S2 to C2
+
+p 2hosts 1link
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/onelink.xml ${srcdir}/network_ns3/onelink_d.xml --cfg=network/model:ns-3 "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [C1:Worker(4) 1.104600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p 2hosts 1link NewReno (no timing change)
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/onelink.xml ${srcdir}/network_ns3/onelink_d.xml --cfg=network/model:ns-3 --cfg=ns3/NetworkModel:NewReno "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'ns3/NetworkModel' to 'NewReno'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [:maestro(0) 0.000000] [res_ns3/INFO] Switching Tcp protocol to 'NewReno'
+> [C1:Worker(4) 1.104600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p 2hosts 1link Cubic (no timing change)
+
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/onelink.xml ${srcdir}/network_ns3/onelink_d.xml --cfg=network/model:ns-3 --cfg=ns3/NetworkModel:Cubic "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'ns3/NetworkModel' to 'Cubic'
+> [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+> [:maestro(0) 0.000000] [res_ns3/INFO] Switching Tcp protocol to 'Cubic'
+> [C1:Worker(4) 1.104600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p 2hosts 1link UDP
+
+# $ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/onelink.xml ${srcdir}/network_ns3/onelink_d.xml --cfg=network/model:ns-3 --cfg=ns3/NetworkModel:UDP "--log=root.fmt:[%h:%a(%i)%e%r]%e[%c/%p]%e%m%n"
+# > [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+# > [:maestro(0) 0.000000] [xbt_cfg/INFO] Configuration change: Set 'ns3/NetworkModel' to 'UDP'
+# > [:maestro(0) 0.000000] [res_ns3/INFO] Switching network protocol to 'UDP'
+# > [:maestro(0) 0.000000] [java/INFO] Using regular java threads.
+# > [C1:Worker(4) 1.104600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+
+p Crosstraffic TCP option DISABLED
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network_ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> [0.000000] [java/INFO] Using regular java threads.
+> [C1:Worker:(10) 1.236600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+> [C1:Worker:(12) 2.150800] [java/INFO] FLOW[2] : Receive 10000 bytes from S1 to C1
+> [C1:Worker:(14) 3.197000] [java/INFO] FLOW[3] : Receive 10000 bytes from S1 to C1
+> [S1:Worker:(16) 3.537400] [java/INFO] FLOW[4] : Receive 10000 bytes from C1 to S1
+
+p Crosstraffic TCP option ENABLED
+$ ${javacmd} -cp ../../simgrid.jar:network_ns3.jar network_ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network_ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'ns-3'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
+> [0.000000] [java/INFO] Using regular java threads.
+> [C1:Worker:(10) 1.236600] [java/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
+> [C1:Worker:(12) 2.150800] [java/INFO] FLOW[2] : Receive 10000 bytes from S1 to C1
+> [C1:Worker:(14) 3.197000] [java/INFO] FLOW[3] : Receive 10000 bytes from S1 to C1
+> [S1:Worker:(16) 3.537400] [java/INFO] FLOW[4] : Receive 10000 bytes from C1 to S1

@@ -1,0 +1,36 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <actor host="Tremblay" function="Master">
+    <argument value="10000"/>
+    <argument value="Jupiter"/>
+    <argument value="1"/>
+  </actor>
+  <actor host="Jupiter" function="Worker">
+    <argument value="1"/>
+  </actor>
+  <actor host="Fafard" function="Master">
+    <argument value="10000"/>
+    <argument value="Ginette"/>
+    <argument value="2"/>
+  </actor>
+  <actor host="Ginette" function="Worker">
+    <argument value="2"/>
+  </actor>
+  <actor host="Bourassa" function="Master">
+    <argument value="10000"/>
+    <argument value="Lovelace"/>
+    <argument value="3"/>
+  </actor>
+  <actor host="Lovelace" function="Worker">
+    <argument value="3"/>
+  </actor>
+  <actor host="Bourassa" function="Master" start_time="2.0">
+    <argument value="10000"/>
+    <argument value="Lovelace"/>
+    <argument value="4"/>
+  </actor>
+  <actor host="Lovelace" function="Worker">
+    <argument value="4"/>
+  </actor>
+</platform>

@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <actor host="S1" function="Master">
+    <argument value="10000"/>
+    <argument value="C1"/>
+    <argument value="0"/>
+  </actor>
+  <actor host="S2" function="Master">
+    <argument value="10000"/>
+    <argument value="C2"/>
+    <argument value="1"/>
+  </actor>
+  <actor host="C1" function="Worker">
+    <argument value="0"/>
+  </actor>
+  <actor host="C2" function="Worker">
+    <argument value="1"/>
+  </actor>
+</platform>
