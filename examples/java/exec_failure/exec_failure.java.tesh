@@ -1,0 +1,31 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:exec_failure.jar exec_failure "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:Dispatcher@Host3) Initiating asynchronous exec on Host1
+> [  0.000000] (1:Dispatcher@Host3) Initiating asynchronous exec on Host2
+> [  0.000000] (1:Dispatcher@Host3) Initiating asynchronous exec on Host3
+> [  0.000000] (1:Dispatcher@Host3) ---------------------------------
+> [  0.000000] (1:Dispatcher@Host3) Wait on the first exec, which host is turned off at t=10 by the other actor.
+> [ 10.000000] (2:HostKiller@Host3) HostKiller turns off the host 'Host1'.
+> [ 10.000000] (1:Dispatcher@Host3) Dispatcher has experienced a host failure exception, so it knows that something went wrong.
+> [ 10.000000] (1:Dispatcher@Host3) State of each exec:
+> [ 10.000000] (1:Dispatcher@Host3)   Exec on Host1 has state: FAILED
+> [ 10.000000] (1:Dispatcher@Host3)   Exec on Host2 has state: STARTED
+> [ 10.000000] (1:Dispatcher@Host3)   Exec on Host3 has state: STARTED
+> [ 10.000000] (1:Dispatcher@Host3) ---------------------------------
+> [ 10.000000] (1:Dispatcher@Host3) Wait on the second exec, which host is turned off at t=12 by the other actor.
+> [ 12.000000] (3:HostToggler@Host3) HostToggler turns off the host 'Host2'.
+> [ 12.000000] (1:Dispatcher@Host3) Dispatcher has experienced a host failure exception, so it knows that something went wrong.
+> [ 12.000000] (1:Dispatcher@Host3) State of each exec:
+> [ 12.000000] (1:Dispatcher@Host3)   Exec on Host1 has state: FAILED
+> [ 12.000000] (1:Dispatcher@Host3)   Exec on Host2 has state: FAILED
+> [ 12.000000] (1:Dispatcher@Host3)   Exec on Host3 has state: STARTED
+> [ 12.000000] (1:Dispatcher@Host3) ---------------------------------
+> [ 12.000000] (1:Dispatcher@Host3) Wait on the third exec, which should succeed.
+> [ 20.000000] (3:HostToggler@Host3) HostToggler turns the host 'Host2' back on.
+> [ 20.000000] (1:Dispatcher@Host3) No exception occured.
+> [ 20.000000] (1:Dispatcher@Host3) State of each exec:
+> [ 20.000000] (1:Dispatcher@Host3)   Exec on Host1 has state: FAILED
+> [ 20.000000] (1:Dispatcher@Host3)   Exec on Host2 has state: FAILED
+> [ 20.000000] (1:Dispatcher@Host3)   Exec on Host3 has state: FINISHED

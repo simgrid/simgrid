@@ -465,6 +465,8 @@ include examples/java/app_masterworkers/app_masterworkers.java.tesh
 include examples/java/app_masterworkers/app_masterworkers_d.xml
 include examples/java/app_token_ring/app_token_ring.java
 include examples/java/app_token_ring/app_token_ring.java.tesh
+include examples/java/cloud_capping/cloud_capping.java
+include examples/java/cloud_capping/cloud_capping.java.tesh
 include examples/java/cloud_migration/cloud_migration.java
 include examples/java/cloud_migration/cloud_migration.java.tesh
 include examples/java/cloud_simple/cloud_simple.java
@@ -547,6 +549,8 @@ include examples/java/exec_dependent/exec_dependent.java
 include examples/java/exec_dependent/exec_dependent.java.tesh
 include examples/java/exec_dvfs/exec_dvfs.java
 include examples/java/exec_dvfs/exec_dvfs.java.tesh
+include examples/java/exec_failure/exec_failure.java
+include examples/java/exec_failure/exec_failure.java.tesh
 include examples/java/exec_ptask/exec_ptask.java
 include examples/java/exec_ptask/exec_ptask.java.tesh
 include examples/java/exec_ptask_multicore/exec_ptask_multicore.java
@@ -563,6 +567,8 @@ include examples/java/exec_unassigned/exec_unassigned.java
 include examples/java/exec_unassigned/exec_unassigned.java.tesh
 include examples/java/io_async/io_async.java
 include examples/java/io_async/io_async.java.tesh
+include examples/java/io_dependent/io_dependent.java
+include examples/java/io_dependent/io_dependent.java.tesh
 include examples/java/io_disk_raw/io_disk_raw.java
 include examples/java/io_disk_raw/io_disk_raw.java.tesh
 include examples/java/io_priority/io_priority.java
@@ -599,6 +605,10 @@ include examples/java/synchro_mutex/synchro_mutex.java
 include examples/java/synchro_mutex/synchro_mutex.java.tesh
 include examples/java/synchro_semaphore/synchro_semaphore.java
 include examples/java/synchro_semaphore/synchro_semaphore.java.tesh
+include examples/java/trace_platform/trace_platform.java
+include examples/java/trace_platform/trace_platform.java.tesh
+include examples/java/trace_process_migration/trace_process_migration.java
+include examples/java/trace_process_migration/trace_process_migration.java.tesh
 include examples/python/activityset-testany/activityset-testany.py
 include examples/python/activityset-testany/activityset-testany.tesh
 include examples/python/activityset-waitall/activityset-waitall.py

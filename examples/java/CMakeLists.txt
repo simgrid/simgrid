@@ -33,26 +33,47 @@ else()
   endforeach()
 endif()
 
-# io_dependent io_file_system io_file_remote: need a plugin
-# exec_failure: needs state profiles
+# io_file_system io_file_remote: need the File / filesystem plugin, which has no Java binding at all
+# exec_cpu_nonlinear: needs Host.set_sharing_policy(NONLINEAR, callback), not bound in Java
+# io_degradation: needs Disk.set_sharing_policy(NONLINEAR, callback), not bound in Java
+# network_factors network_nonlinear: need NetZone.set_latency/bandwidth_factor_cb(), NetZone.add_netzone_star(),
+#   and Host.set_core_count(), none of which are bound in Java
+# clusters_multicpu: needs NetZone.add_netzone_{star,torus,fat,dragonfly}(), not bound in Java
+# task_dispatch task_io task_microservice task_parallelism task_simple task_storm task_switch_host task_variable_load:
+#   these all rely on the Task "Repeatable Activities" API, which has no Java binding at all
+# plugin_battery plugin_battery_chiller_solar plugin_battery_connector plugin_battery_degradation plugin_battery_energy
+# plugin_chiller plugin_solar_panel plugin_jbod plugin_prodcons plugin_vm_load:
+#   these plugins have no Java binding at all (unlike plugin_host_load/plugin_link_load, which are bound)
+# trace_categories trace_host_user_variables trace_link_user_variables trace_masterworkers trace_route_user_variables:
+#   these need the simgrid::instr tracing API (declare/set/add/sub host & link variables, marks, category
+#   declarations); only the narrow per-activity Activity.set_tracing_category() is bound in Java, which is not
+#   enough to reimplement any of these examples (trace_platform and trace_process_migration, below, only needed
+#   that narrow API and are covered)
+# exec_co2: needs the carbon-footprint plugin, not bound in Java
+# engine_filtering routing_get_clusters: need Engine.get_filtered_hosts()/get_filtered_netzones() (templated
+#   functor-based filtering, plus the ClusterZone/DragonflyZone subclasses for routing_get_clusters), not bound
+# replay_comm replay_io: need the trace-replay plugin, not bound in Java
+# actor_stacksize, maestro_set: these examples are conceptually bound to C/C++ and make no sense in Java
+# mc_bugged1 mc_bugged2 mc_centralized_mutex mc_electric_fence mc_failing_assert: SimGrid's model checker *may* work for java
 foreach (example activityset_awaitall activityset_awaitallfor activityset_awaitany activityset_testany
                  actor_create actor_daemon actor_exiting actor_join actor_kill
                  actor_lifetime actor_migrate actor_suspend actor_yield
                  app_bittorrent app_chainsend app_masterworkers app_token_ring 
-                 cloud_migration cloud_simple #cloud_capping
+                 cloud_capping cloud_migration cloud_simple
                  dag_comm dag_failure dag_from_dax_simple dag_from_dax dag_from_dot_simple dag_from_dot dag_from_json_simple dag_io dag_scheduling dag_simple dag_tuto
                  dht_chord dht_kademlia
                  energy_boot energy_exec energy_exec_ptask energy_link energy_vm energy_wifi
-                 exec_async exec_awaitfor exec_basic exec_cpu_factors exec_dependent exec_dvfs exec_threads exec_ptask exec_ptask_multicore exec_ptask_multicore_latency exec_remote exec_suspend exec_unassigned
+                 exec_async exec_awaitfor exec_basic exec_cpu_factors exec_dependent exec_dvfs exec_failure exec_threads exec_ptask exec_ptask_multicore exec_ptask_multicore_latency exec_remote exec_suspend exec_unassigned
 #                 exec_cpu_nonlinear
                  comm_await comm_awaituntil comm_dependent comm_failure comm_host2host comm_pingpong comm_ready comm_suspend comm_throttling
-                 io_async io_disk_raw io_priority # io_degradation 
+                 io_async io_dependent io_disk_raw io_priority # io_degradation 
                  mess_await
                  network_ns3 network_ns3_wifi network_wifi
                  platform_comm_serialize # platform_failures  platform_profile  platform_properties
                  synchro_barrier synchro_condition_variable synchro_condition_variable_awaituntil synchro_mutex synchro_semaphore
                  #task_dispatch  task_io  task_microservice  task_parallelism  task_simple  task_storm  task_switch_host  task_variable_load
                  plugin_host_load plugin_link_load
+                 trace_platform trace_process_migration
                  )
   
   # Use default source file unless specified otherwise

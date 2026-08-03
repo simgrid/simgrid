@@ -1,0 +1,347 @@
+#!/usr/bin/env tesh
+
+$ ${javacmd} -cp ../../simgrid.jar:trace_platform.jar trace_platform --cfg=tracing:yes --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${platfdir}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_platform.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [java/INFO] Using regular java threads.
+
+$ tail -n +3 trace_platform.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 L1
+> 6 0.000000 1 1 0 "zone0"
+> 0 2 1 HOST
+> 6 0.000000 2 2 1 "Tremblay"
+> 1 3 2 speed "1 1 1"
+> 1 4 2 core_count "1 1 1"
+> 6 0.000000 3 2 1 "Jupiter"
+> 6 0.000000 4 2 1 "Fafard"
+> 6 0.000000 5 2 1 "Ginette"
+> 6 0.000000 6 2 1 "Bourassa"
+> 6 0.000000 7 2 1 "Jacquelin"
+> 6 0.000000 8 2 1 "Boivin"
+> 0 5 1 LINK
+> 6 0.000000 9 5 1 "6"
+> 1 6 5 bandwidth "1 1 1"
+> 1 7 5 latency "1 1 1"
+> 6 0.000000 10 5 1 "3"
+> 6 0.000000 11 5 1 "7"
+> 6 0.000000 12 5 1 "9"
+> 6 0.000000 13 5 1 "2"
+> 6 0.000000 14 5 1 "8"
+> 6 0.000000 15 5 1 "1"
+> 6 0.000000 16 5 1 "4"
+> 6 0.000000 17 5 1 "0"
+> 6 0.000000 18 5 1 "5"
+> 6 0.000000 19 5 1 "145"
+> 6 0.000000 20 5 1 "10"
+> 6 0.000000 21 5 1 "11"
+> 6 0.000000 22 5 1 "16"
+> 6 0.000000 23 5 1 "17"
+> 6 0.000000 24 5 1 "44"
+> 6 0.000000 25 5 1 "47"
+> 6 0.000000 26 5 1 "54"
+> 6 0.000000 27 5 1 "56"
+> 6 0.000000 28 5 1 "59"
+> 6 0.000000 29 5 1 "78"
+> 6 0.000000 30 5 1 "79"
+> 6 0.000000 31 5 1 "80"
+> 6 0.000000 32 5 1 "loopback"
+> 4 8 1 5 5 L1-LINK5-LINK5
+> 4 9 1 2 5 L1-HOST2-LINK5
+> 4 10 1 5 2 L1-LINK5-HOST2
+> 8 0.000000 3 2 98095000.000000
+> 8 0.000000 4 2 1.000000
+> 8 0.000000 3 3 76296000.000000
+> 8 0.000000 4 3 1.000000
+> 8 0.000000 3 4 76296000.000000
+> 8 0.000000 4 4 1.000000
+> 8 0.000000 3 5 48492000.000000
+> 8 0.000000 4 5 1.000000
+> 8 0.000000 3 6 48492000.000000
+> 8 0.000000 4 6 1.000000
+> 8 0.000000 3 7 137333000.000000
+> 8 0.000000 4 7 1.000000
+> 8 0.000000 3 8 98095000.000000
+> 8 0.000000 4 8 1.000000
+> 15 0.000000 8 1 topology 13 0
+> 16 0.000000 8 1 topology 17 0
+> 15 0.000000 8 1 topology 10 1
+> 16 0.000000 8 1 topology 17 1
+> 15 0.000000 8 1 topology 17 2
+> 16 0.000000 8 1 topology 15 2
+> 15 0.000000 8 1 topology 22 3
+> 16 0.000000 8 1 topology 20 3
+> 15 0.000000 8 1 topology 9 4
+> 16 0.000000 8 1 topology 20 4
+> 15 0.000000 8 1 topology 20 5
+> 16 0.000000 8 1 topology 21 5
+> 15 0.000000 8 1 topology 9 6
+> 16 0.000000 8 1 topology 21 6
+> 15 0.000000 8 1 topology 28 7
+> 16 0.000000 8 1 topology 19 7
+> 15 0.000000 9 1 topology 6 8
+> 16 0.000000 9 1 topology 19 8
+> 15 0.000000 9 1 topology 5 9
+> 16 0.000000 9 1 topology 19 9
+> 15 0.000000 9 1 topology 3 10
+> 16 0.000000 9 1 topology 19 10
+> 15 0.000000 8 1 topology 17 11
+> 16 0.000000 8 1 topology 22 11
+> 15 0.000000 8 1 topology 22 12
+> 16 0.000000 8 1 topology 23 12
+> 15 0.000000 8 1 topology 10 13
+> 16 0.000000 8 1 topology 13 13
+> 15 0.000000 8 1 topology 16 14
+> 16 0.000000 8 1 topology 10 14
+> 15 0.000000 9 1 topology 2 15
+> 16 0.000000 9 1 topology 10 15
+> 15 0.000000 8 1 topology 21 16
+> 16 0.000000 8 1 topology 24 16
+> 15 0.000000 8 1 topology 24 17
+> 16 0.000000 8 1 topology 25 17
+> 15 0.000000 9 1 topology 6 18
+> 16 0.000000 9 1 topology 25 18
+> 15 0.000000 9 1 topology 5 19
+> 16 0.000000 9 1 topology 25 19
+> 15 0.000000 9 1 topology 3 20
+> 16 0.000000 9 1 topology 25 20
+> 15 0.000000 8 1 topology 12 21
+> 16 0.000000 8 1 topology 16 21
+> 15 0.000000 9 1 topology 2 22
+> 16 0.000000 9 1 topology 16 22
+> 15 0.000000 8 1 topology 13 23
+> 16 0.000000 8 1 topology 18 23
+> 15 0.000000 8 1 topology 10 24
+> 16 0.000000 8 1 topology 18 24
+> 15 0.000000 8 1 topology 23 25
+> 16 0.000000 8 1 topology 26 25
+> 15 0.000000 8 1 topology 13 26
+> 16 0.000000 8 1 topology 26 26
+> 15 0.000000 8 1 topology 26 27
+> 16 0.000000 8 1 topology 27 27
+> 15 0.000000 8 1 topology 27 28
+> 16 0.000000 8 1 topology 28 28
+> 15 0.000000 8 1 topology 15 29
+> 16 0.000000 8 1 topology 9 29
+> 15 0.000000 8 1 topology 14 30
+> 16 0.000000 8 1 topology 9 30
+> 15 0.000000 8 1 topology 12 31
+> 16 0.000000 8 1 topology 9 31
+> 15 0.000000 8 1 topology 9 32
+> 16 0.000000 8 1 topology 11 32
+> 15 0.000000 8 1 topology 31 33
+> 16 0.000000 8 1 topology 29 33
+> 15 0.000000 9 1 topology 4 34
+> 16 0.000000 9 1 topology 29 34
+> 15 0.000000 8 1 topology 29 35
+> 16 0.000000 8 1 topology 30 35
+> 15 0.000000 9 1 topology 4 36
+> 16 0.000000 9 1 topology 31 36
+> 15 0.000000 8 1 topology 15 37
+> 16 0.000000 8 1 topology 14 37
+> 15 0.000000 8 1 topology 30 38
+> 16 0.000000 8 1 topology 12 38
+> 15 0.000000 9 1 topology 2 39
+> 16 0.000000 9 1 topology 12 39
+> 15 0.000000 10 1 topology 25 40
+> 16 0.000000 10 1 topology 8 40
+> 15 0.000000 10 1 topology 11 41
+> 16 0.000000 10 1 topology 6 41
+> 15 0.000000 10 1 topology 14 42
+> 16 0.000000 10 1 topology 4 42
+> 15 0.000000 10 1 topology 18 43
+> 16 0.000000 10 1 topology 5 43
+> 15 0.000000 10 1 topology 19 44
+> 16 0.000000 10 1 topology 7 44
+> 15 0.000000 10 1 topology 12 45
+> 16 0.000000 10 1 topology 3 45
+> 8 0.000000 6 32 41279125.000000
+> 8 0.000000 7 32 0.000060
+> 8 0.000000 6 32 34285625.000000
+> 8 0.000000 7 32 0.000514
+> 8 0.000000 6 32 34285625.000000
+> 8 0.000000 7 32 0.000514
+> 8 0.000000 6 32 118682500.000000
+> 8 0.000000 7 32 0.000137
+> 8 0.000000 6 32 2583375.000000
+> 8 0.000000 7 32 0.000410
+> 8 0.000000 6 32 34285625.000000
+> 8 0.000000 7 32 0.000514
+> 8 0.000000 6 32 118682500.000000
+> 8 0.000000 7 32 0.000137
+> 8 0.000000 6 32 118682500.000000
+> 8 0.000000 7 32 0.000137
+> 8 0.000000 6 32 34285625.000000
+> 8 0.000000 7 32 0.000514
+> 8 0.000000 6 32 10099625.000000
+> 8 0.000000 7 32 0.000480
+> 8 0.000000 6 32 10314625.000000
+> 8 0.000000 7 32 0.006933
+> 8 0.000000 6 32 10314625.000000
+> 8 0.000000 7 32 0.006933
+> 8 0.000000 6 32 27946250.000000
+> 8 0.000000 7 32 0.000278
+> 8 0.000000 6 32 15376875.000000
+> 8 0.000000 7 32 0.035083
+> 8 0.000000 6 32 21414750.000000
+> 8 0.000000 7 32 0.029589
+> 8 0.000000 6 32 11845375.000000
+> 8 0.000000 7 32 0.000371
+> 8 0.000000 6 32 41279125.000000
+> 8 0.000000 7 32 0.000060
+> 8 0.000000 6 32 11618875.000000
+> 8 0.000000 7 32 0.000190
+> 8 0.000000 6 32 27946250.000000
+> 8 0.000000 7 32 0.000278
+> 8 0.000000 6 32 8427250.000000
+> 8 0.000000 7 32 0.000156
+> 8 0.000000 6 32 8158000.000000
+> 8 0.000000 7 32 0.000271
+> 8 0.000000 6 32 15376875.000000
+> 8 0.000000 7 32 0.035083
+> 8 0.000000 6 32 7209750.000000
+> 8 0.000000 7 32 0.001462
+> 8 0.000000 6 32 498000000.000000
+> 8 0.000000 7 32 0.000015
+> 7 0.000000 5 17
+> 7 0.000000 5 15
+> 7 0.000000 5 20
+> 7 0.000000 5 21
+> 7 0.000000 5 19
+> 7 0.000000 5 22
+> 7 0.000000 5 23
+> 7 0.000000 5 13
+> 7 0.000000 5 10
+> 7 0.000000 5 16
+> 7 0.000000 5 24
+> 7 0.000000 5 25
+> 7 0.000000 5 18
+> 7 0.000000 5 26
+> 7 0.000000 5 27
+> 7 0.000000 5 28
+> 7 0.000000 5 9
+> 7 0.000000 5 11
+> 7 0.000000 5 29
+> 7 0.000000 5 30
+> 7 0.000000 5 14
+> 7 0.000000 5 31
+> 7 0.000000 5 12
+> 7 0.000000 2 8
+> 7 0.000000 2 6
+> 7 0.000000 2 4
+> 7 0.000000 2 5
+> 7 0.000000 2 7
+> 7 0.000000 2 3
+> 7 0.000000 2 2
+> 7 0.000000 5 32
+> 7 0.000000 1 1
+
+$ rm -f trace_platform.trace
