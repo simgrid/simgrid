@@ -392,6 +392,10 @@ static std::string java_string_to_std_string(JNIEnv* jenv, jstring jstr)
 static std::vector<double> java_doublearray_to_vector(JNIEnv* jenv, jdoubleArray jarray)
 {
   std::vector<double> res;
+  if (!jarray) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+    return res;
+  }
   int len          = jenv->GetArrayLength(jarray);
   double* cjvalues = jenv->GetDoubleArrayElements(jarray, nullptr);
   for (int i = 0; i < len; i++)
@@ -402,9 +406,17 @@ static std::vector<double> java_doublearray_to_vector(JNIEnv* jenv, jdoubleArray
 static std::vector<std::string> java_stringarray_to_vector(JNIEnv* jenv, jobjectArray jarray)
 {
   std::vector<std::string> res;
+  if (!jarray) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null array");
+    return res;
+  }
   int len = jenv->GetArrayLength(jarray);
-  for (int i = 0; i < len; i++)
-    res.push_back(java_string_to_std_string(jenv, (jstring)jenv->GetObjectArrayElement(jarray, i)));
+  for (int i = 0; i < len; i++) {
+    jstring elt = (jstring)jenv->GetObjectArrayElement(jarray, i);
+    res.push_back(java_string_to_std_string(jenv, elt));
+    if (elt)
+      jenv->DeleteLocalRef(elt);
+  }
   return res;
 }
 #define check_javaexception(jenv)                                                                                      \
@@ -2677,7 +2689,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1on_1this_1destruct
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
 
-jobjectArray cleaned_args;
+static jobjectArray cleaned_args;
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jenv, jclass, jobjectArray jargs)
 {
   check_nullparam(jargs, "The engine arguments shall not be null");
@@ -2693,6 +2705,8 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   char** cargs       = (char**)malloc((len + 2) * sizeof(char*));
   char** cargs_saver = (char**)malloc((len + 2) * sizeof(char*));
   if (cargs == nullptr || cargs_saver == nullptr) {
+    free(cargs);
+    free(cargs_saver);
     SWIG_JavaThrowException(jenv, SWIG_JavaOutOfMemoryError, "memory allocation failed");
     return 0;
   }
@@ -2700,10 +2714,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   cargs[0] = (char*)"java"; // SimGrid expects argv[0] to be useless
   for (jsize i = 0; i < len; i++) {
     jstring j_string     = (jstring)jenv->GetObjectArrayElement(jargs, i);
-    const char* tmp      = jenv->GetStringUTFChars(j_string, 0);
+    const char* tmp      = j_string ? jenv->GetStringUTFChars(j_string, 0) : "";
     cargs[i + 1]         = strdup(tmp);
     cargs_saver[i + 1]   = cargs[i + 1];
-    jenv->ReleaseStringUTFChars(j_string, tmp);
+    if (j_string) {
+      jenv->ReleaseStringUTFChars(j_string, tmp);
+      jenv->DeleteLocalRef(j_string);
+    }
   }
   cargs[len + 1]       = nullptr;
   cargs_saver[len + 1] = nullptr;
@@ -2712,17 +2729,29 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_new_1Engine(JNIEnv* jen
   auto* result = new simgrid::s4u::Engine(&len, cargs);
 
   /* Reallocate the args now that SimGrid just removed its parameters */
-  cleaned_args = jenv->NewObjectArray(len - 1, string_class, nullptr);
+  jobjectArray new_cleaned_args = jenv->NewObjectArray(len - 1, string_class, nullptr);
 
   for (int i = 1; cargs[i] != nullptr; i++) {
-    jenv->SetObjectArrayElement(cleaned_args, i - 1, jenv->NewStringUTF(cargs[i]));
+    jstring elt = jenv->NewStringUTF(cargs[i]);
+    jenv->SetObjectArrayElement(new_cleaned_args, i - 1, elt);
     check_javaexception(jenv);
+    jenv->DeleteLocalRef(elt);
   }
   for (int i = 1; cargs_saver[i] != nullptr; i++)
     free(cargs_saver[i]);
 
   free(cargs);
   free(cargs_saver);
+
+  // cleaned_args is read back later (from a distinct JNI call, Engine_get_args) so it cannot be a mere local
+  // reference: those are only valid for the duration of the JNI call that created them. Promote it to a global
+  // reference instead, releasing any previous one first (Engine is normally a per-process singleton, but this
+  // keeps repeated construction from leaking a global reference each time).
+  if (cleaned_args)
+    jenv->DeleteGlobalRef(cleaned_args);
+  cleaned_args = (jobjectArray)jenv->NewGlobalRef(new_cleaned_args);
+  jenv->DeleteLocalRef(new_cleaned_args);
+
   return (jlong)result;
 }
 XBT_PUBLIC jobjectArray JNICALL Java_org_simgrid_s4u_simgridJNI_Engine_1get_1args(JNIEnv*, jclass, jlong cthis)
@@ -4301,14 +4330,13 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
     return 0;
   }
+  if (jspeeds == nullptr) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Speeds shall not be null.");
+    return 0;
+  }
   std::string name = java_string_to_std_string(jenv, jname);
 
-  std::vector<double> cspeeds;
-  int len          = jenv->GetArrayLength(jspeeds);
-  double* cjspeeds = jenv->GetDoubleArrayElements(jspeeds, nullptr);
-  for (int i = 0; i < len; i++)
-    cspeeds.push_back(cjspeeds[i]);
-  jenv->ReleaseDoubleArrayElements(jspeeds, cjspeeds, JNI_ABORT);
+  std::vector<double> cspeeds = java_doublearray_to_vector(jenv, jspeeds);
 
   return (jlong)((NetZone*)cthis)->add_host(name, cspeeds);
 }
@@ -4334,11 +4362,19 @@ XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_NetZone_1add_1host_1_1S
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Host names shall not be null.");
     return 0;
   }
+  if (jspeeds == nullptr) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Speeds shall not be null.");
+    return 0;
+  }
   std::string name = java_string_to_std_string(jenv, jname);
 
   std::vector<std::string> speeds;
-  for (int i = 0; i < jenv->GetArrayLength(jspeeds); i++)
-    speeds.push_back(java_string_to_std_string(jenv, (jstring)jenv->GetObjectArrayElement(jspeeds, i)));
+  for (int i = 0; i < jenv->GetArrayLength(jspeeds); i++) {
+    jstring elt = (jstring)jenv->GetObjectArrayElement(jspeeds, i);
+    speeds.push_back(java_string_to_std_string(jenv, elt));
+    if (elt)
+      jenv->DeleteLocalRef(elt);
+  }
 
   return (jlong)((NetZone*)cthis)->add_host(name, speeds);
 }
