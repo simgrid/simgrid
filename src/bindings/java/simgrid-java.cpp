@@ -187,6 +187,15 @@ static std::pair<jclass, jmethodID> get_classctor_host(JNIEnv* jenv)
 
   return std::make_pair(host_class, host_ctor);
 }
+static std::pair<jclass, jmethodID> get_classctor_virtualmachine(JNIEnv* jenv)
+{
+  static jclass vm_class   = nullptr;
+  static jmethodID vm_ctor = nullptr;
+  if (vm_class == nullptr)
+    get_classctor(jenv, "org/simgrid/s4u/VirtualMachine", "(J)V", vm_class, vm_ctor);
+
+  return std::make_pair(vm_class, vm_ctor);
+}
 static std::pair<jclass, jmethodID> get_classctor_link(JNIEnv* jenv)
 {
   static jclass link_class   = nullptr;
@@ -806,9 +815,19 @@ XBT_PUBLIC jstring JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1name(JNIE
   return result ? jenv->NewStringUTF(result) : nullptr;
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1host(JNIEnv* jenv, jclass, jlong cthis,
+                                                                            jobject jthis)
 {
-  return (jlong)((Actor*)cthis)->get_host();
+  Host* host = ((Actor*)cthis)->get_host();
+  if (host == nullptr)
+    return nullptr;
+
+  if (auto* vm = dynamic_cast<VirtualMachine*>(host)) {
+    auto [vm_class, vm_ctor] = get_classctor_virtualmachine(jenv);
+    return jenv->NewObject(vm_class, vm_ctor, (jlong)vm);
+  }
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
+  return jenv->NewObject(host_class, host_ctor, (jlong)host);
 }
 
 XBT_PUBLIC jint JNICALL Java_org_simgrid_s4u_simgridJNI_Actor_1get_1pid(JNIEnv*, jclass, jlong cthis, jobject jthis)
@@ -2417,9 +2436,19 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1host(JNIEnv*,
   ((Disk*)cthis)->set_host((Host*)chost);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1get_1host(JNIEnv* jenv, jclass, jlong cthis,
+                                                                           jobject jthis)
 {
-  return (jlong)((Disk*)cthis)->get_host();
+  Host* host = ((Disk*)cthis)->get_host();
+  if (host == nullptr)
+    return nullptr;
+
+  if (auto* vm = dynamic_cast<VirtualMachine*>(host)) {
+    auto [vm_class, vm_ctor] = get_classctor_virtualmachine(jenv);
+    return jenv->NewObject(vm_class, vm_ctor, (jlong)vm);
+  }
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
+  return jenv->NewObject(host_class, host_ctor, (jlong)host);
 }
 
 XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Disk_1set_1concurrency_1limit(JNIEnv*, jclass, jlong cthis,
@@ -3451,9 +3480,19 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1update_1priority(J
   ((Exec*)cthis)->update_priority(jarg2);
 }
 
-XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host(JNIEnv*, jclass, jlong cthis, jobject jthis)
+XBT_PUBLIC jobject JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host(JNIEnv* jenv, jclass, jlong cthis,
+                                                                           jobject jthis)
 {
-  return (jlong)((Exec*)cthis)->get_host();
+  Host* host = ((Exec*)cthis)->get_host();
+  if (host == nullptr)
+    return nullptr;
+
+  if (auto* vm = dynamic_cast<VirtualMachine*>(host)) {
+    auto [vm_class, vm_ctor] = get_classctor_virtualmachine(jenv);
+    return jenv->NewObject(vm_class, vm_ctor, (jlong)vm);
+  }
+  auto [host_class, host_ctor] = get_classctor_host(jenv);
+  return jenv->NewObject(host_class, host_ctor, (jlong)host);
 }
 
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Exec_1get_1host_1number(JNIEnv*, jclass, jlong cthis,

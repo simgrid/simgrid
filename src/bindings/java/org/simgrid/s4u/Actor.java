@@ -97,11 +97,8 @@ public abstract class Actor {
     return simgridJNI.Actor_get_name(swigCPtr, this);
   }
 
-  /** Retrieves the host on which this actor is running */
-  public Host get_host() {
-    long cPtr = simgridJNI.Actor_get_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
+  /** Retrieves the host on which this actor is running. This may be a VirtualMachine. */
+  public Host get_host() { return simgridJNI.Actor_get_host(swigCPtr, this); }
 
   /** Retrieves the actor ID (PID) of this actor */
   public int get_pid() {

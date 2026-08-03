@@ -75,11 +75,8 @@ public class Disk {
     return this;
   }
 
-  /** Retrieve the host to which this disk is attached */
-  public Host get_host() {
-    long cPtr = simgridJNI.Disk_get_host(swigCPtr, this);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
+  /** Retrieves the host to which this disk is attached. This may be a VirtualMachine. */
+  public Host get_host() { return simgridJNI.Disk_get_host(swigCPtr, this); }
 
   /**
    * Set the max amount of operations (either read or write) that can take place on this disk at the same time.

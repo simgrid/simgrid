@@ -32,7 +32,7 @@ public class simgridJNI {
   public final static native void Actor_daemonize(long jarg1, Actor jarg1_);
   public final static native boolean Actor_is_daemon(long jarg1, Actor jarg1_);
   public final static native String Actor_get_name(long jarg1, Actor jarg1_);
-  public final static native long Actor_get_host(long jarg1, Actor jarg1_);
+  public final static native Host Actor_get_host(long jarg1, Actor jarg1_);
   public final static native int Actor_get_pid(long jarg1, Actor jarg1_);
   public final static native int Actor_get_ppid(long jarg1, Actor jarg1_);
   public final static native void Actor_suspend(long jarg1, Actor jarg1_);
@@ -197,7 +197,7 @@ public class simgridJNI {
   public final static native String Disk_get_property(long jarg1, Disk jarg1_, String jarg2);
   public final static native void Disk_set_property(long jarg1, Disk jarg1_, String jarg2, String jarg3);
   public final static native void Disk_set_host(long jarg1, Disk jarg1_, long jarg2, Host jarg2_);
-  public final static native long Disk_get_host(long jarg1, Disk jarg1_);
+  public final static native Host Disk_get_host(long jarg1, Disk jarg1_);
   public final static native void Disk_set_concurrency_limit(long jarg1, Disk jarg1_, int jarg2);
   public final static native int Disk_get_concurrency_limit(long jarg1, Disk jarg1_);
   public final static native long Disk_io_init(long jarg1, Disk jarg1_, int jarg2, int jarg3);
@@ -294,7 +294,7 @@ public class simgridJNI {
   public final static native void Exec_set_bound(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Exec_set_priority(long jarg1, Exec jarg1_, double jarg2);
   public final static native void Exec_update_priority(long jarg1, Exec jarg1_, double jarg2);
-  public final static native long Exec_get_host(long jarg1, Exec jarg1_);
+  public final static native Host Exec_get_host(long jarg1, Exec jarg1_);
   public final static native long Exec_get_host_number(long jarg1, Exec jarg1_);
   public final static native int Exec_get_thread_count(long jarg1, Exec jarg1_);
   public final static native double Exec_get_cost(long jarg1, Exec jarg1_);

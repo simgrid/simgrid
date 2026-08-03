@@ -139,12 +139,9 @@ public class Exec extends Activity {
 
   /**
    * Retrieve the host on which this activity takes place. If it runs on more than one host, only the first
-   *  host is returned.
+   *  host is returned. This may be a VirtualMachine when the exec runs on a virtual machine.
    */
-  public Host get_host() {
-    long cPtr = simgridJNI.Exec_get_host(getCPtr(), this);
-    return (cPtr == 0) ? null : new Host(cPtr);
-  }
+  public Host get_host() { return simgridJNI.Exec_get_host(getCPtr(), this); }
 
   /**
    * Retrieve the amount of hosts involved in this execution: 1 for sequential executions, more for parallel
