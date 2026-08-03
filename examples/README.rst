@@ -204,6 +204,8 @@ Actors can be suspended and resumed during their executions.
       :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, and
       :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
 
+   .. example-tab:: examples/java/actor_suspend/actor_suspend.java
+
    .. example-tab:: examples/python/actor-suspend/actor-suspend.py
 
       See also :py:func:`simgrid.this_actor.suspend()`,
@@ -418,7 +420,7 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
       :cpp:func:`simgrid::s4u::Activity::resume()` and
       :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
 
-   .. example-tab:: examples/java/actor_suspend/actor_suspend.java
+   .. example-tab:: examples/java/comm_suspend/comm_suspend.java
 
    .. example-tab:: examples/python/comm-suspend/comm-suspend.py
 
@@ -539,12 +541,16 @@ Asynchronous executions can be suspended and then resumed to stop and start thei
 
    .. example-tab:: examples/cpp/exec-suspend/s4u-exec-suspend.cpp
 
+   .. example-tab:: examples/java/exec_suspend/exec_suspend.java
+
 Once started, asynchronous executions can be waited for, meaning that the calling actor is blocked until the completion of the
 given asynchronous execution. It is also possible to specify a timeout.
 
 .. tabs::
 
    .. example-tab:: examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
+
+   .. example-tab:: examples/java/exec_awaitfor/exec_awaitfor.java
 
 .. _s4u_ex_threaded:
 
@@ -560,6 +566,7 @@ several computers at once, and their interconnect.
 
    .. example-tab:: examples/cpp/exec-threads/s4u-exec-threads.cpp
 
+   .. example-tab:: examples/java/exec_threads/exec_threads.java
 
 Remote execution
 ----------------
@@ -717,6 +724,8 @@ priority 1.
 .. tabs::
 
    .. example-tab:: examples/cpp/io-priority/s4u-io-priority.cpp
+
+   .. example-tab:: examples/java/io_priority/io_priority.java
 
 Asynchronous raw accesses
 -------------------------
@@ -1353,6 +1362,8 @@ This program is a toy example just loading the platform so that you can play wit
 
    .. example-tab:: examples/cpp/trace-platform/s4u-trace-platform.cpp
 
+   .. example-tab:: examples/java/trace_platform/trace_platform.java
+
 Setting Categories
 ------------------
 
@@ -1378,8 +1389,6 @@ options: ``--cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
 
    .. example-tab:: examples/cpp/trace-masterworkers/s4u-trace-masterworkers.cpp
 
-   .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
-
 Process migration tracing
 -------------------------
 
@@ -1390,6 +1399,8 @@ extend: ``--cfg=tracing:yes --cfg=tracing/actor:yes``
 .. tabs::
 
    .. example-tab:: examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
+
+   .. example-tab:: examples/java/trace_process_migration/trace_process_migration.java
 
 Tracing user variables
 ======================
@@ -1442,6 +1453,8 @@ Shows how to implement a classical communication pattern, where a token is excha
 
    .. example-tab:: examples/cpp/app-token-ring/s4u-app-token-ring.cpp
 
+   .. example-tab:: examples/java/app_token_ring/app_token_ring.java
+
    .. example-tab:: examples/c/app-token-ring/app-token-ring.c
 
 Master Workers
@@ -1465,6 +1478,8 @@ This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
 
       .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
          :language: cpp
+
+   .. example-tab:: examples/java/app_masterworkers/app_masterworkers.java
 
    .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
 
@@ -1494,6 +1509,8 @@ Classical protocol for Peer-to-Peer data diffusion.
       .. showfile:: examples/cpp/app-bittorrent/s4u-tracker.cpp
          :language: cpp
 
+   .. example-tab:: examples/java/app_bittorrent/app_bittorrent.java
+
    .. group-tab:: C
 
       .. showfile:: examples/c/app-bittorrent/app-bittorrent.c
@@ -1513,6 +1530,8 @@ Data broadcast over a ring of processes.
 .. tabs::
 
    .. example-tab:: examples/cpp/app-chainsend/s4u-app-chainsend.cpp
+
+   .. example-tab:: examples/java/app_chainsend/app_chainsend.java
 
    .. group-tab:: C
 
@@ -1543,6 +1562,8 @@ One of the most famous DHT protocol.
       .. showfile:: examples/cpp/dht-chord/s4u-dht-chord-node.cpp
          :language: cpp
 
+   .. example-tab:: examples/java/dht_chord/dht_chord.java
+
 Kademlia
 --------
 
@@ -1563,6 +1584,8 @@ Another well-known DHT protocol.
 
       .. showfile:: examples/cpp/dht-kademlia/node.cpp
          :language: cpp
+
+   .. example-tab:: examples/java/dht_kademlia/dht_kademlia.java
 
    .. group-tab:: C
 
@@ -1630,6 +1653,8 @@ This example shows how to cap (or bound) the computing power that a VM can get f
 
    .. example-tab:: examples/cpp/cloud-capping/s4u-cloud-capping.cpp
 
+   .. example-tab:: examples/java/cloud_capping/cloud_capping.java
+
    .. example-tab:: examples/c/cloud-capping/cloud-capping.c
 
 Master/Workers on VMs
@@ -1661,6 +1686,7 @@ competing activities on the resource).
 
         Multiplicative factors for CPUs using :cpp:func:`simgrid::s4u::Host::set_cpu_factor_cb`.
 
+     .. example-tab:: examples/java/exec_cpu_factors/exec_cpu_factors.java
 
   .. tabs::
 
@@ -1678,9 +1704,17 @@ Alternatively, you can use non-linear factors for the resource variability.
 
         Non-linear variability for CPUs.
 
+     .. example-tab:: examples/python/exec-cpu-nonlinear/exec-cpu-nonlinear.py
+
+        Non-linear variability for CPUs.
+
   .. tabs::
 
      .. example-tab:: examples/cpp/network-nonlinear/s4u-network-nonlinear.cpp
+
+        Non-linear variability for Links.
+
+     .. example-tab:: examples/python/network-nonlinear/network-nonlinear.py
 
         Non-linear variability for Links.
 
@@ -1690,8 +1724,8 @@ Alternatively, you can use non-linear factors for the resource variability.
 
         Non-linear variability for Disks, which was shown realistic in this paper: `<https://hal.inria.fr/hal-01197128>`_.
 
-
-
+     .. example-tab:: examples/python/io-degradation/io-degradation.py
+        Non-linear variability for Disks, which was shown realistic in this paper: `<https://hal.inria.fr/hal-01197128>`_.
 
 ns-3 as a model
 ===============
@@ -1706,6 +1740,8 @@ start a simulation in these settings.
 .. tabs::
 
    .. example-tab:: examples/cpp/network-ns3/s4u-network-ns3.cpp
+
+   .. example-tab:: examples/java/network_ns3/network_ns3.java
 
    .. group-tab:: XML
 
@@ -1737,6 +1773,8 @@ the first level is used.
 
    .. example-tab:: examples/cpp/network-wifi/s4u-network-wifi.cpp
 
+   .. example-tab:: examples/java/network_wifi/network_wifi.java
+
    .. group-tab:: XML
 
       **Platform files:**
@@ -1749,6 +1787,8 @@ You can also use the **ns-3 models on your wifi networks** as follows:
 .. tabs::
 
    .. example-tab:: examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.cpp
+
+   .. example-tab:: examples/java/network_ns3_wifi/network_ns3_wifi.java
 
    .. group-tab:: XML
 
