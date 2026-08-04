@@ -333,7 +333,7 @@ public class Engine {
   static { org.simgrid.s4u.NativeLib.nativeInit(); }
 
   /** Force a full garbage collection pass. Mostly useful to help debugging memory-related issues. */
-  public void force_garbage_collection()
+  @SuppressWarnings("removal") public void force_garbage_collection()
   {
     Object obj                = new Object();
     WeakReference<Object> ref = new WeakReference<>(obj);
@@ -341,5 +341,6 @@ public class Engine {
     while (ref.get() != null) {
       System.gc();
     }
+    System.runFinalization();
   }
 }

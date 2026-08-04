@@ -178,17 +178,34 @@
 
 {
    <insert_a_suppression_name_here>
-   Memcheck:Addr4
+   Memcheck:Leak
+   match-leak-kinds: definite
    ...
-   fun:JNI_CreateJavaVM_inner
    fun:JNI_CreateJavaVM
+   ...
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
+   match-leak-kinds: possible
    ...
-   fun:JNI_CreateJavaVM_inner
    fun:JNI_CreateJavaVM
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:CreateExecutionEnvironment
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:JLI_MemAlloc
    ...
 }
 {
@@ -450,6 +467,48 @@
    fun:_ZN12GraphBuilder15try_inline_fullEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
    fun:_ZN12GraphBuilder10try_inlineEP8ciMethodbbN9Bytecodes4CodeEP11Instruction
    fun:_ZN12GraphBuilder6invokeEN9Bytecodes4CodeE
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_ZN2os6mallocEm8MEMFLAGSRK15NativeCallStack
+   fun:_Z12AllocateHeapm8MEMFLAGSN17AllocFailStrategy13AllocFailEnumE
+   fun:_ZN11StatSampler23create_sampled_perfdataEv
+   fun:_ZN11StatSampler20create_misc_perfdataEv
+   fun:_ZN11StatSampler6engageEv
+   fun:_ZN7Threads9create_vmEP14JavaVMInitArgsPb
+   fun:JNI_CreateJavaVM
+   fun:JavaMain
+   fun:ThreadJavaMain
+   fun:start_thread
+   fun:clone
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:JLI_MemAlloc
+   fun:SetJavaCommandLineProp
+   fun:JLI_Launch
+   obj:*
+   fun:(below main)
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_ZN2os6mallocEm8MEMFLAGSRK15NativeCallStack
+   fun:_Z12AllocateHeapm8MEMFLAGSN17AllocFailStrategy13AllocFailEnumE
+   fun:_ZN10CompiledIC25compute_monomorphic_entryERK12methodHandleP5KlassbbbR14CompiledICInfoP10JavaThread
+   fun:_ZN13SharedRuntime27resolve_sub_helper_internalE12methodHandleRK5frameP14CompiledMethodbb6HandleR8CallInfoN9Bytecodes4CodeEP10JavaThread
+   fun:_ZN13SharedRuntime18resolve_sub_helperEbbP10JavaThread
+   fun:_ZN13SharedRuntime14resolve_helperEbbP10JavaThread
+   fun:_ZN13SharedRuntime22resolve_virtual_call_CEP10JavaThread
+   ...
 }
 {
    <insert_a_suppression_name_here>
