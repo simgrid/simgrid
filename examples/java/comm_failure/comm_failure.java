@@ -24,8 +24,10 @@ class Sender extends Actor {
     Engine e         = this.get_engine();
     Mailbox mailbox1 = e.mailbox_by_name(mailbox1Name);
     Mailbox mailbox2 = e.mailbox_by_name(mailbox2Name);
-    Integer payload1 = 666;
-    Integer payload2 = 888;
+    Integer[] payload1 = new Integer[2_000_000];
+    payload1[0]        = 666;
+    Integer[] payload2 = new Integer[2_000_000];
+    payload2[0]        = 888;
 
     Engine.info("Initiating asynchronous send to %s", mailbox1.get_name());
     Comm comm1 = mailbox1.put_async(payload1, 5);
@@ -65,8 +67,8 @@ class Receiver extends Actor {
   {
     Engine.info("Receiver posting a receive...");
     try {
-      Integer payload = (Integer)mailbox.get();
-      Engine.info("Receiver has successfully received %d!", (int)payload);
+      Integer[] payload = (Integer[])mailbox.get();
+      Engine.info("Receiver has successfully received %d!", (int)payload[0]);
     } catch (NetworkFailureException e) {
       Engine.info("Receiver has experience a network failure exception");
     }
