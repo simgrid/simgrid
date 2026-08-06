@@ -162,7 +162,16 @@ public:
   explicit GlobalRefHolder(jobject ref) : ref_(ref) {}
   GlobalRefHolder(const GlobalRefHolder&)            = delete;
   GlobalRefHolder& operator=(const GlobalRefHolder&) = delete;
-  ~GlobalRefHolder() { get_jenv()->DeleteGlobalRef(ref_); }
+  ~GlobalRefHolder()
+  {
+    // get_jenv() may not work here, if the dtor is called from the wrong thread. This makes -Xcheck:jni report
+    // something like "Using JNIEnv in the wrong thread". So don't use caching and ask the JVM for a working
+    // environment. If retrieving this environment fails, play safe and prefer a leaked global reference to an assertion
+    // error.
+    JNIEnv* jenv = nullptr;
+    if (simgrid_cached_jvm && simgrid_cached_jvm->GetEnv((void**)&jenv, JNI_VERSION_1_2) == JNI_OK && jenv != nullptr)
+      jenv->DeleteGlobalRef(ref_);
+  }
   jobject get() const { return ref_; }
 };
 
