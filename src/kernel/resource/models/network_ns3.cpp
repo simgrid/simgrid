@@ -358,8 +358,8 @@ UdpTraceClient=0*/
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
 #else
-    ns3::GlobalRouteManager<Ipv4Manager>::BuildGlobalRoutingDatabase();
-    ns3::GlobalRouteManager<Ipv4Manager>::InitializeRoutes();
+    ns3::GlobalRouteManager<ns3::Ipv4Manager>::BuildGlobalRoutingDatabase();
+    ns3::GlobalRouteManager<ns3::Ipv4Manager>::InitializeRoutes();
 #endif
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
