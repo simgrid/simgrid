@@ -267,3 +267,8 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
   message(STATUS "Add LDFLAGS: \"$ENV{LDFLAGS}\" to CMAKE_C_LINK_FLAGS")
   set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
 endif()
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" AND NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^arm64")
+  message(STATUS "32-bit ARM detected: Adding -fexceptions to CMAKE_C_FLAGS, so that exceptions propagate properly in mixed C/C++ programs.")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fexceptions")
+endif()
