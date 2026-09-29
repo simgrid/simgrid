@@ -1123,7 +1123,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/test_prog/prog_asan.cpp
   tools/cmake/test_prog/prog_musl.c
-  tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stdstacktrace.cpp
   tools/cmake/test_prog/prog_tsan.cpp
   tools/simgrid-monkey

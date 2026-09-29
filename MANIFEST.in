@@ -3014,7 +3014,6 @@ include tools/cmake/scripts/my_valgrind.pl
 include tools/cmake/scripts/update_tesh.pl
 include tools/cmake/test_prog/prog_asan.cpp
 include tools/cmake/test_prog/prog_musl.c
-include tools/cmake/test_prog/prog_stackgrowth.c
 include tools/cmake/test_prog/prog_stdstacktrace.cpp
 include tools/cmake/test_prog/prog_tsan.cpp
 include tools/doxygen/list_routing_models_examples.sh

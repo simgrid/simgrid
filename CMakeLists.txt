@@ -577,30 +577,21 @@ else()
 endif()
 
 #--------------------------------------------------------------------------------------------------
-### Check what context backends are available
+### Check what context backends are available.
 
 # Stack growth direction (upward or downward). Used for the following contexts: raw, Boost
-try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
-  RUN_OUTPUT_VARIABLE stack
-  COPY_FILE test_stackgrowth)
-
-if("${stack}" STREQUAL "down")
+if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "^(x86_64|amd64|i686|i386|x86|aarch64|arm64|arm.*|loongarch64|loong64|mips.*|powerpc|powerpc64le|ppc64|ppc64le|ppc64el|riscv64|s390x|sparc64)$")
   set(PTH_STACKGROWTH "-1")
-elseif("${stack}" STREQUAL "up")
+elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "^(hppa|parisc)")
   set(PTH_STACKGROWTH "1")
 else()
-  if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-    set(PTH_STACKGROWTH "-1")
-  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-    set(PTH_STACKGROWTH "-1")
+  if(${HAVE_BOOST_CONTEXTS})
+    message(FATAL_ERROR "Could not figure out the stack direction from the hardcoded architectures. CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
   else()
-    message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
+    message(STATUS "Could not figure out the stack direction from the hardcoded architectures, but that's OK since Boost.Context is not available. CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
+    # See https://www.boost.org/doc/libs/latest/libs/context/doc/html/context/architectures.html for a complete list
   endif()
 endif()
-# If the test ran well, remove the test binary
-file(REMOVE ${CMAKE_BINARY_DIR}/test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
 
 ###############
