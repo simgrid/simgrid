@@ -1152,7 +1152,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Activity_1await_1for_1or
                                                                                          jdouble jarg2)
 {
   try {
-    ((Activity*)cthis)->wait_for(jarg2);
+    ((Activity*)cthis)->wait_for_or_cancel(jarg2);
   } catch (ForcefulKillException const&) {
     return; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
@@ -3934,7 +3934,7 @@ XBT_PUBLIC jdouble JNICALL Java_org_simgrid_s4u_simgridJNI_Link_1get_1latency(JN
                                                                               jobject jthis)
 {
   try {
-    return ((Link*)cthis)->get_bandwidth();
+    return ((Link*)cthis)->get_latency();
   } catch (ForcefulKillException const&) {
     return 0;
   }
@@ -4553,7 +4553,7 @@ XBT_PUBLIC jboolean JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1empty(JNIEn
 XBT_PUBLIC jlong JNICALL Java_org_simgrid_s4u_simgridJNI_Mailbox_1size(JNIEnv* jenv, jclass, jlong cthis, jobject jthis)
 {
   try {
-    return ((Mailbox*)cthis)->empty();
+    return ((Mailbox*)cthis)->size();
   } catch (ForcefulKillException const&) {
     return 0; /* Actor killed, this is fine. */
   } catch (std::exception const& e) {
@@ -5071,7 +5071,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1shutdown
                                                                                  jobject jthis)
 {
   try {
-    ((VirtualMachine*)cthis)->start();
+    ((VirtualMachine*)cthis)->shutdown();
   } catch (ForcefulKillException const&) {
     return; /* Actor killed, this is fine. */
   }
