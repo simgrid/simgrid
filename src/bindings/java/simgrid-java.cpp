@@ -5198,7 +5198,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
 {
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
-    ((VirtualMachine*)cthis)->on_start_cb([cb_ref](VirtualMachine const& vm) {
+    ((VirtualMachine*)cthis)->on_this_start_cb([cb_ref](VirtualMachine const& vm) {
       get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
@@ -5308,7 +5308,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
 {
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
-    ((VirtualMachine*)cthis)->on_shutdown_cb([cb_ref](VirtualMachine const& vm) {
+    ((VirtualMachine*)cthis)->on_this_shutdown_cb([cb_ref](VirtualMachine const& vm) {
       get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
