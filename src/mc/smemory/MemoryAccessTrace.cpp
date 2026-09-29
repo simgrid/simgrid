@@ -8,6 +8,7 @@
 #include "xbt/log.h"
 
 #include <cstdint>
+#include <inttypes.h>
 
 XBT_LOG_NEW_SUBCATEGORY(smemory, mc, "Tracking memory accesses");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");
@@ -197,8 +198,8 @@ void MemoryAccessTrace::serialize(Channel& channel)
       hit_count++;
       ++iter;
     }
-    XBT_VERB("Serialize a transition with %u pages, each of size %lu (%lu accesses in this tracker)", page_count,
-             words_per_page_ * sizeof(uint64_t) * 2, hit_count);
+    XBT_VERB("Serialize a transition with %u pages, each of size %" PRIxPTR " (%lu accesses in this tracker)",
+             page_count, words_per_page_ * sizeof(uint64_t) * 2, hit_count);
   }
   for (auto& [addr, page] : pages_) {
     channel.pack<uintptr_t>(addr);
