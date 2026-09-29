@@ -31,6 +31,7 @@
 + tools/docker/.*
 + tools/git-hooks/.*
 + tools/internal/.*
++ tools/internal/update_copyright_header.py
 + tools/jenkins/.*
 
 + doc/simix_network\.tla

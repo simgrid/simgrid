@@ -9,8 +9,8 @@ Please apply the following checklist before releasing.
 
 - Sources
   - The external patches (Debian, etc) are integrated.
-    The COPYING file is aligned with Debian's copyright file, and the
-    dates of SimGrid chunks are accurate.
+  - The script tools/internal/update_copyright_header.py was used
+  - The COPYING file is aligned with Debian's copyright file
 - ChangeLog file
   - All changes are documented
   - The release date is indicated below the changes
