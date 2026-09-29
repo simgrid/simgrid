@@ -2251,7 +2251,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_Comm_1detach_1_1SWIG_11(
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((Comm*)cthis)->detach([cb_ref](void* comm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackIo_methodId, comm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackComm_methodId, comm);
       exception_check_after_upcall(get_jenv());
     });
   } else
