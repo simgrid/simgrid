@@ -372,8 +372,9 @@ extern SMPI_Datatype smpi_MPI_MPI_CXX_LONG_DOUBLE_COMPLEX;
 #define MPI_CXX_LONG_DOUBLE_COMPLEX MPI_DATATYPE_NULL
 #endif
 
-//defines for fortran compatibility
-#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__) || defined(__aarch64__)
+// defines for fortran compatibility
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__) || defined(__aarch64__) ||  \
+    (defined(__riscv) && __riscv_xlen == 64)
 #define MPI_INTEGER MPI_INT
 #define MPI_2INTEGER MPI_2INT
 #define MPI_LOGICAL MPI_INT
