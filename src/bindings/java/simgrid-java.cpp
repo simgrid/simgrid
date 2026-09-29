@@ -101,6 +101,7 @@ static jmethodID CallbackIo_methodId          = nullptr;
 static jmethodID CallbackLink_methodId        = nullptr;
 static jmethodID CallbackNetzone_methodId     = nullptr;
 static jmethodID CallbackVoid_methodId        = nullptr;
+static jmethodID CallbackVirtualMachine_methodId = nullptr;
 static jmethodID Actor_do_run_methodId        = nullptr;
 
 /* Various cached classIds */
@@ -312,6 +313,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void*)
     CallbackLink_methodId        = init_methodId(maestro_jenv, "CallbackLink", "run", "(J)V");
     CallbackNetzone_methodId     = init_methodId(maestro_jenv, "CallbackNetzone", "run", "(J)V");
     CallbackVoid_methodId        = init_methodId(maestro_jenv, "CallbackVoid", "run", "()V");
+    CallbackVirtualMachine_methodId = init_methodId(maestro_jenv, "CallbackVirtualMachine", "run", "(J)V");
 
     Actor_do_run_methodId = init_methodId(maestro_jenv, "Actor", "do_run", "(J)V");
 
@@ -5183,7 +5185,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1star
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     VirtualMachine::on_start_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5197,7 +5199,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_start_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5210,7 +5212,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1star
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     VirtualMachine::on_started_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5224,7 +5226,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_started_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5236,8 +5238,9 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1shut
 {
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
-    VirtualMachine::on_shutdown_cb(
-        [cb_ref](VirtualMachine const& vm) { get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm); });
+    VirtualMachine::on_shutdown_cb([cb_ref](VirtualMachine const& vm) {
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
+    });
   } else
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Callbacks shall not be null.");
 }
@@ -5250,7 +5253,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_shutdown_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5264,7 +5267,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_suspend_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5278,7 +5281,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_resume_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5291,7 +5294,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1dest
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     VirtualMachine::on_destruction_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5306,7 +5309,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_shutdown_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5319,7 +5322,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migr
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     VirtualMachine::on_migration_start_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5332,7 +5335,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_migration_start_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5345,7 +5348,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1migr
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     VirtualMachine::on_migration_end_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
@@ -5358,7 +5361,7 @@ XBT_PUBLIC void JNICALL Java_org_simgrid_s4u_simgridJNI_VirtualMachine_1on_1this
   if (cb) {
     auto cb_ref = std::make_shared<GlobalRefHolder>(jenv->NewGlobalRef(cb));
     ((VirtualMachine*)cthis)->on_this_migration_end_cb([cb_ref](VirtualMachine const& vm) {
-      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackDisk_methodId, &vm);
+      get_jenv()->CallVoidMethod(cb_ref->get(), CallbackVirtualMachine_methodId, &vm);
       exception_check_after_upcall(get_jenv());
     });
   } else
