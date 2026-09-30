@@ -98,6 +98,7 @@ static int (*raw_sem_timedwait)(sem_t*, const struct timespec*);
 static int (*raw_open)(const char*, int, ...);
 static int (*raw_close)(int);
 static ssize_t (*raw_read)(int, void*, size_t);
+static ssize_t (*raw___read_chk)(int, void*, size_t, size_t);
 static ssize_t (*raw_write)(int, const void*, size_t);
 static ssize_t (*raw_pread)(int, void*, size_t, off_t);
 static ssize_t (*raw_pwrite)(int, const void*, size_t, off_t);
@@ -157,6 +158,7 @@ static void intercepter_init()
   raw_open     = dlsym(RTLD_NEXT, "open");
   raw_close    = dlsym(RTLD_NEXT, "close");
   raw_read     = dlsym(RTLD_NEXT, "read");
+  raw___read_chk = dlsym(RTLD_NEXT, "__read_chk");
   raw_write    = dlsym(RTLD_NEXT, "write");
   raw_pread    = dlsym(RTLD_NEXT, "pread");
   raw_pwrite   = dlsym(RTLD_NEXT, "pwrite");
@@ -285,6 +287,8 @@ int open(const char* pathname, int flags, ...)
 }
 intercepted_call(int, close, (int fd), (fd), (fd));
 intercepted_call(ssize_t, read, (int fd, void* buf, size_t count), (fd, buf, count), (fd, buf, count));
+intercepted_call(ssize_t, __read_chk, (int fd, void* buf, size_t count, size_t buflen), (fd, buf, count, buflen),
+                 (fd, buf, count, buflen));
 intercepted_call(ssize_t, write, (int fd, const void* buf, size_t count), (fd, buf, count), (fd, buf, count));
 intercepted_call(ssize_t, pread, (int fd, void* buf, size_t count, off_t offset), (fd, buf, count, offset),
                  (fd, buf, count, offset));

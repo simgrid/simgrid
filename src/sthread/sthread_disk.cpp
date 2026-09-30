@@ -306,6 +306,13 @@ ssize_t sthread_read(int fd, void* buf, size_t count)
   XBT_VERB("read(fd:%d, count:%zu) -> %zd", fd, count, result);
   return result;
 }
+ssize_t sthread___read_chk(int fd, void* buf, size_t count, size_t buflen)
+{
+  if (count > buflen) // Mimick the check done in the real __read_chk
+    xbt_die("Buffer overflow detected in __read_chk: count (%zu) > buflen (%zu)", count, buflen);
+
+  return sthread_read(fd, buf, count);
+}
 /* Reads data from a specific offset without modifying the file's current offset. */
 ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset)
 {

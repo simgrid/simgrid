@@ -110,6 +110,7 @@ int sthread_close(int fd);
 ssize_t sthread_write(int fd, const void* buf, size_t count);
 ssize_t sthread_pwrite(int fd, const void* buf, size_t count, off_t offset);
 ssize_t sthread_read(int fd, void* buf, size_t count);
+ssize_t sthread___read_chk(int fd, void* buf, size_t count, size_t buflen);
 ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset);
 ssize_t sthread_readv(int fd, const struct iovec* iov, int iovcnt);
 ssize_t sthread_writev(int fd, const struct iovec* iov, int iovcnt);
