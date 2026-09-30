@@ -54,7 +54,7 @@ int main(void)
 
     char buff[512] = "TOTO";
     ssize_t got    = write(fd, buff, strlen(buff) + 1);
-    assert_perror(got = strlen(buff) + 1, "Writing the string TOTO did not write 5 chars but %zd", got);
+    assert_perror(got == (ssize_t)strlen(buff) + 1, "Writing the string TOTO did not write 5 chars but %zd", got);
     fprintf(stderr, "write() ok\n");
 
     assert_perror(close(fd) == 0, "close failed.");
@@ -63,7 +63,7 @@ int main(void)
 
     memset(buff, 0, 512);
     got = read(fd, buff, 512);
-    assert_perror(got = 5, "Reading the string TOTO did not read 5 chars but %zd.", got);
+    assert_perror(got == 5, "Reading the string TOTO did not read 5 chars but %zd.", got);
     assert_perror(strncmp(buff, "TOTO", 5) == 0, "Reading the string TOTO did not yield TOTO but '%s'.", buff);
     fprintf(stderr, "read() ok\n");
     assert_perror(close(fd) == 0, "close failed.");
@@ -158,7 +158,7 @@ int main(void)
     iov[1].iov_len  = 3;
 
     ssize_t got = writev(fd, iov, 2);
-    assert_perror(got = 6, "writev(3+3) did not return 6 but %zd: ", got);
+    assert_perror(got == 6, "writev(3+3) did not return 6 but %zd: ", got);
     fprintf(stderr, "writev(3+3) wrote %zd bytes\n", got);
     got = lseek(fd, 0, SEEK_SET);
     assert_perror(got == 0, "lseek(0, SET) did not return 0 but %zd", got);
