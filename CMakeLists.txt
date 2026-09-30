@@ -10,14 +10,6 @@ else()
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}")
 endif()
 
-if(WIN32 OR MINGW)
-  message(FATAL_ERROR "SimGrid does not build on native windows, nor with MinGW. Please use WSL2 instead.")
-endif()
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 4)
-  message(FATAL_ERROR "SimGrid does not build on 32bits architectures. Our reduced manpower forces us to focus on 64bits architectures only.")
-endif()
-
 message(STATUS "Configuring SimGrid v${release_version}")
 
 set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}")
@@ -39,6 +31,14 @@ if(POLICY CMP0167)
 endif()
 
 project(simgrid C CXX)
+
+if(WIN32 OR MINGW)
+  message(FATAL_ERROR "SimGrid does not build on native windows, nor with MinGW. Please use WSL2 instead.")
+endif()
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+  message(FATAL_ERROR "SimGrid does not build on 32bits architectures. Our reduced manpower forces us to focus on 64bits architectures only.")
+endif()
 
 # customizable installation directories
 include(GNUInstallDirs)
