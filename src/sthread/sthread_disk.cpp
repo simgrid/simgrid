@@ -176,6 +176,12 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
   char flags_buff[512];
   char mod_buff[512];
 
+  // Temporarily debug trap to see who's doing that on IntelCC
+  if (strcmp(pathname, "/proc/self/environ") == 0) {
+    XBT_INFO("Someone requested the read of /proc/self/environ. I'm puzzled.");
+    xbt_backtrace_display_current();
+  }
+
   const int access = flags & O_ACCMODE;
   if ((flags & O_TRUNC) && (access == O_WRONLY || access == O_RDWR)) {
     // Trunc the file content as requested
