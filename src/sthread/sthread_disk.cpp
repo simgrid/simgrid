@@ -334,6 +334,10 @@ ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset)
     return -1;
   }
 
+  if (offset >= (off_t)vfile->content->size()) { // Beyond end of file
+    errno = 0;
+    return 0;
+  }
   // This may be a short read
   std::size_t bytes_to_read = std::min((off_t)count, (off_t)vfile->content->size() - offset);
 
