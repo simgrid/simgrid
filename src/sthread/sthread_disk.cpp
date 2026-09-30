@@ -176,10 +176,11 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
   char flags_buff[512];
   char mod_buff[512];
 
-  if (flags & O_TRUNC && (flags & O_RDWR || flags & O_WRONLY))
+  const int access = flags & O_ACCMODE;
+  if ((flags & O_TRUNC) && (access == O_WRONLY || access == O_RDWR)) {
     // Trunc the file content as requested
     vfile->content->clear();
-  else if (flags & O_RDWR || flags & O_RDONLY) {
+  } else if (access == O_RDONLY || access == O_RDWR) {
     // Initialize the cache with the actual content, using the real function implementations
     sthread_disable();
     struct stat sb;
@@ -271,7 +272,8 @@ ssize_t sthread_pwrite(int fd, const void* buf, size_t count, off_t offset)
   }
   VirtualFile* vfile = &it->second;
 
-  if (not(vfile->flags & O_RDWR || vfile->flags & O_WRONLY)) {
+  const int access = vfile->flags & O_ACCMODE;
+  if (access != O_WRONLY && access != O_RDWR) {
     char buffer[512];
     XBT_ERROR("The flags of the file descriptor %d are '%s'. write() not allowed.", fd,
               open_flags_to_text(vfile->flags, buffer, 511));
@@ -323,7 +325,8 @@ ssize_t sthread_pread(int fd, void* buf, size_t count, off_t offset)
   }
   VirtualFile* vfile = &it->second;
 
-  if (not(vfile->flags & O_RDWR || vfile->flags & O_RDONLY)) {
+  const int access = vfile->flags & O_ACCMODE;
+  if (access != O_RDONLY && access != O_RDWR) {
     char buffer[512];
     XBT_ERROR("The flags of the file descriptor %d are '%s'. read() not allowed.", fd,
               open_flags_to_text(vfile->flags, buffer, 511));
