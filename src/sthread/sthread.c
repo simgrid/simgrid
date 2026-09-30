@@ -99,6 +99,8 @@ static int (*raw_open)(const char*, int, ...);
 static int (*raw_close)(int);
 static ssize_t (*raw_read)(int, void*, size_t);
 static ssize_t (*raw___read_chk)(int, void*, size_t, size_t);
+extern ssize_t __read_chk(int, void*, size_t,
+                          size_t); // just in case this does not exist on this architecture (as with MUSL libc)
 static ssize_t (*raw_write)(int, const void*, size_t);
 static ssize_t (*raw_pread)(int, void*, size_t, off_t);
 static ssize_t (*raw_pwrite)(int, const void*, size_t, off_t);
@@ -119,6 +121,7 @@ static void intercepter_init()
   raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
   raw_pthread_detach        = dlsym(RTLD_NEXT, "pthread_detach");
   raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
+  raw_pthread_exit          = dlsym(RTLD_NEXT, "pthread_exit");
   raw_pthread_mutex_init    = dlsym(RTLD_NEXT, "pthread_mutex_init");
   raw_pthread_mutex_lock    = dlsym(RTLD_NEXT, "pthread_mutex_lock");
   raw_pthread_mutex_trylock = dlsym(RTLD_NEXT, "pthread_mutex_trylock");

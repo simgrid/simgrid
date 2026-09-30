@@ -323,8 +323,7 @@ int sthread_barrier_init(sthread_barrier_t* barrier, const sthread_barrierattr_t
 int sthread_barrier_wait(sthread_barrier_t* barrier)
 {
   XBT_DEBUG("%s(%p)", __func__, barrier);
-  static_cast<sg4::Barrier*>(barrier->barrier)->wait();
-  return 0;
+  return static_cast<sg4::Barrier*>(barrier->barrier)->wait() ? PTHREAD_BARRIER_SERIAL_THREAD : 0;
 }
 int sthread_barrier_destroy(sthread_barrier_t* barrier)
 {
@@ -418,6 +417,9 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
 {
   XBT_DEBUG("%s(%p)", __func__, cond);
 
+  if (cond->cond == nullptr)
+    sthread_cond_init(cond, nullptr);
+
   if (cond->mutex == nullptr)
     cond->mutex = mutex->mutex;
   else if (cond->mutex != mutex->mutex)
@@ -426,8 +428,8 @@ int sthread_cond_timedwait(sthread_cond_t* cond, sthread_mutex_t* mutex, const s
              cond, cond->mutex, mutex->mutex);
 
   std::cv_status res = static_cast<sg4::ConditionVariable*>(cond->cond)
-                           ->wait_until(static_cast<sg4::Mutex*>(mutex->mutex),
-                                        abs_timeout->tv_sec + ((double)abs_timeout->tv_nsec) / 1000000);
+                           ->wait_for(static_cast<sg4::Mutex*>(mutex->mutex),
+                                      abs_timeout->tv_sec + ((double)abs_timeout->tv_nsec) / 1e9);
   if (res == std::cv_status::timeout)
     return ETIMEDOUT;
   return 0;
