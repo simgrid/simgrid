@@ -5,6 +5,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -120,23 +121,23 @@ int main(void)
 
     struct stat st;
     assert_perror(fstat(fd, &st) == 0, "fstat() failed");
-    assert_perror(st.st_size == 10, "fstat() size mismatch %jd instead of 10: ", st.st_size);
+    assert_perror(st.st_size == 10, "fstat() size mismatch %jd instead of 10: ", (intmax_t)st.st_size);
     fprintf(stderr, "fstat() size is correct after writing 10 chars\n");
 
     off_t r = lseek(fd, 4, SEEK_SET);
-    assert_perror(r == 4, "lseek SET failed. Returned %jd instead of 4", r);
+    assert_perror(r == 4, "lseek SET failed. Returned %jd instead of 4", (intmax_t)r);
     got = read(fd, &c, 1);
     assert_perror(got == 1, "Reading one char did not return 1 but %zd: ", got);
     assert_perror(c == '4', "Reading the 4th char did not yield '4' but '%c': ", c);
 
     r = lseek(fd, -2, SEEK_CUR);
-    assert_perror(r == 3, "lseek CUR failed. Returned %jd instead of 3: ", r);
+    assert_perror(r == 3, "lseek CUR failed. Returned %jd instead of 3: ", (intmax_t)r);
     got = read(fd, &c, 1);
     assert_perror(got == 1, "Reading one char did not return 1 but %zd: ", got);
     assert_perror(c == '3', "Reading the 4th char did not yield '3' but '%c': ", c);
 
     r = lseek(fd, 0, SEEK_END);
-    assert_perror(r == 10, "lseek END failed. Returned %jd instead of 10: ", r);
+    assert_perror(r == 10, "lseek END failed. Returned %jd instead of 10: ", (intmax_t)r);
     got = read(fd, &c, 1);
     assert_perror(got == 0, "Reading beyond the end did not return 0 but %zd: ", got);
 
@@ -197,7 +198,7 @@ int main(void)
     ssize_t got  = pwritev(fd, iovw, 2, 2);
     assert_perror(got == 7, "pwritev(3+4) did not return 7 but %zd. ", got);
     off_t after = lseek(fd, 0, SEEK_CUR);
-    assert_perror(after == before, "pwritev() changed the offset from %jd to %jd. ", before, after);
+    assert_perror(after == before, "pwritev() changed the offset from %jd to %jd. ", (intmax_t)before, (intmax_t)after);
     fprintf(stderr, "pwritev(3+4) wrote %zd bytes and did not change offset.\n", got);
 
     /* preadv reads at offset without changing offset */
@@ -213,7 +214,7 @@ int main(void)
     got              = preadv(fd, iovr, 3, 2);
     after            = lseek(fd, 0, SEEK_CUR);
     assert_perror(got == 7, "preadv(2+2+3) did not return 7 but %zd", got);
-    assert_perror(after == before, "preadv() changed the offset from %jd to %jd. ", before, after);
+    assert_perror(after == before, "preadv() changed the offset from %jd to %jd. ", (intmax_t)before, (intmax_t)after);
     fprintf(stderr, "preadv(2+2+3) got %zd bytes and did not change offset.\n", got);
 
     assert_perror(strcmp(r1, "11") == 0, "Vector 1 data mismatch. '%s' != '11': ", r1);
