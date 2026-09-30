@@ -141,8 +141,10 @@ if(enable_lto) # User wants LTO. Try if we can do that
       set(enable_lto ON)
     endif()
   endif()
-  # LTO seems to break the exception handling on macos/Intel, in particular when the exception is raised in a dynlib and catched in another
-  if(APPLE AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  # LTO seems to break the exception handling on MacOS, both Intel and Arm.  Reported failures in Intel are when the exception
+  # is raised in a dynlib and catched in another while the known issue on Arm is about static inline symbols in headers that
+  # land in both the binary and the library.
+  if(APPLE)
     set(enable_lto OFF)
   endif()
 
