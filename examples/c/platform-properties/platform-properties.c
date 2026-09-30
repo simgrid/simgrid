@@ -9,8 +9,8 @@
 #include "simgrid/zone.h"
 
 #include "xbt/asserts.h"
-#include "xbt/dict.h"
 #include "xbt/log.h"
+#include <string.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
@@ -24,6 +24,7 @@ static void test_host(const char* hostname)
   XBT_INFO("== Print the properties of the host '%s'", hostname);
   int propcount;
   const char** propnames = sg_host_get_property_names(thehost, &propcount);
+  qsort(propnames, propcount, sizeof(char*), (int (*)(const void*, const void*))strcmp);
   for (int cpt = 0; cpt < propcount; cpt++)
     XBT_INFO("  Host property: '%s' -> '%s'", propnames[cpt],
              (char*)sg_host_get_property_value(thehost, propnames[cpt]));
