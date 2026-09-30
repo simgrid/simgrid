@@ -217,7 +217,7 @@ void DFSExplorer::explore(odpor::Execution& S, stack_t& state_stack)
   }
   s->mark_to_delete();
 
-  XBT_DEBUG("End of Exploration at depth %lu", S.size() + 1);
+  XBT_DEBUG("End of Exploration at depth %zu", S.size() + 1);
 }
 
 void DFSExplorer::run()

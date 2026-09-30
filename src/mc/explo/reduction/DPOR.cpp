@@ -63,7 +63,7 @@ std::unordered_set<Aid> DPOR::compute_ancestors(const odpor::Execution& S, Event
 
 Reduction::RaceUpdate* DPOR::races_computation(odpor::Execution& E, stack_t* S, std::vector<StatePtr>* opened_states)
 {
-  XBT_DEBUG("Doing the race computation phase with a stack of size %lu and an execution of size %lu", S->size(),
+  XBT_DEBUG("Doing the race computation phase with a stack of size %zu and an execution of size %zu", S->size(),
             E.size());
 
   State* last_state = S->back().get();
@@ -94,7 +94,7 @@ unsigned long DPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpda
 
   auto dpor_updates        = static_cast<RaceUpdate*>(updates);
   unsigned long nb_updates = 0;
-  XBT_DEBUG("%lu updates to be considered", dpor_updates->get_value().size());
+  XBT_DEBUG("%zu updates to be considered", dpor_updates->get_value().size());
   for (auto& [state, ancestors] : dpor_updates->get_value()) {
     if (not ancestors.empty()) {
       Aid considered = Exploration::get_strategy()->ensure_one_considered_among_set_in(state.get(), ancestors);

@@ -193,7 +193,7 @@ void RemoteApp::get_actors_status(std::vector<std::optional<ActorState>>& wheret
   XBT_DEBUG("Done receiving ACTORS_STATUS_REPLY");
   for (auto state : whereto) {
     if (state.has_value())
-      XBT_DEBUG("Actor %d is %s, %s/%s/%s considered %u/%u with %lu transitions", state.value().get_aid().c_val(),
+      XBT_DEBUG("Actor %d is %s, %s/%s/%s considered %u/%u with %zu transitions", state.value().get_aid().c_val(),
                 state.value().is_enabled() ? "enabled" : "disabled", state.value().is_todo() ? "todo" : "-",
                 state.value().is_done() ? "done" : "-", state.value().is_unknown() ? "unknown" : "-",
                 state.value().get_times_considered(), state.value().get_max_considered(),

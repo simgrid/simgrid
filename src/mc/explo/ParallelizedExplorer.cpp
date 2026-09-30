@@ -103,7 +103,7 @@ void ParallelizedExplorer::TreeHandler(StatePtr initial_state)
     std::vector<StatePtr> new_opened;
     remaining_todo +=
         reduction_->apply_race_update(Exploration::get_instance()->get_remote_app(), to_apply, &new_opened);
-    XBT_DEBUG("[tid:TreeHandler] The update contained %lu new states, so now there are %d remaining todo",
+    XBT_DEBUG("[tid:TreeHandler] The update contained %zu new states, so now there are %d remaining todo",
               new_opened.size(), remaining_todo);
 
     for (auto state_it = new_opened.rbegin(); state_it != new_opened.rend(); state_it++) {

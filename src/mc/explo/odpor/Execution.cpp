@@ -718,7 +718,7 @@ void MazurkiewiczTraces::log_data()
   }
   XBT_INFO("Mazurkiewicz stats:");
   for (auto const& [size, nb] : nb_traces_of_size)
-    XBT_INFO("... There are %5d traces of size %5lu", nb, size);
+    XBT_INFO("... There are %5d traces of size %5zu", nb, size);
 }
 
 } // namespace simgrid::mc::odpor

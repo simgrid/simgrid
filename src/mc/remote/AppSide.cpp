@@ -255,7 +255,7 @@ void AppSide::handle_one_way(const s_mc_message_one_way_t* msg)
   if (not is_random)
     std::sort(fireables.begin(), fireables.end());
   while (fireables.size() > 0) {
-    XBT_DEBUG("App<%d> is now going one way! There are %lu actors to run here", getpid(), fireables.size());
+    XBT_DEBUG("App<%d> is now going one way! There are %zu actors to run here", getpid(), fireables.size());
 
     unsigned long chosen =
         is_random ? xbt::random::uniform_int(0, fireables.size() - 1) : 0; // The first aid since fireables is sorted

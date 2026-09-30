@@ -36,7 +36,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
    * by the wakeup tree at the appropriate reversal point, either as `C` directly or an as equivalent to `C`
    * ("eventually looks like C", viz. the `~_E` relation)
    */
-  XBT_DEBUG("Going to compute all the reversible races (size stack: %lu) on sequence (size sequence: %lu) \n%s",
+  XBT_DEBUG("Going to compute all the reversible races (size stack: %zu) on sequence (size sequence: %zu) \n%s",
             S->size(), E.size(), E.get_one_string_textual_trace().c_str());
   for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
@@ -63,7 +63,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
     E.get_event_with_handle(e_prime).consider_races();
   }
   updates->last_explored_state_ = S->back().get();
-  XBT_DEBUG("Packing a total of %lu race updates", updates->get_value().size());
+  XBT_DEBUG("Packing a total of %zu race updates", updates->get_value().size());
   return updates;
 }
 
@@ -73,7 +73,7 @@ unsigned long ODPOR::apply_race_update(RemoteApp& remote_app, Reduction::RaceUpd
 
   unsigned long nb_updates = 0;
   auto odpor_updates       = static_cast<RaceUpdate*>(updates);
-  XBT_DEBUG("Applying the %lu received race updates", odpor_updates->get_value().size());
+  XBT_DEBUG("Applying the %zu received race updates", odpor_updates->get_value().size());
   for (auto& [state, seq] : odpor_updates->get_value()) {
     XBT_DEBUG("Going to insert sequence\n%s", odpor::one_string_textual_trace(seq).c_str());
     XBT_DEBUG("... at state #%lu", state->get_num());

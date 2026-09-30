@@ -422,7 +422,7 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
 
   remote_app.replay_sequence(recipe, recipe_needing_actor_status);
 
-  XBT_DEBUG("Need to initialize %lu states (%lu in the replay actor_status side)", state_needing_actor_status.size(),
+  XBT_DEBUG("Need to initialize %zu states (%zu in the replay actor_status side)", state_needing_actor_status.size(),
             recipe_needing_actor_status.size());
 
   // The semantic of the set_one_way is:

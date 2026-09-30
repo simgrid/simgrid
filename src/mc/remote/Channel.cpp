@@ -66,7 +66,7 @@ Channel::~Channel()
 }
 template <> void Channel::pack<std::string>(std::string str)
 {
-  XBT_DEBUG("%s packs string (size: %lu; ctn: '%s')", xbt::gettid().c_str(), str.length(), str.c_str());
+  XBT_DEBUG("%s packs string (size: %zu; ctn: '%s')", xbt::gettid().c_str(), str.length(), str.c_str());
   xbt_assert(str.length() < std::numeric_limits<unsigned short>::max());
   pack<unsigned short>((unsigned short)str.length());
   pack(str.data(), str.length() + 1);
@@ -111,14 +111,14 @@ int Channel::send(const void* message, size_t size)
              "Cannot send directly data while some other data is packed for later emission");
 
   if (size >= sizeof(int) && is_valid_MessageType(*static_cast<const int*>(message))) {
-    XBT_DEBUG("%s sends msg %s (%zu bytes from %p) buffsize: %lu next:%lu", xbt::gettid().c_str(),
+    XBT_DEBUG("%s sends msg %s (%zu bytes from %p) buffsize: %zu next:%zu", xbt::gettid().c_str(),
               to_c_str(*static_cast<const MessageType*>(message)), size, message, buffer_in_size_, buffer_in_next_);
 #ifdef CHANNEL_TRACE_MSG_COUNT
     if (message != buffer_out_)
       sends[(int)*static_cast<const MessageType*>(message)]++;
 #endif
   } else {
-    XBT_DEBUG("%s sends %zu bytes from %p (not a message) buffsize: %lu next:%lu", xbt::gettid().c_str(), size, message,
+    XBT_DEBUG("%s sends %zu bytes from %p (not a message) buffsize: %zu next:%zu", xbt::gettid().c_str(), size, message,
               buffer_in_size_, buffer_in_next_);
     xbt_assert(size > 0, "Request to send a 0-sized message! Please fix your code.");
   }
@@ -145,7 +145,7 @@ int Channel::send(const void* message, size_t size)
 
 std::pair<bool, void*> Channel::receive(size_t size)
 {
-  XBT_DEBUG("%s wants to receive %lu bytes; buffer size: %lu; buffer next: %lu", xbt::gettid().c_str(), size,
+  XBT_DEBUG("%s wants to receive %zu bytes; buffer size: %zu; buffer next: %zu", xbt::gettid().c_str(), size,
             buffer_in_size_, buffer_in_next_);
   void* answer;
   if (buffer_in_size_ < size) { // We need more data from the network
@@ -159,7 +159,7 @@ std::pair<bool, void*> Channel::receive(size_t size)
     answer = buffer_in_ + buffer_in_next_;
   }
   /* Consume the data */
-  XBT_DEBUG("%s consumes %s (data size:%lu, previous value of next: %lu, of bufsize: %lu)", xbt::gettid().c_str(),
+  XBT_DEBUG("%s consumes %s (data size:%zu, previous value of next: %zu, of bufsize: %zu)", xbt::gettid().c_str(),
             to_c_str(*((const MessageType*)(buffer_in_ + buffer_in_next_))), size, buffer_in_next_, buffer_in_size_);
   buffer_in_next_ += size;
   buffer_in_size_ -= size;
@@ -183,7 +183,7 @@ void* Channel::expect_message(size_t size, MessageType type, const char* error_m
 
 std::pair<bool, void*> Channel::peek(size_t size)
 {
-  XBT_DEBUG("%s peeks %lu bytes; buffer size: %lu; buffer next: %lu", xbt::gettid().c_str(), size, buffer_in_size_,
+  XBT_DEBUG("%s peeks %zu bytes; buffer size: %zu; buffer next: %zu", xbt::gettid().c_str(), size, buffer_in_size_,
             buffer_in_next_);
   if (MC_MESSAGE_LENGTH - buffer_in_next_ < size) {
     XBT_DEBUG("Move the data before receiving the rest");
@@ -206,7 +206,7 @@ std::pair<bool, void*> Channel::peek(size_t size)
       return std::make_pair(false, nullptr);
     }
     buffer_in_size_ += got;
-    XBT_DEBUG("%s receives %d bytes from the network (avail was %d). New size: %lu", xbt::gettid().c_str(), got, avail,
+    XBT_DEBUG("%s receives %d bytes from the network (avail was %d). New size: %zu", xbt::gettid().c_str(), got, avail,
               buffer_in_size_);
   }
   XBT_DEBUG("%s peeks msg/type %s", xbt::gettid().c_str(),
@@ -227,7 +227,7 @@ std::pair<bool, MessageType> Channel::peek_message_type()
 
 void Channel::reinject(const char* data, size_t size)
 {
-  xbt_assert(size > 0, "Cannot reinject less than one char (size: %lu)", size);
+  xbt_assert(size > 0, "Cannot reinject less than one char (size: %zu)", size);
   xbt_assert(size + buffer_in_size_ < MC_MESSAGE_LENGTH,
              "Reinjecting these data would make the buffer to overflow. Please increase MC_MESSAGE_LENGTH in the code "
              "(or fix your code).");

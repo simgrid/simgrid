@@ -35,7 +35,7 @@ void smemory_add_stack(uintptr_t begin, uintptr_t end)
 void smemory_remove_stack(uintptr_t begin, uintptr_t end)
 {
   MemRange elem{reinterpret_cast<uintptr_t>(begin), reinterpret_cast<uintptr_t>(end)};
-  XBT_DEBUG("Removing stack %p-%p from a list of %lu stacks.", (void*)begin, (void*)end, stacks_.size());
+  XBT_DEBUG("Removing stack %p-%p from a list of %zu stacks.", (void*)begin, (void*)end, stacks_.size());
   for (auto it = stacks_.begin(); it != stacks_.end(); it++)
     if (it->start == elem.start && it->end == elem.end) {
       stacks_.erase(it);
