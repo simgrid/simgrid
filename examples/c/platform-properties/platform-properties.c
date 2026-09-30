@@ -14,6 +14,13 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
+/* Comparison function, used in qsort. The actual arguments to this function are "pointers to pointers to char", but
+   strcmp(3) arguments are "pointers to char", hence the following cast plus dereference.*/
+static int cmpstringp(const void* p1, const void* p2)
+{
+  return strcmp(*(const char**)p1, *(const char**)p2);
+}
+
 static void test_host(const char* hostname)
 {
   sg_host_t thehost   = sg_host_by_name(hostname);
@@ -24,7 +31,7 @@ static void test_host(const char* hostname)
   XBT_INFO("== Print the properties of the host '%s'", hostname);
   int propcount;
   const char** propnames = sg_host_get_property_names(thehost, &propcount);
-  qsort(propnames, propcount, sizeof(char*), (int (*)(const void*, const void*))strcmp);
+  qsort(propnames, propcount, sizeof(char*), cmpstringp);
   for (int cpt = 0; cpt < propcount; cpt++)
     XBT_INFO("  Host property: '%s' -> '%s'", propnames[cpt],
              (char*)sg_host_get_property_value(thehost, propnames[cpt]));
