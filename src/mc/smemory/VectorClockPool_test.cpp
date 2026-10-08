@@ -5,6 +5,7 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/api/static_config.hpp"
+#include <string>
 
 #define private public
 #include "VectorClockPool.hpp"
@@ -21,7 +22,8 @@ TEST_CASE("VectorClockPool - Initialization and interning rules", "[VectorClockP
     REQUIRE(pool.size() == 1);
     const VectorClock& neutral = pool.get(0);
 
-    for (uint32_t i = 1; i < static_config::max_threads; ++i) {
+    for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+      INFO("Test with i=" + std::to_string(i));
       REQUIRE(neutral.clocks[i].get_clock().value() == 0);
       REQUIRE(neutral.clocks[i].get_aid().c_val() == static_cast<int>(i));
     }
@@ -67,7 +69,8 @@ TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPo
   VectorClockPool pool;
 
   VectorClock global_min;
-  for (uint32_t i = 1; i < static_config::max_threads; ++i) {
+  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+    INFO("Test with i=" + std::to_string(i));
     global_min.clocks[i] = Epoch(Aid(i), Clock(100u));
   }
 
@@ -145,7 +148,8 @@ TEST_CASE("VectorClockPool - Garbage Collector (clean_before)", "[VectorClockPoo
 
   // Define a global_min obsoleting vc_old1 and vc_old2 but not vc_future
   VectorClock global_min;
-  for (uint32_t i = 1; i < static_config::max_threads; ++i) {
+  for (uint32_t i = 0; i < static_config::max_threads - 1; ++i) {
+    INFO("Test with i=" + std::to_string(i));
     global_min.clocks[i] = Epoch(Aid(i), Clock(50u));
   }
 
