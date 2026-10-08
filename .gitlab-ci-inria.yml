@@ -274,7 +274,7 @@ ubuntu22-release:
   - apt-get --allow-releaseinfo-change update
   - apt install -y libboost-stacktrace-dev python3-numpy-dev    build-essential gfortran ninja-build cmake libboost-dev libgraphviz-dev nlohmann-json3-dev default-jdk-headless valgrind  python3-dev pybind11-dev python3-all libns3-dev libdw-dev
   - apt -y clean && apt -y autoclean
-  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=ON -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
+  - cmake -GNinja -Denable_python=ON -Denable_java=ON -Denable_ns3=OFF -Denable_documentation=OFF -Denable_testsuite_smpi_MPICH3=ON -Denable_testsuite_McMini=ON -Denable_compile_warnings=ON -DLTO_EXTRA_FLAG="auto" .
   - ninja --verbose all tests
   - ctest -T Test --output-junit result.xml -j$(nproc) --output-on-failure
   artifacts:
