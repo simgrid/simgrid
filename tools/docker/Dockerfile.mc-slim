@@ -15,7 +15,7 @@ RUN set -x && apt-get --allow-releaseinfo-change update && \
     make -j4 install && \
     echo "XX SimGrid installed" && \
     cd / && rm -rf source &&  \
-    apt remove -y cmake cmake-data git gdb llvm-19-dev krb5-locales fakeroot openssh-client manpages mount && apt autoremove -y && apt autoclean && apt clean && \
+    apt remove -y cmake cmake-data git gdb llvm-21-dev krb5-locales fakeroot openssh-client manpages mount && apt autoremove -y && apt autoclean && apt clean && \
     dpkg --purge $(dpkg --list | grep '^rc'|cut -f3 -d' ') && \
     rm -rf /usr/share/doc /usr/share/man /var/cache/apt/* /var/cache/debconf/*-old /var/lib/apt/* /var/log* /usr/local
 
