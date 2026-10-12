@@ -369,8 +369,11 @@ void CommImpl::cancel()
       mbox_->remove(this);
       set_state(State::CANCELED);
       // No transfer will ever complete this activity: answer the actors that already wait for it right now (actors
-      // waiting later on will be answered by wait_for/wait_any_for, that call finish() on terminated activities)
-      finish();
+      // waiting later on will be answered by wait_for/wait_any_for, that call finish() on terminated activities).
+      // Don't finish() it when nobody waits: this is the case when a terminating actor cancels the activities it still
+      // owns, and the s4u object that finish() would notify may already be gone.
+      if (not simcalls_.empty())
+        finish();
     }
   } else if (not MC_is_active() /* when running the MC there are no model actions */
              && not MC_record_replay_is_active() && (get_state() == State::READY || get_state() == State::RUNNING)) {
