@@ -55,7 +55,14 @@ static void simcall(simgrid::kernel::actor::Simcall::Type call, std::function<vo
     self->simcall_handle(0);
   } else {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), self->simcall_.get_cname());
-    self->yield();
+    try {
+      self->yield();
+    } catch (...) {
+      // The simcall was answered with an exception. The observer lives on the stack of the caller: forget about it
+      // before leaving, or the next simcall would use a dangling pointer.
+      self->simcall_.observer_ = nullptr;
+      throw;
+    }
   }
   self->simcall_.observer_ = nullptr;
 }

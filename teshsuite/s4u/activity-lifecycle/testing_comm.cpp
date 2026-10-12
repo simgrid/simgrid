@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "teshsuite/catch_simgrid.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include <array>
 namespace sg4=simgrid::s4u;
 
@@ -426,6 +427,35 @@ TEST_CASE("Activity lifecycle: comm activities")
     comm->cancel();
     sg4::this_actor::sleep_for(2);
     INFO("The receiver did not get a CancelException");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm test_any after a wait_any interrupted by a cancellation")
+  {
+    XBT_INFO("Use an ActivitySet again after a cancellation interrupted a wait_any on it");
+    sg4::CommPtr comm;
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&comm, &recv_done]() {
+      assert_exit(true, 1);
+      int* data;
+      comm = sg4::Mailbox::by_name("mb")->get_async<int>(&data);
+      sg4::ActivitySet pending({comm});
+      REQUIRE_CANCEL(pending.wait_any());
+      // The simcall interrupted by the exception must not leave a dangling pointer to its observer (that lived on the
+      // stack of wait_any): the next simcall would use it (test_any does, when building its own observer). Using it
+      // is undefined behavior, that does not always crash, hence this check.
+      REQUIRE(simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ == nullptr);
+      // The canceled activity is still in the set and terminated: test_any() returns it
+      REQUIRE(pending.test_any() == comm);
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(1);
+    comm->cancel();
+    sg4::this_actor::sleep_for(1);
+    INFO("The receiver could not use the ActivitySet after the cancellation");
     REQUIRE(recv_done);
 
     END_SECTION;
