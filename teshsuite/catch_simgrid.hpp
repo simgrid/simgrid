@@ -45,6 +45,16 @@ extern void assert_cleanup();
     }                                                                                                                  \
   } while (0)
 
+#define REQUIRE_CANCEL(...)                                                                                            \
+  do {                                                                                                                 \
+    try {                                                                                                              \
+      __VA_ARGS__;                                                                                                     \
+      FAIL("Expected exception CancelException not caught");                                                           \
+    } catch (simgrid::CancelException const&) {                                                                        \
+      XBT_VERB("got expected CancelException");                                                                        \
+    }                                                                                                                  \
+  } while (0)
+
 #define REQUIRE_STORAGE_FAILURE(...)                                                                                   \
   do {                                                                                                                 \
     try {                                                                                                              \

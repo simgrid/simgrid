@@ -368,6 +368,9 @@ void CommImpl::cancel()
     if (not detached_) {
       mbox_->remove(this);
       set_state(State::CANCELED);
+      // No transfer will ever complete this activity: answer the actors that already wait for it right now (actors
+      // waiting later on will be answered by wait_for/wait_any_for, that call finish() on terminated activities)
+      finish();
     }
   } else if (not MC_is_active() /* when running the MC there are no model actions */
              && not MC_record_replay_is_active() && (get_state() == State::READY || get_state() == State::RUNNING)) {

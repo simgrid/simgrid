@@ -151,6 +151,9 @@ void MessImpl::cancel()
   if (get_state() == State::WAITING) {
       queue_->remove(this);
       set_state(State::CANCELED);
+      // No transfer will ever complete this activity: answer the actors that already wait for it right now (actors
+      // waiting later on will be answered by wait_for/wait_any_for, that call finish() on terminated activities)
+      finish();
   }
   MessImplPtr tmp = this; // Make sure the object does not disappear until after we check whether we need to remove it
   if (tmp->src_actor_)
@@ -191,6 +194,9 @@ void MessImpl::finish()
     issuer->activities_.erase(this);
     if(detached_)
       EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
+
+    if (get_state() == State::CANCELED)
+      issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Message canceled"));
 
     issuer->simcall_answer();
   }

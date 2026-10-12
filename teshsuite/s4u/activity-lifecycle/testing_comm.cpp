@@ -339,6 +339,98 @@ TEST_CASE("Activity lifecycle: comm activities")
     END_SECTION;
   }
 
+  // In the following sections, the communication is never matched and gets canceled by another actor (the one running
+  // the section) at t=1. An actor that already waits for it at that time must be released with a CancelException.
+  BEGIN_SECTION("comm cancel unmatched get while waiting")
+  {
+    XBT_INFO("Cancel a get that is not matched yet while the receiver waits for it");
+    sg4::CommPtr comm;
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&comm, &recv_done]() {
+      assert_exit(true, 1);
+      int* data;
+      comm = sg4::Mailbox::by_name("mb")->get_async<int>(&data);
+      REQUIRE_CANCEL(comm->wait());
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(1);
+    comm->cancel();
+    sg4::this_actor::sleep_for(1);
+    INFO("The receiver was not released by the cancellation");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm cancel unmatched get while waiting in wait_any")
+  {
+    XBT_INFO("Cancel a get that is not matched yet while the receiver waits for it in an ActivitySet");
+    sg4::CommPtr comm;
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&comm, &recv_done]() {
+      assert_exit(true, 1);
+      int* data;
+      comm = sg4::Mailbox::by_name("mb")->get_async<int>(&data);
+      sg4::ActivitySet pending_comms({comm});
+      REQUIRE_CANCEL(pending_comms.wait_any());
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(1);
+    comm->cancel();
+    sg4::this_actor::sleep_for(1);
+    INFO("The receiver was not released by the cancellation");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm cancel unmatched put while waiting")
+  {
+    XBT_INFO("Cancel a put that is not matched yet while the sender waits for it");
+    sg4::CommPtr comm;
+    bool send_done = false;
+    all_hosts[1]->add_actor("sender", [&comm, &send_done]() {
+      assert_exit(true, 1);
+      static int data = 42;
+      comm            = sg4::Mailbox::by_name("mb")->put_async(&data, 100000);
+      REQUIRE_CANCEL(comm->wait());
+      send_done = true;
+    });
+
+    sg4::this_actor::sleep_for(1);
+    comm->cancel();
+    sg4::this_actor::sleep_for(1);
+    INFO("The sender was not released by the cancellation");
+    REQUIRE(send_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm wait after the cancellation of an unmatched get")
+  {
+    XBT_INFO("Wait for a get that was canceled before being matched");
+    sg4::CommPtr comm;
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&comm, &recv_done]() {
+      assert_exit(true, 2);
+      int* data;
+      comm = sg4::Mailbox::by_name("mb")->get_async<int>(&data);
+      sg4::this_actor::sleep_for(2);
+      REQUIRE_CANCEL(comm->wait());
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(1);
+    comm->cancel();
+    sg4::this_actor::sleep_for(2);
+    INFO("The receiver did not get a CancelException");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
   sg4::this_actor::sleep_for(10);
   assert_cleanup();
 }
