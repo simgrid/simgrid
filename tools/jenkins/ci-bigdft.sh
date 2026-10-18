@@ -9,7 +9,7 @@ set -ex
 echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 SUDO="" # to ease the local testing
 $SUDO apt-get -y update
-$SUDO apt-get -y install python-is-python3 python3-setuptools libboost-dev autoconf gfortran libblas-dev liblapack-dev 
+$SUDO apt-get -y install python-is-python3 python3-setuptools libboost-dev autoconf gfortran libblas-dev liblapack-dev gdb
 $SUDO apt-get -y install --only-upgrade ca-certificates
 
 echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
@@ -30,18 +30,24 @@ export OMP_NUM_THREADS=1
 #workaround issue with profiling optimization (for fugaku) which prevent f_free_ptr to use the simgrid version. Fix pending.
 export FUTILE_PROFILING_DEPTH=-1
 
+# Larger actor stacks for Fortran automatic arrays, and a gdb backtrace on crash
+run_smpi() {
+  smpirun -hostfile $WORKSPACE/simgrid-dev/examples/smpi/hostfile -platform $WORKSPACE/simgrid-dev/examples/platforms/small_platform.xml --cfg=contexts/stack-size:65536 \
+    -wrapper "gdb -batch -return-child-result -ex run -ex bt --args" "$@"
+}
+
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
-smpirun -hostfile $WORKSPACE/simgrid-dev/examples/smpi/hostfile -platform $WORKSPACE/simgrid-dev/examples/platforms/small_platform.xml -np 8 $WORKSPACE/build/install/bin/bigdft -l no
+run_smpi -np 8 $WORKSPACE/build/install/bin/bigdft -l no
 
 #Psolver checking with smpi_shared_malloc
 cd $WORKSPACE/build/psolver/tests
 make FC=smpif90 PS_Check
-smpirun -hostfile $WORKSPACE/simgrid-dev/examples/smpi/hostfile -platform $WORKSPACE/simgrid-dev/examples/platforms/small_platform.xml -np 4 ./PS_Check -n [57,48,63] -g F
+run_smpi -np 4 ./PS_Check -n [57,48,63] -g F
 
 #linear scaling version (heavy, might swap)
 cd $WORKSPACE/bigdft/tests/DFT/linear/surface
-smpirun -hostfile $WORKSPACE/simgrid-dev/examples/smpi/hostfile -platform $WORKSPACE/simgrid-dev/examples/platforms/small_platform.xml -np 4 $WORKSPACE/build/install/bin/bigdft -n graphene -l no
+run_smpi -np 4 $WORKSPACE/build/install/bin/bigdft -n graphene -l no
 
 cd $WORKSPACE/build
 ../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y clean
