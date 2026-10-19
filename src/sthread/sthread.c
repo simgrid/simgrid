@@ -37,12 +37,12 @@
     sthread_enable();                                                                                                  \
     return res;                                                                                                        \
   }
-#define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
+#define intercepted_call_unless(native, rettype, name, raw_params, call_params, sim_params)                            \
   rettype name raw_params                                                                                              \
   {                                                                                                                    \
     if (_STHREAD_CONCAT(raw_, name) == NULL)                                                                           \
       intercepter_init();                                                                                              \
-    if (!sthread_is_enabled())                                                                                         \
+    if ((native) || !sthread_is_enabled())                                                                             \
       return _STHREAD_CONCAT(raw_, name) call_params;                                                                  \
                                                                                                                        \
     sthread_disable();                                                                                                 \
@@ -50,6 +50,12 @@
     sthread_enable();                                                                                                  \
     return res;                                                                                                        \
   }
+
+#define intercepted_call(rettype, name, raw_params, call_params, sim_params)                                           \
+  intercepted_call_unless(0, rettype, name, raw_params, call_params, sim_params)
+/* Calls on native file descriptors are not intercepted */
+#define intercepted_fdcall(rettype, name, raw_params, call_params, sim_params)                                         \
+  intercepted_call_unless(fd < STHREAD_FIRST_VIRTUAL_FD, rettype, name, raw_params, call_params, sim_params)
 
 /* ---- Retrieving the real implementation of all intercepted symbols (to allow SimGrid to use them instead of
  * intercepting itself) ---- */
@@ -288,27 +294,28 @@ int open(const char* pathname, int flags, ...)
   sthread_enable();
   return res;
 }
-intercepted_call(int, close, (int fd), (fd), (fd));
-intercepted_call(ssize_t, read, (int fd, void* buf, size_t count), (fd, buf, count), (fd, buf, count));
-intercepted_call(ssize_t, __read_chk, (int fd, void* buf, size_t count, size_t buflen), (fd, buf, count, buflen),
-                 (fd, buf, count, buflen));
-intercepted_call(ssize_t, write, (int fd, const void* buf, size_t count), (fd, buf, count), (fd, buf, count));
-intercepted_call(ssize_t, pread, (int fd, void* buf, size_t count, off_t offset), (fd, buf, count, offset),
-                 (fd, buf, count, offset));
-intercepted_call(ssize_t, pwrite, (int fd, const void* buf, size_t count, off_t offset), (fd, buf, count, offset),
-                 (fd, buf, count, offset));
-intercepted_call(off_t, lseek, (int fd, off_t offset, int whence), (fd, offset, whence), (fd, offset, whence));
-intercepted_call(int, fstat, (int fd, struct stat* buf), (fd, buf), (fd, buf));
-intercepted_call(ssize_t, readv, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt), (fd, iov, iovcnt));
-intercepted_call(ssize_t, writev, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt), (fd, iov, iovcnt));
-intercepted_call(ssize_t, preadv, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
-                 (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
-intercepted_call(ssize_t, pwritev, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
-                 (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
-intercepted_call(ssize_t, preadv2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
-                 (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
-intercepted_call(ssize_t, pwritev2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
-                 (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
+intercepted_fdcall(int, close, (int fd), (fd), (fd));
+intercepted_fdcall(ssize_t, read, (int fd, void* buf, size_t count), (fd, buf, count), (fd, buf, count));
+intercepted_fdcall(ssize_t, __read_chk, (int fd, void* buf, size_t count, size_t buflen), (fd, buf, count, buflen),
+                   (fd, buf, count, buflen));
+intercepted_fdcall(ssize_t, write, (int fd, const void* buf, size_t count), (fd, buf, count), (fd, buf, count));
+intercepted_fdcall(ssize_t, pread, (int fd, void* buf, size_t count, off_t offset), (fd, buf, count, offset),
+                   (fd, buf, count, offset));
+intercepted_fdcall(ssize_t, pwrite, (int fd, const void* buf, size_t count, off_t offset), (fd, buf, count, offset),
+                   (fd, buf, count, offset));
+intercepted_fdcall(off_t, lseek, (int fd, off_t offset, int whence), (fd, offset, whence), (fd, offset, whence));
+intercepted_fdcall(int, fstat, (int fd, struct stat* buf), (fd, buf), (fd, buf));
+intercepted_fdcall(ssize_t, readv, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt), (fd, iov, iovcnt));
+intercepted_fdcall(ssize_t, writev, (int fd, const struct iovec* iov, int iovcnt), (fd, iov, iovcnt),
+                   (fd, iov, iovcnt));
+intercepted_fdcall(ssize_t, preadv, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
+                   (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
+intercepted_fdcall(ssize_t, pwritev, (int fd, const struct iovec* iov, int iovcnt, off_t offset),
+                   (fd, iov, iovcnt, offset), (fd, iov, iovcnt, offset));
+intercepted_fdcall(ssize_t, preadv2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
+                   (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
+intercepted_fdcall(ssize_t, pwritev2, (int fd, const struct iovec* iov, int iovcnt, off_t offset, int flags),
+                   (fd, iov, iovcnt, offset, flags), (fd, iov, iovcnt, offset, flags));
 intercepted_call(int, unlink, (const char* pathname), (pathname), (pathname));
 /* ---- time-related ---- */
 

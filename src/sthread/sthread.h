@@ -105,6 +105,8 @@ time_t sthread_time(time_t* time);
 unsigned int sthread_sleep(double seconds);
 int sthread_usleep(double seconds);
 
+/* File descriptors below this value are native (opened by the OS) and never virtualized by sthread */
+#define STHREAD_FIRST_VIRTUAL_FD 1000
 int sthread_open(const char* pathname, int flags, mode_t mode);
 int sthread_close(int fd);
 ssize_t sthread_write(int fd, const void* buf, size_t count);

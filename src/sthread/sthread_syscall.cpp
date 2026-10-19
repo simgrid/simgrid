@@ -1973,15 +1973,15 @@ long sthread_syscall(int number, long a1, long a2, long a3, long a4, long a5, lo
 {
   switch (number) {
     case SYS_read:
-      return sthread_read(a1, (void*)a2, a3);
+      return a1 < STHREAD_FIRST_VIRTUAL_FD ? syscall(number, a1, a2, a3) : sthread_read(a1, (void*)a2, a3);
     case SYS_write:
-      return sthread_write(a1, (void*)a2, a3);
+      return a1 < STHREAD_FIRST_VIRTUAL_FD ? syscall(number, a1, a2, a3) : sthread_write(a1, (void*)a2, a3);
 #ifdef SYS_open
     case SYS_open:
       return sthread_open((const char*)a1, a2, a3);
 #endif
     case SYS_close:
-      return sthread_close(a1);
+      return a1 < STHREAD_FIRST_VIRTUAL_FD ? syscall(number, a1) : sthread_close(a1);
   }
   const char* name = "unknown syscall";
   for (auto [code, n] : table) {

@@ -17,6 +17,7 @@
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
+#include <string_view>
 #include <sys/types.h>
 #include <unistd.h>
 #include <xbt/base.h>
@@ -45,8 +46,7 @@ struct VirtualFile {
 static std::map<std::string, std::vector<char>> pathname_to_vfile; // pathname -> cached content
 static std::map<int, VirtualFile>
     fd_to_vfile; // file descriptor -> VirtualFile. The content of each VF lives in pathname_to_vfile
-static int next_virtual_fd =
-    1000; // We arbitrarily skip some values. We could check in /proc which fd are used and which ones are free.
+static int next_virtual_fd = STHREAD_FIRST_VIRTUAL_FD;
 
 static bool lambda_append_to_text(char* out, const char* str, size_t size, size_t used)
 {
@@ -165,6 +165,14 @@ static char* open_mod_to_text(mode_t mode, char* out, size_t out_size)
 
 int sthread_open(const char* pathname, int flags, mode_t mode)
 {
+  // Pseudo filesystems are not simulated disks: the OS handles them, and their file descriptors remain native
+  if (std::string_view path(pathname);
+      path.starts_with("/proc/") || path.starts_with("/sys/") || path.starts_with("/dev/")) {
+    int fd = open(pathname, flags, mode);
+    xbt_assert(fd < STHREAD_FIRST_VIRTUAL_FD, "Native file descriptor %d collides with the virtual ones.", fd);
+    return fd;
+  }
+
   // Create the file descriptor in our data structures
   int vfd            = next_virtual_fd++;
   VirtualFile* vfile = &fd_to_vfile[vfd];
@@ -175,12 +183,6 @@ int sthread_open(const char* pathname, int flags, mode_t mode)
   // For debug messages
   char flags_buff[512];
   char mod_buff[512];
-
-  // Temporarily debug trap to see who's doing that on IntelCC
-  if (strcmp(pathname, "/proc/self/environ") == 0) {
-    XBT_INFO("Someone requested the read of /proc/self/environ. I'm puzzled.");
-    xbt_backtrace_display_current();
-  }
 
   const int access = flags & O_ACCMODE;
   if ((flags & O_TRUNC) && (access == O_WRONLY || access == O_RDWR)) {
@@ -227,11 +229,8 @@ int sthread_close(int fd)
 {
   auto it = fd_to_vfile.find(fd);
   if (it == fd_to_vfile.end()) {
-    // That's maybe a socket instead of a file. So ask the OS to close it for itself
-    sthread_disable();
-    int res = close(fd);
-    sthread_enable();
-    return res;
+    errno = EBADF;
+    return -1;
   }
 
   fd_to_vfile.erase(it);
