@@ -5,11 +5,12 @@ $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} plusplus.c ${libsthread} -o $
 
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
+# The app runs one-way and may reach the final assert before the checker kills it on the datarace, or not
+! ignore .*Assertion `i == 2' failed.*
 
 ! expect return 5
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/plusplus/plusplus  --log=xbt_cfg.thresh:critical --log=no_loc
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> plusplus: plusplus.c:37: int main(): Assertion `i == 2' failed.
 > [0.000000] [mc_explo/INFO] Found a datarace at location 0xdeadbeaf between actor 2 and actor 3 after the following execution:
 > [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
 > [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
