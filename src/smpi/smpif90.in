@@ -50,13 +50,12 @@ filter_and_compile() {
     else
       SRCFILE="${ARG}"
     fi
-    list_add CMDLINE "${SRCFILE}"
+    list_add CMDARGS "${SRCFILE}"
 }
 TRACE_CALL_LOCATION=0
 NEEDS_OUTPUT=1
 
-list_set CMDLINE "${REAL_FORTRAN_COMPILER}"
-list_add_not_empty CMDLINE "${FFLAGS}"
+list_set CMDARGS
 while [ $# -gt 0 ]; do
     ARG="$1"
     shift
@@ -64,7 +63,7 @@ while [ $# -gt 0 ]; do
         -c)
             CMAKE_LINKARGS=""
             LINKARGS=""
-            list_add CMDLINE "-c"
+            list_add CMDARGS "-c"
             ;;
         *.f90)
             FILENAME=$(basename "${ARG}")
@@ -94,7 +93,7 @@ while [ $# -gt 0 ]; do
             ${REAL_FORTRAN_COMPILER} --version
             ;;
         -o)
-            list_add CMDLINE "-o$1"
+            list_add CMDARGS "-o$1"
             NEEDS_OUTPUT=0
             shift
             ;;
@@ -103,17 +102,21 @@ while [ $# -gt 0 ]; do
 	    show=1
 	    ;;
         *)
-            list_add CMDLINE "${ARG}"
+            list_add CMDARGS "${ARG}"
             ;;
     esac
 done
 
 if [ $NEEDS_OUTPUT -ne 0 ]; then
-   list_add CMDLINE "-o${ORIGFILE}.o"
+   list_add CMDARGS "-o${ORIGFILE}.o"
 fi
 
+# User arguments go after -L@libdir@, so that a user -L cannot shadow the right libsimgrid
+list_set CMDLINE "${REAL_FORTRAN_COMPILER}"
+list_add_not_empty CMDLINE "${FFLAGS}"
 list_add_not_empty CMDLINE "${INCLUDEARGS}"
 list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
+list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
 
 eval $(list_get CMDLINE)
