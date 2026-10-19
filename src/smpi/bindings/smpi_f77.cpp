@@ -813,11 +813,11 @@ void mpi_keyval_free_ (int* keyval, int* ierr) {
 }
 
 void mpi_test_cancelled_ (MPI_Status*  status, int* flag, int* ierr) {
- *ierr = MPI_Test_cancelled(status, flag);
+ *ierr = MPI_Test_cancelled(FORT_STATUS_IGNORE(status), flag);
 }
 
 void mpi_get_elements_ (MPI_Status*  status, int* datatype, int* elements, int* ierr) {
- *ierr = MPI_Get_elements(status, simgrid::smpi::Datatype::f2c(*datatype), elements);
+ *ierr = MPI_Get_elements(FORT_STATUS_IGNORE(status), simgrid::smpi::Datatype::f2c(*datatype), elements);
 }
 
 void mpi_dims_create_ (int* nnodes, int* ndims, int* dims, int* ierr) {
@@ -885,7 +885,7 @@ void mpi_get_library_version_ (char *version,int *len, int* ierr){
 }
 
 void mpi_request_get_status_ ( int* request, int *flag, MPI_Status* status, int* ierr){
- *ierr = MPI_Request_get_status( simgrid::smpi::Request::f2c(*request), flag, status);
+ *ierr = MPI_Request_get_status( simgrid::smpi::Request::f2c(*request), flag, FORT_STATUS_IGNORE(status));
 }
 
 void mpi_grequest_start_ ( void *query_fn, void *free_fn, void *cancel_fn, void *extra_state, int*request, int* ierr){
@@ -902,11 +902,11 @@ void mpi_grequest_complete_ ( int* request, int* ierr){
 }
 
 void mpi_status_set_cancelled_ (MPI_Status* status,int* flag, int* ierr){
- *ierr = MPI_Status_set_cancelled(status,*flag);
+ *ierr = MPI_Status_set_cancelled(FORT_STATUS_IGNORE(status),*flag);
 }
 
 void mpi_status_set_elements_ ( MPI_Status* status, int* datatype, int* count, int* ierr){
- *ierr = MPI_Status_set_elements( status, simgrid::smpi::Datatype::f2c(*datatype), *count);
+ *ierr = MPI_Status_set_elements( FORT_STATUS_IGNORE(status), simgrid::smpi::Datatype::f2c(*datatype), *count);
 }
 
 void mpi_publish_name_ ( char *service_name, int* info, char *port_name, int* ierr){

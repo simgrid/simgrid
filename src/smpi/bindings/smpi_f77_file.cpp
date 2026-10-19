@@ -55,51 +55,51 @@ void mpi_file_set_size_(int* fh, MPI_Offset* size, int* ierr){
 }
 
 void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_read_shared_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read_shared(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read_shared(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_read_all_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read_all(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read_all(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_read_ordered_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read_ordered(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read_ordered(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_read_at_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read_at(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read_at(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_read_at_all_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_read_at_all(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_read_at_all(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_shared_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write_shared(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write_shared(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_ordered_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write_ordered(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write_ordered(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_at_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write_at(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write_at(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_at_all_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write_at_all(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write_at_all(simgrid::smpi::File::f2c(*fh), *offset, buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_write_all_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){
-  *ierr=  MPI_File_write_all(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), status);
+  *ierr=  MPI_File_write_all(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_file_set_view_ ( int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr){

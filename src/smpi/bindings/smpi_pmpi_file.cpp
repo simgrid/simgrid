@@ -95,6 +95,7 @@ int PMPI_File_get_position_shared(MPI_File fh, MPI_Offset* offset){
 
 int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -107,6 +108,7 @@ int PMPI_File_read(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_
 
 int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -120,6 +122,7 @@ int PMPI_File_read_shared(MPI_File fh, void *buf, int count,MPI_Datatype datatyp
 
 int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -132,6 +135,7 @@ int PMPI_File_write(MPI_File fh, const void *buf, int count,MPI_Datatype datatyp
 
 int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -145,6 +149,7 @@ int PMPI_File_write_shared(MPI_File fh, const void *buf, int count,MPI_Datatype 
 
 int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -157,6 +162,7 @@ int PMPI_File_read_all(MPI_File fh, void *buf, int count,MPI_Datatype datatype, 
 
 int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -170,6 +176,7 @@ int PMPI_File_read_ordered(MPI_File fh, void *buf, int count,MPI_Datatype dataty
 
 int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -182,6 +189,7 @@ int PMPI_File_write_all(MPI_File fh, const void *buf, int count,MPI_Datatype dat
 
 int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -195,6 +203,7 @@ int PMPI_File_write_ordered(MPI_File fh, const void *buf, int count,MPI_Datatype
 
 int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUTS
+  CHECK_STATUS(6, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -212,6 +221,7 @@ int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_D
 
 int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
+  CHECK_STATUS(6, MPI_ERR_ARG, status)
   CHECK_WRONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -230,6 +240,7 @@ int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,M
 
 int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
+  CHECK_STATUS(6, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   PASS_ZEROCOUNT(count)
   const SmpiBenchGuard suspend_bench;
@@ -247,6 +258,7 @@ int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int coun
 
 int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype, MPI_Status *status){
   CHECK_FILE_INPUT_OFFSET
+  CHECK_STATUS(6, MPI_ERR_ARG, status)
   CHECK_RDONLY(fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
@@ -292,51 +304,44 @@ int PMPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_D
   return ret;
 }
 
-int PMPI_File_get_info(MPI_File  fh, MPI_Info* info)
-{
+int PMPI_File_get_info(MPI_File  fh, MPI_Info* info){
   CHECK_FILE(1, fh)
   *info = new simgrid::smpi::Info(fh->info());
   return MPI_SUCCESS;
 }
 
-int PMPI_File_set_info(MPI_File  fh, MPI_Info info)
-{
+int PMPI_File_set_info(MPI_File  fh, MPI_Info info){
   CHECK_FILE(1, fh)
   fh->set_info(info);
   return MPI_SUCCESS;
 }
 
-int PMPI_File_get_size(MPI_File  fh, MPI_Offset* size)
-{
+int PMPI_File_get_size(MPI_File  fh, MPI_Offset* size){
   CHECK_FILE(1, fh)
   *size = fh->size();
   return MPI_SUCCESS;
 }
 
-int PMPI_File_set_size(MPI_File  fh, MPI_Offset size)
-{
+int PMPI_File_set_size(MPI_File  fh, MPI_Offset size){
   CHECK_FILE(1, fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   fh->set_size(size);
   return MPI_SUCCESS;
 }
 
-int PMPI_File_get_amode(MPI_File  fh, int* amode)
-{
+int PMPI_File_get_amode(MPI_File  fh, int* amode){
   CHECK_FILE(1, fh)
   *amode = fh->flags();
   return MPI_SUCCESS;
 }
 
-int PMPI_File_get_group(MPI_File  fh, MPI_Group* group)
-{
+int PMPI_File_get_group(MPI_File  fh, MPI_Group* group){
   CHECK_FILE(1, fh)
   *group = fh->comm()->group();
   return MPI_SUCCESS;
 }
 
-int PMPI_File_sync(MPI_File  fh)
-{
+int PMPI_File_sync(MPI_File  fh){
   CHECK_FILE(1, fh)
   fh->sync();
   return MPI_SUCCESS;

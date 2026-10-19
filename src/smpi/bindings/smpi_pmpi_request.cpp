@@ -232,6 +232,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   CHECK_BUFFER(1, buf, count, datatype)
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
+  CHECK_STATUS(7, MPI_ERR_ARG, status)
 
   const SmpiBenchGuard suspend_bench;
   if (src == MPI_PROC_NULL) {
@@ -385,6 +386,7 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
              "%s: Invalid parameters 1 and 6: sendbuf and recvbuf must be disjoint", __func__)
   CHECK_TAG(10, recvtag)
   CHECK_COMM(11)
+  CHECK_STATUS(12, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
 
   if (src == MPI_PROC_NULL) {
@@ -497,6 +499,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
   CHECK_BUFFER(1, buf, count, datatype)
+  CHECK_STATUS(9, MPI_ERR_ARG, status)
 
   int size = datatype->get_extent() * count;
   if (size == 0)
@@ -539,6 +542,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 {
   int retval = 0;
   const SmpiBenchGuard suspend_bench;
+  CHECK_STATUS(3, MPI_ERR_ARG, status)
   if (request == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
@@ -565,6 +569,7 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
 {
   int retval = 0;
   CHECK_COUNT(1, count)
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (index == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
@@ -581,6 +586,7 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
 {
   int retval = 0;
   CHECK_COUNT(1, count)
+  CHECK_STATUSES(4, MPI_ERR_ARG, statuses)
   const SmpiBenchGuard suspend_bench;
   if (flag == nullptr) {
     retval = MPI_ERR_ARG;
@@ -597,6 +603,7 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
+  CHECK_STATUSES(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
@@ -614,6 +621,7 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   const SmpiBenchGuard suspend_bench;
 
   CHECK_COMM(6)
+  CHECK_STATUS(4, MPI_ERR_ARG, status)
   if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
     CHECK_RANK(1, source, comm)
   CHECK_TAG(2, tag)
@@ -634,6 +642,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   int retval = 0;
   const SmpiBenchGuard suspend_bench;
   CHECK_COMM(6)
+  CHECK_STATUS(5, MPI_ERR_ARG, status)
   if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
     CHECK_RANK(1, source, comm)
   CHECK_TAG(2, tag)
@@ -673,9 +682,10 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
   const SmpiBenchGuard suspend_bench;
 
-  simgrid::smpi::Status::empty(status);
-
   CHECK_NULL(1, MPI_ERR_ARG, request)
+  CHECK_STATUS(2, MPI_ERR_ARG, status)
+
+  simgrid::smpi::Status::empty(status);
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_SUCCESS;
   } else {
@@ -712,6 +722,8 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   if (count <= 0)
     return MPI_SUCCESS;
 
+  CHECK_STATUS(4, MPI_ERR_ARG, status)
+
   const SmpiBenchGuard suspend_bench;
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
@@ -743,6 +755,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   const SmpiBenchGuard suspend_bench;
   CHECK_COUNT(1, count)
+  CHECK_STATUSES(3, MPI_ERR_ARG, status)
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
@@ -773,6 +786,7 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
+  CHECK_STATUSES(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
@@ -799,6 +813,7 @@ int PMPI_Cancel(MPI_Request* request)
 }
 
 int PMPI_Test_cancelled(const MPI_Status* status, int* flag){
+  CHECK_STATUS(1, MPI_ERR_ARG, status)
   if(status==MPI_STATUS_IGNORE){
     *flag=0;
     return MPI_ERR_ARG;
@@ -808,6 +823,7 @@ int PMPI_Test_cancelled(const MPI_Status* status, int* flag){
 }
 
 int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
+  CHECK_STATUS(1, MPI_ERR_ARG, status)
   if(status==MPI_STATUS_IGNORE){
     return MPI_ERR_ARG;
   }
@@ -816,6 +832,7 @@ int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
 }
 
 int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int count){
+  CHECK_STATUS(1, MPI_ERR_ARG, status)
   if(status==MPI_STATUS_IGNORE){
     return MPI_ERR_ARG;
   }
@@ -824,6 +841,7 @@ int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int coun
 }
 
 int PMPI_Status_set_elements_x(MPI_Status* status, MPI_Datatype datatype, MPI_Count count){
+  CHECK_STATUS(1, MPI_ERR_ARG, status)
   if(status==MPI_STATUS_IGNORE){
     return MPI_ERR_ARG;
   }
@@ -840,6 +858,7 @@ int PMPI_Grequest_complete( MPI_Request request){
 }
 
 int PMPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
+  CHECK_STATUS(3, MPI_ERR_ARG, status)
   if(request==MPI_REQUEST_NULL){
     *flag=1;
     simgrid::smpi::Status::empty(status);

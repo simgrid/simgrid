@@ -199,6 +199,11 @@ int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
 {
   if (status == nullptr || count == nullptr) {
     return MPI_ERR_ARG;
+  } else if ((const void*)status == (const void*)&mpi_status_ignore_ ||
+             (const void*)status == (const void*)&mpi_statuses_ignore_) {
+    // MPI_Get_count needs a real status: the Fortran MPI_STATUS_IGNORE and
+    // MPI_STATUSES_IGNORE objects are not statuses.
+    return MPI_ERR_ARG;
   } else if (not datatype->is_valid()) {
     return MPI_ERR_TYPE;
   } else {

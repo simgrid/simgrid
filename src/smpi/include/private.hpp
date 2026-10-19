@@ -563,6 +563,25 @@ XBT_PRIVATE void private_execute_flops(double flops);
   CHECK_ARGS((buf) == nullptr, (err),\
              "%s: param %d %s cannot be NULL", __func__, (num), _XBT_STRINGIFY(buf))
 
+/* Check the status argument of a routine taking a single status.
+ *
+ * A valid value is either MPI_STATUS_IGNORE (NULL) or a pointer to a real
+ * MPI_Status. In Fortran, MPI_STATUSES_IGNORE is a distinct object from
+ * MPI_STATUS_IGNORE: giving it to a routine taking a single status is a user
+ * error, and dereferencing it as an MPI_Status would corrupt memory.
+ */
+#define CHECK_STATUS(num, err, status)\
+  CHECK_ARGS((const void*)(status) == (const void*)&mpi_statuses_ignore_, (err),\
+             "%s: param %d %s is neither MPI_STATUS_IGNORE nor a valid MPI_Status pointer", __func__, (num), _XBT_STRINGIFY(status))
+
+/* Check the status argument of a routine taking an array of statuses.
+ *
+ * Symmetrically to CHECK_STATUS, MPI_STATUS_IGNORE must not be used here.
+ */
+#define CHECK_STATUSES(num, err, status)\
+  CHECK_ARGS((const void*)(status) == (const void*)&mpi_status_ignore_, (err),\
+             "%s: param %d %s is neither MPI_STATUSES_IGNORE nor a valid MPI_Status array pointer", __func__, (num), _XBT_STRINGIFY(status))
+
 #define CHECK_MPI_NULL(num, val, err, ptr)\
   {\
     CHECK_ARGS((ptr) == (val), (err),\

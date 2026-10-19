@@ -81,7 +81,7 @@ void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag, int* c
 
 void mpi_recv_(void* buf, int* count, int* datatype, int* src, int* tag, int* comm, MPI_Status* status, int* ierr) {
   buf = static_cast<char *>( FORT_BOTTOM(buf));
-  *ierr = MPI_Recv(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *src, *tag, simgrid::smpi::Comm::f2c(*comm), status);
+  *ierr = MPI_Recv(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *src, *tag, simgrid::smpi::Comm::f2c(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_sendrecv_replace_ (void *buf, int* count, int* datatype, int* dst, int* sendtag, int* src, int* recvtag,
@@ -175,7 +175,7 @@ void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int
   for (int i = 0; i < *count; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Waitany(*count, reqs.data(), index, status);
+  *ierr = MPI_Waitany(*count, reqs.data(), index, FORT_STATUS_IGNORE(status));
   if(*index!=MPI_UNDEFINED){
     if(reqs[*index]==MPI_REQUEST_NULL){
         simgrid::smpi::Request::free_f(requests[*index]);
@@ -206,7 +206,7 @@ void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MP
   for (int i = 0; i < *incount; i++) {
     reqs[i] = simgrid::smpi::Request::f2c(requests[i]);
   }
-  *ierr = MPI_Waitsome(*incount, reqs.data(), outcount, indices, status);
+  *ierr = MPI_Waitsome(*incount, reqs.data(), outcount, indices, FORT_STATUSES_IGNORE(status));
   for (int i = 0; i < *outcount; i++) {
     if(reqs[indices[i]]==MPI_REQUEST_NULL){
         simgrid::smpi::Request::free_f(requests[indices[i]]);
@@ -279,7 +279,7 @@ void mpi_probe_ (int* source, int* tag, int* comm, MPI_Status*  status, int* ier
 
 
 void mpi_iprobe_ (int* source, int* tag, int* comm, int* flag, MPI_Status*  status, int* ierr) {
- *ierr = MPI_Iprobe(*source, *tag, simgrid::smpi::Comm::f2c(*comm), flag, status);
+ *ierr = MPI_Iprobe(*source, *tag, simgrid::smpi::Comm::f2c(*comm), flag, FORT_STATUS_IGNORE(status));
 }
 
 }
