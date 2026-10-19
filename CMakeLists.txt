@@ -980,10 +980,24 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Tests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Define subdirectories
+# With CMake >= 3.28, ctest builds the 'tests' target before running any test
+# (set_tests_properties needs DIRECTORY to reach the subdirectories' tests)
 foreach(cmakefile ${CMAKEFILES_TXT})
   string(REPLACE "/CMakeLists.txt" "" repository ${cmakefile})
   add_subdirectory("${CMAKE_HOME_DIRECTORY}/${repository}")
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
+    get_directory_property(dir_tests DIRECTORY "${CMAKE_HOME_DIRECTORY}/${repository}" TESTS)
+    if(dir_tests)
+      set_tests_properties(${dir_tests} DIRECTORY "${CMAKE_HOME_DIRECTORY}/${repository}" PROPERTIES FIXTURES_REQUIRED tests-built)
+    endif()
+  endif()
 endforeach()
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.28)
+  get_directory_property(dir_tests TESTS)
+  set_tests_properties(${dir_tests} PROPERTIES FIXTURES_REQUIRED tests-built)
+  add_test(NAME build-tests COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target tests)
+  set_tests_properties(build-tests PROPERTIES FIXTURES_SETUP tests-built TIMEOUT 7200) # building from scratch is long
+endif()
 
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
