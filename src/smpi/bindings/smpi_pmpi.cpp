@@ -93,6 +93,8 @@ int PMPI_Get_version (int *version,int *subversion){
 }
 
 int PMPI_Get_library_version (char *version,int *len){
+  if (version == nullptr || len == nullptr)
+    return MPI_ERR_ARG;
   snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2025",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
   *len = std::min(static_cast<int>(strlen(version)), MPI_MAX_LIBRARY_VERSION_STRING);
