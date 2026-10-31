@@ -798,7 +798,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
           &observer);
     } catch (const Exception&) {
       XBT_DEBUG("Exception in testany");
-      return 0;
+      return MPI_ERR_OTHER;
     }
 
     if (i != -1) { // -1 is not MPI_UNDEFINED but a return code of the Engine. (nothing matches)
