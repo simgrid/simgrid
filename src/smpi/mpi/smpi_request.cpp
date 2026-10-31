@@ -758,7 +758,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
       count_dead++;
     }
   }
-  if(count_dead==incount)*count=MPI_UNDEFINED;
+  if(count_dead==incount)*count=0;
   if(error!=0)
     return MPI_ERR_IN_STATUS;
   else
