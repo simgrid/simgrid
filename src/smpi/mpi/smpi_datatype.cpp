@@ -559,6 +559,9 @@ int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint*
 int Datatype::create_subarray(int ndims, const int* array_of_sizes,
                              const int* array_of_subsizes, const int* array_of_starts,
                              int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
+  if (ndims < 1 || array_of_sizes == nullptr || array_of_subsizes == nullptr ||
+      array_of_starts == nullptr || oldtype == MPI_DATATYPE_NULL || newtype == nullptr)
+    return MPI_ERR_ARG;
   MPI_Datatype tmp;
 
   for (int i = 0; i < ndims; i++) {
