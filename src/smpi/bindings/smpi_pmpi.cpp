@@ -228,6 +228,8 @@ int PMPI_Initialized(int* flag) {
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info /*info*/, void* baseptr)
 {
   CHECK_NEGATIVE(1, MPI_ERR_COUNT, size)
+  if (baseptr == nullptr)
+    return MPI_ERR_ARG;
   void *ptr = xbt_malloc(size);
   *static_cast<void**>(baseptr) = ptr;
   return MPI_SUCCESS;
