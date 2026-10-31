@@ -249,7 +249,7 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
 int PMPI_Error_string(int errorcode, char* string, int* resultlen)
 {
   static const std::vector<const char*> smpi_error_string = {FOREACH_ERROR(GENERATE_STRING)};
-  if (errorcode < 0 || static_cast<size_t>(errorcode) >= smpi_error_string.size() || string == nullptr)
+  if (errorcode < 0 || static_cast<size_t>(errorcode) >= smpi_error_string.size() || string == nullptr || resultlen == nullptr)
     return MPI_ERR_ARG;
 
   int len    = snprintf(string, MPI_MAX_ERROR_STRING, "%s", smpi_error_string[errorcode]);
