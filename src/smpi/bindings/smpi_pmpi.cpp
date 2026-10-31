@@ -189,6 +189,8 @@ MPI_Aint PMPI_Aint_diff(MPI_Aint address, MPI_Aint disp)
 
 int PMPI_Get_processor_name(char *name, int *resultlen)
 {
+  if (name == nullptr || resultlen == nullptr)
+    return MPI_ERR_ARG;
   int len = std::min(static_cast<int>(sg_host_self()->get_name().size()), MPI_MAX_PROCESSOR_NAME - 1);
   sg_host_self()->get_name().copy(name, len);
   name[len]  = '\0';
@@ -278,6 +280,8 @@ int PMPI_Buffer_attach(void *buf, int size){
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size){
+  if (buffer == nullptr || size == nullptr)
+    return MPI_ERR_ARG;
   smpi_process()->bsend_buffer((void**)buffer, size);
   return smpi_process()->set_bsend_buffer(nullptr, 0);
 }
