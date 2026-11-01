@@ -149,8 +149,64 @@ __asm__(
     "   popl %ebp\n"
     // Return using the return address of the new context:
     "   retl\n");
+#elif SIMGRID_PROCESSOR_arm64
+__asm__(
+    ".text\n"
+    ".globl raw_makecontext\n"
+    ".type raw_makecontext,@function\n"
+    "raw_makecontext:\n"          /* x0=stack, x1=size, x2=entry, x3=arg */
+    "   add x0, x0, x1\n"         /* stack + size */
+    "   and x0, x0, #-16\n"       /* align stack */
+    "   sub x0, x0, #176\n"       /* frame size: 112 (x regs) + 64 (d regs) */
+    "   str x3, [x0, #0]\n"       /* x0 slot = arg */
+    "   stp xzr, xzr, [x0, #16]\n"
+    "   stp xzr, xzr, [x0, #32]\n"
+    "   stp xzr, xzr, [x0, #48]\n"
+    "   stp xzr, xzr, [x0, #64]\n"
+    "   stp xzr, xzr, [x0, #80]\n"
+    "   stp xzr, x2, [x0, #96]\n"  /* x29=0, x30=entry */
+    "   stp xzr, xzr, [x0, #112]\n"
+    "   stp xzr, xzr, [x0, #128]\n"
+    "   stp xzr, xzr, [x0, #144]\n"
+    "   stp xzr, xzr, [x0, #160]\n"
+    "   ret\n");
+
+__asm__(
+    ".text\n"
+    ".globl raw_swapcontext\n"
+    ".type raw_swapcontext,@function\n"
+    "raw_swapcontext:\n"          /* x0=old, x1=new */
+    "   mov x9, x1\n"
+    "   sub sp, sp, #176\n"
+    "   str x0, [sp, #0]\n"
+    "   stp x19, x20, [sp, #16]\n"
+    "   stp x21, x22, [sp, #32]\n"
+    "   stp x23, x24, [sp, #48]\n"
+    "   stp x25, x26, [sp, #64]\n"
+    "   stp x27, x28, [sp, #80]\n"
+    "   stp x29, x30, [sp, #96]\n"
+    "   stp d8, d9, [sp, #112]\n"
+    "   stp d10, d11, [sp, #128]\n"
+    "   stp d12, d13, [sp, #144]\n"
+    "   stp d14, d15, [sp, #160]\n"
+    "   mov x10, sp\n"
+    "   str x10, [x0]\n"
+    "   mov sp, x9\n"
+    "   ldr x0, [sp, #0]\n"
+    "   ldp x19, x20, [sp, #16]\n"
+    "   ldp x21, x22, [sp, #32]\n"
+    "   ldp x23, x24, [sp, #48]\n"
+    "   ldp x25, x26, [sp, #64]\n"
+    "   ldp x27, x28, [sp, #80]\n"
+    "   ldp x29, x30, [sp, #96]\n"
+    "   ldp d8, d9, [sp, #112]\n"
+    "   ldp d10, d11, [sp, #128]\n"
+    "   ldp d12, d13, [sp, #144]\n"
+    "   ldp d14, d15, [sp, #160]\n"
+    "   add sp, sp, #176\n"
+    "   ret\n");
 #else
-#error HAVE_RAW_CONTEXTS defined, but neither SIMGRID_PROCESSOR_x86_64 nor SIMGRID_PROCESSOR_i686. Please update the code.
+#error HAVE_RAW_CONTEXTS defined, but neither SIMGRID_PROCESSOR_x86_64, SIMGRID_PROCESSOR_i686 nor SIMGRID_PROCESSOR_arm64. Please update the code.
 #endif
 
 #else /* not HAVE_RAW_CONTEXTS */
