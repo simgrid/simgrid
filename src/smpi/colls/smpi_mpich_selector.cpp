@@ -620,22 +620,42 @@ int allgatherv__mpich(const void *sbuf, int scount,
                       )
 {
     int communicator_size, pow2_size,i;
-    size_t total_dsize;
+    size_t total_count = 0;
+    size_t msg_size;
 
     communicator_size = comm->size();
 
-    /* Determine complete data size */
-    total_dsize = 0;
     for (i=0; i<communicator_size; i++)
-        total_dsize += rcounts[i];
-    if (total_dsize == 0)
+        total_count += rcounts[i];
+    if (total_count == 0)
       return MPI_SUCCESS;
+
+    /* MPICH thresholds msg_size as the mean receive count, in bytes */
+    msg_size = ((total_count + communicator_size - 1) / communicator_size) * rdtype->size();
 
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1);
 
-    if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return allgatherv__mpich_rdb(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
-    } else if (total_dsize <= 81920) {
+    /* Selection mirrors MPICH's allgatherv-intra-auto tuning table */
+    if (pow2_size == communicator_size) {
+        if (communicator_size <= 8) {
+            if (msg_size < 65536)
+                return allgatherv__mpich_rdb(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+        } else if (communicator_size <= 64) {
+            if (msg_size < 8192)
+                return allgatherv__mpich_rdb(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+        } else if (msg_size < 1024) {
+            return allgatherv__mpich_rdb(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+        }
+        return allgatherv__mpich_ring(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+    }
+
+    if (communicator_size <= 8) {
+        if (msg_size < 10240)
+            return allgatherv__ompi_bruck(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+    } else if (communicator_size <= 64) {
+        if (msg_size < 1280)
+            return allgatherv__ompi_bruck(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
+    } else if (msg_size < 160) {
         return allgatherv__ompi_bruck(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
     }
     return allgatherv__mpich_ring(sbuf, scount, sdtype, rbuf, rcounts, rdispls, rdtype, comm);
