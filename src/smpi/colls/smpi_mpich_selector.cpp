@@ -309,31 +309,17 @@ int reduce__mpich(const void *sendbuf, void *recvbuf,
                                             MPI_Comm   comm
                                             )
 {
-    int communicator_size=0;
-    size_t message_size, dsize;
+    /* Tuning table of MPICH's reduce-intra-auto. */
+    const size_t small_message_size = 2048;
+    const size_t message_size = datatype->size() * static_cast<size_t>(count);
 
-    if (not comm->is_smp_comm()) {
-      if(comm->get_leaders_comm()==MPI_COMM_NULL){
-        comm->init_smp();
-      }
-      if (op->is_commutative() == 1)
-        return reduce__mvapich2_two_level(sendbuf, recvbuf, count, datatype, op, root, comm);
-    }
-
-    communicator_size = comm->size();
-
-    /* need data size for decision function */
-    dsize=datatype->size();
-    message_size = dsize * count;   /* needed for decision */
-
-    int pof2 = 1;
-    while (pof2 <= communicator_size) pof2 <<= 1;
-    pof2 >>= 1;
-
-    if ((count < pof2) || (message_size < 2048) || (op != MPI_OP_NULL && not op->is_commutative())) {
+    if (message_size < small_message_size)
       return reduce__binomial(sendbuf, recvbuf, count, datatype, op, root, comm);
-    }
-    return reduce__scatter_gather(sendbuf, recvbuf, count, datatype, op, root, comm);
+
+    if (op != MPI_OP_NULL && op->is_predefined())
+      return reduce__scatter_gather(sendbuf, recvbuf, count, datatype, op, root, comm);
+
+    return reduce__binomial(sendbuf, recvbuf, count, datatype, op, root, comm);
 }
 
 

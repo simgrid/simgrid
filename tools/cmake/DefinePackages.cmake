@@ -178,6 +178,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce/reduce-NTSL.cpp
   src/smpi/colls/reduce/reduce-arrival-pattern-aware.cpp
   src/smpi/colls/reduce/reduce-binomial.cpp
+  src/smpi/colls/reduce/reduce-mpich-smp.cpp
   src/smpi/colls/reduce/reduce-flat-tree.cpp
   src/smpi/colls/reduce/reduce-mvapich-knomial.cpp
   src/smpi/colls/reduce/reduce-mvapich-two-level.cpp

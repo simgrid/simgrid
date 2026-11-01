@@ -232,6 +232,7 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
       {{"default", "reduce default collective", (void*)reduce__default},
        {"arrival_pattern_aware", "reduce arrival_pattern_aware collective", (void*)reduce__arrival_pattern_aware},
        {"binomial", "reduce binomial collective", (void*)reduce__binomial},
+       {"mpich_smp", "reduce mpich_smp collective", (void*)reduce__mpich_smp},
        {"flat_tree", "reduce flat_tree collective", (void*)reduce__flat_tree},
        {"NTSL", "reduce NTSL collective", (void*)reduce__NTSL},
        {"scatter_gather", "reduce scatter_gather collective", (void*)reduce__scatter_gather},
