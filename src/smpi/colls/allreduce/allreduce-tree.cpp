@@ -46,16 +46,17 @@ int allreduce__tree(const void* sendbuf, void* recvbuf, int count, MPI_Datatype 
   }
 
   mask = 1;
-  while (mask < size)
-    mask <<= 1;
-  mask >>= 1;
-  while (mask > 0) {
-    if ((rank & mask) == 0 && (rank | mask) < size)
-      Request::send(recvbuf, count, dtype, rank | mask, tag, comm);
-    else if (rank & mask) {
-      Request::recv(recvbuf, count, dtype, rank & ~mask, tag, comm, MPI_STATUS_IGNORE);
+  while (mask < size) {
+    if (rank & mask) {
+      Request::recv(recvbuf, count, dtype, rank - mask, tag, comm, MPI_STATUS_IGNORE);
       break;
     }
+    mask <<= 1;
+  }
+  mask >>= 1;
+  while (mask > 0) {
+    if (rank + mask < size)
+      Request::send(recvbuf, count, dtype, rank + mask, tag, comm);
     mask >>= 1;
   }
 
