@@ -380,44 +380,51 @@ int reduce_scatter__mpich(const void *sbuf, void *rbuf,
                           )
 {
     int comm_size, i;
-    size_t total_message_size;
 
     if(sbuf==rbuf)sbuf=MPI_IN_PLACE; //restore MPI_IN_PLACE as these algorithms handle it
 
     XBT_DEBUG("Coll_reduce_scatter_mpich::reduce");
 
     comm_size = comm->size();
-    // We need data size for decision function
-    total_message_size = 0;
+    size_t total_message_size = 0;
     for (i = 0; i < comm_size; i++) {
         total_message_size += rcounts[i];
     }
+    total_message_size *= dtype->size();
 
-    if( (op==MPI_OP_NULL || op->is_commutative()) &&  total_message_size > 524288) {
+    if (op==MPI_OP_NULL || op->is_commutative()) {
+        size_t rh_threshold;
+        if (comm_size <= 8)
+            rh_threshold = 65536;
+        else if (comm_size <= 64)
+            rh_threshold = 8192;
+        else
+            rh_threshold = 1024;
+
+        if (total_message_size < rh_threshold)
+            return reduce_scatter__ompi_basic_recursivehalving(sbuf, rbuf, rcounts, dtype, op, comm);
         return reduce_scatter__mpich_pair(sbuf, rbuf, rcounts, dtype, op, comm);
-    } else if ((op != MPI_OP_NULL && not op->is_commutative())) {
-      bool is_block_regular = true;
-      for (i = 0; i < (comm_size - 1); ++i) {
-        if (rcounts[i] != rcounts[i + 1]) {
-          is_block_regular = false;
-          break;
-        }
-      }
+    }
 
-      /* slightly retask pof2 to mean pof2 equal or greater, not always greater as it is above */
-      int pof2 = 1;
-      while (pof2 < comm_size)
+    bool is_block_regular = true;
+    for (i = 0; i < (comm_size - 1); ++i) {
+        if (rcounts[i] != rcounts[i + 1]) {
+            is_block_regular = false;
+            break;
+        }
+    }
+
+    /* slightly retask pof2 to mean pof2 equal or greater, not always greater as it is above */
+    int pof2 = 1;
+    while (pof2 < comm_size)
         pof2 <<= 1;
 
-      if (pof2 == comm_size && is_block_regular) {
+    if (pof2 == comm_size && is_block_regular) {
         /* noncommutative, pof2 size, and block regular */
         return reduce_scatter__mpich_noncomm(sbuf, rbuf, rcounts, dtype, op, comm);
-      }
-
-      return reduce_scatter__mpich_rdb(sbuf, rbuf, rcounts, dtype, op, comm);
-    }else{
-       return reduce_scatter__mpich_rdb(sbuf, rbuf, rcounts, dtype, op, comm);
     }
+
+    return reduce_scatter__mpich_rdb(sbuf, rbuf, rcounts, dtype, op, comm);
 }
 
 
