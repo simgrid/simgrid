@@ -85,6 +85,7 @@ set(SMPI_SRC
   src/smpi/colls/allgather/allgather-SMP-NTS.cpp
   src/smpi/colls/allgather/allgather-bruck.cpp
   src/smpi/colls/allgather/allgather-k-brucks.cpp
+  src/smpi/colls/allgather/allgather-recexch.cpp
   src/smpi/colls/allgather/allgather-loosely-lr.cpp
   src/smpi/colls/allgather/allgather-mvapich-smp.cpp
   src/smpi/colls/allgather/allgather-ompi-neighborexchange.cpp

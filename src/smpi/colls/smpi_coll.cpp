@@ -41,6 +41,8 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
        {"3dmesh", "allgather 3dmesh collective", (void*)allgather__3dmesh},
        {"bruck", "allgather bruck collective", (void*)allgather__bruck},
        {"k_brucks", "allgather k_brucks collective", (void*)allgather__k_brucks2},
+       {"recexch_doubling", "allgather recexch_doubling collective", (void*)allgather__recexch_doubling},
+       {"recexch_halving", "allgather recexch_halving collective", (void*)allgather__recexch_halving},
        {"GB", "allgather GB collective", (void*)allgather__GB},
        {"loosely_lr", "allgather loosely_lr collective", (void*)allgather__loosely_lr},
        {"NTSLR", "allgather NTSLR collective", (void*)allgather__NTSLR},
