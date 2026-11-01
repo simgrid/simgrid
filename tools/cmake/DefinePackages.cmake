@@ -107,6 +107,7 @@ set(SMPI_SRC
   src/smpi/colls/allreduce/allreduce-mvapich-two-level.cpp
   src/smpi/colls/allreduce/allreduce-ompi-ring-segmented.cpp
   src/smpi/colls/allreduce/allreduce-rab-rdb.cpp
+  src/smpi/colls/allreduce/allreduce-allgather-reduce.cpp
   src/smpi/colls/allreduce/allreduce-rab1.cpp
   src/smpi/colls/allreduce/allreduce-rab2.cpp
   src/smpi/colls/allreduce/allreduce-rdb.cpp

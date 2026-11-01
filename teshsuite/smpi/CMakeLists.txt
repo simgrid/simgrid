@@ -112,7 +112,7 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-allgatherv-${ALLGATHERV} --cfg smpi/allgatherv:${ALLGATHERV} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgatherv/coll-allgatherv.tesh)
   endforeach()
 
-  foreach (ALLREDUCE lr rdb recexch recursive_multiplying ring tree rab1 rab2 rab_rdb smp_binomial smp_binomial_pipeline smp_rdb smp_rsag smp_rsag_lr impi
+  foreach (ALLREDUCE lr rdb recexch recursive_multiplying ring tree allgather_reduce rab1 rab2 rab_rdb smp_binomial smp_binomial_pipeline smp_rdb smp_rsag smp_rsag_lr impi
                      smp_rsag_rab redbcast ompi mpich ompi_ring_segmented mvapich2 mvapich2_rs mvapich2_two_level)
     ADD_TESH(tesh-smpi-coll-allreduce-${ALLREDUCE} --cfg smpi/allreduce:${ALLREDUCE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce/coll-allreduce.tesh)
   endforeach()

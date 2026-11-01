@@ -84,6 +84,7 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
        {"rab1", "allreduce rab1 collective", (void*)allreduce__rab1},
        {"rab2", "allreduce rab2 collective", (void*)allreduce__rab2},
        {"rab_rdb", "allreduce rab_rdb collective", (void*)allreduce__rab_rdb},
+       {"allgather_reduce", "allreduce allgather_reduce collective", (void*)allreduce__allgather_reduce},
        {"rdb", "allreduce rdb collective", (void*)allreduce__rdb},
        {"ring", "allreduce ring collective", (void*)allreduce__ring},
        {"tree", "allreduce tree collective", (void*)allreduce__tree},

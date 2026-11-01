@@ -197,6 +197,7 @@ int allreduce__lr(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, 
 int allreduce__rab1(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__rab2(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__rab_rdb(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
+int allreduce__allgather_reduce(const void *sbuf, void *rbuf, int count, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__rdb(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__ring(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int allreduce__tree(const void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
