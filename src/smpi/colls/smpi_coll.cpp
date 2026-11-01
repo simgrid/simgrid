@@ -181,6 +181,7 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
      {"alltoallv",
       {{"default", "alltoallv default collective", (void*)alltoallv__default},
        {"bruck", "alltoallv bruck collective", (void*)alltoallv__bruck},
+       {"scattered", "alltoallv scattered collective", (void*)alltoallv__scattered},
        {"pair", "alltoallv pair collective", (void*)alltoallv__pair},
        {"pair_light_barrier", "alltoallv pair_light_barrier collective", (void*)alltoallv__pair_light_barrier},
        {"pair_mpi_barrier", "alltoallv pair_mpi_barrier collective", (void*)alltoallv__pair_mpi_barrier},

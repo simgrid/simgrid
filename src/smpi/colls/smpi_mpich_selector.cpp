@@ -166,10 +166,11 @@ int alltoallv__mpich(const void *sbuf, const int *scounts, const int *sdisps,
                      MPI_Comm  comm
                      )
 {
-    /* For starters, just keep the original algorithm. */
-    return alltoallv__bruck(sbuf, scounts, sdisps, sdtype,
-                            rbuf, rcounts, rdisps,rdtype,
-                            comm);
+    /* MPICH's alltoallv-intra-auto always picks the scattered algorithm;
+       MPI_IN_PLACE is normalized into a real send buffer by the PMPI wrapper. */
+    return alltoallv__scattered(sbuf, scounts, sdisps, sdtype,
+                                rbuf, rcounts, rdisps, rdtype,
+                                comm);
 }
 
 

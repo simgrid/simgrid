@@ -139,6 +139,7 @@ set(SMPI_SRC
   src/smpi/colls/alltoall/alltoall-ring-one-barrier.cpp
   src/smpi/colls/alltoall/alltoall-ring.cpp
   src/smpi/colls/alltoallv/alltoallv-bruck.cpp
+  src/smpi/colls/alltoallv/alltoallv-scattered.cpp
   src/smpi/colls/alltoallv/alltoallv-ompi-basic-linear.cpp
   src/smpi/colls/alltoallv/alltoallv-pair-light-barrier.cpp
   src/smpi/colls/alltoallv/alltoallv-pair-mpi-barrier.cpp

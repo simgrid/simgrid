@@ -249,6 +249,7 @@ int alltoall__automatic(const void *send_buff, int send_count, MPI_Datatype send
 
 int alltoallv__default(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__bruck(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
+int alltoallv__scattered(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__pair(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__pair_light_barrier(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoallv__pair_mpi_barrier(const void *send_buff, const int *send_counts, const int *send_disps, MPI_Datatype send_type, void *recv_buff, const int *recv_counts, const int *recv_disps, MPI_Datatype recv_type, MPI_Comm comm);
