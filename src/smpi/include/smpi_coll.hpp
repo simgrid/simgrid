@@ -226,6 +226,10 @@ int alltoall__2dmesh(const void *send_buff, int send_count, MPI_Datatype send_ty
 int alltoall__3dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__basic_linear(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__bruck(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
+int alltoall__k_brucks2(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
+int alltoall__k_brucks(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm, int k);
+int alltoall__scattered(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
+int alltoall__pairwise(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__pair(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__pair_rma(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int alltoall__pair_light_barrier(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);

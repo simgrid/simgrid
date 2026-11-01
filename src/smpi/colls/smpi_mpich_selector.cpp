@@ -140,43 +140,23 @@ int alltoall__mpich(const void *sbuf, int scount,
     size_t dsize, block_dsize;
     communicator_size = comm->size();
 
-    unsigned int short_size=256;
-    unsigned int medium_size=32768;
-    //short size and comm_size >=8   -> bruck
-
-//     medium size messages and (short messages for comm_size < 8), we
-//     use an algorithm that posts all irecvs and isends and then does a
-//     waitall.
-
-//    For long messages and power-of-two number of processes, we use a
-//   pairwise exchange algorithm
-
-//   For a non-power-of-two number of processes, we use an
-//   algorithm in which, in step i, each process  receives from (rank-i)
-//   and sends to (rank+i).
-
-
     dsize = sdtype->size();
     block_dsize = dsize * scount;
 
-    if ((block_dsize < short_size) && (communicator_size >= 8)) {
-        return alltoall__bruck(sbuf, scount, sdtype,
-                               rbuf, rcount, rdtype,
-                               comm);
-
-    } else if (block_dsize < medium_size) {
-        return alltoall__mvapich2_scatter_dest(sbuf, scount, sdtype,
-                                               rbuf, rcount, rdtype,
-                                               comm);
-    }else if (communicator_size%2){
-        return alltoall__pair(sbuf, scount, sdtype,
-                              rbuf, rcount, rdtype,
-                              comm);
+    /* Selection mirrors MPICH's alltoall-intra-auto tuning table.
+       MPI_IN_PLACE is normalized into a real send buffer by the PMPI
+       wrapper, so the inplace branch has no equivalent here. */
+    if (communicator_size < 8) {
+        if (block_dsize <= 32768)
+            return alltoall__scattered(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+        return alltoall__pairwise(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
     }
 
-    return alltoall__ring(sbuf, scount, sdtype,
-                          rbuf, rcount, rdtype,
-                          comm);
+    if (block_dsize <= 256)
+        return alltoall__bruck(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+    if (block_dsize <= 32768)
+        return alltoall__scattered(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+    return alltoall__pairwise(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
 }
 
 int alltoallv__mpich(const void *sbuf, const int *scounts, const int *sdisps,

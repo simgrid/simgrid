@@ -125,6 +125,9 @@ set(SMPI_SRC
   src/smpi/colls/alltoall/alltoall-3dmesh.cpp
   src/smpi/colls/alltoall/alltoall-basic-linear.cpp
   src/smpi/colls/alltoall/alltoall-bruck.cpp
+  src/smpi/colls/alltoall/alltoall-k-brucks.cpp
+  src/smpi/colls/alltoall/alltoall-scattered.cpp
+  src/smpi/colls/alltoall/alltoall-pairwise.cpp
   src/smpi/colls/alltoall/alltoall-mvapich-scatter-dest.cpp
   src/smpi/colls/alltoall/alltoall-pair-light-barrier.cpp
   src/smpi/colls/alltoall/alltoall-pair-mpi-barrier.cpp
