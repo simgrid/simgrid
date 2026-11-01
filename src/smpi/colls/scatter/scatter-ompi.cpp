@@ -258,7 +258,7 @@ int scatter__ompi_linear_nb(const void *sbuf, int scount,
                             int root,
                             MPI_Comm comm)
 {
-    int i, rank, size, err = MPI_ERR_OTHER, line, nreqs;
+    int i, rank, size, err = MPI_SUCCESS, line, nreqs;
     ptrdiff_t incr;
     char *ptmp;
     MPI_Request *reqs = nullptr;
