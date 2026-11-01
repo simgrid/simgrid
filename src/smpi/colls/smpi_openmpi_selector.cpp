@@ -409,7 +409,7 @@ int barrier__ompi(MPI_Comm  comm)
     int alg = 1;
     int (*funcs[])(MPI_Comm) = {
         &barrier__ompi_basic_linear,
-        &barrier__ompi_basic_linear,
+        &barrier__ompi_doublering,
         &barrier__ompi_recursivedoubling,
         &barrier__ompi_bruck,
         &barrier__ompi_two_procs,
