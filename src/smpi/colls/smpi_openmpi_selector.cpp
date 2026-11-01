@@ -196,7 +196,7 @@ int alltoall__ompi(const void *sbuf, int scount,
     total_dsize = dsize * (ptrdiff_t)scount;
     int (*funcs[])(const void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm) = {
         &alltoall__basic_linear,
-        &alltoall__pair,
+        &alltoall__pairwise,
         &alltoall__bruck,
         &alltoall__basic_linear,
         &alltoall__basic_linear
