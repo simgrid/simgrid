@@ -110,6 +110,10 @@ set(SMPI_SRC
   src/smpi/colls/allreduce/allreduce-rab1.cpp
   src/smpi/colls/allreduce/allreduce-rab2.cpp
   src/smpi/colls/allreduce/allreduce-rdb.cpp
+  src/smpi/colls/allreduce/allreduce-ring.cpp
+  src/smpi/colls/allreduce/allreduce-tree.cpp
+  src/smpi/colls/allreduce/allreduce-recursive-multiplying.cpp
+  src/smpi/colls/allreduce/allreduce-recexch.cpp
   src/smpi/colls/allreduce/allreduce-redbcast.cpp
   src/smpi/colls/allreduce/allreduce-smp-binomial-pipeline.cpp
   src/smpi/colls/allreduce/allreduce-smp-binomial.cpp

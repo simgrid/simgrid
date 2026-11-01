@@ -62,33 +62,25 @@ int allreduce__mpich(const void *sbuf, void *rbuf, int count,
                         MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
     size_t dsize, block_dsize;
-    int comm_size = comm->size();
-    const size_t large_message = 2048; //MPIR_PARAM_ALLREDUCE_SHORT_MSG_SIZE
 
     dsize = dtype->size();
     block_dsize = dsize * count;
 
-    /*MPICH uses SMP algorithms for all commutative ops now*/
-    if (not comm->is_smp_comm()) {
-      if(comm->get_leaders_comm()==MPI_COMM_NULL){
-        comm->init_smp();
-      }
-      if(op->is_commutative())
-        return allreduce__mvapich2_two_level(sbuf, rbuf,count, dtype, op, comm);
-    }
+    /* Single-node communicators use the shared-memory algorithm (MPICH's
+       release-gather branch on CH4/SHM); everything else follows the
+       MSG_SIZE/BUILTIN_OP tree of MPICH's allreduce-intra-auto. */
+    if (comm->get_leaders_comm() == MPI_COMM_NULL)
+      comm->init_smp();
+    if (comm->get_leaders_comm() != MPI_COMM_NULL && comm->get_leaders_comm()->size() == 1)
+      return allreduce__smp_rsag(sbuf, rbuf, count, dtype, op, comm);
 
-    /* find nearest power-of-two less than or equal to comm_size */
-    int pof2 = 1;
-    while (pof2 <= comm_size) pof2 <<= 1;
-    pof2 >>=1;
-
-    if (block_dsize > large_message && count >= pof2 && (op==MPI_OP_NULL || op->is_commutative())) {
-      //for long messages
-       return allreduce__rab_rdb(sbuf, rbuf, count, dtype, op, comm);
-    }else {
-      //for short ones and count < pof2
+    if (block_dsize < 8)
       return allreduce__rdb(sbuf, rbuf, count, dtype, op, comm);
-    }
+
+    if (op != MPI_OP_NULL && not op->is_predefined())
+      return allreduce__rdb(sbuf, rbuf, count, dtype, op, comm);
+
+    return allreduce__rab_rdb(sbuf, rbuf, count, dtype, op, comm);
 }
 
 
