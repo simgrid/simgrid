@@ -152,6 +152,8 @@ set(SMPI_SRC
   src/smpi/colls/barrier/barrier-mpich-smp.cpp
   src/smpi/colls/barrier/barrier-mvapich2-pair.cpp
   src/smpi/colls/barrier/barrier-ompi.cpp
+  src/smpi/colls/barrier/barrier-k-dissemination.cpp
+  src/smpi/colls/barrier/barrier-recexch.cpp
   src/smpi/colls/bcast/bcast-NTSB.cpp
   src/smpi/colls/bcast/bcast-NTSL-Isend.cpp
   src/smpi/colls/bcast/bcast-NTSL.cpp

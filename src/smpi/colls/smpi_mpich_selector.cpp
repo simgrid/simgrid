@@ -176,7 +176,7 @@ int alltoallv__mpich(const void *sbuf, const int *scounts, const int *sdisps,
 
 int barrier__mpich(MPI_Comm  comm)
 {
-    return barrier__ompi_bruck(comm);
+    return barrier__k_dissemination2(comm);
 }
 
 /* This is the default implementation of broadcast. The algorithm is:

@@ -146,6 +146,8 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
        {"ompi_recursivedoubling", "barrier ompi_recursivedoubling collective", (void*)barrier__ompi_recursivedoubling},
        {"ompi_doublering", "barrier ompi_doublering collective", (void*)barrier__ompi_doublering},
        {"mpich_smp", "barrier mpich_smp collective", (void*)barrier__mpich_smp},
+       {"k_dissemination", "barrier k_dissemination collective", (void*)barrier__k_dissemination2},
+       {"recexch", "barrier recexch collective", (void*)barrier__recexch2},
        {"mpich", "barrier mpich collective", (void*)barrier__mpich},
        {"mvapich2_pair", "barrier mvapich2_pair collective", (void*)barrier__mvapich2_pair},
        {"mvapich2", "barrier mvapich2 collective", (void*)barrier__mvapich2},
