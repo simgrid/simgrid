@@ -227,46 +227,26 @@ int bcast__mpich(void *buff, int count,
                  MPI_Comm  comm
                                           )
 {
-    /* Decision function based on MX results for
-       messages up to 36MB and communicator sizes up to 64 nodes */
+    /* Tuning table of MPICH's bcast-intra-auto. */
     const size_t small_message_size = 12288;
     const size_t intermediate_message_size = 524288;
 
-    int communicator_size;
-    //int segsize = 0;
-    size_t message_size, dsize;
+    const int communicator_size = comm->size();
+    const size_t message_size = datatype->size() * static_cast<size_t>(count);
 
-    if (not comm->is_smp_comm()) {
-      if(comm->get_leaders_comm()==MPI_COMM_NULL){
-        comm->init_smp();
-      }
-      if(comm->is_uniform())
-        return bcast__SMP_binomial(buff, count, datatype, root, comm);
-    }
+    if (communicator_size < 8)
+        return bcast__binomial_tree(buff, count, datatype, root, comm);
 
-    communicator_size = comm->size();
+    const bool pof2 = (communicator_size & (communicator_size - 1)) == 0;
 
-    /* else we need data size for decision function */
-    dsize = datatype->size();
-    message_size = dsize * (unsigned long)count;   /* needed for decision */
+    if (message_size <= small_message_size)
+        return bcast__binomial_tree(buff, count, datatype, root, comm);
 
-    /* Handle messages of small and intermediate size, and
-       single-element broadcasts */
-    if ((message_size < small_message_size) || (communicator_size <= 8)) {
-        /* Binomial without segmentation */
-        return  bcast__binomial_tree(buff, count, datatype, root, comm);
-
-    } else if (message_size < intermediate_message_size && !(communicator_size%2)) {
-        // SplittedBinary with 1KB segments
+    if (pof2 && message_size <= intermediate_message_size)
         return bcast__scatter_rdb_allgather(buff, count, datatype, root, comm);
 
-    }
-     //Handle large message sizes
-     return bcast__scatter_LR_allgather(buff, count, datatype, root, comm);
-
+    return bcast__scatter_LR_allgather(buff, count, datatype, root, comm);
 }
-
-
 
 /* This is the default implementation of reduce. The algorithm is:
 
