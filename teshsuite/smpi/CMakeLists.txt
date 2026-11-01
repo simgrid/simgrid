@@ -103,7 +103,7 @@ if(enable_smpi)
     ADD_TESH_FACTORIES(tesh-smpi-fort_args "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/fort_args --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/fort_args ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/fort_args/fort_args.tesh)
   endif()
 
-  foreach (ALLGATHER 2dmesh 3dmesh bruck GB loosely_lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS smp_simple spreading_simple
+  foreach (ALLGATHER 2dmesh 3dmesh bruck GB k_brucks loosely_lr NTSLR NTSLR_NB pair rdb recexch_doubling recexch_halving rhv ring SMP_NTS smp_simple spreading_simple
                      ompi mpich ompi_neighborexchange mvapich2 mvapich2_smp impi)
     ADD_TESH(tesh-smpi-coll-allgather-${ALLGATHER} --cfg smpi/allgather:${ALLGATHER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgather --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgather ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgather/coll-allgather.tesh)
   endforeach()
@@ -112,23 +112,23 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-allgatherv-${ALLGATHERV} --cfg smpi/allgatherv:${ALLGATHERV} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgatherv/coll-allgatherv.tesh)
   endforeach()
 
-  foreach (ALLREDUCE lr rab1 rab2 rab_rdb rdb smp_binomial smp_binomial_pipeline smp_rdb smp_rsag smp_rsag_lr impi
+  foreach (ALLREDUCE lr rdb recexch recursive_multiplying ring tree rab1 rab2 rab_rdb smp_binomial smp_binomial_pipeline smp_rdb smp_rsag smp_rsag_lr impi
                      smp_rsag_rab redbcast ompi mpich ompi_ring_segmented mvapich2 mvapich2_rs mvapich2_two_level)
     ADD_TESH(tesh-smpi-coll-allreduce-${ALLREDUCE} --cfg smpi/allreduce:${ALLREDUCE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce/coll-allreduce.tesh)
   endforeach()
 
-  foreach (ALLTOALL 2dmesh 3dmesh pair pair_rma pair_one_barrier pair_light_barrier pair_mpi_barrier rdb ring
+  foreach (ALLTOALL 2dmesh 3dmesh pair pairwise k_brucks scattered pair_rma pair_one_barrier pair_light_barrier pair_mpi_barrier rdb ring
                     ring_light_barrier ring_mpi_barrier ring_one_barrier bruck basic_linear ompi mpich mvapich2
                     mvapich2_scatter_dest impi)
     ADD_TESH(tesh-smpi-coll-alltoall-${ALLTOALL} --cfg smpi/alltoall:${ALLTOALL} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoall ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoall/coll-alltoall.tesh)
   endforeach()
 
-  foreach (ALLTOALLV pair pair_light_barrier pair_mpi_barrier pair_one_barrier  ring ring_light_barrier ring_mpi_barrier
+  foreach (ALLTOALLV scattered pair pair_light_barrier pair_mpi_barrier pair_one_barrier  ring ring_light_barrier ring_mpi_barrier
                      ring_one_barrier bruck ompi mpich mvapich2 ompi_basic_linear impi)
     ADD_TESH(tesh-smpi-coll-alltoallv-${ALLTOALLV} --cfg smpi/alltoallv:${ALLTOALLV} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoallv --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoallv ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoallv/coll-alltoallv.tesh)
   endforeach()
 
-  foreach (BARRIER ompi mpich mpich_smp ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2 impi)
+  foreach (BARRIER ompi mpich mpich_smp k_dissemination recexch ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2 impi)
       ADD_TESH(tesh-smpi-coll-barrier-${BARRIER} --cfg smpi/barrier:${BARRIER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-barrier --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-barrier ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-barrier/coll-barrier.tesh)
   endforeach()
 
@@ -143,7 +143,7 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-gather-${GATHER} --cfg smpi/gather:${GATHER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-gather --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-gather ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-gather/coll-gather.tesh)
   endforeach()
 
-  foreach (REDUCE arrival_pattern_aware binomial flat_tree NTSL scatter_gather ompi mpich ompi_chain ompi_binary impi
+  foreach (REDUCE arrival_pattern_aware binomial flat_tree mpich_smp NTSL scatter_gather ompi mpich ompi_chain ompi_binary impi
                   ompi_basic_linear ompi_binomial ompi_in_order_binary mvapich2 mvapich2_knomial mvapich2_two_level rab)
     ADD_TESH(tesh-smpi-coll-reduce-${REDUCE} --cfg smpi/reduce:${REDUCE} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-reduce --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-reduce ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-reduce/coll-reduce.tesh)
   endforeach()
