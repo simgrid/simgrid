@@ -377,7 +377,7 @@ int alltoallv__ompi(const void *sbuf, const int *scounts, const int *sdisps,
     int alg = 1;
     int (*funcs[])(const void *, const int*, const int*, MPI_Datatype, void*, const int*, const int*, MPI_Datatype, MPI_Comm) = {
         &alltoallv__ompi_basic_linear,
-        &alltoallv__pair
+        &alltoallv__ring
     };
    /** Algorithms:
      *  {1, "basic_linear"},
