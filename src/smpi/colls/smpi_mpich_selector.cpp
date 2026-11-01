@@ -539,24 +539,36 @@ int allgather__mpich(const void *sbuf, int scount,
 
     communicator_size = comm->size();
 
-    /* Determine complete data size */
+    /* Per-rank message size, as used by the MPICH selection tables */
     dsize=sdtype->size();
-    total_dsize = dsize * scount * communicator_size;
+    total_dsize = dsize * scount;
 
     for (pow2_size  = 1; pow2_size < communicator_size; pow2_size <<=1);
 
-    /* Decision as in MPICH-2
-       presented in Thakur et.al. "Optimization of Collective Communication
-       Operations in MPICH", International Journal of High Performance Computing
-       Applications, Vol. 19, No. 1, 49-66 (2005)
-       - for power-of-two processes and small and medium size messages
-       (up to 512KB) use recursive doubling
-       - for non-power-of-two processes and small messages (80KB) use bruck,
-       - for everything else use ring.
-    */
-    if ((pow2_size == communicator_size) && (total_dsize < 524288)) {
-        return allgather__rdb(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
-    } else if (total_dsize <= 81920) {
+    /* Selection mirrors MPICH's allgather-intra-auto tuning table:
+       power-of-two communicators pick recursive doubling for small messages
+       and ring otherwise, with thresholds depending on the communicator size;
+       non-power-of-two communicators pick Brucks for small messages. */
+    if (pow2_size == communicator_size) {
+        if (communicator_size <= 8) {
+            if (total_dsize < 65536)
+                return allgather__rdb(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+        } else if (communicator_size <= 64) {
+            if (total_dsize < 8192)
+                return allgather__rdb(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+        } else if (total_dsize < 1024) {
+            return allgather__rdb(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+        }
+        return allgather__ring(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+    }
+
+    if (communicator_size <= 8) {
+        if (total_dsize < 10240)
+            return allgather__bruck(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+    } else if (communicator_size <= 64) {
+        if (total_dsize < 1280)
+            return allgather__bruck(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
+    } else if (total_dsize < 160) {
         return allgather__bruck(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);
     }
     return allgather__ring(sbuf, scount, sdtype, rbuf, rcount, rdtype, comm);

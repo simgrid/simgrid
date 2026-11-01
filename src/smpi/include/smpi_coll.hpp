@@ -155,6 +155,8 @@ int allgather__default(const void *send_buff, int send_count, MPI_Datatype send_
 int allgather__2dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__3dmesh(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__bruck(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
+int allgather__k_brucks2(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
+int allgather__k_brucks(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm, int k);
 int allgather__GB(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__loosely_lr(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
 int allgather__NTSLR(const void *send_buff, int send_count, MPI_Datatype send_type, void *recv_buff, int recv_count, MPI_Datatype recv_type, MPI_Comm comm);
