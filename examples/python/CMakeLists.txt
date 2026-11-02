@@ -12,12 +12,15 @@ endif()
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-masterworkers
-        comm-wait comm-failure comm-host2host comm-pingpong
+        cloud-capping cloud-migration cloud-simple
+        comm-dependent comm-wait comm-failure comm-host2host comm-pingpong
         comm-ready comm-suspend comm-throttling comm-waituntil
+        energy-boot energy-exec energy-exec-ptask energy-link energy-vm energy-wifi
         exec-async exec-basic exec-co2 exec-cpu-factors exec-dependent exec-dvfs exec-failure exec-ptask
         exec-ptask-multicore exec-ptask-multicore-latency exec-remote exec-suspend exec-threads exec-unassigned
         exec-waitfor
         io-async io-dependent io-disk-raw io-file-remote io-file-system io-priority
+        mess-wait
         task-io task-simple task-switch-host task-variable-load
         platform-comm-serialize platform-profile platform-failures
         plugin-host-load

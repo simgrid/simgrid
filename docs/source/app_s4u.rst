@@ -67,6 +67,8 @@ provides many helper functions to simplify the code of actors.
       - :ref:`class Actor <API_s4u_Actor>`: Active entities executing your application.
       - :ref:`class Engine <API_s4u_Engine>`: Simulation engine (singleton).
       - :ref:`class Mailbox <API_s4u_Mailbox>`: Communication rendezvous, with which actors meet each other.
+      - :ref:`class MessageQueue <API_s4u_MessageQueue>`: Rendezvous for the exchange of messages without network
+        communication.
 
    - **Resources**
 
@@ -81,6 +83,7 @@ provides many helper functions to simplify the code of actors.
       - :ref:`class Comm <API_s4u_Comm>`: Communication activity, started on Mailboxes and consuming links.
       - :ref:`class Exec <API_s4u_Exec>`: Computation activity, started on Host and consuming CPU resources.
       - :ref:`class Io <API_s4u_Io>`: I/O activity, started on and consuming disks.
+      - :ref:`class Mess <API_s4u_Mess>`: Message activity, started on MessageQueues and consuming no resource.
       - :ref:`class ActivitySet <API_s4u_ActivitySet>`: Bag of activities, to wait for any of the set, or all of them.
 
    - **Synchronization Objects**: Classical IPC that actors can use
@@ -1105,6 +1108,7 @@ Retrieving links
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Engine.all_links
+      .. automethod:: simgrid.Engine.link_by_name
 
    .. group-tab:: Java
 
@@ -1172,6 +1176,11 @@ Retrieving mailboxes and message queues
       .. doxygenfunction:: simgrid::s4u::Engine::mailbox_by_name_or_create(const std::string& name) const
       .. doxygenfunction:: simgrid::s4u::Engine::message_queue_by_name_or_create(const std::string& name) const
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Engine.mailbox_by_name_or_create
+      .. automethod:: simgrid.Engine.message_queue_by_name_or_create
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Engine.mailbox_by_name
@@ -1227,7 +1236,10 @@ They are only provided as plain C functions but are the way to go in C++ too.
 
    .. group-tab:: Python
 
+      .. autofunction:: simgrid.sg_link_energy_plugin_init
+      .. autofunction:: simgrid.sg_wifi_energy_plugin_init
       .. autofunction:: simgrid.sg_host_load_plugin_init
+      .. autofunction:: simgrid.sg_vm_live_migration_plugin_init
       .. autofunction:: simgrid.sg_host_carbon_footprint_plugin_init
       .. autofunction:: simgrid.sg_storage_file_system_init
 
@@ -1291,7 +1303,7 @@ Basic management
 
          from simgrid import Engine, Mailbox
 
-      .. automethod:: Engine.mailbox_by_name
+      .. automethod:: simgrid.Mailbox.by_name
 
    .. group-tab:: C
 
@@ -1381,9 +1393,10 @@ Receiving data
 
    .. group-tab:: Python
 
-       .. automethod:: simgrid.Mailbox.get
-       .. automethod:: simgrid.Mailbox.get_async
-       .. autoattribute:: simgrid.Mailbox.ready
+      .. automethod:: simgrid.Mailbox.get
+      .. automethod:: simgrid.Mailbox.get_async
+      .. automethod:: simgrid.Mailbox.get_init
+      .. autoattribute:: simgrid.Mailbox.ready
 
    .. group-tab:: C
 
@@ -1413,6 +1426,10 @@ See :ref:`s4u_receiving_actor`.
       .. doxygenfunction:: simgrid::s4u::Mailbox::set_receiver(ActorPtr actor)
       .. doxygenfunction:: simgrid::s4u::Mailbox::listen_from() const
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mailbox.set_receiver
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_mailbox_set_receiver(const char *alias)
@@ -1422,6 +1439,137 @@ See :ref:`s4u_receiving_actor`.
       .. javamethod:: org.simgrid.s4u.Mailbox.get_receiver
       .. javamethod:: org.simgrid.s4u.Mailbox.set_receiver
       .. javamethod:: org.simgrid.s4u.Mailbox.listen_from
+
+.. _API_s4u_MessageQueue:
+
+=====================
+⁣  class MessageQueue
+=====================
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::MessageQueue
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.MessageQueue
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.MessageQueue
+
+Unlike :ref:`mailboxes <API_s4u_Mailbox>`, message queues do not involve any network communication: the messages
+(:ref:`Mess <API_s4u_Mess>` activities) are delivered as soon as both the sender and the receiver are ready, without
+consuming any resource. They are useful to model control messages, or the interactions between actors located on the
+same host.
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/MessageQueue.hpp>
+
+      As with mailboxes, there is no MessageQueuePtr type: message queues are internal objects of the simulation
+      engine, that are never destroyed before the end of the simulation.
+
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::by_name(const std::string &name)
+
+   .. group-tab:: Java
+
+      .. code-block:: Java
+
+         import org.simgrid.s4u.MessageQueue;
+
+      .. javamethod:: org.simgrid.s4u.Engine.message_queue_by_name
+
+   .. group-tab:: Python
+
+      .. code-block:: Python
+
+         from simgrid import Engine, MessageQueue
+
+      .. automethod:: simgrid.MessageQueue.by_name
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get_cname
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get_name
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::empty
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::size
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::front
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.MessageQueue.name
+      .. autoattribute:: simgrid.MessageQueue.empty
+      .. autoattribute:: simgrid.MessageQueue.size
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.MessageQueue.get_name
+      .. javamethod:: org.simgrid.s4u.MessageQueue.empty
+      .. javamethod:: org.simgrid.s4u.MessageQueue.size
+
+Sending data
+------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::put(void *payload)
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::put(void *payload, double timeout)
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::put_async(void *payload)
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::put_init()
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::put_init(void *payload)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.MessageQueue.put
+      .. automethod:: simgrid.MessageQueue.put_async
+      .. automethod:: simgrid.MessageQueue.put_init
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.MessageQueue.put
+      .. javamethod:: org.simgrid.s4u.MessageQueue.put_async
+      .. javamethod:: org.simgrid.s4u.MessageQueue.put_init
+
+Receiving data
+--------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get()
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get(double timeout)
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get_async()
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get_async(T **data)
+      .. doxygenfunction:: simgrid::s4u::MessageQueue::get_init()
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.MessageQueue.get
+      .. automethod:: simgrid.MessageQueue.get_async
+      .. automethod:: simgrid.MessageQueue.get_init
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.MessageQueue.get_async
+      .. javamethod:: org.simgrid.s4u.MessageQueue.get_init
 
 .. _API_s4u_Resource:
 
@@ -1735,6 +1883,11 @@ Creating actors and VMs
       .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string& name, int core_amount)
       .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string& name, int core_amount, size_t ramsize)
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.add_actor
+      .. automethod:: simgrid.Host.create_vm
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Host.add_actor
@@ -1975,6 +2128,13 @@ These functions are provided by the energy plugin (see :ref:`plugin_host_energy`
       .. doxygenfunction:: sg_host_get_consumed_energy(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_wattmin_at(const_sg_host_t host, int pstate)
       .. doxygenfunction:: sg_host_get_wattmax_at(const_sg_host_t host, int pstate)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.sg_host_energy_plugin_init
+      .. autoattribute:: simgrid.Host.consumed_energy
+      .. automethod:: simgrid.Host.wattmin_at
+      .. automethod:: simgrid.Host.wattmax_at
 
    .. group-tab:: C
 
@@ -2391,7 +2551,7 @@ WIFI links
 Energy
 ------
 
-These functions are provided by the energy plugin (see :ref:`plugin_host_energy`).
+These functions are provided by the link energy plugin (see :ref:`plugin_link_energy`).
 
 .. tabs::
 
@@ -2399,6 +2559,12 @@ These functions are provided by the energy plugin (see :ref:`plugin_host_energy`
 
       .. doxygenfunction:: sg_link_energy_plugin_init()
       .. doxygenfunction:: sg_link_get_consumed_energy(const_sg_link_t link)
+
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.sg_link_energy_plugin_init
+         :noindex:
+      .. autoattribute:: simgrid.Link.consumed_energy
 
    .. group-tab:: C
 
@@ -2750,6 +2916,10 @@ Router
 
       .. javaclass:: org.simgrid.s4u.VirtualMachine
 
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.VirtualMachine
+
 Basic management
 ----------------
 .. tabs::
@@ -2768,6 +2938,15 @@ Basic management
    .. group-tab:: Java
 
       .. javaclass:: org.simgrid.s4u.VirtualMachine
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import VirtualMachine
+
+      A VirtualMachine is a :py:class:`~simgrid.Host`, so you can use all the members of Host on it. Within an actor
+      running on a VM, :py:func:`this_actor.get_host() <simgrid.this_actor.get_host>` returns the VirtualMachine.
 
    .. group-tab:: C
 
@@ -2792,6 +2971,12 @@ Creating VMs
       .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string &name, int core_amount, size_t ramsize)
          :noindex:
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::destroy
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.create_vm
+         :noindex:
+      .. automethod:: simgrid.VirtualMachine.destroy
 
    .. group-tab:: C
 
@@ -2818,6 +3003,20 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_bound(double bound)
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_pm(Host *pm)
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::set_ramsize(size_t ramsize)
+
+      VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.VirtualMachine.pm
+      .. autoattribute:: simgrid.VirtualMachine.ramsize
+      .. autoattribute:: simgrid.VirtualMachine.state
+      .. automethod:: simgrid.VirtualMachine.set_bound
+
+      .. autoclass:: simgrid.VirtualMachine.State
+         :members:
+         :undoc-members:
+         :exclude-members: name, value
 
       VirtualMachine also inherits the generic members of :ref:`class Host <API_s4u_Host>`:
 
@@ -2859,6 +3058,21 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::suspend()
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::start_migration() const
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::end_migration() const
+
+      To simulate the cost of a live migration (transferring the memory of the VM over the network), use
+      ``sg_vm_migrate()`` from the live migration plugin (see :cpp:func:`sg_vm_live_migration_plugin_init`).
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.VirtualMachine.start
+      .. automethod:: simgrid.VirtualMachine.suspend
+      .. automethod:: simgrid.VirtualMachine.resume
+      .. automethod:: simgrid.VirtualMachine.shutdown
+
+      ``migrate()`` combines the change of physical machine with the simulation of the memory transfer, as provided
+      by the live migration plugin (see :py:func:`~simgrid.sg_vm_live_migration_plugin_init`).
+
+      .. automethod:: simgrid.VirtualMachine.migrate
 
    .. group-tab:: C
 
@@ -2905,6 +3119,26 @@ Signals
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_started_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_suspend_cb
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_this_suspend_cb
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.VirtualMachine.on_creation_cb
+      .. automethod:: simgrid.VirtualMachine.on_destruction_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_destruction_cb
+      .. automethod:: simgrid.VirtualMachine.on_migration_end_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_migration_end_cb
+      .. automethod:: simgrid.VirtualMachine.on_migration_start_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_migration_start_cb
+      .. automethod:: simgrid.VirtualMachine.on_resume_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_resume_cb
+      .. automethod:: simgrid.VirtualMachine.on_shutdown_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_shutdown_cb
+      .. automethod:: simgrid.VirtualMachine.on_start_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_start_cb
+      .. automethod:: simgrid.VirtualMachine.on_started_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_started_cb
+      .. automethod:: simgrid.VirtualMachine.on_suspend_cb
+      .. automethod:: simgrid.VirtualMachine.on_this_suspend_cb
 
    .. group-tab:: Java
 
@@ -3500,6 +3734,7 @@ Querying info
       .. autoattribute:: simgrid.Exec.is_assigned
       .. automethod:: simgrid.Exec.set_tracing_category
       .. automethod:: simgrid.Exec.set_flops_amount
+      .. automethod:: simgrid.Exec.set_bound
 
    .. group-tab:: C
 
@@ -3937,6 +4172,152 @@ Signals
       .. javamethod:: org.simgrid.s4u.Io.on_this_suspend_cb
       .. javamethod:: org.simgrid.s4u.Io.on_this_resume_cb
       .. javamethod:: org.simgrid.s4u.Io.on_this_completion_cb
+
+.. _API_s4u_Mess:
+
+=============
+⁣  class Mess
+=============
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Mess
+
+   .. group-tab:: Java
+
+      .. javaclass:: org.simgrid.s4u.Mess
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.Mess
+
+Basic management
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. code-block:: C++
+
+         #include <simgrid/s4u/Mess.hpp>
+
+      .. doxygentypedef:: MessPtr
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Mess
+
+Querying info
+-------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Mess::get_queue
+      .. doxygenfunction:: simgrid::s4u::Mess::set_queue
+      .. doxygenfunction:: simgrid::s4u::Mess::get_payload
+      .. doxygenfunction:: simgrid::s4u::Mess::set_payload
+      .. doxygenfunction:: simgrid::s4u::Mess::set_dst_data
+      .. doxygenfunction:: simgrid::s4u::Mess::get_sender
+      .. doxygenfunction:: simgrid::s4u::Mess::get_receiver
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Mess.queue
+      .. automethod:: simgrid.Mess.get_payload
+      .. autoattribute:: simgrid.Mess.sender
+      .. autoattribute:: simgrid.Mess.receiver
+      .. autoattribute:: simgrid.Mess.name
+      .. autoattribute:: simgrid.Mess.state_str
+      .. autoattribute:: simgrid.Mess.start_time
+      .. autoattribute:: simgrid.Mess.finish_time
+      .. autoattribute:: simgrid.Mess.is_assigned
+      .. automethod:: simgrid.Mess.set_tracing_category
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Mess.get_queue
+      .. javamethod:: org.simgrid.s4u.Mess.set_queue
+      .. javamethod:: org.simgrid.s4u.Mess.get_payload
+      .. javamethod:: org.simgrid.s4u.Mess.set_payload
+      .. javamethod:: org.simgrid.s4u.Mess.get_sender
+      .. javamethod:: org.simgrid.s4u.Mess.get_receiver
+
+Managing Dependencies
+---------------------
+
+.. tabs::
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Mess.dependencies_solved
+      .. automethod:: simgrid.Mess.add_successor
+      .. automethod:: simgrid.Mess.remove_successor
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Mess.add_successor
+      .. javamethod:: org.simgrid.s4u.Mess.remove_successor
+
+Life cycle
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Mess::wait_for
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mess.cancel
+      .. automethod:: simgrid.Mess.start
+      .. automethod:: simgrid.Mess.test
+      .. automethod:: simgrid.Mess.wait
+      .. automethod:: simgrid.Mess.wait_for
+      .. automethod:: simgrid.Mess.wait_until
+      .. automethod:: simgrid.Mess.detach
+
+   .. group-tab:: Java
+
+      .. javamethod:: org.simgrid.s4u.Mess.cancel
+      .. javamethod:: org.simgrid.s4u.Mess.await
+      .. javamethod:: org.simgrid.s4u.Mess.await_for
+
+Suspending and resuming a message
+---------------------------------
+
+.. tabs::
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mess.suspend
+      .. automethod:: simgrid.Mess.resume
+      .. autoattribute:: simgrid.Mess.is_suspended
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Mess.on_veto_cb
+      .. automethod:: simgrid.Mess.on_start_cb
+      .. automethod:: simgrid.Mess.on_suspend_cb
+      .. automethod:: simgrid.Mess.on_resume_cb
+      .. automethod:: simgrid.Mess.on_completion_cb
+      .. automethod:: simgrid.Mess.on_this_veto_cb
+      .. automethod:: simgrid.Mess.on_this_start_cb
+      .. automethod:: simgrid.Mess.on_this_suspend_cb
+      .. automethod:: simgrid.Mess.on_this_resume_cb
+      .. automethod:: simgrid.Mess.on_this_completion_cb
 
 .. _API_s4u_ActivitySet:
 

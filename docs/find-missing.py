@@ -195,8 +195,12 @@ for name in python_modules:
 
 # Forget about the python declarations that were actually done in the RST
 for kind in python_decl:
+    documented = set() # A symbol can be documented several times, with :noindex: on all but one occurrence
     with os.popen('grep \'[[:blank:]]*auto{}::\' source/*rst|sed \'s/^.*auto{}:: //\''.format(kind, kind)) as pse:
         for fullname in (l.strip() for l in pse):
+            if fullname in documented:
+                continue
+            documented.add(fullname)
             if fullname not in python_decl[kind]:
                 print("Warning: {} documented but declaration not found in python.".format(fullname))
             else:

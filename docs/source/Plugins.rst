@@ -190,7 +190,21 @@ Host Energy
 
 .. doxygengroup:: plugin_host_energy
 
+In Python, the plugin is initialized with :py:func:`simgrid.sg_host_energy_plugin_init`, and the energy-related
+information is then available on the :py:class:`~simgrid.Host` objects with the following members. Using them without
+initializing the plugin raises a ``RuntimeError``.
 
+.. autoattribute:: simgrid.Host.consumed_energy
+   :noindex:
+.. autoattribute:: simgrid.Host.current_consumption
+.. autoattribute:: simgrid.Host.idle_consumption
+.. automethod:: simgrid.Host.idle_consumption_at
+.. automethod:: simgrid.Host.wattmin_at
+   :noindex:
+.. automethod:: simgrid.Host.wattmax_at
+   :noindex:
+.. automethod:: simgrid.Host.power_range_slope_at
+.. autofunction:: simgrid.sg_host_energy_update_all
 
 .. _plugin_link_energy:
 
@@ -199,12 +213,18 @@ Link Energy
 
 .. doxygengroup:: plugin_link_energy
 
+In Python, the plugin is initialized with :py:func:`simgrid.sg_link_energy_plugin_init` (after the creation of the
+:py:class:`~simgrid.Engine`), and the energy consumed by each link is then given by
+:py:attr:`Link.consumed_energy <simgrid.Link.consumed_energy>`.
+
 .. _plugin_link_energy_wifi:
 
 WiFi Energy
 ===========
 
 .. doxygengroup:: plugin_link_energy_wifi
+
+In Python, the plugin is initialized with :py:func:`simgrid.sg_wifi_energy_plugin_init`.
 
 .. _plugin_host_load:
 

@@ -466,6 +466,24 @@ relying on the mailbox mechanism.
 
       See also :py:func:`simgrid.Comm.sendto_init()` and  :py:func:`simgrid.Comm.sendto_async()`.
 
+Exchanging messages without network
+-----------------------------------
+
+This example shows how to exchange messages through a message queue. Unlike the communications through mailboxes, these
+messages do not involve any network transfer: they are delivered as soon as both the sender and the receiver are ready.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/mess-wait/s4u-mess-wait.cpp
+
+      See also :cpp:func:`simgrid::s4u::MessageQueue::put_async()` and :cpp:func:`simgrid::s4u::Mess::get_payload()`.
+
+   .. example-tab:: examples/java/mess_await/mess_await.java
+
+   .. example-tab:: examples/python/mess-wait/mess-wait.py
+
+      See also :py:func:`simgrid.MessageQueue.put_async()` and :py:func:`simgrid.Mess.get_payload()`.
+
 .. _s4u_ex_execution:
 
 Executions on the CPU
@@ -662,6 +680,10 @@ example or the :ref:`examples about energy <s4u_ex_energy>`. It just works.
    .. example-tab:: examples/cpp/energy-exec-ptask/s4u-energy-exec-ptask.cpp
 
    .. example-tab:: examples/java/energy_exec_ptask/energy_exec_ptask.java
+
+   .. example-tab:: examples/python/energy-exec-ptask/energy-exec-ptask.py
+
+      See also :py:func:`simgrid.this_actor.parallel_execute()` and :py:attr:`simgrid.Host.consumed_energy`.
 
    .. example-tab:: examples/c/energy-exec-ptask/energy-exec-ptask.c
 
@@ -941,6 +963,10 @@ dependencies between communications. You could declare such dependencies between
    .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
 
    .. example-tab:: examples/java/comm_dependent/comm_dependent.java
+
+   .. example-tab:: examples/python/comm-dependent/comm-dependent.py
+
+      See also :py:func:`simgrid.Mailbox.get_init()` and :py:func:`simgrid.Comm.add_successor()`.
 
 .. tabs::
 
@@ -1347,6 +1373,11 @@ This example shows how to retrieve the amount of energy consumed by the CPU duri
 
    .. example-tab:: examples/java/energy_exec/energy_exec.java
 
+   .. example-tab:: examples/python/energy-exec/energy-exec.py
+
+      See also :py:func:`simgrid.sg_host_energy_plugin_init()`, :py:attr:`simgrid.Host.consumed_energy`,
+      :py:func:`simgrid.Host.wattmin_at()` and :py:func:`simgrid.Host.wattmax_at()`.
+
    .. example-tab:: examples/c/energy-exec/energy-exec.c
 
 Virtual machines consumption
@@ -1359,6 +1390,8 @@ This example is very similar to the previous one, adding VMs to the picture.
    .. example-tab:: examples/cpp/energy-vm/s4u-energy-vm.cpp
 
    .. example-tab:: examples/java/energy_vm/energy_vm.java
+
+   .. example-tab:: examples/python/energy-vm/energy-vm.py
 
    .. example-tab:: examples/c/energy-vm/energy-vm.c
 
@@ -1373,6 +1406,10 @@ This example shows how to retrieve and display the energy consumed by the wired 
 
    .. example-tab:: examples/java/energy_link/energy_link.java
 
+   .. example-tab:: examples/python/energy-link/energy-link.py
+
+      See also :py:func:`simgrid.sg_link_energy_plugin_init()` and :py:attr:`simgrid.Link.consumed_energy`.
+
 WiFi network energy consumption
 -------------------------------
 
@@ -1384,6 +1421,10 @@ This example shows how to retrieve and display the energy consumed by the wirele
 
    .. example-tab:: examples/java/energy_wifi/energy_wifi.java
 
+   .. example-tab:: examples/python/energy-wifi/energy-wifi.py
+
+      See also :py:func:`simgrid.sg_wifi_energy_plugin_init()` and :py:func:`simgrid.Link.set_host_wifi_rate()`.
+
 Modeling the shutdown and boot of hosts
 ---------------------------------------
 
@@ -1394,6 +1435,8 @@ Simple example of a model for the energy consumption during the host boot and sh
    .. example-tab:: examples/cpp/energy-boot/s4u-energy-boot.cpp
 
    .. example-tab:: examples/java/energy_boot/energy_boot.java
+
+   .. example-tab:: examples/python/energy-boot/energy-boot.py
 
    .. example-tab:: examples/platforms/energy_boot.xml
 
@@ -1689,6 +1732,11 @@ This example starts some computations both on PMs and VMs and migrates some VMs 
 
    .. example-tab:: examples/java/cloud_simple/cloud_simple.java
 
+   .. example-tab:: examples/python/cloud-simple/cloud-simple.py
+
+      See also :py:func:`simgrid.Host.create_vm()`, :py:func:`simgrid.VirtualMachine.start()` and
+      :py:func:`simgrid.VirtualMachine.destroy()`.
+
    .. example-tab:: examples/c/cloud-simple/cloud-simple.c
 
 Migrating VMs
@@ -1702,6 +1750,10 @@ This example shows how to migrate VMs between PMs.
 
    .. example-tab:: examples/java/cloud_migration/cloud_migration.java
 
+   .. example-tab:: examples/python/cloud-migration/cloud-migration.py
+
+      See also :py:func:`simgrid.sg_vm_live_migration_plugin_init()` and :py:func:`simgrid.VirtualMachine.migrate()`.
+
    .. example-tab:: examples/c/cloud-migration/cloud-migration.c
 
 Capping the computing power of VMs
@@ -1714,6 +1766,10 @@ This example shows how to cap (or bound) the computing power that a VM can get f
    .. example-tab:: examples/cpp/cloud-capping/s4u-cloud-capping.cpp
 
    .. example-tab:: examples/java/cloud_capping/cloud_capping.java
+
+   .. example-tab:: examples/python/cloud-capping/cloud-capping.py
+
+      See also :py:func:`simgrid.VirtualMachine.set_bound()` and :py:func:`simgrid.Exec.set_bound()`.
 
    .. example-tab:: examples/c/cloud-capping/cloud-capping.c
 

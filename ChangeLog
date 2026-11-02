@@ -19,9 +19,16 @@ Python:
    and the Disk.mount_point, Disk.size, Disk.size_used and Disk.size_free attributes.
  - Bind the carbon footprint plugin: sg_host_carbon_footprint_plugin_init() and
    sg_host_carbon_footprint_load_trace_file().
- - New examples: exec-co2, exec-cpu-factors, exec-dependent, exec-failure, exec-ptask-multicore,
-   exec-ptask-multicore-latency, exec-suspend, exec-threads, exec-unassigned, exec-waitfor, io-async,
-   io-dependent, io-disk-raw, io-file-remote, io-file-system and io-priority.
+ - Bind the VirtualMachine class (created with Host.create_vm()), with its life cycle, its signals, and
+   VirtualMachine.migrate() from the live migration plugin (sg_vm_live_migration_plugin_init()).
+ - Bind the MessageQueue class and the Mess activity, as well as Engine.message_queue_by_name_or_create().
+ - Bind the energy plugins: sg_host_energy_plugin_init(), sg_link_energy_plugin_init(), sg_wifi_energy_plugin_init(),
+   Host.consumed_energy and friends, and Link.consumed_energy.
+ - Add Mailbox.get_init(), Exec.set_bound() and Engine.link_by_name().
+ - New examples: cloud-capping, cloud-migration, cloud-simple, comm-dependent, energy-boot, energy-exec,
+   energy-exec-ptask, energy-link, energy-vm, energy-wifi, exec-co2, exec-cpu-factors, exec-dependent, exec-failure,
+   exec-ptask-multicore, exec-ptask-multicore-latency, exec-suspend, exec-threads, exec-unassigned, exec-waitfor,
+   io-async, io-dependent, io-disk-raw, io-file-remote, io-file-system, io-priority and mess-wait.
 
 Model-Checker:
  - [sthread] Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,

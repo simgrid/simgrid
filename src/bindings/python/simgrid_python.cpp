@@ -14,12 +14,15 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
 #include "simgrid/plugins/carbon_footprint.h"
+#include "simgrid/plugins/energy.h"
 #include "simgrid/plugins/file_system.h"
+#include "simgrid/plugins/live_migration.h"
 #include "simgrid/plugins/load.h"
 #include "src/bindings/python/PythonContextHooks.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/ContextSwapped.hpp"
+#include "src/plugins/vm/VmLiveMigration.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/ActivitySet.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -32,10 +35,13 @@
 #include <simgrid/s4u/Io.hpp>
 #include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+#include <simgrid/s4u/Mess.hpp>
+#include <simgrid/s4u/MessageQueue.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/s4u/Task.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -67,12 +73,16 @@ using simgrid::s4u::IoTask;
 using simgrid::s4u::IoTaskPtr;
 using simgrid::s4u::Link;
 using simgrid::s4u::Mailbox;
+using simgrid::s4u::Mess;
+using simgrid::s4u::MessageQueue;
+using simgrid::s4u::MessPtr;
 using simgrid::s4u::Mutex;
 using simgrid::s4u::MutexPtr;
 using simgrid::s4u::Semaphore;
 using simgrid::s4u::SemaphorePtr;
 using simgrid::s4u::Task;
 using simgrid::s4u::TaskPtr;
+using simgrid::s4u::VirtualMachine;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
@@ -222,6 +232,27 @@ template <class T> void set_py_data(T* obj, py::object data)
   auto* old = obj->template get_data<PyObject>();
   obj->set_data(data.is_none() ? nullptr : data.inc_ref().ptr());
   Py_XDECREF(old);
+}
+
+/* Signals of the resources (such as VirtualMachine) pass them by reference. The Python callbacks get a pointer */
+template <class R, class Ref = R const&> std::function<void(Ref)> wrap_resource_cb(py::object cb, const char* cb_name)
+{
+  cb.inc_ref(); // keep alive after return
+  return [cb_p = cb.ptr(), cb_name](Ref resource) {
+    try {
+      const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+      fun(const_cast<R*>(&resource));
+    } catch (const py::error_already_set& e) {
+      xbt_die("Error while executing the %s lambda: %s", cb_name, e.what());
+    }
+  };
+}
+
+void ensure_live_migration_plugin()
+{
+  if (not simgrid::plugin::vm::VmMigrationExt::EXTENSION_ID.valid())
+    throw std::runtime_error("The live migration plugin is not initialized. Please call "
+                             "sg_vm_live_migration_plugin_init() before loading the platform.");
 }
 
 void ensure_file_system_plugin()
@@ -489,6 +520,8 @@ PYBIND11_MODULE(simgrid, m)
           "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the engine singleton")
       .def("host_by_name", &Engine::host_by_name_or_null,
            "Retrieve a host by its name, or None if it does not exist in the platform.")
+      .def("link_by_name", &Engine::link_by_name_or_null, py::arg("name"),
+           "Retrieve a link by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints,
@@ -512,6 +545,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
       .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create, py::arg("name"),
            "Find a mailbox from its name or create one if it does not exist")
+      .def("message_queue_by_name_or_create", &Engine::message_queue_by_name_or_create, py::arg("name"),
+           "Find a message queue from its name or create one if it does not exist")
       .def("run", &Engine::run, "Run the simulation until its end")
       .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
            "Run the simulation until the given date, given in seconds since the simulation start",
@@ -933,6 +968,44 @@ PYBIND11_MODULE(simgrid, m)
           "speed variability of the executions. The callback takes the host and the amount of flops of the "
           "execution as parameters, and returns the factor. Note that this callback is in the critical path of the "
           "solver, so it should be fast.")
+      .def("create_vm", py::overload_cast<const std::string&, int>(&Host::create_vm), py::arg("name"),
+           py::arg("core_amount"),
+           "Create a :py:class:`~simgrid.VirtualMachine` on this host, with the given amount of cores. Call start() "
+           "on the result to boot it.")
+      .def("create_vm", py::overload_cast<const std::string&, int, size_t>(&Host::create_vm), py::arg("name"),
+           py::arg("core_amount"), py::arg("ramsize"),
+           "Create a :py:class:`~simgrid.VirtualMachine` on this host, with the given amount of cores and of RAM (in "
+           "bytes). Call start() on the result to boot it.")
+      .def_property_readonly(
+          "consumed_energy", [](const Host* h) { return sg_host_get_consumed_energy(h); },
+          "The total energy consumed by this host so far, in Joules (read-only property). Requires the host energy "
+          "plugin (see :py:func:`sg_host_energy_plugin_init`).")
+      .def_property_readonly(
+          "current_consumption", [](const Host* h) { return sg_host_get_current_consumption(h); },
+          "The current power consumption of this host, in Watts (read-only property). Requires the host energy "
+          "plugin.")
+      .def_property_readonly(
+          "idle_consumption", [](const Host* h) { return sg_host_get_idle_consumption(h); },
+          "The power dissipated by this host when idling at pstate 0, in Watts (read-only property). Requires the "
+          "host energy plugin.")
+      .def(
+          "idle_consumption_at", [](const Host* h, int pstate) { return sg_host_get_idle_consumption_at(h, pstate); },
+          py::arg("pstate"),
+          "The power dissipated by this host when idling at the given pstate, in Watts. Requires the host energy "
+          "plugin.")
+      .def(
+          "wattmin_at", [](const Host* h, int pstate) { return sg_host_get_wattmin_at(h, pstate); }, py::arg("pstate"),
+          "The power dissipated by this host at the given pstate when its CPU is at 0 or epsilon% usage, in Watts. "
+          "Requires the host energy plugin.")
+      .def(
+          "wattmax_at", [](const Host* h, int pstate) { return sg_host_get_wattmax_at(h, pstate); }, py::arg("pstate"),
+          "The power dissipated by this host at the given pstate when its CPU is at 100% usage, in Watts. Requires "
+          "the host energy plugin.")
+      .def(
+          "power_range_slope_at", [](const Host* h, int pstate) { return sg_host_get_power_range_slope_at(h, pstate); },
+          py::arg("pstate"),
+          "The slope of the power consumption between 0% and 100% CPU usage at the given pstate, in Watts. Requires "
+          "the host energy plugin.")
       .def("exec_init", &Host::exec_init, py::arg("flops"),
            "Initialize an execution of the given amount of flops on this host. Call start() or wait() to start it.")
       .def("exec_async", &Host::exec_async, py::arg("flops"),
@@ -1052,10 +1125,105 @@ PYBIND11_MODULE(simgrid, m)
   m.def("sg_storage_file_system_init", &sg_storage_file_system_init,
         "Initialize the file system plugin, that provides the :py:class:`~simgrid.File` class. It must be called "
         "before the platform gets loaded.");
+  m.def("sg_host_energy_plugin_init", &sg_host_energy_plugin_init,
+        "Initialize the host energy plugin, that provides :py:attr:`Host.consumed_energy <simgrid.Host.consumed_energy>` "
+        "and the related functions. It must be called before the platform gets loaded.");
+  m.def("sg_host_energy_update_all", &sg_host_energy_update_all,
+        "Update the energy consumption of all hosts. The consumption is lazily computed, so you need to call this "
+        "before reading it from outside of an actor (e.g., after the end of the simulation).");
+  m.def("sg_link_energy_plugin_init", &sg_link_energy_plugin_init,
+        "Initialize the link energy plugin, that provides :py:attr:`Link.consumed_energy "
+        "<simgrid.Link.consumed_energy>`. It must be called before the platform gets loaded.");
+  m.def("sg_wifi_energy_plugin_init", &sg_wifi_energy_plugin_init,
+        "Initialize the wifi energy plugin, that computes the energy dissipated by the wifi links. It must be called "
+        "before the platform gets loaded.");
+  m.def("sg_vm_live_migration_plugin_init", &sg_vm_live_migration_plugin_init,
+        "Initialize the live migration plugin, that provides :py:func:`VirtualMachine.migrate() "
+        "<simgrid.VirtualMachine.migrate>`. It must be called before the platform gets loaded.");
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
+
+  /* Class VirtualMachine */
+  py::class_<VirtualMachine, Host, std::unique_ptr<VirtualMachine, py::nodelete>> vm(
+      m, "VirtualMachine",
+      "A virtual machine is an execution container that runs on a physical machine (PM, a :py:class:`~simgrid.Host`) "
+      "and that can be moved between PMs. A VM is also a :py:class:`~simgrid.Host`, so you can start actors on it. "
+      "Create VMs with :py:func:`Host.create_vm() <simgrid.Host.create_vm>`.");
+  vm.def("start", &VirtualMachine::start, "Immediately boot this virtual machine, which must be in the CREATED state.")
+      .def("suspend", &VirtualMachine::suspend,
+           "Suspend this virtual machine. The actors running on it are not scheduled anymore until resume() is called.")
+      .def("resume", &VirtualMachine::resume, "Resume this virtual machine, previously suspended with suspend().")
+      .def("shutdown", &VirtualMachine::shutdown,
+           "Immediately shut down this virtual machine. The actors running on it are forcefully stopped.")
+      .def("destroy", &VirtualMachine::destroy,
+           "Immediately destroy this virtual machine, freeing its resources. It cannot be used afterward.")
+      .def_property(
+          "pm", &VirtualMachine::get_pm, [](VirtualMachine* self, Host* pm) { self->set_pm(pm); },
+          "The physical machine (host) on which this virtual machine runs (read/write property). Changing it moves "
+          "the VM instantly: use :py:func:`migrate` to simulate the cost of a live migration.")
+      .def_property(
+          "ramsize", &VirtualMachine::get_ramsize, [](VirtualMachine* self, size_t size) { self->set_ramsize(size); },
+          "The amount of RAM dedicated to this virtual machine, in bytes (read/write property).")
+      .def(
+          "set_bound", [](VirtualMachine* self, double bound) { self->set_bound(bound); }, py::arg("bound"),
+          "Set the CPU utilization bound of this virtual machine (in flops/s), that is the max amount of the "
+          "underlying host's computing power that this VM (and the actors it hosts) can use. 0 means no bound.")
+      .def_property_readonly("state", &VirtualMachine::get_state,
+                             "The current state of this virtual machine (read-only property).")
+      .def(
+          "migrate",
+          [](VirtualMachine* self, Host* dst_pm) {
+            ensure_live_migration_plugin();
+            sg_vm_migrate(self, dst_pm);
+          },
+          py::arg("dst_pm"),
+          "Migrate this virtual machine to the given physical machine, simulating the transfer of its memory over the "
+          "network. The calling actor is blocked until the end of the migration. Requires the live migration plugin "
+          "(see :py:func:`sg_vm_live_migration_plugin_init`).")
+      .def_static(
+          "on_creation_cb",
+          [](py::object cb) {
+            VirtualMachine::on_creation_cb(wrap_resource_cb<VirtualMachine, VirtualMachine&>(cb, "on_creation"));
+          },
+          py::arg("cb"), "Add a callback fired when any VM is created, with the VM as parameter.")
+      .def(
+          "__repr__", [](const VirtualMachine* self) { return "VirtualMachine(" + self->get_name() + ")"; },
+          "Textual representation of the VirtualMachine.");
+
+  /* Signals of the VM life cycle: <name, static signal, per-VM signal> */
+  using VmCbSetter     = void (*)(const std::function<void(VirtualMachine const&)>&);
+  using VmThisCbSetter = void (VirtualMachine::*)(const std::function<void(VirtualMachine const&)>&);
+  const std::vector<std::tuple<const char*, const char*, VmCbSetter, VmThisCbSetter>> vm_signals = {
+      {"start", "starts booting", &VirtualMachine::on_start_cb, &VirtualMachine::on_this_start_cb},
+      {"started", "is booted", &VirtualMachine::on_started_cb, &VirtualMachine::on_this_started_cb},
+      {"shutdown", "is shut down", &VirtualMachine::on_shutdown_cb, &VirtualMachine::on_this_shutdown_cb},
+      {"suspend", "is suspended", &VirtualMachine::on_suspend_cb, &VirtualMachine::on_this_suspend_cb},
+      {"resume", "is resumed", &VirtualMachine::on_resume_cb, &VirtualMachine::on_this_resume_cb},
+      {"destruction", "is destroyed", &VirtualMachine::on_destruction_cb, &VirtualMachine::on_this_destruction_cb},
+      {"migration_start", "starts a migration", &VirtualMachine::on_migration_start_cb,
+       &VirtualMachine::on_this_migration_start_cb},
+      {"migration_end", "ends a migration", &VirtualMachine::on_migration_end_cb,
+       &VirtualMachine::on_this_migration_end_cb}};
+  for (auto const& [name, what, setter, this_setter] : vm_signals) {
+    vm.def_static(
+        (std::string("on_") + name + "_cb").c_str(),
+        [setter, name](py::object cb) { setter(wrap_resource_cb<VirtualMachine>(cb, name)); }, py::arg("cb"),
+        (std::string("Add a callback fired when any VM ") + what + ", with the VM as parameter.").c_str());
+    vm.def(
+        (std::string("on_this_") + name + "_cb").c_str(),
+        [this_setter, name](VirtualMachine* self, py::object cb) {
+          (self->*this_setter)(wrap_resource_cb<VirtualMachine>(cb, name));
+        },
+        py::arg("cb"), (std::string("Add a callback fired when this VM ") + what + ", with the VM as parameter.").c_str());
+  }
+
+  py::enum_<VirtualMachine::State>(vm, "State", "The possible states of a virtual machine.")
+      .value("CREATED", VirtualMachine::State::CREATED, "Created, but not started yet.")
+      .value("RUNNING", VirtualMachine::State::RUNNING, "Started and running.")
+      .value("SUSPENDED", VirtualMachine::State::SUSPENDED, "Suspended (see VirtualMachine.suspend()).")
+      .value("DESTROYED", VirtualMachine::State::DESTROYED, "Destroyed: its resources have been freed.");
 
   /* Class Disk */
   py::class_<Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
@@ -1224,6 +1392,10 @@ PYBIND11_MODULE(simgrid, m)
            "Set the level of communication speed of the given host on this wifi link. By default, the first level "
            "in the list is used, but this can be used to take the location of hosts into account, or even to model "
            "mobility. Asserts that the link is actually a wifi link.")
+      .def_property_readonly(
+          "consumed_energy", [](const Link* l) { return sg_link_get_consumed_energy(l); },
+          "The total energy consumed by this link so far, in Joules (read-only property). Requires the link energy "
+          "plugin (see :py:func:`sg_link_energy_plugin_init`).")
       .def_static("by_name", &Link::by_name, "Retrieves a link from its name, or dies")
       .def_static("by_name_or_null", &Link::by_name_or_null,
                   "Retrieve a link by its name, or None if it does not exist in the platform.")
@@ -1315,11 +1487,23 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "get_async", [](Mailbox* self) -> CommPtr { return self->get_async(); },
           "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
+      .def(
+          "get_init", [](Mailbox* self) -> CommPtr { return self->get_init()->set_dst_data(nullptr, sizeof(void*)); },
+          "Creates (but don't start) a data reception from that mailbox. Use get_payload() on the result to get the "
+          "python object after the communication has finished.")
       .def("set_receiver", &Mailbox::set_receiver,
            "Declare that the specified actor is a permanent receiver on this mailbox. It means that the "
            "communications sent to this mailbox will start flowing to its host even before it does a get(). This "
            "models the real behavior of TCP and MPI communications, amongst other, and improves the accuracy of "
            "predictions, in particular if your application exhibits swarms of small messages.");
+
+  /* Class MessageQueue */
+  /* Its methods are defined after the Mess class, for the signatures to use the Python names */
+  py::class_<MessageQueue, std::unique_ptr<MessageQueue, py::nodelete>> mqueue(
+      m, "MessageQueue",
+      "Rendez-vous points for the exchange of messages between actors. Unlike the :py:class:`~simgrid.Mailbox`, "
+      "the messages exchanged through a message queue do not involve any network communication: they are "
+      "delivered instantly, as soon as both the sender and the receiver are ready.");
 
   /* class Activity */
   py::class_<Activity, ActivityPtr>(m, "Activity",
@@ -1364,6 +1548,65 @@ PYBIND11_MODULE(simgrid, m)
                   "completely bypass the mailbox and actors mechanism. There is really no limit on the hosts involved. "
                   "In particular, the actor does not have to be on one of the involved hosts.");
 
+  /* Class Mess */
+  py::class_<Mess, MessPtr, Activity> mess(
+      m, "Mess",
+      "Represents the messages exchanged through a :py:class:`~simgrid.MessageQueue`, be they asynchronous or not, "
+      "that you can start, test and wait for.");
+  bind_activity_common(mess, "message");
+  mess.def_property_readonly("queue", &Mess::get_queue, "The message queue on which this message is exchanged.")
+      .def_property_readonly("sender", &Mess::get_sender,
+                             "The actor sending this message, or None if it is not known yet.")
+      .def_property_readonly("receiver", &Mess::get_receiver,
+                             "The actor receiving this message, or None if it is not known yet.")
+      .def(
+          "get_payload",
+          [](const Mess* self) { return py::reinterpret_steal<py::object>(static_cast<PyObject*>(self->get_payload())); },
+          "Retrieve the payload of a message obtained with get_async() or get_init(). You cannot call this until "
+          "after the message reception.");
+
+  mqueue.def(
+          "__repr__", [](const MessageQueue* self) { return "MessageQueue(" + self->get_name() + ")"; },
+          "Textual representation of the MessageQueue")
+      .def_static("by_name", &MessageQueue::by_name, py::arg("name"),
+                  "Retrieve the message queue associated to the given name. Message queues are created on demand.")
+      .def_property_readonly("name", &MessageQueue::get_name, "The name of that message queue (read-only property).")
+      .def_property_readonly("empty", &MessageQueue::empty,
+                             "Whether the message queue contains no queued messages (read-only property).")
+      .def_property_readonly("size", &MessageQueue::size,
+                             "The number of queued messages (read-only property).")
+      .def(
+          "put", [](MessageQueue* self, py::object data) { self->put(data.inc_ref().ptr()); }, py::arg("data"),
+          "Blocking data transmission: put the data in the queue and wait for its reception.")
+      .def(
+          "put",
+          [](MessageQueue* self, py::object data, double timeout) { self->put(data.inc_ref().ptr(), timeout); },
+          py::arg("data"), py::arg("timeout"),
+          "Blocking data transmission with a timeout. Raises TimeoutException if the data is not received in time.")
+      .def(
+          "put_async", [](MessageQueue* self, py::object data) { return self->put_async(data.inc_ref().ptr()); },
+          py::arg("data"), "Creates and start a data transmission to that message queue.")
+      .def(
+          "put_init", [](MessageQueue* self, py::object data) { return self->put_init(data.inc_ref().ptr()); },
+          py::arg("data"), "Creates (but don't start) a data transmission to that message queue.")
+      .def(
+          "get", [](MessageQueue* self) { return py::reinterpret_steal<py::object>(self->get<PyObject>()); },
+          "Blocking data reception.")
+      .def(
+          "get",
+          [](MessageQueue* self, double timeout) {
+            return py::reinterpret_steal<py::object>(self->get<PyObject>(timeout));
+          },
+          py::arg("timeout"),
+          "Blocking data reception with a timeout. Raises TimeoutException if no data is received in time.")
+      .def(
+          "get_async", [](MessageQueue* self) -> MessPtr { return self->get_async(); },
+           "Non-blocking data reception. Use get_payload() on the result to get the python object once the message "
+           "is received.")
+      .def("get_init", &MessageQueue::get_init,
+           "Creates (but don't start) a data reception from that message queue. Use get_payload() on the result to "
+           "get the python object once the message is received.");
+
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity> io(
       m, "Io",
@@ -1390,6 +1633,9 @@ PYBIND11_MODULE(simgrid, m)
                   "it: it only actually starts once assigned.")
       .def("set_flops_amount", &simgrid::s4u::Exec::set_flops_amount, py::arg("flops"),
            "Specify the amount of flops that this execution entails. Returns the execution itself.")
+      .def("set_bound", &simgrid::s4u::Exec::set_bound, py::arg("bound"),
+           "Set the maximal speed at which this execution can progress (in flops/s), even if the host is faster. 0 "
+           "means no bound. Returns the execution itself.")
       .def_property_readonly("remaining", py::cpp_function{&simgrid::s4u::Exec::get_remaining},
                              "Amount of flops that remain to be computed until completion (read-only property).")
       .def_property_readonly("remaining_ratio", py::cpp_function{&simgrid::s4u::Exec::get_remaining_ratio},
