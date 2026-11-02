@@ -10,11 +10,14 @@
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
+static constexpr int FORTRAN_NULL_HANDLE = -1;
+
 void mpi_file_close_ ( int* file, int* ierr){
   MPI_File tmp = simgrid::smpi::File::f2c(*file);
   *ierr =  MPI_File_close(&tmp);
   if(*ierr == MPI_SUCCESS) {
     simgrid::smpi::F2C::free_f(*file);
+    *file = FORTRAN_NULL_HANDLE;
   }
 }
 

@@ -82,6 +82,8 @@ void smpi_init_fortran_types()
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
+static constexpr int FORTRAN_NULL_HANDLE = -1;
+
 void mpi_init_(int* ierr)
 {
   smpi_init_fortran_types();
@@ -159,6 +161,9 @@ void mpi_win_free_(int* win, int* ierr)
 {
   MPI_Win tmp = simgrid::smpi::Win::f2c(*win);
   *ierr =  MPI_Win_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *win = FORTRAN_NULL_HANDLE;
+  }
 }
 
 void mpi_win_create_(int* base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int* win, int* ierr)
@@ -407,6 +412,7 @@ void mpi_info_free_(int* info, int* ierr)
   *ierr =  MPI_Info_free(&tmp);
   if(*ierr == MPI_SUCCESS) {
     simgrid::smpi::F2C::free_f(*info);
+    *info = FORTRAN_NULL_HANDLE;
   }
 }
 
@@ -559,6 +565,9 @@ void mpi_op_free_(int* op, int* ierr)
 {
   MPI_Op tmp= simgrid::smpi::Op::f2c(*op);
   *ierr = MPI_Op_free(& tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *op = FORTRAN_NULL_HANDLE;
+  }
 }
 
 void mpi_op_commutative_(int* op, int* commute, int* ierr)
@@ -570,6 +579,9 @@ void mpi_group_free_(int* group, int* ierr)
 {
   MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
   *ierr         = MPI_Group_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *group = FORTRAN_NULL_HANDLE;
+  }
 }
 
 void mpi_group_size_(int* group, int* size, int* ierr)
@@ -649,6 +661,9 @@ void mpi_group_range_excl_ (int* group, int* n, int ranges[][3], int* newgroup, 
 void mpi_request_free_ (int* request, int* ierr){
   MPI_Request tmp=simgrid::smpi::Request::f2c(*request);
  *ierr = MPI_Request_free(&tmp);
+ if(*ierr == MPI_SUCCESS) {
+   *request = MPI_FORTRAN_REQUEST_NULL;
+ }
 }
 
 void mpi_pack_size_ (int* incount, int* datatype, int* comm, int* size, int* ierr) {
@@ -744,6 +759,7 @@ void mpi_errhandler_free_ (int* errhandler, int* ierr) {
   *ierr =  MPI_Errhandler_free(&tmp);
   if(*ierr == MPI_SUCCESS) {
     simgrid::smpi::F2C::free_f(*errhandler);
+    *errhandler = FORTRAN_NULL_HANDLE;
   }
 }
 

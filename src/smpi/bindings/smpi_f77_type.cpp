@@ -11,6 +11,8 @@
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
+static constexpr int FORTRAN_NULL_HANDLE = -1;
+
 void mpi_type_extent_(int* datatype, MPI_Aint * extent, int* ierr){
   *ierr= MPI_Type_extent(simgrid::smpi::Datatype::f2c(*datatype),  extent);
 }
@@ -20,6 +22,7 @@ void mpi_type_free_(int* datatype, int* ierr){
   *ierr= MPI_Type_free (&tmp);
   if(*ierr == MPI_SUCCESS) {
     simgrid::smpi::F2C::free_f(*datatype);
+    *datatype = FORTRAN_NULL_HANDLE;
   }
 }
 

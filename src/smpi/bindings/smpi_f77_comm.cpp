@@ -12,6 +12,8 @@
 
 extern "C" { // This should really use the C linkage to be usable from Fortran
 
+static constexpr int FORTRAN_COMM_NULL = -1;
+
 void mpi_comm_rank_(int* comm, int* rank, int* ierr) {
    *ierr = MPI_Comm_rank(simgrid::smpi::Comm::f2c(*comm), rank);
 }
@@ -31,8 +33,9 @@ void mpi_comm_dup_(int* comm, int* newcomm, int* ierr) {
 
 void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
   MPI_Comm tmp;
+  *newcomm = FORTRAN_COMM_NULL;
   *ierr = MPI_Comm_create(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), &tmp);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && tmp != MPI_COMM_NULL) {
     *newcomm = tmp->c2f();
   }
 }
@@ -42,14 +45,16 @@ void mpi_comm_free_(int* comm, int* ierr) {
     simgrid::smpi::Comm::destroy(tmp);
     simgrid::smpi::Comm::free_f(*comm);
   }
+  *comm = FORTRAN_COMM_NULL;
   *ierr = MPI_SUCCESS;
 }
 
 void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr) {
   MPI_Comm tmp;
 
+  *comm_out = FORTRAN_COMM_NULL;
   *ierr = MPI_Comm_split(simgrid::smpi::Comm::f2c(*comm), *color, *key, &tmp);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && tmp != MPI_COMM_NULL) {
     *comm_out = tmp->c2f();
   }
 }
@@ -112,6 +117,7 @@ void mpi_comm_disconnect_ (int* comm, int* ierr){
  *ierr = MPI_Comm_disconnect(&tmp);
  if(*ierr == MPI_SUCCESS) {
    simgrid::smpi::Comm::free_f(*comm);
+   *comm = FORTRAN_COMM_NULL;
  }
 }
 
@@ -161,8 +167,9 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
 
 void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr){
   MPI_Comm tmp;
+  *newcomm = FORTRAN_COMM_NULL;
   *ierr = MPI_Comm_split_type(simgrid::smpi::Comm::f2c(*comm), *split_type, *key, simgrid::smpi::Info::f2c(*info), &tmp);
-  if(*ierr == MPI_SUCCESS) {
+  if(*ierr == MPI_SUCCESS && tmp != MPI_COMM_NULL) {
     *newcomm = tmp->c2f();
   }
 }

@@ -282,7 +282,7 @@
       integer MPI_MODE_UNIQUE_OPEN, MPI_MODE_APPEND, MPI_MODE_SEQUENTIAL
       integer MPI_FILE_NULL
       integer MPI_DISPLACEMENT_CURRENT, MPI_SEEK_SET, MPI_SEEK_CUR
-      parameter(MPI_FILE_NULL=0)
+      parameter(MPI_FILE_NULL=-1)
       parameter(MPI_DISPLACEMENT_CURRENT=-54278278)
       parameter(MPI_SEEK_SET=600)
       parameter(MPI_SEEK_CUR=602)
