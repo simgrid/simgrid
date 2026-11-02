@@ -31,7 +31,7 @@ void mpi_type_ub_(int* datatype, MPI_Aint * disp, int* ierr){
 }
 
 void mpi_type_lb_(int* datatype, MPI_Aint * extent, int* ierr){
-  *ierr= MPI_Type_extent(simgrid::smpi::Datatype::f2c(*datatype), extent);
+  *ierr= MPI_Type_lb(simgrid::smpi::Datatype::f2c(*datatype), extent);
 }
 
 void mpi_type_size_(int* datatype, int *size, int* ierr)
