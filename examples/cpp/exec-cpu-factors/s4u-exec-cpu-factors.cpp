@@ -20,7 +20,7 @@ static void runner()
   XBT_INFO("Executing 1 tasks of %g flops, should take 1 second.", computation_amount);
   sg4::this_actor::execute(computation_amount);
   XBT_INFO("Executing 1 tasks of %g flops, it would take .001s without factor. It'll take .002s",
-           computation_amount / 10);
+           computation_amount / 1000);
   sg4::this_actor::execute(computation_amount / 1000);
 
   XBT_INFO("Finished executing. Goodbye now!");
