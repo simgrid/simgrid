@@ -280,19 +280,19 @@ each collective operation.
 
 SMPI can simulate the behavior of several MPI implementations:
 OpenMPI, MPICH, `STAR-MPI <http://star-mpi.sourceforge.net/>`_, and
-MVAPICH2. For that, it provides 115 collective algorithms and several
+MVAPICH. For that, it provides 137 collective algorithms and several
 selector algorithms, that were collected directly in the source code
 of the targeted MPI implementations.
 
 You can switch the automatic selector through the
 ``smpi/coll-selector`` configuration item. Possible values:
 
- - **ompi:** default selection logic of OpenMPI (version 4.1.2)
- - **mpich**: default selection logic of MPICH (version 3.3b)
- - **mvapich2**: selection logic of MVAPICH2 (version 1.9) tuned
-   on the Stampede cluster
+ - **ompi:** default selection logic of OpenMPI (version 6.1)
+ - **mpich**: default selection logic of MPICH (version 5.1)
+ - **mvapich2**: default selection logic of MVAPICH (version 4.1),
+   generated from the JSON decision tree that MVAPICH itself uses
  - **impi**: preliminary version of an Intel MPI selector (version
-   4.1.3, also tuned for the Stampede cluster). Due the closed source
+   4.1.3, tuned on the Stampede cluster). Due the closed source
    nature of Intel MPI, some of the algorithms described in the
    documentation are not available, and are replaced by mvapich ones.
  - **default**: legacy algorithms used in the earlier days of
@@ -332,7 +332,7 @@ Most of these are best described in `STAR-MPI's white paper <https://doi.org/10.
 ``bruck``: Described by Bruck et. al. in `this paper <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949>`_. |br|
 ``2dmesh``: organizes the nodes as a two dimensional mesh, and perform allgather along the dimensions. |br|
 ``3dmesh``: adds a third dimension to the previous algorithm. |br|
-``rdb``: recursive doubling``: extends the mesh to a nth dimension, each one containing two nodes. |br|
+``rdb``: recursive doubling: extends the mesh to a nth dimension, each one containing two nodes. |br|
 ``pair``: pairwise exchange, only works for power of 2 procs, size-1 steps, each process sends and receives from the same process at each step. |br|
 ``pair_light_barrier``: same, with small barriers between steps to avoid contention. |br|
 ``pair_mpi_barrier``: same, with MPI_Barrier used. |br|
@@ -342,6 +342,10 @@ Most of these are best described in `STAR-MPI's white paper <https://doi.org/10.
 ``ring_mpi_barrier``: same, with MPI_Barrier used. |br|
 ``ring_one_barrier``: only one barrier at the beginning. |br|
 ``basic_linear``: posts all receives and all sends, starts the communications, and waits for all communication to finish. |br|
+``pair_rma``: pairwise exchange built on one-sided communications. |br|
+``pairwise``: pairwise exchange that also works on non power of two communicators, unlike ``pair``. |br|
+``scattered``: every process sends its whole buffer to every other one, without any intermediate step. |br|
+``k_brucks``: k-Bruck, the generalisation of bruck where k messages are in flight at each step. |br|
 ``mvapich2_scatter_dest``: isend/irecv with scattered destinations, posting only a few messages at the same time. |br|
 
 MPI_Alltoallv
@@ -354,6 +358,7 @@ MPI_Alltoallv
 ``impi``: use intel mpi selector for the alltoallv operations. |br|
 ``automatic (experimental)``: use an automatic self-benchmarking algorithm. |br|
 ``bruck``: same as alltoall. |br|
+``scattered``: same as alltoall. |br|
 ``pair``: same as alltoall. |br|
 ``pair_light_barrier``: same as alltoall. |br|
 ``pair_mpi_barrier``: same as alltoall. |br|
@@ -376,7 +381,7 @@ MPI_Gather
 ``ompi_basic_linear``: basic linear algorithm from openmpi, each process sends to the root. |br|
 ``ompi_binomial``: binomial tree algorithm. |br|
 ``ompi_linear_sync``: same as basic linear, but with a synchronization at the beginning and message cut into two segments. |br|
-``mvapich2_two_level``: SMP-aware version from MVAPICH. Gather first intra-node (defaults to mpich's gather), and then exchange with only one process/node. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
+``mvapich2_two_level``: SMP-aware version from MVAPICH. Gather first intra-node (defaults to mpich's gather), and then exchange with only one process/node. Use mvapich2 selector to change these to the algorithms MVAPICH would pick. |br|
 
 MPI_Barrier
 ^^^^^^^^^^^
@@ -395,6 +400,8 @@ MPI_Barrier
 ``ompi_doublering``: double ring algorithm. |br|
 ``mvapich2_pair``: pairwise algorithm. |br|
 ``mpich_smp``: barrier intra-node, then inter-node. |br|
+``k_dissemination``: k-ary dissemination, log_k(size) rounds of k messages each. |br|
+``recexch``: recursive exchange, a reduce-scatter followed by an allgather of the same shape. |br|
 
 MPI_Scatter
 ^^^^^^^^^^^
@@ -408,8 +415,8 @@ MPI_Scatter
 ``ompi_basic_linear``: basic linear scatter. |br|
 ``ompi_linear_nb``: linear scatter, non blocking sends. |br|
 ``ompi_binomial``: binomial tree scatter. |br|
-``mvapich2_two_level_direct``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
-``mvapich2_two_level_binomial``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
+``mvapich2_two_level_direct``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to the algorithms MVAPICH would pick. |br|
+``mvapich2_two_level_binomial``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to the algorithms MVAPICH would pick. |br|
 
 MPI_Reduce
 ^^^^^^^^^^
@@ -423,8 +430,9 @@ MPI_Reduce
 ``arrival_pattern_aware``: root exchanges with the first process to arrive. |br|
 ``binomial``: uses a binomial tree. |br|
 ``flat_tree``: uses a flat tree. |br|
-``NTSL``: Non-topology-specific pipelined linear-bcast function. |br| 0->1, 1->2 ,2->3, ....., ->last node: in a pipeline fashion, with segments of 8192 bytes. |br|
+``NTSL``: Non-topology-specific pipelined linear-bcast function: 0->1, 1->2, 2->3, ..., ->last node, in a pipeline fashion, with segments of 8192 bytes. |br|
 ``scatter_gather``: scatter then gather. |br|
+``mpich_smp``: reduce intra-node, then inter-node between the node leaders, then broadcast the result intra-node. |br|
 ``ompi_chain``: openmpi reduce algorithms are built on the same basis, but the topology is generated differently for each flavor. chain = chain with spacing of size/2, and segment size of 64KB. |br|
 ``ompi_pipeline``: same with pipeline (chain with spacing of 1), segment size depends on the communicator size and the message size. |br|
 ``ompi_binary``: same with binary tree, segment size of 32KB. |br|
@@ -432,13 +440,13 @@ MPI_Reduce
 ``ompi_binomial``: same with binomial algo (redundant with default binomial one in most cases). |br|
 ``ompi_basic_linear``: basic algorithm, each process sends to root. |br|
 ``mvapich2_knomial``: k-nomial algorithm. Default factor is 4 (mvapich2 selector adapts it through tuning). |br|
-``mvapich2_two_level``: SMP-aware reduce, with default set to mpich both for intra and inter communicators. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
+``mvapich2_two_level``: SMP-aware reduce, with default set to mpich both for intra and inter communicators. Use mvapich2 selector to change these to the algorithms MVAPICH would pick. |br|
 ``rab``: `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_'s reduce algorithm. |br|
 
 MPI_Allreduce
 ^^^^^^^^^^^^^
 
-``default``: naive one, by defautl. |br|
+``default``: naive one, by default. |br|
 ``ompi``: use openmpi selector for the allreduce operations. |br|
 ``mpich``: use mpich selector for the allreduce operations. |br|
 ``mvapich2``: use mvapich2 selector for the allreduce operations. |br|
@@ -447,18 +455,23 @@ MPI_Allreduce
 ``lr``: logical ring reduce-scatter then logical ring allgather. |br|
 ``rab1``: variations of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: reduce_scatter then allgather. |br|
 ``rab2``: variations of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: alltoall then allgather. |br|
-``rab_rsag``: variation of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: recursive doubling reduce_scatter then recursive doubling allgather. |br|
+``rab_rdb``: variation of the  `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ algorithm: recursive doubling reduce_scatter then recursive doubling allgather. |br|
 ``rdb``: recursive doubling. |br|
+``ring``: each process sends to its right neighbour and receives from its left one, in two passes. |br|
+``tree``: binomial reduce to the root followed by a binomial broadcast from it. |br|
+``recursive_multiplying``: recursive multiplying, the non power of two counterpart of recursive doubling. |br|
+``recexch``: recursive exchange, a reduce-scatter and an allgather over the same recursive doubling tree. |br|
+``allgather_reduce``: allgather the data, then reduce it locally on every process. |br|
 ``smp_binomial``: binomial tree with smp: binomial intra. |br| SMP reduce, inter reduce, inter broadcast then intra broadcast. |br|
 ``smp_binomial_pipeline``: same with segment size = 4096 bytes. |br|
-``smp_rdb``: intra``: binomial allreduce, inter: Recursive doubling allreduce, intra``: binomial broadcast. |br|
+``smp_rdb``: intra: binomial allreduce, inter: recursive doubling allreduce, intra: binomial broadcast. |br|
 ``smp_rsag``: intra: binomial allreduce, inter: reduce-scatter, inter:allgather, intra: binomial broadcast. |br|
-``smp_rsag_lr``: intra: binomial allreduce, inter: logical ring reduce-scatter, logical ring inter:allgather, intra: binomial broadcast. |br|
-``smp_rsag_rab``: intra: binomial allreduce, inter: rab reduce-scatter, rab inter:allgather, intra: binomial broadcast. |br|
+``smp_rsag_lr``: intra: binomial allreduce, inter: logical ring reduce-scatter, inter: logical ring allgather, intra: binomial broadcast. |br|
+``smp_rsag_rab``: intra: binomial allreduce, inter: rab reduce-scatter, inter: rab allgather, intra: binomial broadcast. |br|
 ``redbcast``: reduce then broadcast, using default or tuned algorithms if specified. |br|
 ``ompi_ring_segmented``: ring algorithm used by OpenMPI. |br|
 ``mvapich2_rs``: rdb for small messages, reduce-scatter then allgather else. |br|
-``mvapich2_two_level``: SMP-aware algorithm, with mpich as intra algorithm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values). |br|
+``mvapich2_two_level``: SMP-aware algorithm, with mpich as intra algorithm, and rdb as inter (change this behavior by using the mvapich2 selector). |br|
 ``rab``: default `Rabenseifner <https://fs.hlrs.de/projects/par/mpi//myreduce.html>`_ implementation. |br|
 
 MPI_Reduce_scatter
@@ -489,7 +502,10 @@ MPI_Allgather
 ``automatic (experimental)``: use an automatic self-benchmarking algorithm. |br|
 ``2dmesh``: see alltoall. |br|
 ``3dmesh``: see alltoall. |br|
-``bruck``: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949"> Efficient algorithms for all-to-all communications in multiport message-passing systems</a>. |br|
+``bruck``: Described by Bruck et al. in `Efficient algorithms for all-to-all communications in multiport message-passing systems <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949>`_. |br|
+``k_brucks``: k-Bruck, the generalisation of bruck where k messages are in flight at each step. |br|
+``recexch_doubling``: recursive exchange on a recursive doubling tree. |br|
+``recexch_halving``: recursive exchange on a recursive halving tree. |br|
 ``GB``: Gather - Broadcast (uses tuned version if specified). |br|
 ``loosely_lr``: Logical Ring with grouping by core (hardcoded, default processes/node: 4). |br|
 ``NTSLR``: Non Topology Specific Logical Ring. |br|
@@ -502,7 +518,7 @@ MPI_Allgather
 ``smp_simple``: gather to root of each SMP, then every root of each SMP node post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, using simple algorithm (hardcoded, default processes/SMP: 8). |br|
 ``spreading_simple``: from node i, order of communications is i -> i + 1, i -> i + 2, ..., i -> (i + p -1) % P. |br|
 ``ompi_neighborexchange``: Neighbor Exchange algorithm for allgather. Described by Chen et.al. in  `Performance Evaluation of Allgather Algorithms on Terascale Linux Cluster with Fast Ethernet <http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=1592302>`_. |br|
-``mvapich2_smp``: SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node
+``mvapich2_smp``: SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node. |br|
 
 MPI_Allgatherv
 ^^^^^^^^^^^^^^
@@ -519,7 +535,7 @@ MPI_Allgatherv
 ``ompi_neighborexchange``: see allgather. |br|
 ``ompi_bruck``: see allgather. |br|
 ``mpich_rdb``: recursive doubling algorithm from MPICH. |br|
-``mpich_ring``: ring algorithm from MPICh - performs differently from the  one from STAR-MPI.
+``mpich_ring``: ring algorithm from MPICH - performs differently from the one from STAR-MPI. |br|
 
 MPI_Bcast
 ^^^^^^^^^
@@ -533,6 +549,10 @@ MPI_Bcast
 ``arrival_pattern_aware``: root exchanges with the first process to arrive. |br|
 ``arrival_pattern_aware_wait``: same with slight variation. |br|
 ``binomial_tree``: binomial tree exchange. |br|
+``tree``: k-ary tree exchange, sending the whole message at once. |br|
+``pipelined_tree``: same k-ary tree, with the message cut into 8192 byte pieces that progress independently. |br|
+``knomial``: k-nomial tree exchange. |br|
+``pipelined_knomial``: same k-nomial tree, with the message cut into 8192 byte pieces. |br|
 ``flattree``: flat tree exchange. |br|
 ``flattree_pipeline``: flat tree exchange, message split into 8192 bytes pieces. |br|
 ``NTSB``: Non-topology-specific pipelined binary tree with 8192 bytes pieces. |br|
@@ -548,7 +568,7 @@ MPI_Bcast
 ``ompi_pipeline``: pipeline algorithm from OpenMPI, with message split in 128KB pieces. |br|
 ``mvapich2_inter_node``: Inter node default mvapich worker. |br|
 ``mvapich2_intra_node``: Intra node default mvapich worker. |br|
-``mvapich2_knomial_intra_node``:  k-nomial intra node default mvapich worker. default factor is 4.
+``mvapich2_knomial_intra_node``: k-nomial intra node default mvapich worker. Default factor is 4.
 
 Automatic Evaluation
 ^^^^^^^^^^^^^^^^^^^^
