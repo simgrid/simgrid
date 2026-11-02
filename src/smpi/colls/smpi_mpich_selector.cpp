@@ -71,7 +71,8 @@ int allreduce__mpich(const void *sbuf, void *rbuf, int count,
        MSG_SIZE/BUILTIN_OP tree of MPICH's allreduce-intra-auto. */
     if (comm->get_leaders_comm() == MPI_COMM_NULL)
       comm->init_smp();
-    if (comm->get_leaders_comm() != MPI_COMM_NULL && comm->get_leaders_comm()->size() == 1)
+    if (comm->get_leaders_comm() != MPI_COMM_NULL && comm->get_leaders_comm()->size() == 1 &&
+        (op == MPI_OP_NULL || op->is_commutative()))
       return allreduce__smp_rsag(sbuf, rbuf, count, dtype, op, comm);
 
     if (block_dsize < 8)
