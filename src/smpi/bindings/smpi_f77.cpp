@@ -127,11 +127,13 @@ void mpi_initialized_(int* flag, int* ierr)
   *ierr = MPI_Initialized(flag);
 }
 
-void mpi_get_processor_name_(char* name, int* resultlen, int* ierr)
+void mpi_get_processor_name_(char* name, int* resultlen, int* ierr, int name_len)
 {
-  //fortran does not handle string endings cleanly, so initialize everything before
-  memset(name, 0, MPI_MAX_PROCESSOR_NAME);
-  *ierr = MPI_Get_processor_name(name, resultlen);
+  std::vector<char> tmp(MPI_MAX_PROCESSOR_NAME);
+  *ierr = MPI_Get_processor_name(tmp.data(), resultlen);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(name, name_len, tmp.data(), *resultlen);
+  }
 }
 
 void mpi_get_count_(MPI_Status* status, int* datatype, int* count, int* ierr)
@@ -147,9 +149,13 @@ void mpi_attr_get_(int* comm, int* keyval, int* attr_value, int* flag, int* ierr
     *attr_value=*value;
 }
 
-void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr)
+void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr, int string_len)
 {
-  *ierr = MPI_Error_string(*errorcode, string, resultlen);
+  std::vector<char> tmp(MPI_MAX_ERROR_STRING);
+  *ierr = MPI_Error_string(*errorcode, tmp.data(), resultlen);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(string, string_len, tmp.data(), *resultlen);
+  }
 }
 
 void mpi_win_fence_(int* assert, int* win, int* ierr)
@@ -175,14 +181,14 @@ void mpi_win_create_(int* base, MPI_Aint* size, int* disp_unit, int* info, int* 
   }
 }
 
-void mpi_win_post_(int* group, int assert, int* win, int* ierr)
+void mpi_win_post_(int* group, int* assert, int* win, int* ierr)
 {
-  *ierr =  MPI_Win_post(simgrid::smpi::Group::f2c(*group), assert, simgrid::smpi::Win::f2c(*win));
+  *ierr =  MPI_Win_post(simgrid::smpi::Group::f2c(*group), *assert, simgrid::smpi::Win::f2c(*win));
 }
 
-void mpi_win_start_(int* group, int assert, int* win, int* ierr)
+void mpi_win_start_(int* group, int* assert, int* win, int* ierr)
 {
-  *ierr =  MPI_Win_start(simgrid::smpi::Group::f2c(*group), assert, simgrid::smpi::Win::f2c(*win));
+  *ierr =  MPI_Win_start(simgrid::smpi::Group::f2c(*group), *assert, simgrid::smpi::Win::f2c(*win));
 }
 
 void mpi_win_complete_(int* win, int* ierr)
@@ -197,22 +203,17 @@ void mpi_win_wait_(int* win, int* ierr)
 
 void mpi_win_set_name_(int* win, char* name, int* ierr, int size)
 {
-  //handle trailing blanks
-  while(name[size-1]==' ')
-    size--;
-  while(*name==' '){//handle leading blanks
-    size--;
-    name++;
-  }
-  std::string tname(name, size);
+  std::string tname = smpi_fortran_to_string(name, size);
   *ierr = MPI_Win_set_name(simgrid::smpi::Win::f2c(*win), tname.c_str());
 }
 
-void mpi_win_get_name_(int* win, char* name, int* len, int* ierr)
+void mpi_win_get_name_(int* win, char* name, int* len, int* ierr, int size)
 {
-  *ierr = MPI_Win_get_name(simgrid::smpi::Win::f2c(*win),name,len);
-  if(*len>0)
-    name[*len]=' ';//blank padding, not \0
+  std::vector<char> tmp(MPI_MAX_OBJECT_NAME);
+  *ierr = MPI_Win_get_name(simgrid::smpi::Win::f2c(*win), tmp.data(), len);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(name, size, tmp.data(), *len);
+  }
 }
 
 void mpi_win_allocate_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr)

@@ -49,14 +49,16 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
 
 void mpi_type_set_name_(int* datatype, char* name, int* ierr, int size)
 {
-  std::string tname(name, size);
+  std::string tname = smpi_fortran_to_string(name, size);
   *ierr = MPI_Type_set_name(simgrid::smpi::Datatype::f2c(*datatype), tname.c_str());
 }
 
-void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
- *ierr = MPI_Type_get_name(simgrid::smpi::Datatype::f2c(*datatype),name,len);
- for (int i = *len; i < MPI_MAX_OBJECT_NAME; i++)
-   name[i] = ' ';
+void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr, int size){
+  std::vector<char> tmp(MPI_MAX_OBJECT_NAME);
+  *ierr = MPI_Type_get_name(simgrid::smpi::Datatype::f2c(*datatype), tmp.data(), len);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(name, size, tmp.data(), *len);
+  }
 }
 
 void mpi_type_get_attr_ (int* type, int* type_keyval, int *attribute_val, int* flag, int* ierr){
@@ -128,7 +130,7 @@ void mpi_type_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_typ
 
 void mpi_type_create_hvector_(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr){
   MPI_Datatype tmp;
-  *ierr= MPI_Type_hvector(*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  *ierr= MPI_Type_create_hvector(*count, *blocklen, *stride, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->c2f();
   }
@@ -172,7 +174,7 @@ void mpi_type_indexed_ (int* count, int* blocklens, int* indices, int* old_type,
 
 void mpi_type_create_indexed_(int* count, int* blocklens, int* indices, int* old_type, int*  newtype, int* ierr){
   MPI_Datatype tmp;
-  *ierr = MPI_Type_create_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
+  *ierr = MPI_Type_indexed(*count, blocklens, indices, simgrid::smpi::Datatype::f2c(*old_type), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = tmp->c2f();
   }
@@ -222,18 +224,21 @@ void mpi_unpack_ (void* inbuf, int* insize, int* position, void* outbuf, int* ou
  *ierr = MPI_Unpack(inbuf, *insize, position, outbuf, *outcount, simgrid::smpi::Datatype::f2c(*type), simgrid::smpi::Comm::f2c(*comm));
 }
 
-void mpi_pack_external_size_ (char *datarep, int* incount, int* datatype, MPI_Aint *size, int* ierr){
- *ierr = MPI_Pack_external_size(datarep, *incount, simgrid::smpi::Datatype::f2c(*datatype), size);
+void mpi_pack_external_size_ (char *datarep, int* incount, int* datatype, MPI_Aint *size, int* ierr, int datarep_len){
+  std::string rep = smpi_fortran_to_string(datarep, datarep_len);
+  *ierr = MPI_Pack_external_size(rep.data(), *incount, simgrid::smpi::Datatype::f2c(*datatype), size);
 }
 
 void mpi_pack_external_ (char *datarep, void *inbuf, int* incount, int* datatype, void *outbuf, MPI_Aint* outcount,
-                         MPI_Aint *position, int* ierr){
- *ierr = MPI_Pack_external(datarep, inbuf, *incount, simgrid::smpi::Datatype::f2c(*datatype), outbuf, *outcount, position);
+                         MPI_Aint *position, int* ierr, int datarep_len){
+  std::string rep = smpi_fortran_to_string(datarep, datarep_len);
+  *ierr = MPI_Pack_external(rep.data(), inbuf, *incount, simgrid::smpi::Datatype::f2c(*datatype), outbuf, *outcount, position);
 }
 
 void mpi_unpack_external_ ( char *datarep, void *inbuf, MPI_Aint* insize, MPI_Aint *position, void *outbuf,
-                            int* outcount, int* datatype, int* ierr){
- *ierr = MPI_Unpack_external( datarep, inbuf, *insize, position, outbuf, *outcount, simgrid::smpi::Datatype::f2c(*datatype));
+                            int* outcount, int* datatype, int* ierr, int datarep_len){
+  std::string rep = smpi_fortran_to_string(datarep, datarep_len);
+  *ierr = MPI_Unpack_external(rep.data(), inbuf, *insize, position, outbuf, *outcount, simgrid::smpi::Datatype::f2c(*datatype));
 }
 
 

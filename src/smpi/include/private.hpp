@@ -68,6 +68,23 @@ extern XBT_PUBLIC const int mpi_statuses_ignore_;
 #define FORT_STATUSES_IGNORE(addr)                                                                                     \
   static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUSES_IGNORE, mpi_statuses_ignore_))
 
+/* Convert between Fortran strings and C strings */
+inline std::string smpi_fortran_to_string(const char* str, int len)
+{
+  while (len > 0 && str[len - 1] == ' ')
+    len--;
+  return std::string(str, len);
+}
+
+inline void smpi_fortran_from_string(char* dst, int dst_len, const char* src, int src_len)
+{
+  if (src_len > dst_len)
+    src_len = dst_len;
+  memcpy(dst, src, src_len);
+  for (int i = src_len; i < dst_len; i++)
+    dst[i] = ' ';
+}
+
 extern XBT_PRIVATE MPI_Comm MPI_COMM_UNINITIALIZED;
 
 using MPIR_Cart_Topology       = SMPI_Cart_topology*;
@@ -165,7 +182,7 @@ void mpi_comm_free_(int* comm, int* ierr);
 void mpi_comm_split_(int* comm, int* color, int* key, int* comm_out, int* ierr);
 void mpi_group_incl_(int* group, int* n, int* key, int* group_out, int* ierr);
 void mpi_comm_group_(int* comm, int* group_out, int* ierr);
-void mpi_comm_create_group_(int* comm, int* group, int, int* comm_out, int* ierr);
+void mpi_comm_create_group_(int* comm, int* group, int* tag, int* comm_out, int* ierr);
 void mpi_send_init_(void* buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
 void mpi_isend_(void* buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
 void mpi_irsend_(void* buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr);
@@ -238,7 +255,7 @@ void mpi_ialltoallw_(void* sendbuf, int* sendcnts, int* sdispls, int* sendtypes,
 void mpi_iexscan_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* request, int* ierr);
 
 void mpi_type_size_(int* datatype, int* size, int* ierr);
-void mpi_get_processor_name_(char* name, int* resultlen, int* ierr);
+void mpi_get_processor_name_(char* name, int* resultlen, int* ierr, int name_len);
 void mpi_test_(int* request, int* flag, MPI_Status* status, int* ierr);
 void mpi_testall_(int* count, int* requests, int* flag, MPI_Status* statuses, int* ierr);
 void mpi_get_count_(MPI_Status* status, int* datatype, int* count, int* ierr);
@@ -255,9 +272,9 @@ void mpi_win_fence_(int* assert, int* win, int* ierr);
 void mpi_win_free_(int* win, int* ierr);
 void mpi_win_create_(int* base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int* win, int* ierr);
 void mpi_win_set_name_(int* win, char* name, int* ierr, int size);
-void mpi_win_get_name_(int* win, char* name, int* len, int* ierr);
-void mpi_win_post_(int* group, int assert, int* win, int* ierr);
-void mpi_win_start_(int* group, int assert, int* win, int* ierr);
+void mpi_win_get_name_(int* win, char* name, int* len, int* ierr, int size);
+void mpi_win_post_(int* group, int* assert, int* win, int* ierr);
+void mpi_win_start_(int* group, int* assert, int* win, int* ierr);
 void mpi_win_complete_(int* win, int* ierr);
 void mpi_win_wait_(int* win, int* ierr);
 void mpi_win_allocate_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr);
@@ -308,7 +325,7 @@ void mpi_accumulate_(int* origin_addr, int* origin_count, int* origin_datatype, 
 void mpi_raccumulate_(int* origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
                       MPI_Aint* target_disp, int* target_count, int* target_datatype, int* op, int* win, int* request,
                       int* ierr);
-void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr);
+void mpi_error_string_(int* errorcode, char* string, int* resultlen, int* ierr, int string_len);
 void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* sendtag, void* recvbuf, int* recvcount,
                    int* recvtype, int* src, int* recvtag, int* comm, MPI_Status* status, int* ierr);
 
@@ -320,7 +337,7 @@ void mpi_address_(void* location, MPI_Aint* address, int* ierr);
 void mpi_get_address_(void* location, MPI_Aint* address, int* ierr);
 void mpi_type_dup_(int* datatype, int* newdatatype, int* ierr);
 void mpi_type_set_name_(int* datatype, char* name, int* ierr, int size);
-void mpi_type_get_name_(int* datatype, char* name, int* len, int* ierr);
+void mpi_type_get_name_(int* datatype, char* name, int* len, int* ierr, int size);
 void mpi_type_get_attr_(int* type, int* type_keyval, int* attribute_val, int* flag, int* ierr);
 void mpi_type_set_attr_(int* type, int* type_keyval, int* attribute_val, int* ierr);
 void mpi_type_delete_attr_(int* type, int* type_keyval, int* ierr);
@@ -348,7 +365,7 @@ void mpi_comm_set_attr_(int* comm, int* comm_keyval, int* attribute_val, int* ie
 void mpi_comm_delete_attr_(int* comm, int* comm_keyval, int* ierr);
 void mpi_comm_create_keyval_(void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr);
 void mpi_comm_free_keyval_(int* keyval, int* ierr);
-void mpi_comm_get_name_(int* comm, char* name, int* len, int* ierr);
+void mpi_comm_get_name_(int* comm, char* name, int* len, int* ierr, int size);
 void mpi_comm_compare_(int* comm1, int* comm2, int* result, int* ierr);
 void mpi_comm_disconnect_(int* comm, int* ierr);
 void mpi_request_free_(int* request, int* ierr);
@@ -387,11 +404,11 @@ void mpi_buffer_detach_(void* buffer, int* size, int* ierr);
 void mpi_testsome_(int* incount, int* requests, int* outcount, int* indices, MPI_Status* statuses, int* ierr);
 void mpi_comm_test_inter_(int* comm, int* flag, int* ierr);
 void mpi_unpack_(void* inbuf, int* insize, int* position, void* outbuf, int* outcount, int* type, int* comm, int* ierr);
-void mpi_pack_external_size_(char* datarep, int* incount, int* datatype, MPI_Aint* size, int* ierr);
+void mpi_pack_external_size_(char* datarep, int* incount, int* datatype, MPI_Aint* size, int* ierr, int datarep_len);
 void mpi_pack_external_(char* datarep, void* inbuf, int* incount, int* datatype, void* outbuf, MPI_Aint* outcount,
-                        MPI_Aint* position, int* ierr);
+                        MPI_Aint* position, int* ierr, int datarep_len);
 void mpi_unpack_external_(char* datarep, void* inbuf, MPI_Aint* insize, MPI_Aint* position, void* outbuf, int* outcount,
-                          int* datatype, int* ierr);
+                          int* datatype, int* ierr, int datarep_len);
 void mpi_type_hindexed_(int* count, int* blocklens, int* indices, int* old_type, int* newtype, int* ierr);
 void mpi_type_create_hindexed_(int* count, int* blocklens, MPI_Aint* indices, int* old_type, int* newtype, int* ierr);
 void mpi_type_create_hindexed_block_(int* count, int* blocklength, MPI_Aint* indices, int* old_type, int* newtype,
@@ -434,7 +451,7 @@ void mpi_type_create_resized_(int* oldtype, MPI_Aint* lb, MPI_Aint* extent, int*
 void mpi_type_create_subarray_(int* ndims, int* array_of_sizes, int* array_of_subsizes, int* array_of_starts,
                                int* order, int* oldtype, int* newtype, int* ierr);
 void mpi_type_match_size_(int* typeclass, int* size, int* datatype, int* ierr);
-void mpi_comm_set_name_(int* comm, char* name, int* ierr);
+void mpi_comm_set_name_(int* comm, char* name, int* ierr, int size);
 void mpi_comm_dup_with_info_(int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_(int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr);
 void mpi_comm_set_info_(int* comm, int* info, int* ierr);
@@ -472,16 +489,17 @@ void mpi_comm_spawn_multiple_(int* count, char* array_of_commands, char** array_
                               int* ierr);
 void mpi_comm_get_parent_(int* parent, int* ierr);
 void mpi_file_close_(int* file, int* ierr);
-void mpi_file_delete_(char* filename, int* info, int* ierr);
-void mpi_file_open_(int* comm, char* filename, int* amode, int* info, int* fh, int* ierr);
+void mpi_file_delete_(char* filename, int* info, int* ierr, int filename_len);
+void mpi_file_open_(int* comm, char* filename, int* amode, int* info, int* fh, int* ierr, int filename_len);
 void mpi_file_seek_(int* fh, MPI_Offset* offset, int* whence, int* ierr);
 void mpi_file_seek_shared_(int* fh, MPI_Offset* offset, int* whence, int* ierr);
 void mpi_file_get_position_(int* fh, MPI_Offset* offset, int* ierr);
 void mpi_file_get_position_shared_(int* fh, MPI_Offset* offset, int* ierr);
 void mpi_file_set_size_(int* fh, MPI_Offset* size, int* ierr);
 void mpi_file_get_size_(int* fh, MPI_Offset* sier, int* ierr);
-void mpi_file_set_view_(int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
-void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr);
+void mpi_file_set_view_(int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr,
+                        int datarep_len);
+void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr, int datarep_len);
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_read_shared_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_read_all_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr);

@@ -67,10 +67,11 @@ void mpi_comm_group_(int* comm, int* group_out,  int* ierr) {
   }
 }
 
-void mpi_comm_create_group_ (int* comm, int* group, int i, int* comm_out, int* ierr){
+void mpi_comm_create_group_ (int* comm, int* group, int* tag, int* comm_out, int* ierr){
   MPI_Comm tmp;
- *ierr = MPI_Comm_create_group(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), i, &tmp);
-  if(*ierr == MPI_SUCCESS) {
+  *comm_out = FORTRAN_COMM_NULL;
+  *ierr = MPI_Comm_create_group(simgrid::smpi::Comm::f2c(*comm),simgrid::smpi::Group::f2c(*group), *tag, &tmp);
+  if(*ierr == MPI_SUCCESS && tmp != MPI_COMM_NULL) {
     *comm_out = tmp->c2f();
   }
 }
@@ -102,10 +103,12 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
  *ierr = MPI_Comm_free_keyval( keyval);
 }
 
-void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
- *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), name, len);
- for (int i = *len; i < MPI_MAX_OBJECT_NAME; i++)
-   name[i] = ' ';
+void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr, int size){
+  std::vector<char> tmp(MPI_MAX_OBJECT_NAME);
+  *ierr = MPI_Comm_get_name(simgrid::smpi::Comm::f2c(*comm), tmp.data(), len);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(name, size, tmp.data(), *len);
+  }
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
@@ -149,11 +152,8 @@ void mpi_comm_remote_size_ (int* comm, int* size, int* ierr) {
  *ierr = MPI_Comm_remote_size(simgrid::smpi::Comm::f2c(*comm), size);
 }
 
-void mpi_comm_set_name_ (int* comm, char* name, int* ierr){
- int count;
- for(count=MPI_MAX_OBJECT_NAME-1; count>=0 && name[count]==' '; count--);
- count+=1;
- std::string tname(name, count);
+void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
+ std::string tname = smpi_fortran_to_string(name, size);
  *ierr = MPI_Comm_set_name(simgrid::smpi::Comm::f2c(*comm), tname.c_str());
 }
 

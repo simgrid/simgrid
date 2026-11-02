@@ -21,13 +21,16 @@ void mpi_file_close_ ( int* file, int* ierr){
   }
 }
 
-void mpi_file_delete_ ( char* filename, int* info, int* ierr){
-  *ierr= MPI_File_delete(filename, simgrid::smpi::Info::f2c(*info));
+void mpi_file_delete_ ( char* filename, int* info, int* ierr, int filename_len){
+  std::string name = smpi_fortran_to_string(filename, filename_len);
+  *ierr= MPI_File_delete(name.c_str(), simgrid::smpi::Info::f2c(*info));
 }
 
-void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh, int* ierr){
+void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh, int* ierr, int filename_len){
   MPI_File tmp;
-  *ierr= MPI_File_open(simgrid::smpi::Comm::f2c(*comm), filename, *amode, simgrid::smpi::Info::f2c(*info), &tmp);
+  std::string name = smpi_fortran_to_string(filename, filename_len);
+  *fh = FORTRAN_NULL_HANDLE;
+  *ierr= MPI_File_open(simgrid::smpi::Comm::f2c(*comm), name.c_str(), *amode, simgrid::smpi::Info::f2c(*info), &tmp);
   if (*ierr == MPI_SUCCESS) {
     *fh = tmp->c2f();
   }
@@ -105,17 +108,21 @@ void mpi_file_write_all_ ( int* fh, void* buf, int* count, int* datatype, MPI_St
   *ierr=  MPI_File_write_all(simgrid::smpi::File::f2c(*fh), buf, *count, simgrid::smpi::Datatype::f2c(*datatype), FORT_STATUS_IGNORE(status));
 }
 
-void mpi_file_set_view_ ( int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr){
-  *ierr= MPI_File_set_view(simgrid::smpi::File::f2c(*fh) , *offset, simgrid::smpi::Datatype::f2c(*etype), simgrid::smpi::Datatype::f2c(*filetype), datarep, simgrid::smpi::Info::f2c(*info));
+void mpi_file_set_view_ ( int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr,
+                          int datarep_len){
+  std::string rep = smpi_fortran_to_string(datarep, datarep_len);
+  *ierr= MPI_File_set_view(simgrid::smpi::File::f2c(*fh) , *offset, simgrid::smpi::Datatype::f2c(*etype), simgrid::smpi::Datatype::f2c(*filetype), rep.c_str(), simgrid::smpi::Info::f2c(*info));
 }
 
-void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr){
+void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr, int datarep_len){
   MPI_Datatype tmp;
   MPI_Datatype tmp2;
-  *ierr= MPI_File_get_view(simgrid::smpi::File::f2c(*fh) , disp, &tmp, &tmp2, datarep);
+  std::vector<char> rep(MPI_MAX_DATAREP_STRING);
+  *ierr= MPI_File_get_view(simgrid::smpi::File::f2c(*fh) , disp, &tmp, &tmp2, rep.data());
   if(*ierr == MPI_SUCCESS) {
     *etype = tmp->c2f();
     *filetype = tmp2->c2f();
+    smpi_fortran_from_string(datarep, datarep_len, rep.data(), strlen(rep.data()));
   }
 }
 
