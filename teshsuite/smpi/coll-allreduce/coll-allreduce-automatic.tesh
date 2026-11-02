@@ -35,35 +35,35 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll 
 > [13] sndbuf=[208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 ]
 > [14] sndbuf=[224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 ]
 > [15] sndbuf=[240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 ]
-> [  0.628843] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.008087
+> [  0.629278] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.008087
 > [7] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628843] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.008056
+> [  0.629278] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.008056
 > [6] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628843] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.008056
+> [  0.629278] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.008056
 > [5] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628843] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.008026
+> [  0.629278] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.008026
 > [4] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628958] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.008054
+> [  0.629393] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.008054
 > [3] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628958] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.008023
+> [  0.629393] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.008023
 > [2] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.628958] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.008023
+> [  0.629393] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.008023
 > [1] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.629565] (13:12@Ginette) The quickest allreduce was mvapich2 on rank 12 and took 0.005970
+> [  0.630000] (13:12@Ginette) The quickest allreduce was smp_rdb on rank 12 and took 0.006001
 > [12] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.629565] (14:13@Ginette) The quickest allreduce was mvapich2 on rank 13 and took 0.006001
+> [  0.630000] (14:13@Ginette) The quickest allreduce was smp_rdb on rank 13 and took 0.006031
 > [13] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.629565] (15:14@Ginette) The quickest allreduce was mvapich2 on rank 14 and took 0.006001
+> [  0.630000] (15:14@Ginette) The quickest allreduce was smp_rdb on rank 14 and took 0.006031
 > [14] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.629565] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.005970
+> [  0.630000] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.005970
 > [15] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.632118] (12:11@Fafard) The quickest allreduce was mvapich2 on rank 11 and took 0.006009
+> [  0.632554] (12:11@Fafard) The quickest allreduce was smp_rdb on rank 11 and took 0.006039
 > [11] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.632118] (11:10@Fafard) The quickest allreduce was mvapich2 on rank 10 and took 0.005978
+> [  0.632554] (11:10@Fafard) The quickest allreduce was smp_rdb on rank 10 and took 0.006009
 > [10] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.632118] (10:9@Fafard) The quickest allreduce was mvapich2 on rank 9 and took 0.005978
+> [  0.632554] (10:9@Fafard) The quickest allreduce was smp_rdb on rank 9 and took 0.006009
 > [9] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.632118] (9:8@Fafard) The quickest allreduce was mvapich2 on rank 8 and took 0.005948
+> [  0.632554] (9:8@Fafard) The quickest allreduce was smp_rdb on rank 8 and took 0.005978
 > [8] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
-> [  0.636114] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.008023 , but global was mvapich2 : 0.009199 at max
+> [  0.636550] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.008023 , but global was smp_rdb : 0.009230 at max
 > [0] rcvbuf=[1920 1936 1952 1968 1984 2000 2016 2032 2048 2064 2080 2096 2112 2128 2144 2160 ]
