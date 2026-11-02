@@ -543,6 +543,11 @@ Asynchronous executions can be suspended and then resumed to stop and start thei
 
    .. example-tab:: examples/java/exec_suspend/exec_suspend.java
 
+   .. example-tab:: examples/python/exec-suspend/exec-suspend.py
+
+      See also :py:func:`simgrid.Exec.suspend()`, :py:func:`simgrid.Exec.resume()`,
+      :py:func:`simgrid.Exec.on_this_suspend_cb()` and :py:func:`simgrid.Exec.on_this_resume_cb()`.
+
 Once started, asynchronous executions can be waited for, meaning that the calling actor is blocked until the completion of the
 given asynchronous execution. It is also possible to specify a timeout.
 
@@ -551,6 +556,10 @@ given asynchronous execution. It is also possible to specify a timeout.
    .. example-tab:: examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
 
    .. example-tab:: examples/java/exec_awaitfor/exec_awaitfor.java
+
+   .. example-tab:: examples/python/exec-waitfor/exec-waitfor.py
+
+      See also :py:func:`simgrid.Exec.wait_for()` and :py:class:`simgrid.TimeoutException`.
 
 .. _s4u_ex_threaded:
 
@@ -567,6 +576,10 @@ several computers at once, and their interconnect.
    .. example-tab:: examples/cpp/exec-threads/s4u-exec-threads.cpp
 
    .. example-tab:: examples/java/exec_threads/exec_threads.java
+
+   .. example-tab:: examples/python/exec-threads/exec-threads.py
+
+      See also :py:func:`simgrid.this_actor.thread_execute()` and :py:func:`simgrid.this_actor.thread_execute_async()`.
 
 Remote execution
 ----------------
@@ -615,7 +628,7 @@ reconfigure a task after its start, to change the number of hosts it runs onto. 
 
    .. example-tab:: examples/python/exec-ptask/exec-ptask.py
 
-      See also :ref:`simgrid.this_actor.parallel_execute()`
+      See also :py:func:`simgrid.this_actor.parallel_execute()`.
 
 A parallel task can also run several instances on the very same host, using several of its cores.
 
@@ -625,6 +638,10 @@ A parallel task can also run several instances on the very same host, using seve
 
    .. example-tab:: examples/java/exec_ptask_multicore/exec_ptask_multicore.java
 
+   .. example-tab:: examples/python/exec-ptask-multicore/exec-ptask-multicore.py
+
+      See also :py:func:`simgrid.this_actor.parallel_execute()` and :py:func:`simgrid.Host.exec_async()`.
+
 The latency of the involved communications can also be taken into account.
 
 .. tabs::
@@ -632,6 +649,10 @@ The latency of the involved communications can also be taken into account.
    .. example-tab:: examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency.cpp
 
    .. example-tab:: examples/java/exec_ptask_multicore_latency/exec_ptask_multicore_latency.java
+
+   .. example-tab:: examples/python/exec-ptask-multicore-latency/exec-ptask-multicore-latency.py
+
+      See also :py:func:`simgrid.this_actor.parallel_execute()`.
 
 Ptasks play well with the host energy plugin, as shown in this example. There is not much new compared to the above ptask
 example or the :ref:`examples about energy <s4u_ex_energy>`. It just works.
@@ -661,6 +682,10 @@ failing hosts however, any blocking operation such as ``exec`` or ``wait`` will 
    .. example-tab:: examples/cpp/exec-failure/s4u-exec-failure.cpp
 
    .. example-tab:: examples/java/exec_failure/exec_failure.java
+
+   .. example-tab:: examples/python/exec-failure/exec-failure.py
+
+      See also :py:attr:`simgrid.Exec.state_str` and :py:class:`simgrid.HostFailureException`.
 
 .. _s4u_ex_dvfs:
 
@@ -712,6 +737,10 @@ This example illustrates how to simply read and write data on a simulated disk r
 
    .. example-tab:: examples/java/io_disk_raw/io_disk_raw.java
 
+   .. example-tab:: examples/python/io-disk-raw/io-disk-raw.py
+
+      See also :py:func:`simgrid.Disk.read()`, :py:func:`simgrid.Disk.write()` and :py:attr:`simgrid.Disk.data`.
+
    .. example-tab:: examples/c/io-disk-raw/io-disk-raw.c
 
    .. example-tab:: examples/platforms/hosts_with_disks.xml
@@ -727,6 +756,11 @@ priority 1.
 
    .. example-tab:: examples/java/io_priority/io_priority.java
 
+   .. example-tab:: examples/python/io-priority/io-priority.py
+
+      See also :py:func:`simgrid.Disk.write()`, :py:func:`simgrid.Disk.write_async()` and
+      :py:func:`simgrid.Io.update_priority()`.
+
 Asynchronous raw accesses
 -------------------------
 
@@ -737,6 +771,11 @@ As most other activities, raw IO accesses can be used asynchronously, as illustr
    .. example-tab:: examples/cpp/io-async/s4u-io-async.cpp
 
    .. example-tab:: examples/java/io_async/io_async.java
+
+   .. example-tab:: examples/python/io-async/io-async.py
+
+      See also :py:func:`simgrid.Disk.io_init()`, :py:func:`simgrid.Io.wait_for()`, :py:func:`simgrid.Io.cancel()`,
+      :py:func:`simgrid.Io.test()`, :py:func:`simgrid.Io.detach()` and :py:func:`simgrid.Io.on_this_completion_cb()`.
 
 Filesystem plugin
 -----------------
@@ -756,6 +795,10 @@ result in short reads and short writes, as in reality.
 
        .. example-tab:: examples/java/io_file_system/io_file_system.java
 
+       .. example-tab:: examples/python/io-file-system/io-file-system.py
+
+          See also :py:class:`simgrid.File` and :py:func:`simgrid.sg_storage_file_system_init()`.
+
        .. example-tab:: examples/c/io-file-system/io-file-system.c
 
   - **Remote I/O:**
@@ -767,6 +810,10 @@ result in short reads and short writes, as in reality.
        .. example-tab:: examples/cpp/io-file-remote/s4u-io-file-remote.cpp
 
        .. example-tab:: examples/java/io_file_remote/io_file_remote.java
+
+       .. example-tab:: examples/python/io-file-remote/io-file-remote.py
+
+          See also :py:func:`simgrid.File.remote_copy()` and :py:func:`simgrid.File.remote_move()`.
 
        .. example-tab:: examples/c/io-file-remote/io-file-remote.c
 
@@ -884,6 +931,11 @@ dependencies between communications. You could declare such dependencies between
 
    .. example-tab:: examples/java/exec_dependent/exec_dependent.java
 
+   .. example-tab:: examples/python/exec-dependent/exec-dependent.py
+
+      See also :py:func:`simgrid.Exec.init()`, :py:func:`simgrid.Exec.add_successor()` and
+      :py:func:`simgrid.Exec.on_veto_cb()`.
+
 .. tabs::
 
    .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
@@ -895,6 +947,10 @@ dependencies between communications. You could declare such dependencies between
    .. example-tab:: examples/cpp/io-dependent/s4u-io-dependent.cpp
 
    .. example-tab:: examples/java/io_dependent/io_dependent.java
+
+   .. example-tab:: examples/python/io-dependent/io-dependent.py
+
+      See also :py:func:`simgrid.Io.add_successor()` and :py:func:`simgrid.Host.exec_init()`.
 
 Assigning activities
 --------------------
@@ -908,6 +964,10 @@ dependency that can withdraw their execution.
    .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 
    .. example-tab:: examples/java/exec_unassigned/exec_unassigned.java
+
+   .. example-tab:: examples/python/exec-unassigned/exec-unassigned.py
+
+      See also :py:func:`simgrid.Exec.init()` and :py:attr:`simgrid.Exec.host`.
 
 Simple DAG of activities
 ------------------------
@@ -1688,6 +1748,10 @@ competing activities on the resource).
 
      .. example-tab:: examples/java/exec_cpu_factors/exec_cpu_factors.java
 
+     .. example-tab:: examples/python/exec-cpu-factors/exec-cpu-factors.py
+
+        Multiplicative factors for CPUs using :py:func:`simgrid.Host.set_cpu_factor_cb()`.
+
   .. tabs::
 
      .. example-tab:: examples/cpp/network-factors/s4u-network-factors.cpp
@@ -1725,6 +1789,7 @@ Alternatively, you can use non-linear factors for the resource variability.
         Non-linear variability for Disks, which was shown realistic in this paper: `<https://hal.inria.fr/hal-01197128>`_.
 
      .. example-tab:: examples/python/io-degradation/io-degradation.py
+
         Non-linear variability for Disks, which was shown realistic in this paper: `<https://hal.inria.fr/hal-01197128>`_.
 
 ns-3 as a model
@@ -1875,6 +1940,11 @@ The corresponding plugin is documented here: :ref:`plugin_host_carbon_footprint`
 .. tabs::
 
    .. example-tab:: examples/cpp/exec-co2/s4u-exec-co2.cpp
+
+   .. example-tab:: examples/python/exec-co2/exec-co2.py
+
+      See also :py:func:`simgrid.sg_host_carbon_footprint_plugin_init()` and
+      :py:func:`simgrid.sg_host_carbon_footprint_load_trace_file()`.
 
 ***********************
 Model-Checking examples

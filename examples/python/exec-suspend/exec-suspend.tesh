@@ -1,0 +1,10 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/exec-suspend.py ${platfdir}/small_platform.xml
+> [Tremblay:executor:(1) 1.000000] [python/INFO] Task is suspended (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [python/INFO] Task is resumed (remaining: 196190000.000000)
+> [Tremblay:executor:(1) 11.000000] [python/INFO] Activity hasn't advanced: yes. (remaining before sleep: 196190000.000000, remaining after sleep: 196190000.000000)
+> [Tremblay:executor:(1) 12.000000] [python/INFO] Task is suspended (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [python/INFO] Task is resumed (remaining: 98095000.000000)
+> [Tremblay:executor:(1) 22.000000] [python/INFO] Activity hasn't advanced: yes. (remaining before sleep: 98095000.000000, remaining after sleep: 98095000.000000)
+> [Tremblay:executor:(1) 23.000000] [python/INFO] Finished

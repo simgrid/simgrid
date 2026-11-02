@@ -8,6 +8,21 @@ S4U:
  - New plugin for Host carbon footprint. See examples/cpp/exec-co2 and https://arxiv.org/abs/2508.13693
    Thanks to the authors for this great contribution.
 
+Python:
+ - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,
+   is_assigned, dependencies_solved, add_successor(), remove_successor(), start(), cancel(), test(), wait(),
+   wait_for(), wait_until(), suspend(), resume(), detach() and the on_*_cb() / on_this_*_cb() signals.
+ - Add Exec.init(), Exec.set_flops_amount(), Host.exec_init(), Host.exec_async(), Host.set_cpu_factor_cb(),
+   this_actor.thread_execute() and this_actor.thread_execute_async().
+ - Add Disk.io_init(), Disk.data, Io.remaining and Io.update_priority().
+ - Bind the file system plugin: sg_storage_file_system_init(), the File class (usable as a context manager)
+   and the Disk.mount_point, Disk.size, Disk.size_used and Disk.size_free attributes.
+ - Bind the carbon footprint plugin: sg_host_carbon_footprint_plugin_init() and
+   sg_host_carbon_footprint_load_trace_file().
+ - New examples: exec-co2, exec-cpu-factors, exec-dependent, exec-failure, exec-ptask-multicore,
+   exec-ptask-multicore-latency, exec-suspend, exec-threads, exec-unassigned, exec-waitfor, io-async,
+   io-dependent, io-disk-raw, io-file-remote, io-file-system and io-priority.
+
 Model-Checker:
  - [sthread] Implement an intercepter of the disk basic disk operations. They are not connected to the simulator yet,
    but allow programs requiring the disk to run in sthread.

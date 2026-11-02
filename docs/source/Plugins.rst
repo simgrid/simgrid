@@ -220,6 +220,40 @@ File System
 
 .. doxygengroup:: plugin_filesystem
 
+In Python, the plugin is initialized with :py:func:`simgrid.sg_storage_file_system_init`. Files are then
+manipulated through the :py:class:`simgrid.File` class, preferably used as a context manager so that the file gets
+closed automatically. The disks also provide some additional attributes.
+
+.. code-block:: python
+
+   with File.open("/scratch/tmp/data.txt") as file:
+       file.write(200000)
+       file.seek(0)
+       file.read(file.size)
+
+.. autoclass:: simgrid.File
+
+   .. automethod:: simgrid.File.open
+   .. automethod:: simgrid.File.close
+   .. autoattribute:: simgrid.File.closed
+   .. autoattribute:: simgrid.File.path
+   .. autoattribute:: simgrid.File.size
+   .. autoattribute:: simgrid.File.data
+   .. automethod:: simgrid.File.read
+   .. automethod:: simgrid.File.write
+   .. automethod:: simgrid.File.seek
+   .. automethod:: simgrid.File.tell
+   .. automethod:: simgrid.File.move
+   .. automethod:: simgrid.File.unlink
+   .. automethod:: simgrid.File.remote_copy
+   .. automethod:: simgrid.File.remote_move
+   .. automethod:: simgrid.File.dump
+
+.. autoattribute:: simgrid.Disk.mount_point
+.. autoattribute:: simgrid.Disk.size
+.. autoattribute:: simgrid.Disk.size_used
+.. autoattribute:: simgrid.Disk.size_free
+
 .. _plugin_battery:
 
 Battery
@@ -268,6 +302,11 @@ Host carbon footprint
 .. doxygenfunction:: sg_host_get_carbon_intensity(const_sg_host_t host)
 .. doxygenfunction:: sg_host_set_carbon_intensity(const_sg_host_t host, double carbon_intensity)
 .. doxygenfunction:: sg_host_carbon_footprint_load_trace_file(const char* trace_file)
+
+In Python, the plugin is initialized with :py:func:`simgrid.sg_host_carbon_footprint_plugin_init`, and the trace file
+is loaded with the following function. See also :ref:`the example <ex_plugin_host_carbon_footprint>`.
+
+.. autofunction:: simgrid.sg_host_carbon_footprint_load_trace_file
 
 
 ..  LocalWords:  SimGrid

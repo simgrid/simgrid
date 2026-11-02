@@ -148,15 +148,27 @@ def handle_python_module(fullname, englobing, elm):
     elif isinstance(elm, (int, str)): # We do have such a data, directly in the SimGrid top module
         found_decl("data", fullname)
 #        print('.. autodata:: {}'.format(fullname))
-    elif inspect.isclass(type(elm)): # Enum classes are of that kind
-        found_decl("data", fullname)
-        #print('.. autodata:: {}'.format(fullname))
-    elif inspect.ismodule(elm) or inspect.isclass(elm):
+    elif inspect.ismodule(elm):
         for name, data in inspect.getmembers(elm):
             if name.startswith('__'):
                 continue
 #            print("Recurse on {}.{}".format(fullname, name))
             handle_python_module("{}.{}".format(fullname, name), elm, data)
+    elif inspect.isclass(elm):
+        found_decl("class", fullname)
+#        print('.. autoclass:: {}'.format(fullname))
+        # Do not evaluate the members: the static properties (such as Engine.instance) cannot be read before the
+        # engine creation. Inherited members are documented in the parent class, and the pybind11 internals
+        # (starting with '_') or the boilerplate of enums are not to be documented.
+        if hasattr(elm, '__members__'): # The values of an enum are documented along with its class
+            return
+        for name, data in inspect.getmembers_static(elm):
+            if name.startswith('_') or name not in elm.__dict__:
+                continue
+            handle_python_module("{}.{}".format(fullname, name), elm, data)
+    elif inspect.isclass(type(elm)): # Enum values are of that kind
+        found_decl("data", fullname)
+        #print('.. autodata:: {}'.format(fullname))
     else:
         print('UNHANDLED TYPE {} : {!r} Type: {} Englobing: {} str: {} Members: \n{}\n'.format(fullname, elm, type(elm), englobing, str(elm), inspect.getmembers(elm)))
 

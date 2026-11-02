@@ -857,12 +857,17 @@ the execution, or start an asynchronous activity.
       .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
       .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute(double flop_amounts, int thread_count)
       .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute(s4u::Host *host, double flop_amounts, int thread_count)
+      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute_async(double flop_amounts, int thread_count)
+      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute_async(s4u::Host *host, double flop_amounts, int thread_count)
 
    .. group-tab:: Python
 
       .. autofunction:: simgrid.this_actor.exec_async
       .. autofunction:: simgrid.this_actor.exec_init
       .. autofunction:: simgrid.this_actor.execute
+      .. autofunction:: simgrid.this_actor.parallel_execute
+      .. autofunction:: simgrid.this_actor.thread_execute
+      .. autofunction:: simgrid.this_actor.thread_execute_async
 
    .. group-tab:: C
 
@@ -1220,6 +1225,12 @@ They are only provided as plain C functions but are the way to go in C++ too.
       .. doxygenfunction:: sg_vm_live_migration_plugin_init()
          :noindex:
 
+   .. group-tab:: Python
+
+      .. autofunction:: simgrid.sg_host_load_plugin_init
+      .. autofunction:: simgrid.sg_host_carbon_footprint_plugin_init
+      .. autofunction:: simgrid.sg_storage_file_system_init
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Engine.plugin_host_load_init
@@ -1459,6 +1470,9 @@ Basic management
       destroy resources once the simulation is started.
 
       .. doxygenfunction:: simgrid::s4u::Disk::seal()
+      .. doxygenfunction:: simgrid::s4u::Disk::turn_on()
+      .. doxygenfunction:: simgrid::s4u::Disk::turn_off()
+      .. doxygenfunction:: simgrid::s4u::Disk::is_on() const
 
    .. group-tab:: Python
 
@@ -1467,6 +1481,8 @@ Basic management
          from simgrid import Disk
 
       .. automethod:: simgrid.Disk.seal
+      .. automethod:: simgrid.Disk.turn_on
+      .. automethod:: simgrid.Disk.turn_off
 
    .. group-tab:: Java
 
@@ -1491,6 +1507,7 @@ Querying info
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Disk.name
+      .. autoattribute:: simgrid.Disk.host
 
    .. group-tab:: Java
 
@@ -1573,6 +1590,12 @@ User data and properties
       .. doxygenfunction:: simgrid::s4u::Disk::get_property(const std::string &key) const
       .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &key, const std::string &value)
 
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Disk.data
+
+      See also :ref:`the attributes provided by the file system plugin <plugin_filesystem>`.
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_disk_get_data(const_sg_disk_t disk)
@@ -1601,6 +1624,7 @@ I/O operations
 
       .. autoclass:: simgrid.Disk.Operation
 
+      .. automethod:: simgrid.Disk.io_init
       .. automethod:: simgrid.Disk.read
       .. automethod:: simgrid.Disk.read_async
       .. automethod:: simgrid.Disk.write
@@ -1767,6 +1791,7 @@ Modifying characteristics
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
       .. autoattribute:: simgrid.Host.concurrency_limit
+      .. automethod:: simgrid.Host.set_cpu_factor_cb
 
    .. group-tab:: Java
 
@@ -1991,6 +2016,11 @@ Execution
       .. doxygenfunction:: simgrid::s4u::Host::exec_init(double flops_amounts) const
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops) const
       .. doxygenfunction:: simgrid::s4u::Host::execute(double flops, double priority) const
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.exec_async
+      .. automethod:: simgrid.Host.exec_init
 
    .. group-tab:: Java
 
@@ -2913,6 +2943,13 @@ class Activity
 
       .. javaclass:: org.simgrid.s4u.Activity
 
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.Activity
+
+      In Python, the methods common to all activities are documented in each subclass:
+      :ref:`Comm <API_s4u_Comm>`, :ref:`Exec <API_s4u_Exec>` and :ref:`Io <API_s4u_Io>`.
+
 **Known subclasses:**
 :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
 :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
@@ -3145,6 +3182,13 @@ Querying info
       .. autoattribute:: simgrid.Comm.mailbox
       .. autoattribute:: simgrid.Comm.sender
       .. autoattribute:: simgrid.Comm.state_str
+      .. autoattribute:: simgrid.Comm.name
+      .. autoattribute:: simgrid.Comm.start_time
+      .. autoattribute:: simgrid.Comm.finish_time
+      .. autoattribute:: simgrid.Comm.is_assigned
+      .. automethod:: simgrid.Comm.set_tracing_category
+      .. autoattribute:: simgrid.Comm.remaining
+      .. automethod:: simgrid.Comm.get_payload
       .. automethod:: simgrid.Comm.detach
       .. automethod:: simgrid.Comm.set_payload_size
       .. automethod:: simgrid.Comm.set_rate
@@ -3196,6 +3240,12 @@ Managing Dependencies
       .. doxygenfunction:: simgrid::s4u::Comm::get_dependencies() const
       .. doxygenfunction:: simgrid::s4u::Comm::dependencies_solved() const
       .. doxygenfunction:: simgrid::s4u::Comm::has_no_successor() const
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Comm.add_successor
+      .. automethod:: simgrid.Comm.remove_successor
+      .. autoattribute:: simgrid.Comm.dependencies_solved
 
    .. group-tab:: Java
 
@@ -3318,6 +3368,19 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_this_send_cb
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Comm.on_veto_cb
+      .. automethod:: simgrid.Comm.on_start_cb
+      .. automethod:: simgrid.Comm.on_suspend_cb
+      .. automethod:: simgrid.Comm.on_resume_cb
+      .. automethod:: simgrid.Comm.on_completion_cb
+      .. automethod:: simgrid.Comm.on_this_veto_cb
+      .. automethod:: simgrid.Comm.on_this_start_cb
+      .. automethod:: simgrid.Comm.on_this_suspend_cb
+      .. automethod:: simgrid.Comm.on_this_resume_cb
+      .. automethod:: simgrid.Comm.on_this_completion_cb
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Comm.on_veto_cb
@@ -3430,6 +3493,13 @@ Querying info
       .. autoattribute:: simgrid.Exec.host
       .. autoattribute:: simgrid.Exec.remaining
       .. autoattribute:: simgrid.Exec.remaining_ratio
+      .. autoattribute:: simgrid.Exec.state_str
+      .. autoattribute:: simgrid.Exec.name
+      .. autoattribute:: simgrid.Exec.start_time
+      .. autoattribute:: simgrid.Exec.finish_time
+      .. autoattribute:: simgrid.Exec.is_assigned
+      .. automethod:: simgrid.Exec.set_tracing_category
+      .. automethod:: simgrid.Exec.set_flops_amount
 
    .. group-tab:: C
 
@@ -3492,6 +3562,12 @@ Managing Dependencies
       .. doxygenfunction:: simgrid::s4u::Exec::dependencies_solved() const
       .. doxygenfunction:: simgrid::s4u::Exec::has_no_successor() const
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Exec.add_successor
+      .. automethod:: simgrid.Exec.remove_successor
+      .. autoattribute:: simgrid.Exec.dependencies_solved
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Exec.add_successor
@@ -3521,6 +3597,10 @@ Life cycle
        .. automethod:: simgrid.Exec.start
        .. automethod:: simgrid.Exec.test
        .. automethod:: simgrid.Exec.wait
+      .. automethod:: simgrid.Exec.wait_for
+      .. automethod:: simgrid.Exec.wait_until
+      .. automethod:: simgrid.Exec.init
+      .. automethod:: simgrid.Exec.detach
 
    .. group-tab:: C
 
@@ -3582,6 +3662,19 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Exec::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::Exec::on_this_completion_cb
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Exec.on_veto_cb
+      .. automethod:: simgrid.Exec.on_start_cb
+      .. automethod:: simgrid.Exec.on_suspend_cb
+      .. automethod:: simgrid.Exec.on_resume_cb
+      .. automethod:: simgrid.Exec.on_completion_cb
+      .. automethod:: simgrid.Exec.on_this_veto_cb
+      .. automethod:: simgrid.Exec.on_this_start_cb
+      .. automethod:: simgrid.Exec.on_this_suspend_cb
+      .. automethod:: simgrid.Exec.on_this_resume_cb
+      .. automethod:: simgrid.Exec.on_this_completion_cb
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Exec.on_veto_cb
@@ -3626,6 +3719,14 @@ Basic management
 
       .. doxygentypedef:: IoPtr
 
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Io
+
+      .. autoclass:: simgrid.IoOpType
+
 Querying info
 -------------
 
@@ -3659,6 +3760,17 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Io::get_finish_time() const
       .. doxygenfunction:: simgrid::s4u::Io::get_data
       .. doxygenfunction:: simgrid::s4u::Io::set_data
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Io.remaining
+      .. autoattribute:: simgrid.Io.state_str
+      .. autoattribute:: simgrid.Io.name
+      .. autoattribute:: simgrid.Io.start_time
+      .. autoattribute:: simgrid.Io.finish_time
+      .. autoattribute:: simgrid.Io.is_assigned
+      .. automethod:: simgrid.Io.set_tracing_category
+      .. automethod:: simgrid.Io.update_priority
 
    .. group-tab:: Java
 
@@ -3703,6 +3815,12 @@ Managing Dependencies
       .. doxygenfunction:: simgrid::s4u::Io::dependencies_solved() const
       .. doxygenfunction:: simgrid::s4u::Io::has_no_successor() const
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Io.add_successor
+      .. automethod:: simgrid.Io.remove_successor
+      .. autoattribute:: simgrid.Io.dependencies_solved
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Io.add_successor
@@ -3731,8 +3849,13 @@ Life cycle
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.Io.cancel
+      .. automethod:: simgrid.Io.start
       .. automethod:: simgrid.Io.test
       .. automethod:: simgrid.Io.wait
+      .. automethod:: simgrid.Io.wait_for
+      .. automethod:: simgrid.Io.wait_until
+      .. automethod:: simgrid.Io.detach
 
    .. group-tab:: Java
 
@@ -3760,6 +3883,12 @@ Suspending and resuming an I/O
       .. doxygenfunction:: simgrid::s4u::Io::resume
       .. doxygenfunction:: simgrid::s4u::Io::is_suspended
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Io.suspend
+      .. automethod:: simgrid.Io.resume
+      .. autoattribute:: simgrid.Io.is_suspended
+
    .. group-tab:: Java
 
       .. javamethod:: org.simgrid.s4u.Io.suspend
@@ -3784,6 +3913,19 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Io::on_this_suspend_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_this_resume_cb
       .. doxygenfunction:: simgrid::s4u::Io::on_this_completion_cb
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Io.on_veto_cb
+      .. automethod:: simgrid.Io.on_start_cb
+      .. automethod:: simgrid.Io.on_suspend_cb
+      .. automethod:: simgrid.Io.on_resume_cb
+      .. automethod:: simgrid.Io.on_completion_cb
+      .. automethod:: simgrid.Io.on_this_veto_cb
+      .. automethod:: simgrid.Io.on_this_start_cb
+      .. automethod:: simgrid.Io.on_this_suspend_cb
+      .. automethod:: simgrid.Io.on_this_resume_cb
+      .. automethod:: simgrid.Io.on_this_completion_cb
 
    .. group-tab:: Java
 
@@ -3865,10 +4007,10 @@ Managing activities
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.ActivitySet.push()
-      .. automethod:: simgrid.ActivitySet.erase()
-      .. automethod:: simgrid.ActivitySet.empty()
-      .. automethod:: simgrid.ActivitySet.size()
+      .. automethod:: simgrid.ActivitySet.push
+      .. automethod:: simgrid.ActivitySet.erase
+      .. automethod:: simgrid.ActivitySet.empty
+      .. autoattribute:: simgrid.ActivitySet.size
 
    .. group-tab:: c
 
@@ -3901,11 +4043,11 @@ Interacting with the set
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.ActivitySet.test_any()
-      .. automethod:: simgrid.ActivitySet.wait_all()
-      .. automethod:: simgrid.ActivitySet.wait_all_for()
-      .. automethod:: simgrid.ActivitySet.wait_any()
-      .. automethod:: simgrid.ActivitySet.wait_any_for()
+      .. automethod:: simgrid.ActivitySet.test_any
+      .. automethod:: simgrid.ActivitySet.wait_all
+      .. automethod:: simgrid.ActivitySet.wait_all_for
+      .. automethod:: simgrid.ActivitySet.wait_any
+      .. automethod:: simgrid.ActivitySet.wait_any_for
 
    .. group-tab:: c
 
@@ -3933,6 +4075,11 @@ Dealing with failed activities
 
       .. doxygenfunction:: simgrid::s4u::ActivitySet::get_failed_activity()
       .. doxygenfunction:: simgrid::s4u::ActivitySet::has_failed_activities() const
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.ActivitySet.get_failed_activity
+      .. automethod:: simgrid.ActivitySet.has_failed_activities
 
    .. group-tab:: Java
 

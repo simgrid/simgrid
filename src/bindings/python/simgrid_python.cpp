@@ -13,6 +13,8 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/modelchecker.h"
+#include "simgrid/plugins/carbon_footprint.h"
+#include "simgrid/plugins/file_system.h"
 #include "simgrid/plugins/load.h"
 #include "src/bindings/python/PythonContextHooks.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -91,6 +93,168 @@ std::string get_simgrid_version()
 } // namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
+
+namespace {
+
+/* Activities cannot be copied, so the callbacks get them as smart pointers instead of references */
+template <class A> std::function<void(A const&)> wrap_activity_cb(py::object cb, const char* cb_name)
+{
+  cb.inc_ref(); // keep alive after return
+  return [cb_p = cb.ptr(), cb_name](A const& activity) {
+    try {
+      const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+      fun(boost::intrusive_ptr<A>(const_cast<A*>(&activity)));
+    } catch (const py::error_already_set& e) {
+      xbt_die("Error while executing the %s lambda: %s", cb_name, e.what());
+    }
+  };
+}
+
+/* Bind the methods that are common to all activities (Comm, Exec, Io). `what` names the activity in the docstrings */
+template <class A, class... Options> void bind_activity_common(py::class_<A, Options...>& cls, const std::string& what)
+{
+  cls.def_property(
+         "name", [](const A* self) { return self->get_name(); },
+         [](A* self, const std::string& name) { self->set_name(name); },
+         ("The name of this " + what + ", used in the logs (read/write property).").c_str())
+      .def_property_readonly("state_str", &A::get_state_str,
+                             ("The state of this " + what + ", as a string (read-only property).").c_str())
+      .def_property_readonly("start_time", &A::get_start_time, ("Time at which this " + what + " started.").c_str())
+      .def_property_readonly("finish_time", &A::get_finish_time,
+                             ("Time at which this " + what + " finished.").c_str())
+      .def_property_readonly("is_suspended", &A::is_suspended,
+                             ("Whether this " + what + " is suspended (read-only property).").c_str())
+      .def_property_readonly(
+          "is_assigned", &A::is_assigned,
+          ("Whether this " + what + " is assigned to the resources it needs to start (read-only property).").c_str())
+      .def_property_readonly("dependencies_solved", &A::dependencies_solved,
+                             ("Whether all the predecessors of this " + what +
+                              " are completed, so that it can start (read-only property).")
+                                 .c_str())
+      .def("add_successor", &A::add_successor, py::arg("activity"),
+           ("Declare that the given activity cannot start before the completion of this " + what + ".").c_str())
+      .def("remove_successor", &A::remove_successor, py::arg("activity"),
+           "Remove a dependency previously declared with add_successor().")
+      .def("set_tracing_category", &A::set_tracing_category, py::arg("category"),
+           "Set a user-defined tracing category. Must be called before start().")
+      .def("start", &A::start,
+           ("Start this " + what +
+            ". It only actually starts once it is assigned to its resources and all its dependencies are solved.")
+               .c_str())
+      .def("cancel", &A::cancel, ("Cancel this " + what + ".").c_str())
+      .def("test", &A::test, ("Test whether this " + what + " is terminated.").c_str())
+      .def("wait", &A::wait, ("Block until the completion of this " + what + ".").c_str())
+      .def("wait_for", &A::wait_for, py::arg("timeout"),
+           ("Block until the completion of this " + what +
+            ", or raises TimeoutException after the specified timeout.")
+               .c_str())
+      .def("wait_until", &A::wait_until, py::arg("time_limit"),
+           ("Block until the completion of this " + what + ", or raises TimeoutException after the specified time.")
+               .c_str())
+      .def("suspend", &A::suspend,
+           ("Blocks the progression of this " + what + " until it gets resumed with resume().").c_str())
+      .def("resume", &A::resume,
+           ("Unblock the progression of this " + what + " if it was suspended previously with suspend().").c_str())
+      .def("detach", py::overload_cast<>(&A::detach),
+           ("Start this " + what + ", and ignore its result. It can be completely forgotten after that.").c_str())
+      .def(
+          "on_this_start_cb",
+          [](A* self, py::object cb) { self->on_this_start_cb(wrap_activity_cb<A>(cb, "on_this_start")); },
+          py::arg("cb"), ("Add a callback fired when this " + what + " starts, with the " + what + " as parameter.").c_str())
+      .def(
+          "on_this_completion_cb",
+          [](A* self, py::object cb) { self->on_this_completion_cb(wrap_activity_cb<A>(cb, "on_this_completion")); },
+          py::arg("cb"),
+          ("Add a callback fired when this " + what + " completes (either normally, cancelled or failed), with the " +
+           what + " as parameter.")
+              .c_str())
+      .def(
+          "on_this_suspend_cb",
+          [](A* self, py::object cb) { self->on_this_suspend_cb(wrap_activity_cb<A>(cb, "on_this_suspend")); },
+          py::arg("cb"),
+          ("Add a callback fired when this " + what + " is suspended, with the " + what + " as parameter.").c_str())
+      .def(
+          "on_this_resume_cb",
+          [](A* self, py::object cb) { self->on_this_resume_cb(wrap_activity_cb<A>(cb, "on_this_resume")); },
+          py::arg("cb"),
+          ("Add a callback fired when this " + what + " is resumed, with the " + what + " as parameter.").c_str())
+      .def(
+          "on_this_veto_cb",
+          [](A* self, py::object cb) { self->on_this_veto_cb(wrap_activity_cb<A>(cb, "on_this_veto")); },
+          py::arg("cb"),
+          ("Add a callback fired each time this " + what +
+           " fails to start because of a veto (unsolved dependency or unassigned resource), with the " + what +
+           " as parameter.")
+              .c_str())
+      .def_static(
+          "on_start_cb", [](py::object cb) { A::on_start_cb(wrap_activity_cb<A>(cb, "on_start")); }, py::arg("cb"),
+          ("Add a callback fired when any " + what + " starts, with the " + what + " as parameter.").c_str())
+      .def_static(
+          "on_completion_cb", [](py::object cb) { A::on_completion_cb(wrap_activity_cb<A>(cb, "on_completion")); },
+          py::arg("cb"),
+          ("Add a callback fired when any " + what + " completes (either normally, cancelled or failed), with the " +
+           what + " as parameter.")
+              .c_str())
+      .def_static(
+          "on_suspend_cb", [](py::object cb) { A::on_suspend_cb(wrap_activity_cb<A>(cb, "on_suspend")); },
+          py::arg("cb"),
+          ("Add a callback fired when any " + what + " is suspended, with the " + what + " as parameter.").c_str())
+      .def_static(
+          "on_resume_cb", [](py::object cb) { A::on_resume_cb(wrap_activity_cb<A>(cb, "on_resume")); },
+          py::arg("cb"),
+          ("Add a callback fired when any " + what + " is resumed, with the " + what + " as parameter.").c_str())
+      .def_static(
+          "on_veto_cb", [](py::object cb) { A::on_veto_cb(wrap_activity_cb<A>(cb, "on_veto")); }, py::arg("cb"),
+          ("Add a callback fired each time any " + what +
+           " fails to start because of a veto (unsolved dependency or unassigned resource), with the " + what +
+           " as parameter.")
+              .c_str());
+}
+
+/* User data attached to a SimGrid object (through xbt::Extendable). We keep a reference on the stored Python object */
+template <class T> py::object get_py_data(const T* obj)
+{
+  auto* data = obj->template get_data<PyObject>();
+  return data == nullptr ? py::none() : py::reinterpret_borrow<py::object>(data);
+}
+template <class T> void set_py_data(T* obj, py::object data)
+{
+  auto* old = obj->template get_data<PyObject>();
+  obj->set_data(data.is_none() ? nullptr : data.inc_ref().ptr());
+  Py_XDECREF(old);
+}
+
+void ensure_file_system_plugin()
+{
+  if (not simgrid::s4u::FileSystemDiskExt::EXTENSION_ID.valid())
+    throw std::runtime_error("The file system plugin is not initialized. Please call sg_storage_file_system_init() "
+                             "before loading the platform.");
+}
+
+/* Python view of a simgrid::s4u::File. Closing a File destroys it, so we keep track of it to make sure that a closed
+ * file is not used anymore (as for the Python files, using it raises a ValueError). */
+class PyFile {
+  simgrid::s4u::File* file_;
+
+public:
+  py::object data = py::none();
+
+  explicit PyFile(simgrid::s4u::File* file) : file_(file) {}
+  simgrid::s4u::File* get() const
+  {
+    if (file_ == nullptr)
+      throw py::value_error("I/O operation on closed file.");
+    return file_;
+  }
+  bool closed() const { return file_ == nullptr; }
+  void close()
+  {
+    if (file_ != nullptr)
+      file_->close();
+    file_ = nullptr;
+  }
+};
+} // namespace
 
 PYBIND11_MODULE(simgrid, m)
 {
@@ -210,6 +374,23 @@ PYBIND11_MODULE(simgrid, m)
       .def("exec_async", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_async))
       .def("parallel_execute", &simgrid::s4u::this_actor::parallel_execute,
            "Run a parallel task (requires the 'ptask_L07' model)")
+      .def("thread_execute", py::overload_cast<Host*, double, int>(&simgrid::s4u::this_actor::thread_execute),
+           py::arg("host"), py::arg("flops"), py::arg("thread_count"),
+           "Block the current actor, computing the given amount of flops with several threads on the given host. "
+           "Each thread computes the given amount of flops, using one core of the host.")
+      .def("thread_execute", py::overload_cast<double, int>(&simgrid::s4u::this_actor::thread_execute),
+           py::arg("flops"), py::arg("thread_count"),
+           "Block the current actor, computing the given amount of flops with several threads on the current host. "
+           "Each thread computes the given amount of flops, using one core of the host.")
+      .def("thread_execute_async",
+           py::overload_cast<Host*, double, int>(&simgrid::s4u::this_actor::thread_execute_async), py::arg("host"),
+           py::arg("flops"), py::arg("thread_count"),
+           "Start a multi-threaded execution on the given host, and return the corresponding Exec without waiting "
+           "for its completion.")
+      .def("thread_execute_async", py::overload_cast<double, int>(&simgrid::s4u::this_actor::thread_execute_async),
+           py::arg("flops"), py::arg("thread_count"),
+           "Start a multi-threaded execution on the current host, and return the corresponding Exec without waiting "
+           "for its completion.")
       .def("exec_init",
            py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
                              const std::vector<double>&>(&simgrid::s4u::this_actor::exec_init),
@@ -735,6 +916,29 @@ PYBIND11_MODULE(simgrid, m)
            "critical path of the solver, so it should be fast.",
            py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def(
+          "set_cpu_factor_cb",
+          [](Host* h, py::object cb) {
+            cb.inc_ref(); // keep alive after return
+            h->set_cpu_factor_cb([cb_p = cb.ptr()](Host& host, double flops) -> double {
+              try {
+                const auto fun = py::reinterpret_borrow<py::function>(cb_p);
+                return py::cast<double>(fun(&host, flops));
+              } catch (const py::error_already_set& e) {
+                xbt_die("Error while executing the set_cpu_factor_cb lambda: %s", e.what());
+              }
+            });
+          },
+          py::arg("cb"),
+          "Specify a callback that computes a multiplicative factor applied to the speed of this host, to model the "
+          "speed variability of the executions. The callback takes the host and the amount of flops of the "
+          "execution as parameters, and returns the factor. Note that this callback is in the critical path of the "
+          "solver, so it should be fast.")
+      .def("exec_init", &Host::exec_init, py::arg("flops"),
+           "Initialize an execution of the given amount of flops on this host. Call start() or wait() to start it.")
+      .def("exec_async", &Host::exec_async, py::arg("flops"),
+           "Start an execution of the given amount of flops on this host, and return it without waiting for its "
+           "completion.")
+      .def(
           "add_actor",
           [](Host* host, const std::string& name, py::object fun, py::args args) {
             fun.inc_ref();  // keep alive after return
@@ -839,6 +1043,16 @@ PYBIND11_MODULE(simgrid, m)
             "Computed flops of the host.");
   });
 
+  m.def("sg_host_carbon_footprint_plugin_init", &sg_host_carbon_footprint_plugin_init,
+        "Initialize the host carbon footprint plugin (and the host energy plugin on which it relies). It must be "
+        "called before the platform gets loaded.");
+  m.def("sg_host_carbon_footprint_load_trace_file", &sg_host_carbon_footprint_load_trace_file, py::arg("trace_file"),
+        "Load a CSV file giving the carbon intensity of the hosts over time. Each line is of the form "
+        "``host_id,timestamp,carbon_intensity``.");
+  m.def("sg_storage_file_system_init", &sg_storage_file_system_init,
+        "Initialize the file system plugin, that provides the :py:class:`~simgrid.File` class. It must be called "
+        "before the platform gets loaded.");
+
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR);
@@ -860,6 +1074,40 @@ PYBIND11_MODULE(simgrid, m)
       .def("write_async", &simgrid::s4u::Disk::write_async,
            "Non-blocking write of the given amount of bytes to this "
            "disk")
+      .def("io_init", &simgrid::s4u::Disk::io_init, py::arg("size"), py::arg("type"),
+           "Initialize an I/O operation (of the given IoOpType) of the given amount of bytes on this disk. Call "
+           "start() or wait() to start it.")
+      .def_property(
+          "data", [](const Disk* d) { return get_py_data(d); }, [](Disk* d, py::object data) { set_py_data(d, data); },
+          "Some user data attached to this disk, or None if not set (read/write property).")
+      .def_property_readonly(
+          "mount_point",
+          [](const Disk* d) {
+            ensure_file_system_plugin();
+            return sg_disk_get_mount_point(d);
+          },
+          "The mount point of this disk (read-only property). Requires the file system plugin.")
+      .def_property_readonly(
+          "size",
+          [](const Disk* d) {
+            ensure_file_system_plugin();
+            return sg_disk_get_size(d);
+          },
+          "The total size of this disk, in bytes (read-only property). Requires the file system plugin.")
+      .def_property_readonly(
+          "size_used",
+          [](const Disk* d) {
+            ensure_file_system_plugin();
+            return sg_disk_get_size_used(d);
+          },
+          "The amount of bytes used on this disk (read-only property). Requires the file system plugin.")
+      .def_property_readonly(
+          "size_free",
+          [](const Disk* d) {
+            ensure_file_system_plugin();
+            return sg_disk_get_size_free(d);
+          },
+          "The amount of bytes still available on this disk (read-only property). Requires the file system plugin.")
       .def_property("read_bandwidth", py::cpp_function{&simgrid::s4u::Disk::get_read_bandwidth},
                     py::cpp_function{&simgrid::s4u::Disk::set_read_bandwidth},
                     "The read bandwidth of this disk is the max speed at which read operations progress")
@@ -1080,13 +1328,14 @@ PYBIND11_MODULE(simgrid, m)
                                     "subclasses (Comm, Exec, Io) for the activities that you can actually create.");
 
   /* Class Comm */
-  py::class_<Comm, CommPtr, Activity>(
+  py::class_<Comm, CommPtr, Activity> comm(
       m, "Comm",
       "Represents all communications, be they asynchronous or not, that you can start, test and wait for. Most "
       "communications are created by exchanging data through a :py:class:`~simgrid.Mailbox`. You can also create "
       "direct point-to-point communications between two arbitrary hosts, bypassing the mailbox and actor "
-      "mechanisms, with sendto(), sendto_init() and sendto_async().")
-      .def_property_readonly("dst_data_size", py::cpp_function{&Comm::get_dst_data_size},
+      "mechanisms, with sendto(), sendto_init() and sendto_async().");
+  bind_activity_common(comm, "communication");
+  comm.def_property_readonly("dst_data_size", py::cpp_function{&Comm::get_dst_data_size},
                              "Retrieve the size of the received data.")
       .def_property_readonly("mailbox", py::cpp_function{&Comm::get_mailbox},
                              "Retrieve the mailbox on which this comm acts. This is None if the comm was created "
@@ -1094,39 +1343,16 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("sender", py::cpp_function{&Comm::get_sender},
                              "Retrieve the actor which is sending this communication. Returns None if the "
                              "communication has not started yet, or if it was created with sendto().")
-      .def_property_readonly("state_str", py::cpp_function{&Comm::get_state_str}, "Retrieve the Comm state as string")
       .def_property_readonly("remaining", py::cpp_function{&Comm::get_remaining},
                              "Remaining amount of work that this Comm entails")
-      .def_property_readonly("start_time", py::cpp_function{&Comm::get_start_time}, "Time at which this Comm started")
-      .def_property_readonly("finish_time", py::cpp_function{&Comm::get_finish_time},
-                             "Time at which this Comm finished")
-      .def_property_readonly("is_suspended", py::cpp_function{&Comm::is_suspended}, "Whether this Comm is suspended")
-      .def("set_tracing_category", &Comm::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category. Must be called before start().")
       .def("set_payload_size", &Comm::set_payload_size, py::arg("bytes"),
            "Specify the amount of bytes which exchange should be simulated.")
       .def("set_rate", &Comm::set_rate, py::arg("rate"),
            "Sets the maximal communication rate (in byte/sec). Must be done before start")
-      .def("cancel", &Comm::cancel, py::return_value_policy::reference_internal, "Cancel the activity.")
-      .def("start", &Comm::start, py::return_value_policy::reference_internal,
-           "Starts a previously created activity. This function is optional: you can call wait() even if you didn't "
-           "call start()")
-      .def("suspend", &Comm::suspend, py::return_value_policy::reference_internal,
-           "Blocks the progression of this activity until it gets resumed with resume().")
-      .def("resume", &Comm::resume, py::return_value_policy::reference_internal,
-           "Unblock the progression of this activity if it was suspended previously with suspend().")
-      .def("test", &Comm::test, "Test whether the communication is terminated.")
-      .def("wait", &Comm::wait, "Block until the completion of that communication.")
-      .def("wait_for", &Comm::wait_for, py::arg("timeout"),
-           "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
-      .def("wait_until", &Comm::wait_until, py::arg("time_limit"),
-           "Block until the completion of that communication, or raises TimeoutException after the specified time.")
       .def(
           "get_payload",
           [](const Comm* self) { return py::reinterpret_steal<py::object>((PyObject*)self->get_payload()); },
           "Retrieve the message's payload of a get_async. You cannot call this until after the comm termination.")
-      .def("detach", py::overload_cast<>(&Comm::detach), py::return_value_policy::reference_internal,
-           "Start the comm, and ignore its result. It can be completely forgotten after that.")
       .def_static("sendto", &Comm::sendto, py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
                   "Do a blocking communication between two arbitrary hosts, bypassing the mailbox and actor "
                   "mechanisms.")
@@ -1139,22 +1365,31 @@ PYBIND11_MODULE(simgrid, m)
                   "In particular, the actor does not have to be on one of the involved hosts.");
 
   /* Class Io */
-  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity>(
+  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr, Activity> io(
       m, "Io",
       "I/O activities, representing an asynchronous disk access. They are generated from the read/write methods "
-      "of :py:class:`~simgrid.Disk`.")
-      .def("set_tracing_category", &simgrid::s4u::Io::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category. Must be called before start().")
-      .def("test", &simgrid::s4u::Io::test, "Test whether the I/O is terminated.")
-      .def("wait", &simgrid::s4u::Io::wait, "Block until the completion of that I/O operation");
+      "of :py:class:`~simgrid.Disk`.");
+  bind_activity_common(io, "I/O");
+  io.def_property_readonly("remaining", py::cpp_function{&simgrid::s4u::Io::get_remaining},
+                           "Amount of bytes that remain to be read or written until completion (read-only property).")
+      .def("update_priority", &simgrid::s4u::Io::update_priority, py::arg("priority"),
+           "Change the priority of this I/O while it is running. An I/O of priority 2 is twice as fast as an I/O of "
+           "priority 1.");
 
   /* Class Exec */
-  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity>(
+  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr, Activity> exec(
       m, "Exec",
       "Computation Activity, representing an asynchronous execution. Most of them are created with "
-      "this_actor.exec_init() or Host.execute(), and represent a classical (sequential) execution. This can be "
+      "this_actor.exec_init() or Host.exec_init(), and represent a classical (sequential) execution. This can be "
       "used to simulate some computation occurring in another thread when the calling actor is not blocked "
-      "during the execution.")
+      "during the execution.");
+  bind_activity_common(exec, "execution");
+  exec.def_static("init", &simgrid::s4u::Exec::init,
+                  "Create an execution that is not assigned to any host yet. Use set_flops_amount() to specify its "
+                  "amount of work, and assign it to a host by setting its ``host`` property before (or after) starting "
+                  "it: it only actually starts once assigned.")
+      .def("set_flops_amount", &simgrid::s4u::Exec::set_flops_amount, py::arg("flops"),
+           "Specify the amount of flops that this execution entails. Returns the execution itself.")
       .def_property_readonly("remaining", py::cpp_function{&simgrid::s4u::Exec::get_remaining},
                              "Amount of flops that remain to be computed until completion (read-only property).")
       .def_property_readonly("remaining_ratio", py::cpp_function{&simgrid::s4u::Exec::get_remaining_ratio},
@@ -1162,21 +1397,7 @@ PYBIND11_MODULE(simgrid, m)
                              "yet) (read-only property).")
       .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. Only the first host is returned for parallel executions. "
-                    "Changing this value migrates the execution.")
-      .def_property_readonly("is_suspended", py::cpp_function{&simgrid::s4u::Exec::is_suspended},
-                             "Whether this Exec is suspended")
-      .def("set_tracing_category", &simgrid::s4u::Exec::set_tracing_category, py::arg("category"),
-           "Set a user-defined tracing category. Must be called before start().")
-      .def("test", &simgrid::s4u::Exec::test, "Test whether the execution is terminated.")
-      .def("cancel", &simgrid::s4u::Exec::cancel, "Cancel that execution.")
-      .def("start", &simgrid::s4u::Exec::start, "Start that execution.")
-      .def("suspend", &simgrid::s4u::Exec::suspend,
-           "Blocks the progression of this execution until it gets resumed with resume().")
-      .def("resume", &simgrid::s4u::Exec::resume,
-           "Unblock the progression of this execution if it was suspended previously with suspend().")
-      .def("wait", &simgrid::s4u::Exec::wait, "Block until the completion of that execution.")
-      .def("wait_for", &simgrid::s4u::Exec::wait_for, py::arg("timeout"),
-           "Block until the completion of that activity, or raises TimeoutException after the specified timeout.");
+                    "Changing this value migrates the execution.");
 
   /* Class Semaphore */
   py::class_<Semaphore, SemaphorePtr>(
@@ -1294,6 +1515,79 @@ PYBIND11_MODULE(simgrid, m)
   py::enum_<simgrid::s4u::Io::OpType>(m, "IoOpType")
       .value("READ", simgrid::s4u::Io::OpType::READ)
       .value("WRITE", simgrid::s4u::Io::OpType::WRITE);
+
+  /* Class File (from the file system plugin) */
+  py::class_<PyFile>(m, "File",
+                     "A file, as provided by the file system plugin (see :py:func:`sg_storage_file_system_init`). "
+                     "Files are opened with :py:func:`File.open` and must be closed with :py:func:`File.close` or, "
+                     "preferably, used as context managers: ``with File.open(path) as file: ...``.")
+      .def_static(
+          "open",
+          [](const std::string& fullpath, const Host* host) {
+            ensure_file_system_plugin();
+            return new PyFile(host == nullptr ? simgrid::s4u::File::open(fullpath, nullptr)
+                                              : simgrid::s4u::File::open(fullpath, host, nullptr));
+          },
+          py::arg("fullpath"), py::arg("host") = py::none(),
+          "Open the file of the given full path, creating it if it does not exist. The disk is searched on the "
+          "given host (on the current host by default) from the mount point found in the path.")
+      .def("close", &PyFile::close, "Close this file. It cannot be used afterward. Closing a file twice is harmless.")
+      .def_property_readonly("closed", &PyFile::closed, "Whether this file is closed (read-only property).")
+      .def("__enter__", [](py::object self) { return self; })
+      .def("__exit__",
+           [](PyFile* self, const py::object&, const py::object&, const py::object&) { self->close(); })
+      .def_property_readonly(
+          "path", [](const PyFile* self) { return self->get()->get_path(); },
+          "The full path of this file (read-only property).")
+      .def_property_readonly(
+          "size", [](const PyFile* self) { return self->get()->size(); },
+          "The size of this file, in bytes (read-only property).")
+      .def_readwrite("data", &PyFile::data, "Some user data attached to this file, or None if not set.")
+      .def(
+          "read", [](const PyFile* self, sg_size_t size) { return self->get()->read(size); }, py::arg("size"),
+          "Simulate a read of the given amount of bytes from the current position. Returns the amount of bytes "
+          "actually read.")
+      .def(
+          "write",
+          [](const PyFile* self, sg_size_t size, bool write_inside) { return self->get()->write(size, write_inside); },
+          py::arg("size"), py::arg("write_inside") = false,
+          "Simulate a write of the given amount of bytes at the current position. Returns the amount of bytes "
+          "actually written. Unless ``write_inside`` is True, the file is truncated at the end of the write.")
+      .def(
+          "seek", [](const PyFile* self, sg_offset_t offset, int whence) { self->get()->seek(offset, whence); },
+          py::arg("offset"), py::arg("whence") = SEEK_SET,
+          "Move the current position to the given offset, relative to the position given by ``whence`` "
+          "(os.SEEK_SET, os.SEEK_CUR or os.SEEK_END), as with Python files.")
+      .def(
+          "tell", [](const PyFile* self) { return self->get()->tell(); }, "Return the current position in the file.")
+      .def(
+          "move", [](const PyFile* self, const std::string& fullpath) { self->get()->move(fullpath); },
+          py::arg("fullpath"), "Rename this file. It is forbidden to move the file to another mount point.")
+      .def(
+          "unlink", [](const PyFile* self) { self->get()->unlink(); },
+          "Remove this file from the disk. The file is not closed.")
+      .def(
+          "remote_copy",
+          [](const PyFile* self, Host* host, const std::string& fullpath) {
+            return self->get()->remote_copy(host, fullpath);
+          },
+          py::arg("host"), py::arg("fullpath"), "Copy this file to the given full path on the given host.")
+      .def(
+          "remote_move",
+          [](const PyFile* self, Host* host, const std::string& fullpath) {
+            return self->get()->remote_move(host, fullpath);
+          },
+          py::arg("host"), py::arg("fullpath"),
+          "Move this file to the given full path on the given host. The local file is removed.")
+      .def(
+          "dump", [](const PyFile* self) { self->get()->dump(); },
+          "Display information about this file (path, size, mount point, disk and host) in the logs.")
+      .def(
+          "__repr__",
+          [](const PyFile* self) {
+            return self->closed() ? std::string("File(closed)") : "File(" + std::string(self->get()->get_path()) + ")";
+          },
+          "Textual representation of the File");
 
   /* Class Task */
   py::class_<Task, TaskPtr>(
