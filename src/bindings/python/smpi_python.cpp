@@ -188,6 +188,11 @@ void SMPI_bindings(py::module& m)
                        "Initialize the MPI interface")
                    .def("Finalize", &MPI_Finalize, "Finalize the MPI interface");
 
+  /* Declare all the classes before defining any function, so that the signatures refer to their Python names */
+  py::class_<simgrid::smpi::Op, std::unique_ptr<simgrid::smpi::Op, py::nodelete>> mpi_op(
+      mpi_m, "Op", "MPI reduction operation. See the C++ documentation for details.");
+  py::class_<simgrid::smpi::Datatype, std::unique_ptr<simgrid::smpi::Datatype, py::nodelete>> mpi_datatype(
+      mpi_m, "Datatype", "MPI datatype. See the C++ documentation for details.");
   py::class_<simgrid::smpi::Info, std::unique_ptr<simgrid::smpi::Info, py::nodelete>> mpi_info(
       mpi_m, "Info", "MPI Info object. See the C++ documentation for details.");
   py::class_<simgrid::smpi::Group, std::unique_ptr<simgrid::smpi::Group, py::nodelete>> mpi_group(
@@ -406,8 +411,6 @@ void SMPI_bindings(py::module& m)
   BIND_ALL_TYPES(mpi_m, "Reduce_scatter_block", wrap_mpi_reduce_scatter_block, py::arg("input"), py::arg("output"),
                  py::arg("count"), py::arg("type"), py::arg("op"), py::arg("comm"), "Reduce scatter block operation");
 
-  py::class_<simgrid::smpi::Op, std::unique_ptr<simgrid::smpi::Op, py::nodelete>> mpi_op(
-      mpi_m, "Op", "Simulated host. See the C++ documentation for details.");
   mpi_op.def_readonly_static("MAX", MPI_MAX)
       .def_readonly_static("MIN", MPI_MIN)
       .def_readonly_static("MAXLOC", MPI_MAXLOC)
@@ -431,8 +434,6 @@ void SMPI_bindings(py::module& m)
       .def_readonly("count", &MPI_Status::count)
       .def_readonly("cancelled", &MPI_Status::cancelled);
 
-  py::class_<simgrid::smpi::Datatype, std::unique_ptr<simgrid::smpi::Datatype, py::nodelete>> mpi_datatype(
-      mpi_m, "Datatype", "Simulated host. See the C++ documentation for details.");
   mpi_datatype.def_property_readonly_static("DATATYPE_NULL", [](py::object /* self */) { return MPI_DATATYPE_NULL; })
       .def_property_readonly_static("CHAR", [](py::object /* self */) { return MPI_CHAR; })
       .def_property_readonly_static("SHORT", [](py::object /* self */) { return MPI_SHORT; })

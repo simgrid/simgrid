@@ -1943,6 +1943,7 @@ Modifying characteristics
          :noindex:
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
+      .. autoclass:: simgrid.Host.SharingPolicy
       .. autoattribute:: simgrid.Host.concurrency_limit
       .. automethod:: simgrid.Host.set_cpu_factor_cb
 
@@ -2427,6 +2428,7 @@ Model policy
       .. automethod:: simgrid.Link.set_concurrency_limit
       .. automethod:: simgrid.Link.get_sharing_policy
       .. automethod:: simgrid.Link.set_sharing_policy
+      .. autoclass:: simgrid.Link.SharingPolicy
 
    .. group-tab:: C
 
@@ -2779,6 +2781,9 @@ Routing data
       .. automethod:: simgrid.NetZone.add_component
       .. automethod:: simgrid.NetZone.add_route
       .. automethod:: simgrid.NetZone.add_bypass_route
+      .. autoclass:: simgrid.NetPoint
+      .. autoclass:: simgrid.LinkInRoute
+      .. autoclass:: simgrid.LinkInRoute.Direction
       .. automethod:: simgrid.NetZone.set_gateway
       .. automethod:: simgrid.NetZone.get_children
       .. autoattribute:: simgrid.NetZone.parent
