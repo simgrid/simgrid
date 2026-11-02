@@ -271,6 +271,12 @@ int bcast__arrival_pattern_aware(void *buf, int count, MPI_Datatype datatype, in
 int bcast__arrival_pattern_aware_wait(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__arrival_scatter(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__binomial_tree(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+int bcast__tree(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int k, int chunk_bytes);
+int bcast__knomial(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, int k, int seg_bytes);
+int bcast__knomial2(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+int bcast__pipelined_knomial2(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+int bcast__tree2(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+int bcast__pipelined_tree2(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__flattree(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__flattree_pipeline(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int bcast__NTSB(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm);

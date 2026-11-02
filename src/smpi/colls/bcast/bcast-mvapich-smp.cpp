@@ -171,10 +171,6 @@ int bcast__mvapich2_knomial_intra_node(void *buffer,
                                        MPI_Datatype datatype,
                                        int root, MPI_Comm  comm)
 {
-    int local_size = 0, rank;
-    int mpi_errno = MPI_SUCCESS;
-    int src, dst, mask, relative_rank;
-    int k;
     if (MV2_Bcast_function == nullptr) {
       MV2_Bcast_function = bcast__mpich;
     }
@@ -187,55 +183,7 @@ int bcast__mvapich2_knomial_intra_node(void *buffer,
       comm->init_smp();
     }
 
-    local_size = comm->size();
-    rank = comm->rank();
-
-    auto* reqarray = new MPI_Request[2 * mv2_intra_node_knomial_factor];
-
-    auto* starray = new MPI_Status[2 * mv2_intra_node_knomial_factor];
-
-    /* intra-node k-nomial bcast  */
-    if (local_size > 1) {
-        relative_rank = (rank >= root) ? rank - root : rank - root + local_size;
-        mask = 0x1;
-
-        while (mask < local_size) {
-            if (relative_rank % (mv2_intra_node_knomial_factor * mask)) {
-                src = relative_rank / (mv2_intra_node_knomial_factor * mask) *
-                    (mv2_intra_node_knomial_factor * mask) + root;
-                if (src >= local_size) {
-                    src -= local_size;
-                }
-
-                Request::recv(buffer, count, datatype, src,
-                                         COLL_TAG_BCAST, comm,
-                                         MPI_STATUS_IGNORE);
-                break;
-            }
-            mask *= mv2_intra_node_knomial_factor;
-        }
-        mask /= mv2_intra_node_knomial_factor;
-
-        while (mask > 0) {
-            int reqs = 0;
-            for (k = 1; k < mv2_intra_node_knomial_factor; k++) {
-                if (relative_rank + mask * k < local_size) {
-                    dst = rank + mask * k;
-                    if (dst >= local_size) {
-                        dst -= local_size;
-                    }
-                    reqarray[reqs++]=Request::isend(buffer, count, datatype, dst,
-                                              COLL_TAG_BCAST, comm);
-                }
-            }
-            Request::waitall(reqs, reqarray, starray);
-
-            mask /= mv2_intra_node_knomial_factor;
-        }
-    }
-    delete[] reqarray;
-    delete[] starray;
-    return mpi_errno;
+    return bcast__knomial(buffer, count, datatype, root, comm, mv2_intra_node_knomial_factor, 0);
 }
 
 

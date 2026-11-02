@@ -135,7 +135,7 @@ if(enable_smpi)
   foreach (BCAST arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter binomial_tree flattree
                  flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather scatter_rdb_allgather SMP_binary
                  SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 mvapich2_intra_node
-                 mvapich2_knomial_intra_node impi)
+                 mvapich2_knomial_intra_node impi tree pipelined_tree knomial pipelined_knomial)
     ADD_TESH(tesh-smpi-coll-bcast-${BCAST} --cfg smpi/bcast:${BCAST} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-bcast --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-bcast ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-bcast/coll-bcast.tesh)
   endforeach()
 

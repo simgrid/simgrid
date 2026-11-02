@@ -165,6 +165,8 @@ set(SMPI_SRC
   src/smpi/colls/bcast/bcast-arrival-pattern-aware.cpp
   src/smpi/colls/bcast/bcast-arrival-scatter.cpp
   src/smpi/colls/bcast/bcast-binomial-tree.cpp
+  src/smpi/colls/bcast/bcast-tree.cpp
+  src/smpi/colls/bcast/bcast-knomial.cpp
   src/smpi/colls/bcast/bcast-flattree-pipeline.cpp
   src/smpi/colls/bcast/bcast-flattree.cpp
   src/smpi/colls/bcast/bcast-mvapich-smp.cpp
