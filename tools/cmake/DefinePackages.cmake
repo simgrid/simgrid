@@ -41,7 +41,6 @@ set(EXTRA_DIST
 
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
-  src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
   src/smpi/include/private.hpp
   src/smpi/include/smpi_utils.hpp
   src/smpi/smpi_main.c
@@ -59,6 +58,8 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
+  src/smpi/colls/mvapich2-knobs.cpp
+  src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/bindings/smpi_f77.cpp
   src/smpi/bindings/smpi_f77_coll.cpp
   src/smpi/bindings/smpi_f77_comm.cpp
@@ -197,7 +198,6 @@ set(SMPI_SRC
   src/smpi/colls/smpi_default_selector.cpp
   src/smpi/colls/smpi_intel_mpi_selector.cpp
   src/smpi/colls/smpi_mpich_selector.cpp
-  src/smpi/colls/smpi_mvapich2_selector.cpp
   src/smpi/colls/smpi_nbc_impl.cpp
   src/smpi/colls/smpi_openmpi_selector.cpp
   src/smpi/include/smpi_actor.hpp
