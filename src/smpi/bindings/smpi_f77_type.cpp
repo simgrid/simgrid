@@ -246,8 +246,15 @@ void mpi_type_get_envelope_ ( int* datatype, int *num_integers, int *num_address
 void mpi_type_get_contents_ (int* datatype, int* max_integers, int* max_addresses, int* max_datatypes,
                              int* array_of_integers, MPI_Aint* array_of_addresses,
  int* array_of_datatypes, int* ierr){
+ std::vector<MPI_Datatype> datatypes(*max_datatypes > 0 ? *max_datatypes : 0);
  *ierr = MPI_Type_get_contents(simgrid::smpi::Datatype::f2c(*datatype), *max_integers, *max_addresses,*max_datatypes,
-                               array_of_integers, array_of_addresses, reinterpret_cast<MPI_Datatype*>(array_of_datatypes));
+                               array_of_integers, array_of_addresses, datatypes.data());
+ if (*ierr == MPI_SUCCESS) {
+   for (int i = 0; i < *max_datatypes; i++) {
+     array_of_datatypes[i] =
+         datatypes[i] != MPI_DATATYPE_NULL ? datatypes[i]->c2f() : FORTRAN_NULL_HANDLE;
+   }
+ }
 }
 
 void mpi_type_create_darray_ (int* size, int* rank, int* ndims, int* array_of_gsizes, int* array_of_distribs,
