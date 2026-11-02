@@ -31,6 +31,17 @@ Model-Checker:
 
 Core:
  - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust.
+ - Implement raw contexts on arm64, so that this context factory is no longer limited to amd64.
+
+SMPI:
+ - Refresh the algorithm collections and the decision trees of the mpich, ompi and mvapich2 selectors after MPICH 5.1,
+   OpenMPI 6.1 and MVAPICH 4.1, which are the implementations they emulate. The tables we used were faithful to MPICH 3,
+   OpenMPI 1.x and to MVAPICH2 tuning tables measured on Stampede: many thresholds were off and many algorithms missing.
+ - Add the 16 collective algorithms these selectors now need, mostly ported from MPICH.
+ - The mvapich2 selector is generated from the JSON decision tree MVAPICH uses to pick its algorithms, since upstream
+   dropped the C tuning tables it was transcribed from; tools/smpi/gen_mvapich2_selector.py regenerates it.
+ - Fix a few wrong algorithm choices in the OpenMPI selector, plus assorted edge cases uncovered while extending the
+   test suite.
 
 ----------------------------------------------------------------------------
 
