@@ -5,7 +5,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file async_any async bigtype external32-derived-dtype getextent hindexed_io rdwrord rdwrzero resized2 resized setinfo setviewcur simple_collective userioerr)
+  foreach(file async_any async bigtype external32-derived-dtype external32_derived_dtype getextent hindexed_io rdwrord rdwrzero resized2 resized setinfo setviewcur simple_collective userioerr zero_count)
   #i_aggregation1 i_aggregation2 i_bigtype i_coll_test i_darray_read i_hindexed i_hindexed_io i_noncontig i_noncontig_coll2 i_noncontig_coll i_rdwrord i_setviewcur i_types_with_zeros
     add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
     add_dependencies(tests ${file})
