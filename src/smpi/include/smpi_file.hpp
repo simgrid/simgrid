@@ -108,6 +108,14 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
 
   XBT_CDEBUG(smpi_io, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min,
              max);
+  // Detect overlapping regions: if the sum of per-rank spans exceeds the global span,
+  // ranks read overlapping data, so fall back to independent per-rank reads.
+  int overlap = (empty == 0) && (tot > (max - min));
+  if (overlap) {
+    int ret = T(this, buf, count, datatype, status);
+    simgrid::smpi::colls::barrier(comm_);
+    return ret;
+  }
   if (empty == 1) {
     if (status != MPI_STATUS_IGNORE)
       status->count = 0;
