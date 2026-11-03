@@ -167,7 +167,7 @@ int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, 
   }
   XBT_VERB("Position after read in MPI_File %s : %llu", fh->file_->get_path(), fh->file_->tell());
   if (status != MPI_STATUS_IGNORE)
-    status->count = count * datatype->size();
+    status->count = (int)read;
   return MPI_SUCCESS;
 }
 
