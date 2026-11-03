@@ -71,6 +71,10 @@ extern XBT_PUBLIC const int mpi_statuses_ignore_;
 /* Convert between Fortran strings and C strings */
 inline std::string smpi_fortran_to_string(const char* str, int len)
 {
+  while (len > 0 && *str == ' ') {
+    str++;
+    len--;
+  }
   while (len > 0 && str[len - 1] == ' ')
     len--;
   return std::string(str, len);
@@ -300,7 +304,7 @@ void mpi_win_flush_local_all_(int* win, int* ierr);
 void mpi_win_dup_fn_( int* win, int* keyval, int* extrastate, MPI_Aint* valin, MPI_Aint* valout, int* flag, int* ierr );
 void mpi_win_null_copy_fn_( int* win, int* keyval, int* extrastate, MPI_Aint* valin, MPI_Aint* valout, int* flag, int* ierr );
 void mpi_info_create_(int* info, int* ierr);
-void mpi_info_set_(int* info, char* key, char* value, int* ierr, unsigned int keylen, unsigned int valuelen);
+void mpi_info_set_(int* info, char* key, char* value, int* ierr, int keylen, int valuelen);
 void mpi_info_free_(int* info, int* ierr);
 void mpi_get_(int* origin_addr, int* origin_count, int* origin_datatype, int* target_rank, MPI_Aint* target_disp,
               int* target_count, int* target_datatype, int* win, int* ierr);
@@ -456,19 +460,19 @@ void mpi_comm_dup_with_info_(int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_(int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr);
 void mpi_comm_set_info_(int* comm, int* info, int* ierr);
 void mpi_comm_get_info_(int* comm, int* info, int* ierr);
-void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, int* ierr, unsigned int keylen);
+void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, int* ierr, int keylen);
 void mpi_comm_create_errhandler_(void* function, int* errhandler, int* ierr);
 void mpi_add_error_class_(int* errorclass, int* ierr);
 void mpi_add_error_code_(int* errorclass, int* errorcode, int* ierr);
-void mpi_add_error_string_(int* errorcode, char* string, int* ierr);
+void mpi_add_error_string_(int* errorcode, char* string, int* ierr, int string_len);
 void mpi_comm_call_errhandler_(int* comm, int* errorcode, int* ierr);
 void mpi_info_dup_(int* info, int* newinfo, int* ierr);
-void mpi_info_get_valuelen_(int* info, char* key, int* valuelen, int* flag, int* ierr, unsigned int keylen);
-void mpi_info_delete_(int* info, char* key, int* ierr, unsigned int keylen);
+void mpi_info_get_valuelen_(int* info, char* key, int* valuelen, int* flag, int* ierr, int keylen);
+void mpi_info_delete_(int* info, char* key, int* ierr, int keylen);
 void mpi_info_get_nkeys_(int* info, int* nkeys, int* ierr);
-void mpi_info_get_nthkey_(int* info, int* n, char* key, int* ierr, unsigned int keylen);
+void mpi_info_get_nthkey_(int* info, int* n, char* key, int* ierr, int keylen);
 void mpi_get_version_(int* version, int* subversion, int* ierr);
-void mpi_get_library_version_(char* version, int* len, int* ierr);
+void mpi_get_library_version_(char* version, int* len, int* ierr, int version_len);
 void mpi_request_get_status_(int* request, int* flag, MPI_Status* status, int* ierr);
 void mpi_grequest_start_(void* query_fn, void* free_fn, void* cancel_fn, void* extra_state, int* request, int* ierr);
 void mpi_grequest_complete_(int* request, int* ierr);
@@ -512,6 +516,30 @@ void mpi_file_write_shared_(int* fh, void *buf, int* count, int* datatype, MPI_S
 void mpi_file_write_ordered_(int* fh, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_at_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 void mpi_file_write_at_all_(int* fh, MPI_Offset* offset, void *buf, int* count, int* datatype, MPI_Status* status, int* ierr);
+void mpi_file_sync_(int* fh, int* ierr);
+void mpi_file_get_amode_(int* fh, int* amode, int* ierr);
+void mpi_file_get_atomicity_(int* fh, int* flag, int* ierr);
+void mpi_file_set_atomicity_(int* fh, int* flag, int* ierr);
+void mpi_file_get_byte_offset_(int* fh, MPI_Offset* offset, MPI_Offset* disp, int* ierr);
+void mpi_file_get_group_(int* fh, int* group, int* ierr);
+void mpi_file_get_info_(int* fh, int* info, int* ierr);
+void mpi_file_set_info_(int* fh, int* info, int* ierr);
+void mpi_file_get_type_extent_(int* fh, int* datatype, MPI_Aint* extent, int* ierr);
+void mpi_file_get_errhandler_(int* file, int* errhandler, int* ierr);
+void mpi_file_set_errhandler_(int* file, int* errhandler, int* ierr);
+void mpi_win_sync_(int* win, int* ierr);
+void mpi_win_get_errhandler_(int* win, int* errhandler, int* ierr);
+void mpi_win_set_errhandler_(int* win, int* errhandler, int* ierr);
+void mpi_win_allocate_shared_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr);
+void mpi_win_shared_query_(int* win, int* rank, MPI_Aint* size, int* disp_unit, void* baseptr, int* ierr);
+void mpi_type_size_x_(int* datatype, MPI_Count* size, int* ierr);
+void mpi_type_get_extent_x_(int* datatype, MPI_Count* lb, MPI_Count* extent, int* ierr);
+void mpi_type_get_true_extent_x_(int* datatype, MPI_Count* lb, MPI_Count* extent, int* ierr);
+void mpi_status_set_elements_x_(MPI_Status* status, int* datatype, MPI_Count* count, int* ierr);
+void mpi_isendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* sendtag, void* recvbuf, int* recvcount,
+                    int* recvtype, int* src, int* recvtag, int* comm, int* request, int* ierr);
+void mpi_isendrecv_replace_(void* buf, int* count, int* datatype, int* dst, int* sendtag, int* src, int* recvtag,
+                            int* comm, int* request, int* ierr);
 void smpi_init_fortran_types();
 void smpi_execute_flops_(double* flops);
 void smpi_execute_flops_benched_(double* flops);

@@ -114,6 +114,65 @@ void mpi_file_set_view_ ( int* fh, MPI_Offset* offset, int* etype, int* filetype
   *ierr= MPI_File_set_view(simgrid::smpi::File::f2c(*fh) , *offset, simgrid::smpi::Datatype::f2c(*etype), simgrid::smpi::Datatype::f2c(*filetype), rep.c_str(), simgrid::smpi::Info::f2c(*info));
 }
 
+void mpi_file_get_type_extent_ ( int* fh, int* datatype, MPI_Aint* extent, int* ierr){
+  *ierr= MPI_File_get_type_extent(simgrid::smpi::File::f2c(*fh), simgrid::smpi::Datatype::f2c(*datatype), extent);
+}
+
+void mpi_file_get_amode_ ( int* fh, int* amode, int* ierr){
+  *ierr= MPI_File_get_amode(simgrid::smpi::File::f2c(*fh), amode);
+}
+
+void mpi_file_get_byte_offset_ ( int* fh, MPI_Offset* offset, MPI_Offset* disp, int* ierr){
+  *ierr= MPI_File_get_byte_offset(simgrid::smpi::File::f2c(*fh), *offset, disp);
+}
+
+void mpi_file_get_atomicity_ ( int* fh, int* flag, int* ierr){
+  *ierr= MPI_File_get_atomicity(simgrid::smpi::File::f2c(*fh), flag);
+}
+
+void mpi_file_set_atomicity_ ( int* fh, int* flag, int* ierr){
+  *ierr= MPI_File_set_atomicity(simgrid::smpi::File::f2c(*fh), *flag);
+}
+
+void mpi_file_sync_ ( int* fh, int* ierr){
+  *ierr= MPI_File_sync(simgrid::smpi::File::f2c(*fh));
+}
+
+void mpi_file_get_group_ ( int* fh, int* group, int* ierr){
+  MPI_Group tmp;
+  *group = FORTRAN_NULL_HANDLE;
+  *ierr= MPI_File_get_group(simgrid::smpi::File::f2c(*fh), &tmp);
+  if (*ierr == MPI_SUCCESS) {
+    *group = tmp->c2f();
+  }
+}
+
+void mpi_file_get_info_ ( int* fh, int* info, int* ierr){
+  MPI_Info tmp;
+  *info = FORTRAN_NULL_HANDLE;
+  *ierr= MPI_File_get_info(simgrid::smpi::File::f2c(*fh), &tmp);
+  if (*ierr == MPI_SUCCESS) {
+    *info = tmp->c2f();
+  }
+}
+
+void mpi_file_set_info_ ( int* fh, int* info, int* ierr){
+  *ierr= MPI_File_set_info(simgrid::smpi::File::f2c(*fh), simgrid::smpi::Info::f2c(*info));
+}
+
+void mpi_file_get_errhandler_ ( int* file, int* errhandler, int* ierr){
+  MPI_Errhandler tmp;
+  *errhandler = FORTRAN_NULL_HANDLE;
+  *ierr= MPI_File_get_errhandler(simgrid::smpi::File::f2c(*file), &tmp);
+  if (*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
+    *errhandler = tmp->c2f();
+  }
+}
+
+void mpi_file_set_errhandler_ ( int* file, int* errhandler, int* ierr){
+  *ierr= MPI_File_set_errhandler(simgrid::smpi::File::f2c(*file), simgrid::smpi::Errhandler::f2c(*errhandler));
+}
+
 void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr, int datarep_len){
   MPI_Datatype tmp;
   MPI_Datatype tmp2;

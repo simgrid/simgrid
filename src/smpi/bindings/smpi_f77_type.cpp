@@ -99,6 +99,21 @@ void mpi_type_get_true_extent_(int* datatype, MPI_Aint* lb, MPI_Aint* extent, in
   *ierr = MPI_Type_get_true_extent(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
 }
 
+void mpi_type_size_x_(int* datatype, MPI_Count* size, int* ierr)
+{
+  *ierr = MPI_Type_size_x(simgrid::smpi::Datatype::f2c(*datatype), size);
+}
+
+void mpi_type_get_extent_x_(int* datatype, MPI_Count* lb, MPI_Count* extent, int* ierr)
+{
+  *ierr = MPI_Type_get_extent_x(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
+}
+
+void mpi_type_get_true_extent_x_(int* datatype, MPI_Count* lb, MPI_Count* extent, int* ierr)
+{
+  *ierr = MPI_Type_get_true_extent_x(simgrid::smpi::Datatype::f2c(*datatype), lb, extent);
+}
+
 void mpi_type_commit_(int* datatype,  int* ierr){
   MPI_Datatype tmp= simgrid::smpi::Datatype::f2c(*datatype);
   *ierr= MPI_Type_commit(&tmp);

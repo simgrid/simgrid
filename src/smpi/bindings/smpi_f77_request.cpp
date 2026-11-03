@@ -91,6 +91,33 @@ void mpi_sendrecv_replace_ (void *buf, int* count, int* datatype, int* dst, int*
   *recvtag, simgrid::smpi::Comm::f2c(*comm), FORT_STATUS_IGNORE(status));
 }
 
+void mpi_isendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* sendtag, void* recvbuf,
+                    int* recvcount, int* recvtype, int* src, int* recvtag, int* comm, int* request, int* ierr)
+{
+  MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
+  sendbuf  = static_cast<char*>(FORT_BOTTOM(sendbuf));
+  recvbuf  = static_cast<char*>(FORT_BOTTOM(recvbuf));
+  *ierr    = MPI_Isendrecv(sendbuf, *sendcount, simgrid::smpi::Datatype::f2c(*sendtype), *dst, *sendtag, recvbuf,
+                           *recvcount, simgrid::smpi::Datatype::f2c(*recvtype), *src, *recvtag,
+                           simgrid::smpi::Comm::f2c(*comm), &req);
+  if (*ierr == MPI_SUCCESS && req != nullptr) {
+    *request = req->c2f();
+  }
+}
+
+void mpi_isendrecv_replace_(void* buf, int* count, int* datatype, int* dst, int* sendtag, int* src, int* recvtag,
+                            int* comm, int* request, int* ierr)
+{
+  MPI_Request req;
+  *request = MPI_FORTRAN_REQUEST_NULL;
+  *ierr    = MPI_Isendrecv_replace(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dst, *sendtag, *src,
+                                   *recvtag, simgrid::smpi::Comm::f2c(*comm), &req);
+  if (*ierr == MPI_SUCCESS && req != nullptr) {
+    *request = req->c2f();
+  }
+}
+
 void mpi_ssend_ (void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* ierr) {
   *ierr = MPI_Ssend(buf, *count, simgrid::smpi::Datatype::f2c(*datatype), *dest, *tag, simgrid::smpi::Comm::f2c(*comm));
 }

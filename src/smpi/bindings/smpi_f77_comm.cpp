@@ -130,8 +130,9 @@ void mpi_comm_set_errhandler_ (int* comm, int* errhandler, int* ierr) {
 
 void mpi_comm_get_errhandler_ (int* comm, int* errhandler, int* ierr) {
  MPI_Errhandler tmp;
+ *errhandler = FORTRAN_COMM_NULL;
  *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
+ if(*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
    *errhandler = tmp->c2f();
  }
 }

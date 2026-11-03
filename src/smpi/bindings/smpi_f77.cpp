@@ -191,6 +191,42 @@ void mpi_win_start_(int* group, int* assert, int* win, int* ierr)
   *ierr =  MPI_Win_start(simgrid::smpi::Group::f2c(*group), *assert, simgrid::smpi::Win::f2c(*win));
 }
 
+void mpi_win_sync_(int* win, int* ierr)
+{
+  *ierr = MPI_Win_sync(simgrid::smpi::Win::f2c(*win));
+}
+
+void mpi_win_get_errhandler_(int* win, int* errhandler, int* ierr)
+{
+  MPI_Errhandler tmp;
+  *errhandler = FORTRAN_NULL_HANDLE;
+  *ierr = MPI_Win_get_errhandler(simgrid::smpi::Win::f2c(*win), &tmp);
+  if (*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
+    *errhandler = tmp->c2f();
+  }
+}
+
+void mpi_win_set_errhandler_(int* win, int* errhandler, int* ierr)
+{
+  *ierr = MPI_Win_set_errhandler(simgrid::smpi::Win::f2c(*win), simgrid::smpi::Errhandler::f2c(*errhandler));
+}
+
+void mpi_win_allocate_shared_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr)
+{
+  MPI_Win tmp;
+  *win = FORTRAN_NULL_HANDLE;
+  *ierr = MPI_Win_allocate_shared(*size, *disp_unit, simgrid::smpi::Info::f2c(*info),
+                                  simgrid::smpi::Comm::f2c(*comm), base, &tmp);
+  if (*ierr == MPI_SUCCESS) {
+    *win = tmp->c2f();
+  }
+}
+
+void mpi_win_shared_query_(int* win, int* rank, MPI_Aint* size, int* disp_unit, void* baseptr, int* ierr)
+{
+  *ierr = MPI_Win_shared_query(simgrid::smpi::Win::f2c(*win), *rank, size, disp_unit, baseptr);
+}
+
 void mpi_win_complete_(int* win, int* ierr)
 {
   *ierr =  MPI_Win_complete(simgrid::smpi::Win::f2c(*win));
@@ -364,37 +400,16 @@ void mpi_info_create_(int* info, int* ierr)
   }
 }
 
-void mpi_info_set_(int* info, char* key, char* value, int* ierr, unsigned int keylen, unsigned int valuelen)
+void mpi_info_set_(int* info, char* key, char* value, int* ierr, int keylen, int valuelen)
 {
-  //handle trailing blanks
-  while(key[keylen-1]==' ')
-    keylen--;
-  while(*key==' '){//handle leading blanks
-    keylen--;
-    key++;
-  }
-  std::string tkey(key, keylen);
-
-  while(value[valuelen-1]==' ')
-    valuelen--;
-  while(*value==' '){//handle leading blanks
-    valuelen--;
-    value++;
-  }
-  std::string tvalue(value, valuelen);
-
+  std::string tkey   = smpi_fortran_to_string(key, keylen);
+  std::string tvalue = smpi_fortran_to_string(value, valuelen);
   *ierr = MPI_Info_set(simgrid::smpi::Info::f2c(*info), tkey.c_str(), tvalue.c_str());
 }
 
-void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, int* ierr, unsigned int keylen)
+void mpi_info_get_(int* info, char* key, int* valuelen, char* value, int* flag, int* ierr, int keylen)
 {
-  while(key[keylen-1]==' ')
-    keylen--;
-  while(*key==' '){//handle leading blanks
-    keylen--;
-    key++;
-  }
-  std::string tkey(key, keylen);
+  std::string tkey = smpi_fortran_to_string(key, keylen);
   *ierr = MPI_Info_get(simgrid::smpi::Info::f2c(*info), tkey.c_str(), *valuelen, value, flag);
   if(*flag!=0){
     int replace=0;
@@ -766,8 +781,9 @@ void mpi_errhandler_free_ (int* errhandler, int* ierr) {
 
 void mpi_errhandler_get_ (int* comm, int* errhandler, int* ierr) {
  MPI_Errhandler tmp;
+ *errhandler = FORTRAN_NULL_HANDLE;
  *ierr = MPI_Errhandler_get(simgrid::smpi::Comm::f2c(*comm), &tmp);
- if(*ierr == MPI_SUCCESS) {
+ if(*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
    *errhandler = tmp->c2f();
  }
 }
@@ -849,8 +865,9 @@ void mpi_add_error_code_ (  int* errorclass, int *errorcode, int* ierr){
  *ierr = MPI_Add_error_code(*errorclass, errorcode);
 }
 
-void mpi_add_error_string_ ( int* errorcode, char *string, int* ierr){
- *ierr = MPI_Add_error_string(*errorcode, string);
+void mpi_add_error_string_ ( int* errorcode, char *string, int* ierr, int string_len){
+  std::string msg = smpi_fortran_to_string(string, string_len);
+  *ierr = MPI_Add_error_string(*errorcode, msg.data());
 }
 
 void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
@@ -861,25 +878,13 @@ void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
  }
 }
 
-void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, unsigned int keylen){
-  while(key[keylen-1]==' ')
-    keylen--;
-  while(*key==' '){//handle leading blanks
-    keylen--;
-    key++;
-  }
-  std::string tkey(key, keylen);
+void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, int keylen){
+  std::string tkey = smpi_fortran_to_string(key, keylen);
   *ierr = MPI_Info_get_valuelen(simgrid::smpi::Info::f2c(*info), tkey.c_str(), valuelen, flag);
 }
 
-void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
-  while(key[keylen-1]==' ')
-    keylen--;
-  while(*key==' '){//handle leading blanks
-    keylen--;
-    key++;
-  }
-  std::string tkey(key, keylen);
+void mpi_info_delete_ (int* info, char *key, int* ierr, int keylen){
+  std::string tkey = smpi_fortran_to_string(key, keylen);
   *ierr = MPI_Info_delete(simgrid::smpi::Info::f2c(*info), tkey.c_str());
 }
 
@@ -887,18 +892,24 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
  *ierr = MPI_Info_get_nkeys(  simgrid::smpi::Info::f2c(*info), nkeys);
 }
 
-void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
-  *ierr = MPI_Info_get_nthkey( simgrid::smpi::Info::f2c(*info), *n, key);
-  for (auto i = static_cast<unsigned>(strlen(key)); i < keylen; i++)
-    key[i]=' ';
+void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, int keylen){
+  std::vector<char> tmp(MPI_MAX_INFO_KEY);
+  *ierr = MPI_Info_get_nthkey( simgrid::smpi::Info::f2c(*info), *n, tmp.data());
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(key, keylen, tmp.data(), strlen(tmp.data()));
+  }
 }
 
 void mpi_get_version_ (int *version,int *subversion, int* ierr){
  *ierr = MPI_Get_version (version,subversion);
 }
 
-void mpi_get_library_version_ (char *version,int *len, int* ierr){
- *ierr = MPI_Get_library_version (version,len);
+void mpi_get_library_version_ (char *version,int *len, int* ierr, int version_len){
+  std::vector<char> tmp(MPI_MAX_LIBRARY_VERSION_STRING);
+  *ierr = MPI_Get_library_version (tmp.data(),len);
+  if (*ierr == MPI_SUCCESS) {
+    smpi_fortran_from_string(version, version_len, tmp.data(), *len);
+  }
 }
 
 void mpi_request_get_status_ ( int* request, int *flag, MPI_Status* status, int* ierr){
@@ -924,6 +935,10 @@ void mpi_status_set_cancelled_ (MPI_Status* status,int* flag, int* ierr){
 
 void mpi_status_set_elements_ ( MPI_Status* status, int* datatype, int* count, int* ierr){
  *ierr = MPI_Status_set_elements( FORT_STATUS_IGNORE(status), simgrid::smpi::Datatype::f2c(*datatype), *count);
+}
+
+void mpi_status_set_elements_x_ ( MPI_Status* status, int* datatype, MPI_Count* count, int* ierr){
+ *ierr = MPI_Status_set_elements_x( FORT_STATUS_IGNORE(status), simgrid::smpi::Datatype::f2c(*datatype), *count);
 }
 
 void mpi_publish_name_ ( char *service_name, int* info, char *port_name, int* ierr){
