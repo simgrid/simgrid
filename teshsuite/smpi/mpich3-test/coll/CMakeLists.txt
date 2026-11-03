@@ -23,6 +23,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
         # redscatinter
           reduce_local scantst scatter2 scatter3 scattern scatterv
          uoplong
+         bcast_noncontig
          )
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
     add_dependencies(tests ${test})
@@ -105,6 +106,7 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c
  ${CMAKE_CURRENT_SOURCE_DIR}/bcasttest.c
  ${CMAKE_CURRENT_SOURCE_DIR}/bcastzerotype.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcast_noncontig.c
  ${CMAKE_CURRENT_SOURCE_DIR}/coll10.c
  ${CMAKE_CURRENT_SOURCE_DIR}/coll11.c
  ${CMAKE_CURRENT_SOURCE_DIR}/coll12.c
