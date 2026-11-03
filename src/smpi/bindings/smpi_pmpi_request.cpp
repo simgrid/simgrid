@@ -36,7 +36,8 @@ static aid_t getPid(MPI_Comm comm, int id)
   CHECK_REQUEST(7)\
   *request = MPI_REQUEST_NULL;\
   CHECK_COUNT(2, count)\
-  CHECK_TYPE(3, datatype)\
+  if (src != MPI_PROC_NULL)\
+    CHECK_TYPE(3, datatype)\
   CHECK_BUFFER(1, buf, count, datatype)\
   CHECK_COMM(6)\
   if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
@@ -228,7 +229,8 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   int retval = 0;
   SET_BUF1(buf)
   CHECK_COUNT(2, count)
-  CHECK_TYPE(3, datatype)
+  if (src != MPI_PROC_NULL)
+    CHECK_TYPE(3, datatype)
   CHECK_BUFFER(1, buf, count, datatype)
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
