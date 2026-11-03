@@ -36,8 +36,6 @@ public:
   static ActivityImplPtr iput(actor::MessIputSimcall* observer);
   static ActivityImplPtr iget(actor::MessIgetSimcall* observer);
 
-  void wait_for(actor::ActorImpl* issuer, double timeout) override;
-
   MessImpl* start();
 
   void suspend() override { /* no action to suspend for Mess */ }

@@ -77,7 +77,15 @@ void MessageQueue::put(void* payload, double timeout)
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  put_init()->set_payload(payload)->start()->wait_for(timeout);
+  MessPtr mess = put_init()->set_payload(payload)->start();
+  try {
+    mess->wait_for(timeout);
+  } catch (const TimeoutException&) {
+    // Remove the message from the queue, so that it is not delivered after the sender was told that it timeouted
+    mess->cancel();
+    /* Rethrowing the original exception segfaults in parallel tests */
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
+  }
 }
 
 MessPtr MessageQueue::get_init()

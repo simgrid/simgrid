@@ -136,15 +136,6 @@ ActivityImplPtr MessImpl::iget(actor::MessIgetSimcall* observer)
   return other_mess;
 }
 
-void MessImpl::wait_for(actor::ActorImpl* issuer, double timeout)
-{
-  XBT_DEBUG("MessImpl::wait_for(%g), %p, state %s", timeout, this, get_state_str());
-
-  /* Associate this simcall to the wait synchro */
-  register_simcall(&issuer->simcall_);
-  ActivityImpl::wait_for(issuer, timeout);
-}
-
 void MessImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */

@@ -159,6 +159,95 @@ TEST_CASE("Activity lifecycle: mess activities")
     END_SECTION;
   }
 
+  // In the following sections, a blocking get() or put() timeouts at t=1. The message must be removed from the queue,
+  // so that it is not matched later on (the get() would write in a variable that is gone, and the put() would deliver a
+  // message whose sender was told that it timeouted).
+  BEGIN_SECTION("mess get with timeout")
+  {
+    XBT_INFO("A get(timeout) that timeouts must not be matched by a later put()");
+    bool recv_done = false;
+    bool send_done = false;
+    all_hosts[1]->add_actor("receiver", [&recv_done]() {
+      assert_exit(true, 3);
+      sg4::MessageQueue* mq = sg4::MessageQueue::by_name("mq");
+      REQUIRE_THROWS_AS(mq->get<int>(1), simgrid::TimeoutException);
+      REQUIRE(mq->empty());
+      sg4::this_actor::sleep_for(2);
+      const int* data = mq->get<int>();
+      REQUIRE(*data == 42);
+      recv_done = true;
+    });
+    all_hosts[2]->add_actor("sender", [&send_done]() {
+      assert_exit(true, 3);
+      static int data = 42;
+      sg4::this_actor::sleep_for(2);
+      sg4::MessageQueue::by_name("mq")->put(&data);
+      send_done = true;
+    });
+
+    sg4::this_actor::sleep_for(4);
+    INFO("The message was not delivered to the second get()");
+    REQUIRE(send_done);
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("mess put with timeout")
+  {
+    XBT_INFO("A put(timeout) that timeouts must not be delivered to a later get()");
+    bool send_done = false;
+    bool recv_done = false;
+    all_hosts[1]->add_actor("sender", [&send_done]() {
+      assert_exit(true, 3);
+      static int data1 = 1;
+      static int data2 = 2;
+      sg4::MessageQueue* mq = sg4::MessageQueue::by_name("mq");
+      REQUIRE_THROWS_AS(mq->put(&data1, 1), simgrid::TimeoutException);
+      REQUIRE(mq->empty());
+      sg4::this_actor::sleep_for(2);
+      mq->put(&data2);
+      send_done = true;
+    });
+    all_hosts[2]->add_actor("receiver", [&recv_done]() {
+      assert_exit(true, 3);
+      sg4::this_actor::sleep_for(2);
+      const int* data = sg4::MessageQueue::by_name("mq")->get<int>();
+      INFO("The message of the put() that timeouted was delivered");
+      REQUIRE(*data == 2);
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(4);
+    REQUIRE(send_done);
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("mess cancel after wait_for timeout")
+  {
+    XBT_INFO("Cancel an unmatched get after a wait_for() on it timeouted");
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&recv_done]() {
+      assert_exit(true, 1);
+      int* data;
+      sg4::MessageQueue* mq = sg4::MessageQueue::by_name("mq");
+      sg4::MessPtr mess     = mq->get_async<int>(&data);
+      REQUIRE_THROWS_AS(mess->wait_for(1), simgrid::TimeoutException);
+      // The canceling actor does not wait for the message anymore: it must not get the CancelException itself
+      REQUIRE_NOTHROW(mess->cancel());
+      REQUIRE(mq->empty());
+      recv_done = true;
+    });
+
+    sg4::this_actor::sleep_for(2);
+    INFO("The receiver could not cancel the message after the timeout");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
   sg4::this_actor::sleep_for(10);
   assert_cleanup();
 }

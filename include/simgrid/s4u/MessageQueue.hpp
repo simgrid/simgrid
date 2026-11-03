@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_MESSAGEQUEUE_HPP
 #define SIMGRID_S4U_MESSAGEQUEUE_HPP
 
+#include <simgrid/Exception.hpp>
 #include <simgrid/forward.h>
 #include <simgrid/s4u/Mess.hpp>
 #include <smpi/forward.hpp>
@@ -103,8 +104,16 @@ template <typename T> T* MessageQueue::get()
 
 template <typename T> T* MessageQueue::get(double timeout)
 {
-  T* res = nullptr;
-  get_async<T>(&res)->wait_for(timeout);
+  T* res       = nullptr;
+  MessPtr mess = get_async<T>(&res);
+  try {
+    mess->wait_for(timeout);
+  } catch (const TimeoutException&) {
+    // Remove the reception from the queue: a later put() would otherwise match it, and write in res (that is gone)
+    mess->cancel();
+    /* Rethrowing the original exception segfaults in parallel tests */
+    throw TimeoutException(XBT_THROW_POINT, "Timeouted");
+  }
   return res;
 }
 } // namespace simgrid::s4u
