@@ -1,0 +1,56 @@
+#!/usr/bin/env tesh
+
+p Testing a vm with two successive activities
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/cloud-simple.py ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:master_@Fafard) ## Test 1 (started): check computation on normal PMs
+> [  0.000000] (1:master_@Fafard) ### Put an activity on a PM
+> [  0.013107] (2:compute@Fafard) Fafard:compute executed 0.0131068
+> [  2.000000] (1:master_@Fafard) ### Put two activities on a PM
+> [  2.026214] (4:compute@Fafard) Fafard:compute executed 0.0262137
+> [  2.026214] (3:compute@Fafard) Fafard:compute executed 0.0262137
+> [  4.000000] (1:master_@Fafard) ### Put an activity on each PM
+> [  4.010194] (6:compute@Tremblay) Tremblay:compute executed 0.0101942
+> [  4.013107] (5:compute@Fafard) Fafard:compute executed 0.0131068
+> [  6.000000] (1:master_@Fafard) ## Test 1 (ended)
+> [  6.000000] (1:master_@Fafard) ## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)
+> [  6.000000] (1:master_@Fafard) ### Put a VM on a PM, and put an activity to the VM
+> [  6.013107] (7:compute@VM0) VM0:compute executed 0.0131068
+> [  8.000000] (1:master_@Fafard) ## Test 2 (ended)
+> [  8.000000] (1:master_@Fafard) ## Test 3 (started): check impact of running an activity collocated with a VM (there is no VM noise for the moment)
+> [  8.000000] (1:master_@Fafard) ### Put a VM on a PM, and put an activity to the PM
+> [  8.013107] (8:compute@Fafard) Fafard:compute executed 0.0131068
+> [ 10.000000] (1:master_@Fafard) ## Test 3 (ended)
+> [ 10.000000] (1:master_@Fafard) ## Test 4 (started): compare the cost of running two activities inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
+> [ 10.000000] (1:master_@Fafard) ### Put two VMs on a PM, and put an activity to each VM
+> [ 10.026214] (9:compute@VM0) VM0:compute executed 0.0262137
+> [ 10.026214] (10:compute@VM1) VM1:compute executed 0.0262137
+> [ 12.000000] (1:master_@Fafard) ### Put a VM on each PM, and put an activity to each VM
+> [ 12.010194] (12:compute@VM1) VM1:compute executed 0.0101942
+> [ 12.013107] (11:compute@VM0) VM0:compute executed 0.0131068
+> [ 14.000000] (1:master_@Fafard) ## Test 4 (ended)
+> [ 14.000000] (1:master_@Fafard) ## Test 5  (started): Analyse network impact
+> [ 14.000000] (1:master_@Fafard) ### Make a connection between PM0 and PM1
+> [ 14.158397] (14:comm_rx@Tremblay) Fafard:comm_tx to Tremblay:comm_rx => 0.158397 sec
+> [ 19.000000] (1:master_@Fafard) ### Make two connection between PM0 and PM1
+> [ 19.291085] (18:comm_rx@Tremblay) Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [ 19.291085] (16:comm_rx@Tremblay) Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [ 24.000000] (1:master_@Fafard) ### Make a connection between PM0 and VM0@PM0
+> [ 24.002265] (20:comm_rx@VM0) Fafard:comm_tx to VM0:comm_rx => 0.00226529 sec
+> [ 29.000000] (1:master_@Fafard) ### Make a connection between PM0 and VM0@PM1
+> [ 29.158397] (22:comm_rx@VM0) Fafard:comm_tx to VM0:comm_rx => 0.158397 sec
+> [ 34.000000] (1:master_@Fafard) ### Make two connections between PM0 and VM0@PM1
+> [ 34.291085] (26:comm_rx@VM0) Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [ 34.291085] (24:comm_rx@VM0) Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [ 39.000000] (1:master_@Fafard) ### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1
+> [ 39.291085] (30:comm_rx@Tremblay) Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
+> [ 39.291085] (28:comm_rx@VM0) Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
+> [ 44.000000] (1:master_@Fafard) ### Make a connection between VM0@PM0 and PM1@PM1, and also make a connection between VM0@PM0 and VM1@PM1
+> [ 44.291085] (34:comm_rx@VM1) VM0:comm_tx to VM1:comm_rx => 0.291085 sec
+> [ 44.291085] (32:comm_rx@VM1) VM0:comm_tx to VM1:comm_rx => 0.291085 sec
+> [ 49.000000] (1:master_@Fafard) ## Test 5 (ended)
+> [ 49.000000] (1:master_@Fafard) ## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one
+> [ 49.000000] (1:master_@Fafard) ### Relocate VM0 between PM0 and PM1
+> [ 49.204993] (36:comm_rx@Bourassa) VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
+> [339.199251] (1:master_@Fafard) ## Test 6 (ended)
+> [339.199251] (0:maestro@) Simulation time 339.199
