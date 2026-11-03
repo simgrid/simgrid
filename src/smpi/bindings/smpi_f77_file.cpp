@@ -173,6 +173,19 @@ void mpi_file_set_errhandler_ ( int* file, int* errhandler, int* ierr){
   *ierr= MPI_File_set_errhandler(simgrid::smpi::File::f2c(*file), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
+void mpi_file_create_errhandler_ ( void* function, int* errhandler, int* ierr){
+  MPI_Errhandler tmp;
+  *errhandler = FORTRAN_NULL_HANDLE;
+  *ierr = MPI_File_create_errhandler(reinterpret_cast<MPI_File_errhandler_fn*>(function), &tmp);
+  if(*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
+    *errhandler = tmp->c2f();
+  }
+}
+
+void mpi_file_call_errhandler_ ( int* file, int* errorcode, int* ierr){
+  *ierr = MPI_File_call_errhandler(simgrid::smpi::File::f2c(*file), *errorcode);
+}
+
 void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr, int datarep_len){
   MPI_Datatype tmp;
   MPI_Datatype tmp2;

@@ -211,6 +211,21 @@ void mpi_win_set_errhandler_(int* win, int* errhandler, int* ierr)
   *ierr = MPI_Win_set_errhandler(simgrid::smpi::Win::f2c(*win), simgrid::smpi::Errhandler::f2c(*errhandler));
 }
 
+void mpi_win_create_errhandler_(void* function, int* errhandler, int* ierr)
+{
+  MPI_Errhandler tmp;
+  *errhandler = FORTRAN_NULL_HANDLE;
+  *ierr = MPI_Win_create_errhandler(reinterpret_cast<MPI_Win_errhandler_fn*>(function), &tmp);
+  if (*ierr == MPI_SUCCESS && tmp != MPI_ERRHANDLER_NULL) {
+    *errhandler = tmp->c2f();
+  }
+}
+
+void mpi_win_call_errhandler_(int* win, int* errorcode, int* ierr)
+{
+  *ierr = MPI_Win_call_errhandler(simgrid::smpi::Win::f2c(*win), *errorcode);
+}
+
 void mpi_win_allocate_shared_(MPI_Aint* size, int* disp_unit, int* info, int* comm, void* base, int* win, int* ierr)
 {
   MPI_Win tmp;
