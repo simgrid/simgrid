@@ -26,3 +26,4 @@ external32-derived-dtype 1
 #i_noncontig_coll 2 mpiversion=3.1
 #i_noncontig_coll2 4 mpiversion=3.1
 #i_types_with_zeros 2 mpiversion=3.1
+setview_zero 3
