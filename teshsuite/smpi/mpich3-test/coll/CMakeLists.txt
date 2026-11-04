@@ -55,6 +55,11 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   target_include_directories(op_coll_dtp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
   target_link_libraries(op_coll_dtp simgrid mtest_c dtpools)
 
+  add_executable(reduce_dtp EXCLUDE_FROM_ALL reduce_dtp.c)
+  add_dependencies(tests reduce_dtp)
+  target_include_directories(reduce_dtp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+  target_link_libraries(reduce_dtp simgrid mtest_c dtpools)
+
   add_executable(reduce_mpich EXCLUDE_FROM_ALL reduce.c)
   add_dependencies(tests reduce_mpich)
   target_link_libraries(reduce_mpich  simgrid mtest_c)
