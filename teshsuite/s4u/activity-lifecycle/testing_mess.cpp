@@ -248,6 +248,36 @@ TEST_CASE("Activity lifecycle: mess activities")
     END_SECTION;
   }
 
+  BEGIN_SECTION("mess payload delivered only once")
+  {
+    XBT_INFO("The payload must not be written again in the receiver buffer when the sender waits for the message");
+    bool recv_done = false;
+    all_hosts[1]->add_actor("receiver", [&recv_done]() {
+      assert_exit(true, 2);
+      int* data;
+      sg4::MessageQueue::by_name("mq")->get_async<int>(&data)->wait();
+      REQUIRE(*data == 42);
+      // The receiver is done with its buffer, that may even be gone at this point. When the sender waits for the
+      // message (right after this receiver got it), the payload must not be written in that buffer again.
+      data = nullptr;
+      sg4::this_actor::sleep_for(1);
+      REQUIRE(data == nullptr);
+      recv_done = true;
+    });
+    all_hosts[2]->add_actor("sender", []() {
+      assert_exit(true, 1);
+      static int data = 42;
+      sg4::this_actor::sleep_for(1); // Make sure that the get() is posted first
+      sg4::MessageQueue::by_name("mq")->put(&data);
+    });
+
+    sg4::this_actor::sleep_for(3);
+    INFO("The payload was written twice in the receiver buffer");
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
   sg4::this_actor::sleep_for(10);
   assert_cleanup();
 }

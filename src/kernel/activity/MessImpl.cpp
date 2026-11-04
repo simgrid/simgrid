@@ -168,17 +168,17 @@ void MessImpl::finish()
     piface.fire_on_this_completion_for_real();
   }
 
-  /* Update synchro state */
+  /* Update synchro state, and deliver the payload. finish() is called again each time an actor waits for the terminated
+   * message, so this must be done only once: the receiver may already be gone with its buffer when the sender waits. */
   if (get_state() == State::RUNNING) {
     set_state(State::DONE);
+    if (payload_ != nullptr && dst_buff_ != nullptr)
+      *(void**)(dst_buff_) = payload_;
   }
 
   /* If the synchro is still in a rendez-vous point then remove from it */
   if (queue_)
     queue_->remove(this);
-
-  if (get_state() == State::DONE && payload_ != nullptr && dst_buff_ != nullptr)
-     *(void**)(dst_buff_) = payload_;
 
   while (not simcalls_.empty()) {
     auto issuer = unregister_first_simcall();
