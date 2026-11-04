@@ -67,6 +67,9 @@ public:
   int tag() const { return tag_; }
   int flags() const { return flags_; }
   bool detached() const { return detached_; }
+  /** True while the mailbox still references this request: neither matched nor completed yet.
+   *  Freeing such a request must not delete it, or the pending comm keeps a dangling pointer. */
+  bool in_flight() const;
   std::string name() const override { return "MPI_Request"; }
   MPI_Datatype type() const { return type_; }
   void print_request(const char* message) const;

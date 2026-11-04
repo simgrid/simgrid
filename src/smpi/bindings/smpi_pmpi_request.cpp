@@ -158,6 +158,13 @@ int PMPI_Request_free(MPI_Request * request)
   const SmpiBenchGuard suspend_bench;
   if (*request != MPI_REQUEST_NULL) {
     (*request)->mark_as_deleted();
+    /* A request that is neither matched nor completed is still referenced by the mailbox as the
+     * match data of its pending comm. Deleting it here would leave a dangling pointer that the
+     * next matching send/recv dereferences in Request::match_common (use-after-free). MPI allows
+     * freeing a request whose operation is still in progress, so keep the object alive; it is
+     * released when the comm completes or, at the latest, when the simulation ends. */
+    if ((*request)->in_flight() && not(*request)->detached())
+      (*request)->ref();
     simgrid::smpi::Request::unref(request);
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;

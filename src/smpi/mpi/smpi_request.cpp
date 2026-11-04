@@ -78,6 +78,11 @@ void Request::ref(){
   refcount_++;
 }
 
+bool Request::in_flight() const
+{
+  return action_ != nullptr && (flags_ & (MPI_REQ_FINISHED | MPI_REQ_MATCHED)) == 0;
+}
+
 void Request::unref(MPI_Request* request)
 {
   xbt_assert(*request != MPI_REQUEST_NULL, "freeing an already free request");
