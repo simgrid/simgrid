@@ -44,6 +44,7 @@ Core:
  - Implement raw contexts on arm64, so that this context factory is no longer limited to amd64.
 
 SMPI:
+ - Long-overdue big maintenance (AI-assisted)
  - Refresh the algorithm collections and the decision trees of the mpich, ompi and mvapich2 selectors after MPICH 5.1,
    OpenMPI 6.1 and MVAPICH 4.1, which are the implementations they emulate. The tables we used were faithful to MPICH 3,
    OpenMPI 1.x and to MVAPICH2 tuning tables measured on Stampede: many thresholds were off and many algorithms missing.
@@ -52,6 +53,9 @@ SMPI:
    dropped the C tuning tables it was transcribed from; tools/smpi/gen_mvapich2_selector.py regenerates it.
  - Fix a few wrong algorithm choices in the OpenMPI selector, plus assorted edge cases uncovered while extending the
    test suite.
+ - Update mpich test suite: Port MPICH3 dtpools test suite into SMPI test tree (coll, pt2pt, rma);
+   remove superseded MTestGetDatatypes tests; fix derived datatype extents, MTest harness helpers,
+   and Fortran 80-column limits in mpif.h.
 
 ----------------------------------------------------------------------------
 
