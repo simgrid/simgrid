@@ -76,6 +76,7 @@ void MTestInitMinDatatypes(void);
 /* Setup the basic version of datatype tests.
  * It generate tests for all basic datatypes. */
 void MTestInitBasicDatatypes(void);
+int MTestIsBasicDtype(MPI_Datatype type);
 
 int MTestCheckRecv(MPI_Status *, MTestDatatype *);
 int MTestGetStressLevel(void);
