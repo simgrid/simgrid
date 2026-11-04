@@ -7,6 +7,7 @@
 #include "mpitest.h"
 #include "dtpools.h"
 #include "mtest_dtp.h"
+#include <stdio.h>
 #include <assert.h>
 
 #ifdef MULTI_TESTS
@@ -174,10 +175,20 @@ int run(const char *arg)
 }
 
 #ifndef MULTI_TESTS
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
+    int errs;
+    char argstr[4096];
+    size_t pos = 0;
+    argstr[0] = '\0';
+    for (int i = 1; i < argc && pos < sizeof(argstr) - 1; i++) {
+        if (i > 1)
+            argstr[pos++] = ' ';
+        pos += (size_t) snprintf(argstr + pos, sizeof(argstr) - pos, "%s", argv[i]);
+    }
     MTest_Init(&argc, &argv);
-    int _errs = run(NULL);
-    MTest_Finalize(_errs);
-    return 0;
+    errs = run(argstr[0] ? argstr : NULL);
+    MTest_Finalize(errs);
+    return MTestReturnValue(errs);
 }
 #endif
