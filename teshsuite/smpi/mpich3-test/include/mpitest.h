@@ -77,6 +77,7 @@ void MTestInitMinDatatypes(void);
 void MTestInitBasicDatatypes(void);
 
 int MTestCheckRecv(MPI_Status *, MTestDatatype *);
+int MTestGetStressLevel(void);
 int MTestGetDatatypes(MTestDatatype *, MTestDatatype *, MPI_Aint);
 void MTestResetDatatypes(void);
 void MTestFreeDatatype(MTestDatatype *);
@@ -135,3 +136,30 @@ do {                                    \
 } while (0)
 
 #endif
+
+static inline int MTestCheckStatus(MPI_Status * p_status, MPI_Datatype el_type,
+                                   int exp_count, int exp_source, int exp_tag, int verbose)
+{
+    int errs = 0;
+    int count;
+    MPI_Get_count(p_status, el_type, &count);
+    if (count != exp_count) {
+        errs++;
+        if (verbose) {
+            printf("Status expect count %d, got %d\n", exp_count, count);
+        }
+    }
+    if (exp_source != MPI_ANY_SOURCE && p_status->MPI_SOURCE != exp_source) {
+        errs++;
+        if (verbose) {
+            printf("Status expect source %d, got %d\n", exp_source, p_status->MPI_SOURCE);
+        }
+    }
+    if (exp_tag != MPI_ANY_TAG && p_status->MPI_TAG != exp_tag) {
+        errs++;
+        if (verbose) {
+            printf("Status expect tag %d, got %d\n", exp_tag, p_status->MPI_TAG);
+        }
+    }
+    return errs;
+}

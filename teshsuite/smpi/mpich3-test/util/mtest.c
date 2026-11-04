@@ -43,6 +43,13 @@
  */
 
 static void MTestRMACleanup(void);
+
+static int stress = 0;
+
+int MTestGetStressLevel(void)
+{
+    return stress;
+}
 static void MTestResourceSummary(FILE *);
 
 /* Here is where we could put the includes and definitions to enable
