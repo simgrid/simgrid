@@ -40,6 +40,11 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   set_target_properties(bcast_min_datatypes PROPERTIES COMPILE_FLAGS "-DBCAST_MIN_DATATYPES_ONLY" LINK_FLAGS "-DBCAST_MIN_DATATYPES_ONLY")
   set_target_properties(bcast_comm_world PROPERTIES COMPILE_FLAGS "-DBCAST_COMM_WORLD_ONLY" LINK_FLAGS "-DBCAST_COMM_WORLD_ONLY")
 
+  add_executable(bcast_dtp EXCLUDE_FROM_ALL bcast_dtp.c)
+  add_dependencies(tests bcast_dtp)
+  target_include_directories(bcast_dtp PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+  target_link_libraries(bcast_dtp simgrid mtest_c dtpools)
+
   add_executable(reduce_mpich EXCLUDE_FROM_ALL reduce.c)
   add_dependencies(tests reduce_mpich)
   target_link_libraries(reduce_mpich  simgrid mtest_c)
