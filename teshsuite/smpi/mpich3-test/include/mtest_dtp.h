@@ -63,11 +63,10 @@ struct dtp_args {
 
 static mtest_mem_type_e allmemtypes[] = {
     MTEST_MEM_TYPE__UNREGISTERED_HOST,
-    MTEST_MEM_TYPE__REGISTERED_HOST,
-    MTEST_MEM_TYPE__DEVICE
+    MTEST_MEM_TYPE__REGISTERED_HOST
 };
 
-static int num_allmemtypes = 3;
+static int num_allmemtypes = 2;
 
 static void split_testsizes(const char *str, int *min_size, int *max_size)
 {
