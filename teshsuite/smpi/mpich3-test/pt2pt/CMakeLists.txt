@@ -5,7 +5,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_underflow inactivereq isendself isendrecv isendrecv_replace isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived cancelanysrc pingping probenull
+  foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_underflow inactivereq isendself isendrecv isendrecv_replace isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived cancelanysrc pingping pipeline probenull
           dtype_send greq1 probe-unexp rqstatus sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull many_isend manylmt recv_any sendself scancel scancel2 rcancel bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending rqfreeb pssend precv_anysrc precv_anysrc_exp probe_unexp recvnull rqfree send_tests waitany_null)
     # not compiled files: big_count_status mprobe
     # cancelrecv  icsend large_message pscancel     scancel_unmatch
