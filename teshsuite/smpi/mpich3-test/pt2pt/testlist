@@ -64,5 +64,5 @@ pipeline 2
 precv_anysrc 2
 precv_anysrc_exp 2
 recvnull 2
-rqfree 2
 send_tests 3
+rqfree 2
