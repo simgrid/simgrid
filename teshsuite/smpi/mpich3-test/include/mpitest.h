@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include "mpitestconf.h"
+#include "mpi.h"
 
 /*
  * Init and finalize test
