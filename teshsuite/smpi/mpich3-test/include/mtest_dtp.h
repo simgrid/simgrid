@@ -313,13 +313,13 @@ static bool dtp_args_get_next(struct dtp_args *dtp_args)
         dtp_args->idx++;
     } else if (dtp_args->dtp_arg_type == MTEST_COLL_NOCOUNT) {
         dtp_args->u.coll.evenmem = allmemtypes[dtp_args->idx];
-        dtp_args->u.coll.oddmem = MTEST_MEM_TYPE__DEVICE;
+        dtp_args->u.coll.oddmem = MTEST_MEM_TYPE__UNREGISTERED_HOST;
         dtp_args->idx++;
     } else if (dtp_args->dtp_arg_type == MTEST_COLL_COUNT) {
         int idx = dtp_args->idx;
         dtp_args->count = dtp_args->counts[idx / num_allmemtypes];
         dtp_args->u.coll.evenmem = allmemtypes[idx % num_allmemtypes];
-        dtp_args->u.coll.oddmem = MTEST_MEM_TYPE__DEVICE;
+        dtp_args->u.coll.oddmem = MTEST_MEM_TYPE__UNREGISTERED_HOST;
         dtp_args->idx++;
     } else {
         set_count_and_type(dtp_args);
