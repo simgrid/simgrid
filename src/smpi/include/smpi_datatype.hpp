@@ -146,6 +146,7 @@ public:
   static MPI_Datatype decode(const std::string& datatype_id);
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent) const;
+  void true_bounds(MPI_Aint* lo, MPI_Aint* hi) const;
   MPI_Aint get_extent() const { return ub_ - lb_; };
   void get_name(char* name, int* length) const;
   void set_name(const char* name);

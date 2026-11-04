@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <array>
 #include <functional>
+#include <limits>
 #include <string>
 #include <complex>
 
@@ -245,6 +246,103 @@ int Datatype::extent(MPI_Aint* lb, MPI_Aint* extent) const
   return MPI_SUCCESS;
 }
 
+void Datatype::true_bounds(MPI_Aint* lo, MPI_Aint* hi) const
+{
+  if (contents_ == nullptr) {
+    *lo = lb_;
+    *hi = lb_ + static_cast<MPI_Aint>(size_);
+    return;
+  }
+
+  MPI_Aint min_off = std::numeric_limits<MPI_Aint>::max();
+  MPI_Aint max_off = std::numeric_limits<MPI_Aint>::min();
+
+  auto add_span = [&](MPI_Aint offset, MPI_Aint child_lo, MPI_Aint child_hi) {
+    min_off = std::min(min_off, offset + child_lo);
+    max_off = std::max(max_off, offset + child_hi);
+  };
+  const auto& ints = contents_->integers_;
+  const auto& addrs = contents_->addresses_;
+  const auto& types = contents_->datatypes_;
+
+  if (types.size() > 1) {
+    for (size_t i = 0; i < types.size(); i++) {
+      const MPI_Aint block_len = ints[i + 1];
+      if (block_len <= 0)
+        continue;
+      MPI_Datatype dt = types[i];
+      if (dt->size() == 0)
+        continue;
+      MPI_Aint clo;
+      MPI_Aint chi;
+      dt->true_bounds(&clo, &chi);
+      const MPI_Aint ext = dt->get_extent();
+      add_span(addrs[i], clo, chi);
+      max_off = std::max(max_off, addrs[i] + (block_len - 1) * ext + chi);
+    }
+  } else if (types.size() == 1) {
+    MPI_Datatype dt = types[0];
+    if (contents_->combiner_ == MPI_COMBINER_DUP) {
+      dt->true_bounds(lo, hi);
+      return;
+    }
+    const int count = ints[0];
+    MPI_Aint clo;
+    MPI_Aint chi;
+    dt->true_bounds(&clo, &chi);
+    const MPI_Aint ext = dt->get_extent();
+    switch (contents_->combiner_) {
+      case MPI_COMBINER_CONTIGUOUS:
+        *lo = lb_;
+        *hi = lb_ + static_cast<MPI_Aint>(size_);
+        return;
+      case MPI_COMBINER_VECTOR:
+      case MPI_COMBINER_HVECTOR: {
+        const int block_len = ints[1];
+        const MPI_Aint stride =
+            (contents_->combiner_ == MPI_COMBINER_VECTOR) ? static_cast<MPI_Aint>(ints[2]) * ext : addrs[0];
+        for (int i = 0; i < count; i++)
+          for (int j = 0; j < block_len; j++)
+            add_span(i * stride + j * ext, clo, chi);
+        break;
+      }
+      case MPI_COMBINER_INDEXED:
+        if (addrs.empty()) {
+          for (int i = 0; i < count; i++) {
+            const int block_len   = ints[i + 1];
+            const MPI_Aint displ  = static_cast<MPI_Aint>(ints[count + 1 + i]) * ext;
+            for (int j = 0; j < block_len; j++)
+              add_span(displ + j * ext, clo, chi);
+          }
+        } else {
+          const int block_len = ints[1];
+          for (int j = 0; j < block_len; j++)
+            add_span(addrs[0] + j * ext, clo, chi);
+        }
+        break;
+      case MPI_COMBINER_HINDEXED:
+        for (int i = 0; i < count; i++) {
+          const int block_len = ints[i + 1];
+          for (int j = 0; j < block_len; j++)
+            add_span(addrs[i] + j * ext, clo, chi);
+        }
+        break;
+      default:
+        *lo = lb_;
+        *hi = ub_;
+        return;
+    }
+  }
+
+  if (min_off > max_off) {
+    *lo = 0;
+    *hi = 0;
+    return;
+  }
+  *lo = min_off;
+  *hi = max_off;
+}
+
 void Datatype::get_name(char* name, int* length) const
 {
   *length = static_cast<int>(name_.length());
@@ -395,8 +493,13 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
-    lb=old_type->lb();
-    ub=((count-1)*stride+block_length-1)*old_type->get_extent()+old_type->ub();
+    const MPI_Aint extent = old_type->get_extent();
+    const MPI_Aint first  = 0;
+    const MPI_Aint last   = static_cast<MPI_Aint>(count - 1) * stride;
+    const MPI_Aint min_off = first < last ? first : last;
+    const MPI_Aint max_off = first > last ? first : last;
+    lb = min_off * extent + old_type->lb();
+    ub = (max_off + block_length - 1) * extent + old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length){
     *new_type = new Type_Vector(old_type->size() * block_length * count, lb, ub, DT_FLAG_DERIVED, count, block_length,
@@ -423,8 +526,13 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
-    lb=old_type->lb();
-    ub=((count-1)*stride)+(block_length-1)*old_type->get_extent()+old_type->ub();
+    const MPI_Aint extent = old_type->get_extent();
+    const MPI_Aint first  = 0;
+    const MPI_Aint last   = static_cast<MPI_Aint>(count - 1) * stride;
+    const MPI_Aint min_off = first < last ? first : last;
+    const MPI_Aint max_off = first > last ? first : last;
+    lb = min_off + old_type->lb();
+    ub = max_off + (block_length - 1) * extent + old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length*old_type->get_extent()){
     *new_type = new Type_Hvector(old_type->size() * block_length * count, lb, ub, DT_FLAG_DERIVED, count, block_length,
@@ -446,20 +554,21 @@ int Datatype::create_indexed(int count, const int* block_lengths, const int* ind
   bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
-  if(count>0){
-    lb=indices[0]*old_type->get_extent();
-    ub=indices[0]*old_type->get_extent() + block_lengths[0]*old_type->ub();
-  }
-
+  bool first_block = true;
   for (int i = 0; i < count; i++) {
     if (block_lengths[i] < 0)
       return MPI_ERR_ARG;
     size += block_lengths[i];
 
-    if(indices[i]*old_type->get_extent()+old_type->lb()<lb)
-      lb = indices[i]*old_type->get_extent()+old_type->lb();
-    if(indices[i]*old_type->get_extent()+block_lengths[i]*old_type->ub()>ub)
-      ub = indices[i]*old_type->get_extent()+block_lengths[i]*old_type->ub();
+    if (block_lengths[i] > 0) {
+      const MPI_Aint block_lb = indices[i]*old_type->get_extent()+old_type->lb();
+      const MPI_Aint block_ub = indices[i]*old_type->get_extent()+(block_lengths[i]-1)*old_type->get_extent()+old_type->ub();
+      if (first_block || block_lb < lb)
+        lb = block_lb;
+      if (first_block || block_ub > ub)
+        ub = block_ub;
+      first_block = false;
+    }
 
     if ( (i< count -1) && (indices[i]+block_lengths[i] != indices[i+1]) )
       contiguous=false;
@@ -481,19 +590,21 @@ int Datatype::create_hindexed(int count, const int* block_lengths, const MPI_Ain
   bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
-  if(count>0){
-    lb=indices[0] + old_type->lb();
-    ub=indices[0] + block_lengths[0]*old_type->ub();
-  }
+  bool first_block = true;
   for (int i = 0; i < count; i++) {
     if (block_lengths[i] < 0)
       return MPI_ERR_ARG;
     size += block_lengths[i];
 
-    if(indices[i]+old_type->lb()<lb)
-      lb = indices[i]+old_type->lb();
-    if(indices[i]+block_lengths[i]*old_type->ub()>ub)
-      ub = indices[i]+block_lengths[i]*old_type->ub();
+    if (block_lengths[i] > 0) {
+      const MPI_Aint block_lb = indices[i]+old_type->lb();
+      const MPI_Aint block_ub = indices[i]+(block_lengths[i]-1)*old_type->get_extent()+old_type->ub();
+      if (first_block || block_lb < lb)
+        lb = block_lb;
+      if (first_block || block_ub > ub)
+        ub = block_ub;
+      first_block = false;
+    }
 
     if ((i < count - 1) && (indices[i] + static_cast<MPI_Aint>(old_type->size()) * block_lengths[i] != indices[i + 1]))
       contiguous=false;
@@ -516,10 +627,7 @@ int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint*
   size = 0;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
-  if(count>0){
-    lb=indices[0] + old_types[0]->lb();
-    ub=indices[0] + block_lengths[0]*old_types[0]->ub();
-  }
+  bool first_block = true;
   bool forced_lb=false;
   bool forced_ub=false;
   for (int i = 0; i < count; i++) {
@@ -538,10 +646,15 @@ int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint*
       forced_ub=true;
     }
 
-    if (not forced_lb && indices[i] + old_types[i]->lb() < lb)
-      lb = indices[i];
-    if (not forced_ub && indices[i] + block_lengths[i] * old_types[i]->ub() > ub)
-      ub = indices[i]+block_lengths[i]*old_types[i]->ub();
+    if (block_lengths[i] > 0 && old_types[i]->size() > 0) {
+      const MPI_Aint block_lb = indices[i] + old_types[i]->lb();
+      const MPI_Aint block_ub = indices[i] + (block_lengths[i]-1)*old_types[i]->get_extent()+old_types[i]->ub();
+      if (not forced_lb && (first_block || block_lb < lb))
+        lb = block_lb;
+      if (not forced_ub && (first_block || block_ub > ub))
+        ub = block_ub;
+      first_block = false;
+    }
 
     if ((i < count - 1) &&
         (indices[i] + static_cast<MPI_Aint>(old_types[i]->size() * block_lengths[i]) != indices[i + 1]))
@@ -614,7 +727,7 @@ int Datatype::create_subarray(int ndims, const int* array_of_sizes,
   unref(tmp);
 
   tmp = *newtype;
-  create_resized(tmp, 0, extent, newtype);
+  create_resized(tmp, 0, size * extent, newtype);
 
   unref(tmp);
   return MPI_SUCCESS;

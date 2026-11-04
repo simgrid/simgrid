@@ -62,7 +62,13 @@ int PMPI_Type_get_extent_x(MPI_Datatype datatype, MPI_Count * lb, MPI_Count * ex
 
 int PMPI_Type_get_true_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent)
 {
-  return PMPI_Type_get_extent(datatype, lb, extent);
+  CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, datatype)
+  CHECK_NULL(2, MPI_ERR_ARG, lb)
+  CHECK_NULL(3, MPI_ERR_ARG, extent)
+  MPI_Aint hi = 0;
+  datatype->true_bounds(lb, &hi);
+  *extent = hi - *lb;
+  return MPI_SUCCESS;
 }
 
 int PMPI_Type_get_true_extent_x(MPI_Datatype datatype, MPI_Count * lb, MPI_Count * extent)
@@ -227,7 +233,7 @@ int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
   if (ndims==1){
     simgrid::smpi::Datatype::create_contiguous( array_of_subsizes[0], oldtype, array_of_starts[0]*oldtype->get_extent(), newtype);
     return MPI_SUCCESS;
-  } else if (oldtype == MPI_DATATYPE_NULL || not oldtype->is_valid() ) {
+  } else if (oldtype == MPI_DATATYPE_NULL) {
     return MPI_ERR_TYPE;
   } else if (order != MPI_ORDER_FORTRAN && order != MPI_ORDER_C){
     return MPI_ERR_ARG;
