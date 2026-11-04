@@ -35,6 +35,14 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
     add_dependencies(tests transpose3_shm)
     target_link_libraries(transpose3_shm simgrid mtest_c)
     set_target_properties(transpose3_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS} -DUSE_WIN_ALLOCATE")
+
+  # dtpools-based rma tests
+  foreach(_t accfence1_dtp accpscw1_dtp epochtest_dtp lock_x_dt_dtp putpscw1_dtp fence_dtp)
+    add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
+    add_dependencies(tests ${_t})
+    target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+    target_link_libraries(${_t} simgrid mtest_c dtpools)
+  endforeach()
 endif()
 
 if (enable_testsuite_smpi_MPICH3 AND HAVE_RAW_CONTEXTS)
@@ -70,11 +78,3 @@ set(examples_src  ${examples_src}                                           PARE
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/testlist
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mcs-mutex.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/squelch.h    PARENT_SCOPE)
-
-# dtpools-based rma tests
-foreach(_t accfence1_dtp accpscw1_dtp epochtest_dtp lock_x_dt_dtp putpscw1_dtp fence_dtp)
-  add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
-  add_dependencies(tests ${_t})
-  target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
-  target_link_libraries(${_t} simgrid mtest_c dtpools)
-endforeach()

@@ -14,6 +14,14 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
     target_link_libraries(${file} simgrid mtest_c dtpools)
   endforeach()
 
+  # dtpools-based pt2pt tests
+  foreach(_t pingping_dtp)
+    add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
+    add_dependencies(tests ${_t})
+    target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+    target_link_libraries(${_t} simgrid mtest_c dtpools)
+  endforeach()
+
   if(HAVE_RAW_CONTEXTS AND (NOT enable_memcheck) AND (NOT enable_address_sanitizer) AND (NOT enable_undefined_sanitizer) AND (NOT enable_thread_sanitizer))
     set(facto "--cfg=contexts/factory:raw")
     set(name raw)
@@ -39,11 +47,3 @@ endforeach()
 
 set(examples_src  ${examples_src}                                        PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/testlist  PARENT_SCOPE)
-
-# dtpools-based pt2pt tests
-foreach(_t pingping_dtp)
-  add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
-  add_dependencies(tests ${_t})
-  target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
-  target_link_libraries(${_t} simgrid mtest_c dtpools)
-endforeach()
