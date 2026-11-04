@@ -30,7 +30,33 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestcxx.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mtest_datatype.h
-                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h                            PARENT_SCOPE)
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/coll/allred_dtp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/coll/bcast_dtp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/coll/op_coll_dtp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/coll/reduce_dtp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/dtpoolsconf.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/include/dtpools.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/include/dtpools_internal.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools_attr.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools_custom.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools_desc.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools_init_verify.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/dtpools/src/dtpools_misc.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mtest_common.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mtest_dtp.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/io/setview_zero.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/io/striped_hints.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/io/zero_count.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/pingping_dtp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/pipeline.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/precv_anysrc.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/precv_anysrc_exp.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/recvnull.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/rqfree.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt/send_tests.c
+                            PARENT_SCOPE)
 
 #build only once files used in each test (C version compiled here at root, F77 is in f77/util, and F90 in F90/util)
 
