@@ -114,7 +114,7 @@ static MPI_Datatype pair_types[] = {
     MPI_DOUBLE_INT
 };
 
-#define MAX_TYPE_SIZE 16
+#define MAX_TYPE_SIZE 32
 static void *in, *out, *sol;
 static void *in_d, *out_d;
 

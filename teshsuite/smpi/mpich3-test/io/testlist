@@ -28,3 +28,4 @@ external32-derived-dtype 1
 #i_types_with_zeros 2 mpiversion=3.1
 setview_zero 3
 striped_hints 1
+#zero_count 2 : opens argv[0], absent from the simulated disk

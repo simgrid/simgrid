@@ -18,7 +18,8 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
-                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtestcheck.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_common.c
+			     ${CMAKE_CURRENT_SOURCE_DIR}/util/mtestcheck.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_datatype_gen.c
                              ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist

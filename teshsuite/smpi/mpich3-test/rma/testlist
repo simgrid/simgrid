@@ -157,3 +157,9 @@ rget-testall 2
 ## out till be find a better way to test the original problem with
 ## MPI_Test.
 # nb_test 2 mpiversion=3.0 xfail=ticket1910
+accfence1_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+accpscw1_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+epochtest_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+lock_x_dt_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+putpscw1_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+fence_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024

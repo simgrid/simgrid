@@ -1143,6 +1143,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_tsan.cpp
   tools/simgrid-monkey
   tools/smpi/generate_smpi_defines.pl
+  tools/smpi/gen_mvapich2_selector.py
   tools/stack-cleaner/README
   tools/stack-cleaner/as
   tools/stack-cleaner/c++

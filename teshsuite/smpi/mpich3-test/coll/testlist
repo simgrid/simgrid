@@ -156,3 +156,8 @@ ibarrier 2 timeLimit=30
 #nbredscat 8   mpiversion=3.0
 #nbredscat3 8  mpiversion=3.0
 #nbredscatinter 8 mpiversion=3.0
+bcast_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+allred_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=100
+op_coll_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+reduce_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-count=1024
+bcast_noncontig 2

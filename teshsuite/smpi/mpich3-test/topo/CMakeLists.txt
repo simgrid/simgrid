@@ -5,7 +5,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file cartcreates cartshift1 cartsuball cartzero)
+  foreach(file cartcreates cartshift1 cartsuball cartzero dims0)
     # not compiled files
     # cartmap1 dgraph_unwgt dims1 dims2 dims3 dims4 distgraph1 graphcr2 graphcr graphmap1 neighb_coll topodup topotest
     add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)

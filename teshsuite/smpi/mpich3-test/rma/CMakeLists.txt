@@ -68,7 +68,7 @@ foreach(file  accfence2_am accfence2  allocmem   getgroup manyrma3 nullpscw
           win_large_shm win_zero wintest win_shared_zerobyte get-struct
           at_complete atomic_rmw_fop atomic_rmw_cas atomic_rmw_gacc atomic_get aint acc-pairtype manyget large-small-acc
           rget-unlock overlap_wins_rma lock_nested derived-acc-flush_local large-acc-flush_local  
-           nb_test   lock_contention_dt   
+          accfence1_dtp accpscw1_dtp epochtest_dtp lock_x_dt_dtp putpscw1_dtp fence_dtp nb_test   lock_contention_dt   
           racc_local_comp rput_local_comp win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
           wrma_flush_get rget-testall)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)

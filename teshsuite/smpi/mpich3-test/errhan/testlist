@@ -7,3 +7,5 @@ predef_eh 2
 #needs MPI_Error_class and such
 #errstring2 1
 #dynamic_errcode_predefined_errclass 1
+commcall_oldapi 2
+#errstring 2 : prints error strings, no "No Errors" output
