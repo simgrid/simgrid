@@ -6,7 +6,6 @@ sendself 1 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_INT arg=-sendcnt=1024 arg=
 sendall 4
 anyall 2
 eagerdt 2
-pingping 2
 pingping_dtp 2 arg=-seed=1 arg=-testsize=10 arg=-type=MPI_CHAR arg=-sendcnt=1024 arg=-recvcnt=1024
 pingping_dtp 2 arg=-seed=2 arg=-testsize=10 arg=-type=MPI_INT arg=-sendcnt=1024 arg=-recvcnt=1024
 pingping_dtp 2 arg=-seed=3 arg=-testsize=10 arg=-type=MPI_DOUBLE arg=-sendcnt=1024 arg=-recvcnt=1024
