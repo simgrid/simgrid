@@ -9,10 +9,7 @@
 #include "mtest_dtp.h"
 #include <stdio.h>
 
-#ifdef MULTI_TESTS
-#define run rma_lock_x_dt
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Test for streaming ACC-like operations with lock";

@@ -6,12 +6,12 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
-          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test3_am test4 test4_am test5_am test5 transpose1 transpose2 lockcontention2 wincall
+  foreach(file  accfence2_am accfence2  allocmem   getgroup manyrma3 nullpscw lockcontention lockopts contig_displ
+           putfidx  test1_am test1 test1_dt test2_am test2 test3 test3_am test4 test4_am test5_am test5 transpose1 transpose2 lockcontention2 wincall
           transpose3 transpose4 transpose5 transpose6 transpose7 window_creation selfrma locknull win_info
-          at_complete  acc-pairtype manyget large-small-acc lock_dt win_dynamic_acc fetch_and_op flush req_example rmanull rmazero badrma
+          at_complete  acc-pairtype manyget large-small-acc  win_dynamic_acc fetch_and_op flush req_example rmanull rmazero badrma
           lock_nested winname attrorderwin baseattrwin fkeyvalwin strided_acc_indexed strided_getacc_indexed compare_and_swap
-          lockall_dt lockall_dt_flushall lock_dt_flush lockall_dt_flush lockall_dt_flushlocalall lockall_dt_flushlocal  lock_dt_flushlocal
+                 
      strided_acc_onelock strided_get_indexed strided_putget_indexed contention_put contention_putget lockcontention3
      adlb_mimic1 lock_contention_dt acc-loc get_acc_local get_accumulate put_base put_bottom
      linked_list_bench_lock_all linked_list_bench_lock_excl manyrma2 pscw_ordering rma-contig get-struct
@@ -45,8 +45,8 @@ if (enable_testsuite_smpi_MPICH3 AND HAVE_RAW_CONTEXTS)
   endif()
 endif()
 
-foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfence1 getgroup manyrma3 nullpscw
-          putfence1 putfidx putpscw1 test1_am test1 test1_dt test2_am test2 test3 test5_am test5 transpose1 transpose2
+foreach(file  accfence2_am accfence2  allocmem   getgroup manyrma3 nullpscw
+           putfidx  test1_am test1 test1_dt test2_am test2 test3 test5_am test5 transpose1 transpose2
           transpose3 transpose6 transpose7 window_creation
           acc-loc adlb_mimic1 attrorderwin badrma baseattrwin compare_and_swap contention_put contention_putget
           contig_displ fence_shm fetchandadd_am fetchandadd fetchandadd_tree_am fetchandadd_tree fetch_and_op
@@ -59,8 +59,8 @@ foreach(file accfence1 accfence2_am accfence2 accpscw1 allocmem epochtest getfen
           win_dynamic_acc win_flavors win_info winname win_shared win_shared_noncontig win_shared_noncontig_put
           win_large_shm win_zero wintest win_shared_zerobyte get-struct
           at_complete atomic_rmw_fop atomic_rmw_cas atomic_rmw_gacc atomic_get aint acc-pairtype manyget large-small-acc
-          rget-unlock overlap_wins_rma lock_nested derived-acc-flush_local large-acc-flush_local lockall_dt lockall_dt_flushall
-          lockall_dt_flush nb_test lockall_dt_flushlocal lockall_dt_flushlocalall lock_contention_dt lock_dt lock_dt_flush lock_dt_flushlocal
+          rget-unlock overlap_wins_rma lock_nested derived-acc-flush_local large-acc-flush_local  
+           nb_test   lock_contention_dt   
           racc_local_comp rput_local_comp win_shared_create win_shared_put_flush_get win_shared_rma_flush_load
           wrma_flush_get rget-testall)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
@@ -70,3 +70,11 @@ set(examples_src  ${examples_src}                                           PARE
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/testlist
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mcs-mutex.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/squelch.h    PARENT_SCOPE)
+
+# dtpools-based rma tests
+foreach(_t accfence1_dtp accpscw1_dtp epochtest_dtp lock_x_dt_dtp putpscw1_dtp fence_dtp)
+  add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
+  add_dependencies(tests ${_t})
+  target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+  target_link_libraries(${_t} simgrid mtest_c dtpools)
+endforeach()

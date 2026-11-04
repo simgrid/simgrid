@@ -11,10 +11,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef MULTI_TESTS
-#define run rma_fence
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Get with Fence";

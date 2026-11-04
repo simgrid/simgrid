@@ -7,10 +7,7 @@
 #include "mtest_dtp.h"
 #include <stdio.h>
 
-#ifdef MULTI_TESTS
-#define run coll_reduce
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "A simple test of Reduce with all choices of root process";

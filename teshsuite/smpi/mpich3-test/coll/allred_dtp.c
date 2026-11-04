@@ -20,10 +20,7 @@ int run(const char *arg);
  */
 #define LONG long long
 
-#ifdef MULTI_TESTS
-#define run coll_allred
 int run(const char *arg);
-#endif
 
 struct int_test {
     int a;
@@ -665,7 +662,7 @@ static int test_allred(mtest_mem_type_e evenmem, mtest_mem_type_e oddmem)
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2)
     int num_complex_types = sizeof(complex_types) / sizeof(MPI_Datatype);
-    for (int i = 0; i < num_byte_types; i++) {
+    for (int i = 0; i < num_complex_types; i++) {
         MPI_Datatype mpi_type = complex_types[i];
         int category = CATEGORY_COMPLEX;
         if (mpi_type != MPI_DATATYPE_NULL) {
@@ -677,7 +674,7 @@ static int test_allred(mtest_mem_type_e evenmem, mtest_mem_type_e oddmem)
 
 #if MTEST_HAVE_MIN_MPI_VERSION(2,2) && defined(HAVE__BOOL)
     int num_logical_types = sizeof(logical_types) / sizeof(MPI_Datatype);
-    for (int i = 0; i < num_byte_types; i++) {
+    for (int i = 0; i < num_logical_types; i++) {
         MPI_Datatype mpi_type = logical_types[i];
         int category = CATEGORY_INT;
         if (mpi_type != MPI_DATATYPE_NULL) {

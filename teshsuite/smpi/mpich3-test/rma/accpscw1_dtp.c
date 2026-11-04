@@ -9,10 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef MULTI_TESTS
-#define run rma_accpscw1
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Accumulate/replace with Post/Start/Complete/Wait";

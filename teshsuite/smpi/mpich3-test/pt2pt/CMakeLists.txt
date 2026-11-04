@@ -5,7 +5,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-  foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_underflow inactivereq isendself isendrecv isendrecv_replace isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived cancelanysrc pingping pipeline pingping_dtp probenull
+  foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_underflow inactivereq isendself isendrecv isendrecv_replace isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived cancelanysrc pipeline probenull
           dtype_send greq1 probe-unexp rqstatus sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull many_isend manylmt recv_any sendself scancel scancel2 rcancel bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending rqfreeb pssend precv_anysrc precv_anysrc_exp probe_unexp recvnull rqfree send_tests waitany_null)
     # not compiled files: big_count_status mprobe
     # cancelrecv  icsend large_message pscancel     scancel_unmatch
@@ -28,7 +28,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
 endif()
 
 foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_underflow inactivereq isendrecv isendrecv_replace
-	  isendself isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived pingping pingping_dtp probenull
+	  isendself isendirecv isendselfprobe issendselfcancel large_tag multi_psend_derived probenull
           probe-unexp sendall sendflood sendrecv1 sendrecv2 sendrecv3 waitany-null waittestnull
           big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending
           cancelrecv cancelanysrc dtype_send greq1 icsend large_message pscancel pssend
@@ -39,3 +39,11 @@ endforeach()
 
 set(examples_src  ${examples_src}                                        PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/testlist  PARENT_SCOPE)
+
+# dtpools-based pt2pt tests
+foreach(_t pingping_dtp)
+  add_executable(${_t} EXCLUDE_FROM_ALL ${_t}.c)
+  add_dependencies(tests ${_t})
+  target_include_directories(${_t} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools/include" "${CMAKE_CURRENT_SOURCE_DIR}/../dtpools")
+  target_link_libraries(${_t} simgrid mtest_c dtpools)
+endforeach()

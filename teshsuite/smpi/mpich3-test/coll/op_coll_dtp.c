@@ -9,10 +9,7 @@
 #include "mtest_dtp.h"
 #include <stdio.h>
 
-#ifdef MULTI_TESTS
-#define run coll_op_coll
 int run(const char *arg);
-#endif
 
 #define COUNT (10)
 

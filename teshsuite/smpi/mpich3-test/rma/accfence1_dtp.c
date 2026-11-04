@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <assert.h>
 
+int run(const char *arg);
 #ifdef MULTI_TESTS
 #define run rma_accfence1
-int run(const char *arg);
 #endif
 
 /*

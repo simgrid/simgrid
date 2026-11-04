@@ -25,10 +25,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef MULTI_TESTS
-#define run rma_epochtest
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Put with Fences used to separate epochs";

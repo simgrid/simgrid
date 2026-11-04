@@ -9,10 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef MULTI_TESTS
-#define run rma_putpscw1
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Put with Post/Start/Complete/Wait";

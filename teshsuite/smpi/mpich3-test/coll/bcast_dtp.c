@@ -9,10 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#ifdef MULTI_TESTS
-#define run coll_bcast
 int run(const char *arg);
-#endif
 
 /*
 static char MTEST_Descrip[] = "Test of broadcast with various roots and datatypes";
