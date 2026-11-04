@@ -14,7 +14,7 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   endforeach()
 endif()
 
-foreach(file cartcreates cartshift1 cartsuball cartzero cartmap1 dgraph_unwgt dims1 dims2 dims3 dims4 dims5 distgraph1
+foreach(file cartcreates cartshift1 cartsuball cartzero cartmap1 dgraph_unwgt dims0 dims1 dims2 dims3 dims4 dims5 distgraph1
         graphcr2 graphcr graphmap1 neighb_coll topodup topotest)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
