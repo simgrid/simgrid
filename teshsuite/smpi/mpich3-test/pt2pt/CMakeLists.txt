@@ -41,6 +41,7 @@ foreach(file anyall bottom eagerdt huge_anysrc huge_dupcomm huge_ssend huge_unde
           big_count_status bsend1 bsend2 bsend3 bsend4 bsend5 bsendalign bsendfrag bsendpending
           cancelrecv cancelanysrc dtype_send greq1 icsend large_message pscancel pssend
 	  rcancel rqfreeb rqstatus scancel2 scancel sendself many_isend manylmt mprobe recv_any scancel_unmatch
+          pipeline precv_anysrc precv_anysrc_exp recvnull rqfree send_tests pingping_dtp
 )
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()

@@ -195,5 +195,9 @@ set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/scattern.c
  ${CMAKE_CURRENT_SOURCE_DIR}/scatterv.c
  ${CMAKE_CURRENT_SOURCE_DIR}/uoplong.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/allred_dtp.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/bcast_dtp.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/op_coll_dtp.c
+ ${CMAKE_CURRENT_SOURCE_DIR}/reduce_dtp.c
   PARENT_SCOPE)
 set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/testlist  PARENT_SCOPE)

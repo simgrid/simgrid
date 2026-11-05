@@ -18,7 +18,7 @@ if (enable_testsuite_smpi_MPICH3 AND HAVE_RAW_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-io-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()
 
-  foreach(file async_any async bigtype external32-derived-dtype getextent hindexed_io rdwrord rdwrzero resized2 resized setinfo setviewcur simple_collective userioerr i_aggregation1 i_aggregation2 i_bigtype i_coll_test i_darray_read i_hindexed i_hindexed_io i_noncontig i_noncontig_coll2 i_noncontig_coll i_rdwrord i_setviewcur i_types_with_zeros )
+  foreach(file async_any async bigtype external32-derived-dtype getextent hindexed_io rdwrord rdwrzero resized2 resized setinfo setviewcur simple_collective userioerr i_aggregation1 i_aggregation2 i_bigtype i_coll_test i_darray_read i_hindexed i_hindexed_io i_noncontig i_noncontig_coll2 i_noncontig_coll i_rdwrord i_setviewcur i_types_with_zeros setview_zero striped_hints zero_count)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 
