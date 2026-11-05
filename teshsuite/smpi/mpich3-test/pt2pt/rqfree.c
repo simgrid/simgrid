@@ -135,6 +135,7 @@ int main(int argc, char **argv) {
     MTest_Init(&argc, &argv);
     int _errs = run(NULL);
     MTest_Finalize(_errs);
+    MPI_Finalize();
     return 0;
 }
 #endif

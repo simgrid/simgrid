@@ -339,19 +339,10 @@ MPI_Request Request::ibsend(const void *buf, int count, MPI_Datatype datatype, i
 
 MPI_Request Request::isend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
-  if (dst != MPI_PROC_NULL) {
-    simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(comm->group()->actor(dst)));
-    if (process == nullptr) {
-      XBT_WARN("Rank %d is trying to send data to rank %d, which is no longer available (already finalized). "
-               "Dropping the send.",
-               comm->group()->rank(simgrid::s4u::this_actor::get_pid()), comm->group()->rank(comm->group()->actor(dst)));
-      return MPI_REQUEST_NULL;
-    }
-  }
   auto* request = new Request(buf == MPI_BOTTOM ? nullptr : buf, count, datatype, simgrid::s4u::this_actor::get_pid(),
                               dst != MPI_PROC_NULL ? comm->group()->actor(dst) : MPI_PROC_NULL, tag, comm,
                               MPI_REQ_NON_PERSISTENT | MPI_REQ_ISEND | MPI_REQ_SEND);
-  if (dst != MPI_PROC_NULL)
+  if(dst != MPI_PROC_NULL)
     request->start();
   return request;
 }
@@ -560,12 +551,12 @@ void Request::start()
     XBT_DEBUG("recv simcall posted");
   } else { /* the RECV flag was not set, so this is a send */
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
-    if (process == nullptr) {
-      XBT_WARN("Rank %d (pid:%ld) is trying to send data to rank %d (pid:%ld), which is no "
-               "longer available (already finalized). Dropping the send.",
+    if (process == nullptr)
+      simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+    xbt_assert(process,
+               "Rank %d (pid:%ld) is trying to send data to rank %d (pid:%ld), which is not to be found. Is the "
+               "receiving rank gone??",
                comm_->group()->rank(src_), src_, comm_->group()->rank(dst_), dst_);
-      return;
-    }
     if (TRACE_smpi_view_internals())
       TRACE_smpi_send(src_, src_, dst_, tag_, size_);
     this->print_request("New send");
