@@ -48,6 +48,8 @@ public:
 
   void reset();
 
+  /** Fired when a started exec moves to another host. The exec is still on its source host (see get_host()) when the
+   *  signal is fired, and the second parameter is the destination host. */
   static xbt::signal<void(ExecImpl const&, s4u::Host*)> on_migration;
 };
 } // namespace simgrid::kernel::activity

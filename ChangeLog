@@ -11,6 +11,9 @@ S4U:
    left in the queue, where a later put() or get() could match it (writing in a variable that was gone, in the case of
    get), and canceling it raised a CancelException in the canceling actor.
  - Host energy plugin: fix idle energy accounting for parallel executions.
+ - Fix the accounting of execs migrating in or out of a VM (with Exec::set_host() or Actor::set_host()). The source VM
+   kept loading its PM (wasting energy) after the exec left, and the destination VM did not get any core of its PM to
+   run it, which crashed the simulation. Migrating a suspended exec does not resume it anymore. (GitHub #297)
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,

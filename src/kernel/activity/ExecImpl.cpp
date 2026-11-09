@@ -209,6 +209,8 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     new_action->set_activity(this);
     new_action->set_sharing_penalty(old_action->get_sharing_penalty());
     new_action->set_user_bound(old_action->get_user_bound());
+    if (old_action->is_suspended()) // Do not resume a suspended exec by migrating it
+      new_action->suspend();
 
     old_action->set_activity(nullptr);
     old_action->cancel();
@@ -216,7 +218,11 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     this->model_action_ = new_action;
   }
 
+  // Callbacks are fired before the host list is updated, so that they can still find the source host with get_host()
   on_migration(*this, to);
+  // Also update the host list when the migration comes from Actor::set_host(), not only from Exec::set_host(). Without
+  // this, the exec would still be attached to its source host, and the end-of-execution callbacks would target it.
+  set_host(to);
   return this;
 }
 

@@ -61,7 +61,11 @@ public:
   void update_action_weight();
 
   void add_active_exec() { active_execs_++; }
-  void remove_active_exec() { active_execs_--; }
+  void remove_active_exec()
+  {
+    xbt_assert(active_execs_ > 0, "VM %s: removing an exec while none is accounted as active", get_cname());
+    active_execs_--;
+  }
 
   void start_migration();
   void end_migration();

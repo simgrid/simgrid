@@ -17,6 +17,7 @@
 #include "src/simgrid/sg_config.hpp"
 
 #include <numeric>
+#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile across hosts");
 
@@ -68,63 +69,100 @@ static void host_onoff(s4u::Host const& host)
   }
 }
 
-static void add_active_exec(s4u::Exec const& task)
+/* Accounting of the execs running within each VM, used to compute the VM's impact on its PM.
+ *
+ * An exec counts for its amount of threads in the VM it runs on, while it is started and not suspended. We remember
+ * where each exec is accounted so that every operation below is idempotent: the signals used to maintain this
+ * accounting are not always fired in a convenient order (an exec started in the suspended state is suspended before
+ * being started; an exec can be suspended both by its actor and directly; an actor migration moves its execs), and a
+ * mismatch would make the counter of the VM drift or underflow. */
+namespace {
+struct AccountedExec {
+  VirtualMachineImpl* vm;
+  int thread_count;
+};
+std::unordered_map<const activity::ExecImpl*, AccountedExec> accounted_execs;
+
+const activity::ExecImpl* get_exec_impl(s4u::Exec const& exec)
 {
-  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
-  if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    for (int i = 1; i <= task.get_thread_count(); i++)
-      vm_impl->add_active_exec();
-    vm_impl->update_action_weight();
-  }
+  return static_cast<const activity::ExecImpl*>(exec.get_impl());
 }
 
-static void remove_active_exec(s4u::Exec const& exec)
+void account_exec(const activity::ExecImpl* exec, const s4u::Host* host)
 {
-  if (not exec.is_assigned())
+  const auto* vm = dynamic_cast<const s4u::VirtualMachine*>(host);
+  if (vm == nullptr || accounted_execs.find(exec) != accounted_execs.end())
     return;
-  const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec.get_host());
-  if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    for (int i = 1; i <= exec.get_thread_count(); i++)
-      vm_impl->remove_active_exec();
-    vm_impl->update_action_weight();
-  }
-}
-
-static s4u::VirtualMachine* get_vm_from_activity(s4u::Activity const& act)
-{
-  const auto* exec = dynamic_cast<kernel::activity::ExecImpl const*>(act.get_impl());
-  return exec != nullptr ? dynamic_cast<s4u::VirtualMachine*>(exec->get_host()) : nullptr;
-}
-
-static void add_active_activity(s4u::Activity const& act)
-{
-  const s4u::VirtualMachine* vm = get_vm_from_activity(act);
-  if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
+  VirtualMachineImpl* vm_impl = vm->get_vm_impl();
+  for (int i = 0; i < exec->get_thread_count(); i++)
     vm_impl->add_active_exec();
-    vm_impl->update_action_weight();
-  }
+  vm_impl->update_action_weight();
+  accounted_execs.try_emplace(exec, AccountedExec{vm_impl, exec->get_thread_count()});
 }
 
-static void remove_active_activity(s4u::Activity const& act)
+void unaccount_exec(const activity::ExecImpl* exec)
 {
-  const s4u::VirtualMachine* vm = get_vm_from_activity(act);
-  if (vm != nullptr) {
-    VirtualMachineImpl* vm_impl = vm->get_vm_impl();
+  auto it = accounted_execs.find(exec);
+  if (it == accounted_execs.end())
+    return;
+  auto [vm_impl, thread_count] = it->second;
+  accounted_execs.erase(it);
+  for (int i = 0; i < thread_count; i++)
     vm_impl->remove_active_exec();
-    vm_impl->update_action_weight();
-  }
+  vm_impl->update_action_weight();
 }
+
+void on_exec_start(s4u::Exec const& exec)
+{
+  const activity::ExecImpl* impl = get_exec_impl(exec);
+  // A starting exec cannot be accounted yet. If it is, the entry is stale: it belongs to a previous exec that was freed
+  // without firing on_completion (when its actor was killed) and whose address got reused. Reclaim it.
+  unaccount_exec(impl);
+  if (not exec.is_suspended()) // An exec started in the suspended state will be accounted when resumed
+    account_exec(impl, exec.get_host());
+}
+
+void on_exec_completion(s4u::Exec const& exec)
+{
+  unaccount_exec(get_exec_impl(exec));
+}
+
+void on_exec_suspend(s4u::Exec const& exec)
+{
+  unaccount_exec(get_exec_impl(exec));
+}
+
+void on_exec_resume(s4u::Exec const& exec)
+{
+  // Exec::start() may resume an exec that is not started yet: on_exec_start() will account it if needed
+  if (exec.get_state() == s4u::Activity::State::STARTED)
+    account_exec(get_exec_impl(exec), exec.get_host());
+}
+
+void on_exec_migration(activity::ExecImpl const& exec, s4u::Host* to)
+{
+  unaccount_exec(&exec);
+  // A suspended exec will be accounted on its new host when resumed. The model action was already moved to the new
+  // host when this signal is fired, keeping its suspension state.
+  if (exec.model_action_ == nullptr || not exec.model_action_->is_suspended())
+    account_exec(&exec, to);
+}
+
+/* Forget the execs accounted on a VM that is being destroyed, to not touch its counter afterward */
+void forget_accounted_execs(const VirtualMachineImpl* vm_impl)
+{
+  std::erase_if(accounted_execs, [vm_impl](auto const& entry) { return entry.second.vm == vm_impl; });
+}
+} // namespace
 
 VMModel::VMModel(const std::string& name) : HostModel(name)
 {
   s4u::Host::on_onoff_cb(host_onoff);
-  s4u::Exec::on_start_cb(add_active_exec);
-  s4u::Exec::on_completion_cb(remove_active_exec);
-  s4u::Exec::on_resume_cb(add_active_activity);
-  s4u::Exec::on_suspend_cb(remove_active_activity);
+  s4u::Exec::on_start_cb(on_exec_start);
+  s4u::Exec::on_completion_cb(on_exec_completion);
+  s4u::Exec::on_suspend_cb(on_exec_suspend);
+  s4u::Exec::on_resume_cb(on_exec_resume);
+  activity::ExecImpl::on_migration.connect(on_exec_migration);
 }
 
 double VMModel::next_occurring_event(double now)
@@ -218,6 +256,8 @@ void VirtualMachineImpl::vm_destroy()
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
   if (auto iter = find(allVms_.begin(), allVms_.end(), piface_); iter != allVms_.end())
     allVms_.erase(iter);
+
+  forget_accounted_execs(this);
 
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED bool ret = action_->unref();
