@@ -139,6 +139,30 @@ static void runner()
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
 
+  // ========= Idle period directly followed by a ptask =========
+  // The energy is not queried between the sleep and the ptask, so the plugin must account for the idle period
+  // on both hosts by itself when the ptask starts.
+  start = sg4::Engine::get_clock();
+  XBT_INFO("Sleep for 10 seconds, then run a task of %.0E flops on two hosts.", flopAmount);
+  sg4::this_actor::sleep_for(10);
+  std::vector<double> cpu_amounts6{flopAmount, flopAmount};
+  std::vector<double> com_amounts6{0, 0, 0, 0};
+  sg4::this_actor::parallel_execute(hosts, cpu_amounts6, com_amounts6);
+
+  new_energy_host1 = sg_host_get_consumed_energy(host1);
+  new_energy_host2 = sg_host_get_consumed_energy(host2);
+  XBT_INFO(
+      "Task done (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
+
+  old_energy_host1 = new_energy_host1;
+  old_energy_host2 = new_energy_host2;
+
   // ========= A new ptask with computation and a timeout =========
   start = sg4::Engine::get_clock();
   XBT_INFO("Run a task with computation on two hosts and a timeout of 20s.");

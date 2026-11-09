@@ -509,8 +509,7 @@ void sg_host_energy_plugin_init()
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
   simgrid::s4u::Exec::on_start_cb([](simgrid::s4u::Exec const& activity) {
-    if (activity.get_host_number() == 1) { // We only run on one host
-      simgrid::s4u::Host* host = activity.get_host();
+    for (simgrid::s4u::Host* host : activity.get_impl()->get_hosts()) {
       if (const auto* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host))
         host = vm->get_pm();
       xbt_assert(host != nullptr);

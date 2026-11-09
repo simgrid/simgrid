@@ -82,6 +82,15 @@ def runner():
     this_actor.parallel_execute(hosts, [0, 0], [0, com_amount, com_amount, 0])
     reporter.report(f"Task done (duration: {Engine.clock - start:.2f} s).")
 
+    # ========= Idle period directly followed by a ptask =========
+    # The energy is not queried between the sleep and the ptask, so the plugin must account for the idle period
+    # on both hosts by itself when the ptask starts.
+    start = Engine.clock
+    this_actor.info(f"Sleep for 10 seconds, then run a task of {flop_amount:.0E} flops on two hosts.")
+    this_actor.sleep_for(10)
+    this_actor.parallel_execute(hosts, [flop_amount, flop_amount], [0, 0, 0, 0])
+    reporter.report(f"Task done (duration: {Engine.clock - start:.2f} s).")
+
     # ========= A new ptask with computation and a timeout =========
     start = Engine.clock
     this_actor.info("Run a task with computation on two hosts and a timeout of 20s.")
