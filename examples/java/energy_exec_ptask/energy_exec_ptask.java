@@ -134,6 +134,30 @@ class runner extends Actor {
     old_energy_host1 = new_energy_host1;
     old_energy_host2 = new_energy_host2;
 
+    // ========= Idle period directly followed by a ptask =========
+    // The energy is not queried between the sleep and the ptask, so the plugin must account for the idle period
+    // on both hosts by itself when the ptask starts.
+    start = Engine.get_clock();
+    Engine.info("Sleep for 10 seconds, then run a task of %.0E flops on two hosts.", flopAmount);
+    sleep_for(10);
+    double[] cpu_amounts6 = new double[] {flopAmount, flopAmount};
+    double[] com_amounts6 = new double[] {0, 0, 0, 0};
+    parallel_execute(hosts, cpu_amounts6, com_amounts6);
+
+    new_energy_host1 = host1.get_consumed_energy();
+    new_energy_host2 = host2.get_consumed_energy();
+    Engine.info("Task done (duration: %.2f s).\n"
+                    + "[%s] Current peak speed=%.0E flop/s; "
+                    + "Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+                    + "[%s] Current peak speed=%.0E flop/s; "
+                    + "Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
+                Engine.get_clock() - start, host1.get_name(), host1.get_speed(), (new_energy_host1 - old_energy_host1),
+                host1.get_consumed_energy(), host2.get_name(), host2.get_speed(), (new_energy_host2 - old_energy_host2),
+                host2.get_consumed_energy());
+
+    old_energy_host1 = new_energy_host1;
+    old_energy_host2 = new_energy_host2;
+
     // ========= A new ptask with computation and a timeout =========
     start = Engine.get_clock();
     Engine.info("Run a task with computation on two hosts and a timeout of 20s.");

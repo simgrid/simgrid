@@ -10,6 +10,7 @@ S4U:
  - MessageQueue::get(timeout) and MessageQueue::put(timeout) now cancel the message when the timeout fires. It was
    left in the queue, where a later put() or get() could match it (writing in a variable that was gone, in the case of
    get), and canceling it raised a CancelException in the canceling actor.
+ - Host energy plugin: fix idle energy accounting for parallel executions.
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,
