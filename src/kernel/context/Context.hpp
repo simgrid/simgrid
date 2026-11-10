@@ -67,7 +67,7 @@ public:
   virtual ~Context();
 
   bool is_maestro() const { return is_maestro_; }
-  void operator()() const { code_(); }
+  void operator()() const;
   bool has_code() const { return static_cast<bool>(code_); }
   actor::ActorImpl* get_actor() const { return this->actor_; }
 
