@@ -20,7 +20,7 @@ static void computation_fun(double size)
   simgrid::s4u::this_actor::execute(size);
   double end = simgrid::s4u::Engine::get_clock();
 
-  if (double duration = end - begin; 0.1 - duration > 0.001) {
+  if (double duration = end - begin; std::abs(0.1 - duration) > 0.001) {
     XBT_INFO("FAILED TEST: %s with %.4g load (%.0f flops) took %.4fs instead of 0.1s",
              simgrid::s4u::this_actor::get_name().c_str(), (size / FLOP_AMOUNT), size, duration);
     failed_test++;
