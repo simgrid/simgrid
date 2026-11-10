@@ -1,0 +1,8 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/vm-speed-profile ${platfdir}/cluster_multi.xml --log=root.fmt=%m%n --log=host_energy.thres:warning
+> Tasks on a PM at full speed: tasks at 1.0000 and 0.8000 Gf/s, PM at 1.8000 W
+> Tasks on a PM at half speed: tasks at 0.5000 and 0.5000 Gf/s, PM at 1.0000 W
+> Tasks in a VM at full speed: tasks at 1.0000 and 0.8000 Gf/s, PM at 1.8000 W
+> Tasks in a VM at half speed: tasks at 0.5000 and 0.5000 Gf/s, PM at 1.0000 W
+> Passed

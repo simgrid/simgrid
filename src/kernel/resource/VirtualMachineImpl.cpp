@@ -465,8 +465,10 @@ void VirtualMachineImpl::remove_active_exec(int thread_count, double bound)
 double VirtualMachineImpl::get_active_load() const
 {
   // A bounded exec uses the amount of cores given by its bound, and never more than one core per thread. The bounds
-  // are converted with the current speed of the PM, which may have changed since the exec started.
-  double core_speed = physical_host_->get_speed();
+  // are converted with the current speed of the PM, which may have changed since the exec started (with DVFS or a
+  // speed profile, which get_speed() does not account for).
+  auto* cpu         = physical_host_->get_cpu();
+  double core_speed = cpu->get_speed(1.0) * cpu->get_speed_ratio();
   double load       = active_threads_;
   for (auto const& [threads, bound] : active_bounded_)
     load += std::min(static_cast<double>(threads), bound / core_speed);
