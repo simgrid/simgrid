@@ -158,8 +158,23 @@ void forget_accounted_execs(const VirtualMachineImpl* vm_impl)
 }
 } // namespace
 
+/* When the speed of a PM changes (with DVFS or a speed profile), its VMs must follow. The PM already updated the bound
+ * of all its actions, including the ones representing its VMs, which therefore lost the bound computed from the execs
+ * they contain. */
+static void on_pm_speed_change(s4u::Host const& host)
+{
+  if (dynamic_cast<const s4u::VirtualMachine*>(&host) != nullptr)
+    return; // The speed of a vCPU changes because of its PM, from below
+  for (auto* vm : VirtualMachineImpl::allVms_) {
+    if (vm->get_pm() != &host)
+      continue;
+    vm->get_vm_impl()->on_physical_host_speed_change();
+  }
+}
+
 VMModel::VMModel(const std::string& name) : HostModel(name)
 {
+  s4u::Host::on_speed_change_cb(on_pm_speed_change);
   s4u::Host::on_onoff_cb(host_onoff);
   s4u::Exec::on_start_cb(on_exec_start);
   activity::ExecImpl::on_termination.connect(on_exec_termination);
@@ -457,6 +472,12 @@ double VirtualMachineImpl::get_active_load() const
   for (double bound : active_bounds_)
     load += std::min(1.0, bound / core_speed);
   return load;
+}
+
+void VirtualMachineImpl::on_physical_host_speed_change()
+{
+  piface_->get_cpu()->reset_vcpu(physical_host_->get_cpu()); // The execs of the VM run at the new speed
+  update_action_weight();                                    // The VM loads its PM according to the new speed
 }
 
 void VirtualMachineImpl::update_action_weight()

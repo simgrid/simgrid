@@ -64,6 +64,8 @@ public:
   void set_bound(double bound);
 
   void update_action_weight();
+  /** Follow the speed of the PM, after it changed */
+  void on_physical_host_speed_change();
 
   /** Account an exec running in this VM. An exec with a positive bound uses a fraction of a core only, and is
    *  accounted with its bound (in flop/s). Others use a full core per thread. */

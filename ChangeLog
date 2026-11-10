@@ -24,6 +24,8 @@ S4U:
    running at the speed of the former PM, and the VM competed on its new PM as if it contained a single exec. Moving a
    VM with set_pm() also accounted the energy of both PMs with their new load since their previous update. The
    expected output of the vm-live-migration test changed accordingly. (GitHub #207)
+ - VMs now follow the speed changes of their PM (with DVFS or a speed profile). Their execs kept running at the former
+   speed of the PM, and the VMs loaded their PM as if their execs were not bounded.
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,
