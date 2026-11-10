@@ -96,8 +96,7 @@ void account_exec(const activity::ExecImpl* exec, const s4u::Host* host)
   if (vm == nullptr || accounted_execs.find(exec) != accounted_execs.end())
     return;
   VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-  // The bound of multi-threaded execs is ignored by the CPU models (see ExecImpl::start()), so ignore it here too
-  double bound = exec->get_thread_count() == 1 ? exec->get_bound() : 0.0;
+  double bound                = exec->get_bound();
   vm_impl->add_active_exec(exec->get_thread_count(), bound);
   vm_impl->update_action_weight();
   accounted_execs.try_emplace(exec, AccountedExec{vm_impl, exec->get_thread_count(), bound});
@@ -227,10 +226,10 @@ double VMModel::next_occurring_event(double now)
   return -1.0;
 }
 
-Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
+Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int thread_count, double bound)
 {
   auto* cpu = host->get_cpu();
-  return cpu->execution_start(thread_count * flops_amount, thread_count, -1);
+  return cpu->execution_start(thread_count * flops_amount, thread_count, bound);
 }
 
 /************
@@ -444,7 +443,7 @@ void VirtualMachineImpl::set_bound(double bound)
 void VirtualMachineImpl::add_active_exec(int thread_count, double bound)
 {
   if (bound > 0)
-    active_bounds_.insert(bound);
+    active_bounded_.insert({thread_count, bound});
   else
     active_threads_ += thread_count;
 }
@@ -452,10 +451,10 @@ void VirtualMachineImpl::add_active_exec(int thread_count, double bound)
 void VirtualMachineImpl::remove_active_exec(int thread_count, double bound)
 {
   if (bound > 0) {
-    auto it = active_bounds_.find(bound);
-    xbt_assert(it != active_bounds_.end(), "VM %s: removing a bounded exec that is not accounted as active",
+    auto it = active_bounded_.find({thread_count, bound});
+    xbt_assert(it != active_bounded_.end(), "VM %s: removing a bounded exec that is not accounted as active",
                get_cname());
-    active_bounds_.erase(it);
+    active_bounded_.erase(it);
   } else {
     xbt_assert(active_threads_ >= static_cast<unsigned>(thread_count),
                "VM %s: removing more threads than accounted as active", get_cname());
@@ -465,12 +464,12 @@ void VirtualMachineImpl::remove_active_exec(int thread_count, double bound)
 
 double VirtualMachineImpl::get_active_load() const
 {
-  // A bounded exec uses the fraction of a core given by its bound, and never more than one core. The bounds are
-  // converted with the current speed of the PM, which may have changed since the exec started.
+  // A bounded exec uses the amount of cores given by its bound, and never more than one core per thread. The bounds
+  // are converted with the current speed of the PM, which may have changed since the exec started.
   double core_speed = physical_host_->get_speed();
   double load       = active_threads_;
-  for (double bound : active_bounds_)
-    load += std::min(1.0, bound / core_speed);
+  for (auto const& [threads, bound] : active_bounded_)
+    load += std::min(static_cast<double>(threads), bound / core_speed);
   return load;
 }
 
@@ -482,22 +481,24 @@ void VirtualMachineImpl::on_physical_host_speed_change()
 
 void VirtualMachineImpl::update_action_weight()
 {
-  /* The VM competes on its PM like the execs it contains, up to its vCPU amount: each exec weighs for one competitor
-   * in the sharing, whatever its bound.
+  /* The VM competes on its PM like the execs it contains, up to its vCPU amount: each exec weighs for its amount of
+   * threads in the sharing, whatever its bound.
    *
    * This is only an approximation of running the execs directly on the PM, as a single variable cannot represent a
    * mix of bounded and unbounded execs. The share that a bounded exec does not use goes to the whole VM, instead of
    * being split between all competitors of the PM. For example, on a PM of 2 cores, a VM running an unbounded exec and
    * an exec bounded to half a core competes with an exec of the PM: the unbounded exec of the VM gets 5/6 of a core
    * and the exec of the PM 2/3, while they would both get 3/4 of a core on the PM. */
-  double weight =
-      std::min(static_cast<double>(active_threads_ + active_bounds_.size()), static_cast<double>(get_core_amount()));
+  double weight = active_threads_;
+  for (auto const& [threads, bound] : active_bounded_)
+    weight += threads;
+  weight = std::min(weight, static_cast<double>(get_core_amount()));
   /* But the VM cannot use more cores than what its execs need: a bounded exec only needs a fraction of a core. */
   double load = std::min(get_active_load(), static_cast<double>(get_core_amount()));
 
   XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %g and its bound to %g cores (#unbounded threads: "
             "%u, #bounded execs: %zu)",
-            this, weight, load, active_threads_, active_bounds_.size());
+            this, weight, load, active_threads_, active_bounded_.size());
 
   if (weight > 0)
     action_->set_sharing_penalty(1. / weight);

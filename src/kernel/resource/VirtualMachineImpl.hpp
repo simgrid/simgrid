@@ -67,8 +67,8 @@ public:
   /** Follow the speed of the PM, after it changed */
   void on_physical_host_speed_change();
 
-  /** Account an exec running in this VM. An exec with a positive bound uses a fraction of a core only, and is
-   *  accounted with its bound (in flop/s). Others use a full core per thread. */
+  /** Account an exec running in this VM. An exec uses a core per thread, or less if it has a positive bound (in flop/s,
+   *  for all its threads). */
   void add_active_exec(int thread_count, double bound);
   void remove_active_exec(int thread_count, double bound);
   /** Amount of cores (possibly fractional) needed by the execs running in this VM, regardless of its own core amount */
@@ -82,8 +82,8 @@ public:
 private:
   s4u::VirtualMachine* piface_ = nullptr;
   Action* action_            = nullptr;
-  unsigned int active_threads_ = 0;     // threads of the active execs that are not bounded
-  std::multiset<double> active_bounds_; // bounds of the active execs that are bounded
+  unsigned int active_threads_ = 0;                      // threads of the active execs that are not bounded
+  std::multiset<std::pair<int, double>> active_bounded_; // threads and bound of the active execs that are bounded
   s4u::Host* physical_host_;
   unsigned int core_amount_;
   double user_bound_                   = std::numeric_limits<double>::max();
@@ -105,7 +105,7 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};
-  Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) override;
+  Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count, double bound) override;
   Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                            const double* bytes_amount, double rate) override
   {

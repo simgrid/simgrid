@@ -39,7 +39,10 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) override { return nullptr; }
+  Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count, double bound) override
+  {
+    return nullptr;
+  }
   CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                               const double* bytes_amount, double rate) override;
 };
@@ -127,7 +130,6 @@ class L07Action : public CpuAction {
   const double* communication_amount_; /* pointer to the data that lives in s4u action -- do not free unless if
                                         * free_arrays */
   double latency_;
-  double rate_;
 
   friend CpuAction* CpuL07::execution_start(double size, double user_bound);
   friend CpuAction* CpuL07::sleep(double duration);
@@ -149,6 +151,9 @@ class L07Action : public CpuAction {
    * Return MAX_DOUBLE if latency is 0 (or ptask doesn't have any communication)
    */
   double calculate_network_bound() const;
+  /** The amount of work that the user bound limits per second: the total amount of flops, or the total amount of bytes
+   *  if this action computes nothing */
+  double get_bounded_amount() const;
 
 public:
   L07Action() = delete;

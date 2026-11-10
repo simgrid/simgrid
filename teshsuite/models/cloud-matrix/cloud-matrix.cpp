@@ -23,7 +23,8 @@
  * cores, a VM A of 2 cores containing an unbounded task 'o' and a task 'b' bounded to half a core, a VM B of 1 core
  * containing a task, an empty VM C of 1 core, 2 tasks on the PM, no task on the 'fast' PM, no event, and the tasks
  * get canceled at the end.
- * Task kinds: o (unbounded), b (bounded to 0.5 Gf/s), q (0.25 Gf/s), t (0.75 Gf/s), B (2 Gf/s, above the core speed).
+ * Task kinds: o (unbounded), b (bounded to 0.5 Gf/s), q (0.25 Gf/s), t (0.75 Gf/s), B (2 Gf/s, above the core speed),
+ * and with 2 threads: d (unbounded), h (bounded to 1.5 Gf/s in total), l (bounded to 0.5 Gf/s in total).
  *
  * To debug a scenario, give a part of its label as second parameter (or use the --filter option of cloud-matrix.py):
  * only the matching scenarios are run. Give --list instead to list all scenarios. */
@@ -68,7 +69,7 @@ struct Scenario {
   std::string a_tasks; // Kinds of the tasks in VM A
   std::string b_tasks; // Kinds of the tasks in VM B (1 core)
   std::string c_tasks; // Kinds of the tasks in VM C (1 core)
-  int pm_tasks;        // Amount of unbounded tasks on the PM
+  std::string pm_tasks; // Kinds of the tasks on the PM
   int fast_tasks;      // Amount of unbounded tasks on the 'fast' PM
   std::string event;   // none, exec_vm2pm, exec_pm2vm, exec_vm2vm, actor_vm2pm, actor_pm2vm, set_pm, live_migration,
                        // dvfs (the PM switches from 1 to 2Gf/s per core) or dvfs_down (from 2 to 1Gf/s per core)
@@ -77,8 +78,8 @@ struct Scenario {
   std::string label() const
   {
     return "pm" + std::to_string(pm_cores) + " A" + std::to_string(a_cores) + "[" + a_tasks + "] B[" + b_tasks +
-           "] C[" + c_tasks + "] P[" + std::string(pm_tasks, 'o') + "] F[" + std::string(fast_tasks, 'o') +
-           "] ev=" + event + " end=" + end;
+           "] C[" + c_tasks + "] P[" + pm_tasks + "] F[" + std::string(fast_tasks, 'o') + "] ev=" + event +
+           " end=" + end;
   }
 };
 
@@ -101,14 +102,27 @@ static double bound_of(char kind)
       return 0.75e9;
     case 'B':
       return 2e9;
+    case 'd':
+      return -1;
+    case 'h':
+      return 1.5e9;
+    case 'l':
+      return 0.5e9;
     default:
       xbt_die("Unknown task kind '%c'", kind);
   }
 }
 
+static int threads_of(char kind)
+{
+  return std::string("dhl").find(kind) == std::string::npos ? 1 : 2;
+}
+
 static void task_actor(Task* task, const std::string& end, sg4::SemaphorePtr sem)
 {
-  sg4::ExecPtr exec = sg4::this_actor::exec_init(FLOPS);
+  sg4::ExecPtr exec = sg4::this_actor::exec_init(FLOPS); // per thread
+  if (int threads = threads_of(task->kind); threads > 1)
+    exec->set_thread_count(threads);
   if (double bound = bound_of(task->kind); bound > 0)
     exec->set_bound(bound);
   task->exec = exec;
@@ -158,8 +172,8 @@ static std::string speeds(const Scenario& s, const std::vector<double>& before, 
                           double duration)
 {
   std::string res;
-  const std::vector<size_t> group_sizes = {s.a_tasks.size(), s.b_tasks.size(), s.c_tasks.size(),
-                                           static_cast<size_t>(s.pm_tasks), static_cast<size_t>(s.fast_tasks)};
+  const std::vector<size_t> group_sizes = {s.a_tasks.size(), s.b_tasks.size(), s.c_tasks.size(), s.pm_tasks.size(),
+                                           static_cast<size_t>(s.fast_tasks)};
   size_t i                              = 0;
   for (size_t g = 0; g < group_sizes.size(); g++) {
     res += g == 0 ? "" : ";";
@@ -197,8 +211,8 @@ static void run_scenario(const Scenario& s)
     tasks.push_back({kind, nullptr, nullptr});
     hosts.push_back(vm_c);
   }
-  for (int i = 0; i < s.pm_tasks; i++) {
-    tasks.push_back({'o', nullptr, nullptr});
+  for (char kind : s.pm_tasks) {
+    tasks.push_back({kind, nullptr, nullptr});
     hosts.push_back(pm);
   }
   for (int i = 0; i < s.fast_tasks; i++) {
@@ -214,11 +228,13 @@ static void run_scenario(const Scenario& s)
     tasks[i].actor = hosts[i]->add_actor("task", [task, end = s.end, sem]() { task_actor(task, end, sem); });
   }
 
-  // First phase. The tasks start their exec when the master sleeps, at the current date.
+  // First phase. The tasks start their exec when the master sleeps, at the current date. Each thread computes FLOPS.
+  std::vector<double> initial_amounts;
+  for (auto const& task : tasks)
+    initial_amounts.push_back(FLOPS * threads_of(task.kind));
   auto energy_start = energies();
   sg4::this_actor::sleep_for(PHASE);
-  std::string line = s.label() + " | P1 " +
-                     speeds(s, std::vector<double>(tasks.size(), FLOPS), remaining(tasks), PHASE) + " W" +
+  std::string line = s.label() + " | P1 " + speeds(s, initial_amounts, remaining(tasks), PHASE) + " W" +
                      powers(energy_start, energies(), PHASE);
 
   // Event, and second phase
@@ -315,21 +331,33 @@ static std::vector<Scenario> all_scenarios()
             for (size_t c = b; c < small_vm_tasks.size(); c++)
               for (int pm_tasks = 0; pm_tasks <= pm_cores + 1; pm_tasks++)
                 for (int fast_tasks : {0, 1})
-                  res.push_back({pm_cores, a_cores, a_tasks, small_vm_tasks[b], small_vm_tasks[c], pm_tasks, fast_tasks,
-                                 "none", "cancel"});
+                  res.push_back({pm_cores, a_cores, a_tasks, small_vm_tasks[b], small_vm_tasks[c],
+                                 std::string(pm_tasks, 'o'), fast_tasks, "none", "cancel"});
 
   // 2. Other bounds: below, around and above the core speed
   for (auto const& a_tasks : task_sets("obqtB", 2))
     if (a_tasks.find_first_of("qtB") != std::string::npos)
-      for (int pm_tasks : {0, 1})
+      for (std::string pm_tasks : {"", "o"})
         res.push_back({4, 2, a_tasks, "", "", pm_tasks, 0, "none", "cancel"});
 
-  // 3. Moves: an exec or an actor moving between the PM and the VMs, or VM A moving to the 'fast' PM. VM A may be
-  //    empty when an exec or an actor moves into it.
+  // 3. Multi-threaded tasks, bounded or not, directly on the PM and in a VM
+  for (int pm_cores : {1, 2, 4})
+    for (auto const& pm_tasks : task_sets("odhl", 3))
+      if (pm_tasks.find_first_of("dhl") != std::string::npos)
+        res.push_back({pm_cores, 1, "", "", "", pm_tasks, 0, "none", "cancel"});
   for (int pm_cores : {2, 4})
     for (int a_cores : {1, 2})
-      for (std::string a_tasks : {"", "o", "oo", "b", "ob"})
-        for (int pm_tasks : {1, 2}) {
+      for (auto const& a_tasks : task_sets("odhl", 2))
+        if (a_tasks.find_first_of("dhl") != std::string::npos)
+          for (std::string pm_tasks : {"", "o", "d"})
+            res.push_back({pm_cores, a_cores, a_tasks, "", "", pm_tasks, 0, "none", "cancel"});
+
+  // 4. Moves: an exec or an actor moving between the PM and the VMs, or VM A moving to the 'fast' PM. VM A may be
+  //    empty when an exec or an actor moves into it. The tasks that move may be multi-threaded.
+  for (int pm_cores : {2, 4})
+    for (int a_cores : {1, 2})
+      for (std::string a_tasks : {"", "o", "oo", "b", "ob", "d", "h"})
+        for (std::string pm_tasks : {"o", "oo", "d", "h"}) {
           for (auto const& event : moves)
             if (not a_tasks.empty() || event.find("pm2vm") != std::string::npos)
               res.push_back({pm_cores, a_cores, a_tasks, "", "", pm_tasks, 0, event, "cancel"});
@@ -343,23 +371,23 @@ static std::vector<Scenario> all_scenarios()
               res.push_back({pm_cores, a_cores, a_tasks, "", "", pm_tasks, 0, event, "cancel"});
         }
 
-  // 4. Terminations, with and without moves or speed changes
+  // 5. Terminations, with and without moves or speed changes
   for (int a_cores : {1, 2})
     for (std::string a_tasks : {"", "o", "ob"})
       for (auto const& end : ends) {
         if (a_tasks.empty()) { // Only to see an exec or an actor moving into an empty VM, and terminating there
           for (auto const& event : moves)
             if (event.find("pm2vm") != std::string::npos)
-              res.push_back({4, a_cores, a_tasks, "", "", 1, 0, event, end});
+              res.push_back({4, a_cores, a_tasks, "", "", "o", 0, event, end});
           continue;
         }
-        res.push_back({4, a_cores, a_tasks, "", "", 1, 0, "none", end});
+        res.push_back({4, a_cores, a_tasks, "", "", "o", 0, "none", end});
         for (auto const& event : moves)
-          res.push_back({4, a_cores, a_tasks, "", "", 1, 0, event, end});
+          res.push_back({4, a_cores, a_tasks, "", "", "o", 0, event, end});
         for (auto const& event : vm_moves)
-          res.push_back({4, a_cores, a_tasks, "", "", 1, 0, event, end});
+          res.push_back({4, a_cores, a_tasks, "", "", "o", 0, event, end});
         for (auto const& event : pm_changes)
-          res.push_back({4, a_cores, a_tasks, "", "", 1, 0, event, end});
+          res.push_back({4, a_cores, a_tasks, "", "", "o", 0, event, end});
       }
 
   return res;

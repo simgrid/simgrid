@@ -1027,6 +1027,8 @@ include teshsuite/models/maxmin_bench/maxmin_bench.cpp
 include teshsuite/models/maxmin_bench/maxmin_bench_large.tesh
 include teshsuite/models/maxmin_bench/maxmin_bench_medium.tesh
 include teshsuite/models/maxmin_bench/maxmin_bench_small.tesh
+include teshsuite/models/ptask-bound/ptask-bound.cpp
+include teshsuite/models/ptask-bound/ptask-bound.tesh
 include teshsuite/models/ptask-subflows/ptask-subflows.cpp
 include teshsuite/models/ptask-subflows/ptask-subflows.tesh
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.cpp

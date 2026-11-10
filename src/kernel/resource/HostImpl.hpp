@@ -25,8 +25,11 @@ namespace simgrid::kernel::resource {
 class XBT_PRIVATE HostModel : public Model {
 public:
   using Model::Model;
-  virtual Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) = 0;
+  /** Execute a multi-threaded computation, whose total speed is bounded by 'bound' (in flop/s) if it is positive */
+  virtual Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count, double bound) = 0;
 
+  /** Execute a parallel task. If 'rate' is positive, it bounds the total amount of flops computed per second, or the
+   *  total amount of bytes transferred per second if the task computes nothing. */
   virtual Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                    const double* bytes_amount, double rate) = 0;
   Action* io_stream(s4u::Host* src_host, const DiskImpl* src_disk, s4u::Host* dst_host, const DiskImpl* dst_disk,

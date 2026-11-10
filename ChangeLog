@@ -64,6 +64,10 @@ Kernel:
    requested by the user, which got lost when the bound was recomputed (on speed changes, migrations, ...). Use
    Action::set_user_bound() instead, and make your actions define get_intrinsic_bound() for the bound imposed by the resources:
    Action::update_bound() applies the min of both. (GitHub #306)
+ - The bound of multi-threaded and parallel execs is now honored. It was silently ignored, while it is the total
+   amount of flops computed per second, by all the threads or on all the hosts. (GitHub #306)
+ - Multi-threaded execs keep their threads when migrating. They became sequential after a migration.
+ - ptask model: the rate of communications is now honored, and the bound of sequential execs is now supported.
 
 SMPI:
  - Long-overdue big maintenance (AI-assisted)

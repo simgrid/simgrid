@@ -1,0 +1,12 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/ptask-bound ${platfdir}/cluster_multi.xml --cfg=host/model:ptask_L07 --log=root.fmt=%m%n
+> Configuration change: Set 'host/model' to 'ptask_L07'
+> Switching to the L07 model to handle parallel tasks.
+> Passed: an exec of 1 Gf took 1.0000 s
+> Passed: an exec of 1 Gf bounded to 0.5 Gf/s took 2.0000 s
+> Passed: a parallel exec of 1 Gf on each of 2 hosts took 1.0000 s
+> Passed: a parallel exec of 1 Gf on each of 2 hosts, bounded to 1 Gf/s in total took 2.0000 s
+> Passed: a parallel exec of 1 and 3 Gf on 2 hosts, bounded to 2 Gf/s in total took 3.0000 s
+> Passed: a communication of 1 MB at 100 kB/s took 10 s (plus its latency)
+> Passed: an exec of 1 Gf bounded to 0.5 Gf/s, on a host getting faster after 1 s took 2.0000 s

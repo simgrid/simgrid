@@ -18,6 +18,7 @@
 #include "src/kernel/resource/models/ptask_L07.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 
+#include <numeric>
 #include <unordered_set>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
@@ -170,7 +171,6 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     , host_list_(host_list)
     , computation_amount_(flops_amount)
     , communication_amount_(bytes_amount)
-    , rate_(rate)
 {
   size_t link_nb       = 0;
   const size_t host_nb = host_list_.size();
@@ -205,7 +205,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
   latency_ = latency;
 
   // Allocate more space for constraints (+4) in case users want to mix ptasks and io streams
-  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + link_nb + 4));
+  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, host_nb + link_nb + 4));
 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
@@ -233,8 +233,8 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     this->set_cost(1.0);
     this->set_remains(0.0);
   }
-  /* finally calculate the initial bound value */
-  update_bound();
+  /* finally record the user bound, and calculate the initial bound value */
+  set_user_bound(rate);
 }
 
 Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool /* streamed */)
@@ -277,13 +277,12 @@ StandardLinkImpl* NetworkL07Model::create_wifi_link(const std::string& name, con
 CpuAction* CpuL07::execution_start(double size, double user_bound)
 {
   std::vector<s4u::Host*> host_list = {get_iface()};
-  xbt_assert(user_bound <= 0, "User bound not supported by ptask model");
 
   auto* flops_amount = new double[host_list.size()]();
   flops_amount[0]    = size;
 
-  CpuAction* res =
-      static_cast<CpuL07Model*>(get_model())->hostModel_->execute_parallel(host_list, flops_amount, nullptr, -1);
+  CpuAction* res = static_cast<CpuL07Model*>(get_model())
+                       ->hostModel_->execute_parallel(host_list, flops_amount, nullptr, user_bound);
   static_cast<L07Action*>(res)->free_arrays_ = true;
   return res;
 }
@@ -444,19 +443,33 @@ double L07Action::calculate_cpu_bound() const
   return cpu_bound;
 }
 
+double L07Action::get_bounded_amount() const
+{
+  const size_t host_nb = host_list_.size();
+  double amount        = 0.0;
+  if (computation_amount_ != nullptr)
+    amount = std::accumulate(computation_amount_, computation_amount_ + host_nb, 0.0);
+  if (amount <= 0.0 && communication_amount_ != nullptr)
+    amount = std::accumulate(communication_amount_, communication_amount_ + host_nb * host_nb, 0.0);
+  return amount;
+}
+
 void L07Action::update_bound() const
 {
+  if (get_variable() == nullptr)
+    return;
   double bound = std::min(calculate_network_bound(), calculate_cpu_bound());
+
+  /* The variable of this action is the fraction of the work done per second, while the user bound is expressed in
+   * flop/s (or in byte/s for communications) */
+  if (double amount = get_bounded_amount(); get_user_bound() > 0 && amount > 0)
+    bound = std::min(bound, get_user_bound() / amount);
 
   XBT_DEBUG("action (%p) : bound = %g", this, bound);
 
   /* latency has been paid (or no latency), we can set the appropriate bound for multicore or network limit */
-  if ((bound < std::numeric_limits<double>::max()) && (latency_ <= 0.0)) {
-    if (rate_ < 0)
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
-    else
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), std::min(rate_, bound));
-  }
+  if ((bound < std::numeric_limits<double>::max()) && (latency_ <= 0.0))
+    get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
 }
 
 } // namespace simgrid::kernel::resource

@@ -174,6 +174,7 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
                 model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
     , requested_cores_(requested_core)
 {
+  set_sharing_penalty_no_update(1.0 / requested_core); // Keep track of the penalty given to the variable above
   if (model->is_update_lazy())
     set_last_update();
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);

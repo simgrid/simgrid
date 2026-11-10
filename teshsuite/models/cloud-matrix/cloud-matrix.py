@@ -19,12 +19,12 @@ prints anything unexpected, if it does not print as many scenarios as it announc
 
 This script does not use SimGrid. It encodes the sharing rules of the VM model, as documented in VirtualMachineImpl:
 
-- On a PM, each task running directly on the PM competes with a weight of 1, and can use at most one core (or its
-  bound, if lower).
-- A VM competes on its PM with a weight equal to the amount of tasks it contains, but at most its amount of cores. It
-  can use at most what its tasks need (one core per unbounded task, and the bound of the bounded ones, each counting
-  for at most one core), and never more than its amount of cores.
-- Within a VM, the tasks share what the VM got on its PM, each one using at most one core (or its bound).
+- On a PM, each task running directly on the PM competes with a weight equal to its amount of threads, and can use at
+  most one core per thread (or its bound, if lower, which applies to all its threads).
+- A VM competes on its PM with a weight equal to the amount of threads it contains, but at most its amount of cores.
+  It can use at most what its tasks need (one core per thread, or the bound of the bounded tasks), and never more than
+  its amount of cores.
+- Within a VM, the tasks share what the VM got on its PM, with the same weights and limits as on a PM.
 - Sharing is max-min fair, in proportion of the weights: everybody gets the same amount per unit of weight, except
   the ones that are limited, whose share is distributed to the others.
 
@@ -41,7 +41,9 @@ import xml.etree.ElementTree as ET
 # The PMs used by the test, as in cloud-matrix.cpp
 PM_HOSTS = {"pm1": "node-0.1core.org", "pm2": "node-0.2cores.org", "pm4": "node-0.4cores.org",
             "fast": "node-1.4cores.org"}
-BOUND = {"o": float("inf"), "b": 0.5e9, "q": 0.25e9, "t": 0.75e9, "B": 2e9}
+BOUND = {"o": float("inf"), "b": 0.5e9, "q": 0.25e9, "t": 0.75e9, "B": 2e9,  # total, for all the threads
+         "d": float("inf"), "h": 1.5e9, "l": 0.5e9}
+THREADS = {"d": 2, "h": 2, "l": 2}  # 1 for the other kinds
 TOLERANCE = 1e-3
 
 PMS = {}  # name -> {"speeds": [per pstate], "cores": n, "wattage": [(idle, epsilon, full) per pstate]}
@@ -91,8 +93,12 @@ def share(capacity, items):
     return alloc
 
 
+def threads(kind):
+    return THREADS.get(kind, 1)
+
+
 def task_limit(kind, speed):
-    return min(speed, BOUND[kind])
+    return min(threads(kind) * speed, BOUND[kind])
 
 
 def solve(placement, vm_pm, pstates):
@@ -108,20 +114,22 @@ def solve(placement, vm_pm, pstates):
         competitors = []  # (weight, limit, list of the indices of the tasks, or the name of the VM)
         for i, (kind, location) in enumerate(placement):
             if location == pm:
-                competitors.append((1, task_limit(kind, speed), i))
+                competitors.append((threads(kind), task_limit(kind, speed), i))
         for vm, (host, cores) in vm_pm.items():
             if host != pm:
                 continue
             tasks = [i for i, (_, location) in enumerate(placement) if location == vm]
-            load = sum(min(1.0, BOUND[placement[i][0]] / speed) for i in tasks)
-            competitors.append((min(len(tasks), cores), min(load, cores) * speed, vm))
+            load = sum(task_limit(placement[i][0], speed) / speed for i in tasks)
+            weight = sum(threads(placement[i][0]) for i in tasks)
+            competitors.append((min(weight, cores), min(load, cores) * speed, vm))
         alloc = share(spec["cores"] * speed, [(weight, limit) for weight, limit, _ in competitors])
         for (_, _, what), amount in zip(competitors, alloc):
             if isinstance(what, int):
                 speeds[what] = amount
             else:  # Share what the VM got between its tasks
                 tasks = [i for i, (_, location) in enumerate(placement) if location == what]
-                for i, rate in zip(tasks, share(amount, [(1, task_limit(placement[i][0], speed)) for i in tasks])):
+                items = [(threads(placement[i][0]), task_limit(placement[i][0], speed)) for i in tasks]
+                for i, rate in zip(tasks, share(amount, items)):
                     speeds[i] = rate
         load = sum(alloc) / (spec["cores"] * speed)
         idle, epsilon, full = spec["wattage"][pstates[pm]]
@@ -130,12 +138,12 @@ def solve(placement, vm_pm, pstates):
 
 
 def parse_label(label):
-    m = re.fullmatch(r"(pm\d) A(\d)\[(\w*)\] B\[(\w*)\] C\[(\w*)\] P\[(o*)\] F\[(o*)\] ev=(\w+) end=(\w+)", label)
+    m = re.fullmatch(r"(pm\d) A(\d)\[(\w*)\] B\[(\w*)\] C\[(\w*)\] P\[(\w*)\] F\[(o*)\] ev=(\w+) end=(\w+)", label)
     if not m:
         raise ValueError(f"Cannot parse the scenario label '{label}'")
     pm, a_cores, a_tasks, b_tasks, c_tasks, p_tasks, f_tasks, event, _ = m.groups()
     placement = ([(k, "A") for k in a_tasks] + [(k, "B") for k in b_tasks] + [(k, "C") for k in c_tasks] +
-                 [("o", pm) for _ in p_tasks] + [("o", "fast") for _ in f_tasks])
+                 [(k, pm) for k in p_tasks] + [("o", "fast") for _ in f_tasks])
     vm_pm = {"A": (pm, int(a_cores)), "B": (pm, 1), "C": (pm, 1)}
     return placement, vm_pm, pm, event, len(a_tasks) + len(b_tasks) + len(c_tasks)
 
@@ -161,7 +169,7 @@ def apply_event(placement, vm_pm, pstates, pm, event, first_p):
 
 def format_phase(label, speeds, power):
     """Format a phase like the C++ program does"""
-    m = re.fullmatch(r".*A\d\[(\w*)\] B\[(\w*)\] C\[(\w*)\] P\[(o*)\] F\[(o*)\].*", label)
+    m = re.fullmatch(r".*A\d\[(\w*)\] B\[(\w*)\] C\[(\w*)\] P\[(\w*)\] F\[(o*)\].*", label)
     sizes = [len(group) for group in m.groups()]
     groups, i = [], 0
     for size in sizes:
