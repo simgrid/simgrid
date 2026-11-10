@@ -20,6 +20,10 @@ S4U:
    loads the PM by half a core instead of a full one, and the other activities of the PM can use the remaining
    capacity (as shown by the cloud-capping example, whose expected output changed accordingly). Multi-threaded execs
    are not concerned, as their bound is ignored by the CPU models. (GitHub #297)
+ - Fix the execs of a VM that moves to another PM, with a live migration or VirtualMachine::set_pm(). They kept
+   running at the speed of the former PM, and the VM competed on its new PM as if it contained a single exec. Moving a
+   VM with set_pm() also accounted the energy of both PMs with their new load since their previous update. The
+   expected output of the vm-live-migration test changed accordingly. (GitHub #207)
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,

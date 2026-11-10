@@ -49,6 +49,7 @@ namespace kernel::resource {
  *********/
 
 std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
+xbt::signal<void(VirtualMachineImpl const&, s4u::Host*)> VirtualMachineImpl::on_physical_host_change;
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
  * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system.
@@ -390,6 +391,8 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   std::string pm_name_src = physical_host_->get_name();
   std::string pm_name_dst = destination->get_name();
 
+  on_physical_host_change(*this, destination);
+
   /* update net_elm with that of the destination physical host */
   piface_->set_netpoint(destination->get_netpoint());
   physical_host_->get_impl()->move_vm(this, destination->get_impl());
@@ -406,16 +409,12 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
 
-  /* keep the bound value of the cpu action of the VM. */
-  if (double old_bound = action_->get_bound(); old_bound > 0) {
-    XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name.c_str(), old_bound, pm_name_dst.c_str());
-    new_cpu_action->set_bound(old_bound);
-  }
-
   XBT_ATTRIB_UNUSED bool ret = action_->unref();
   xbt_assert(ret, "Bug: some resource still remains");
 
   action_ = new_cpu_action;
+  action_->set_user_bound(user_bound_);
+  update_action_weight();
 
   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name.c_str(), pm_name_src.c_str(), pm_name_dst.c_str());
 }

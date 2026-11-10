@@ -60,6 +60,8 @@ void CpuImpl::reset_vcpu(CpuImpl* that)
   this->speed_  = that->speed_;
   this->speed_per_pstate_.clear();
   this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
+  // The actions already running on this vCPU were bounded by its former speed: update them
+  on_speed_change();
 }
 
 CpuImpl* CpuImpl::set_pstate(unsigned long pstate_index)

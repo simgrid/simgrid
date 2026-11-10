@@ -13,6 +13,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/simgrid/module.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
@@ -499,6 +500,13 @@ void sg_host_energy_plugin_init()
   simgrid::s4u::Host::on_exec_state_change_cb(&on_action_state_change);
   simgrid::s4u::VirtualMachine::on_suspend_cb(&on_host_change);
   simgrid::s4u::VirtualMachine::on_resume_cb(&on_host_change);
+  // When a VM moves to another PM, account the energy of both PMs before their load changes. Live migrations suspend
+  // the VM around this change, but VirtualMachine::set_pm() does not.
+  simgrid::kernel::resource::VirtualMachineImpl::on_physical_host_change.connect(
+      [](simgrid::kernel::resource::VirtualMachineImpl const& vm, simgrid::s4u::Host* destination) {
+        vm.get_physical_host()->extension<HostEnergy>()->update();
+        destination->extension<HostEnergy>()->update();
+      });
   simgrid::s4u::Exec::on_suspend_cb(on_activity_suspend_resume);
   simgrid::s4u::Exec::on_resume_cb(on_activity_suspend_resume);
   simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);

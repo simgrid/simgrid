@@ -29,6 +29,9 @@ class XBT_PUBLIC VirtualMachineImpl : public HostImpl, public xbt::Extendable<Vi
 
 public:
   static std::deque<s4u::VirtualMachine*> allVms_;
+  /** Fired right before a VM moves to another PM (given as parameter), so that the resources of both PMs can still be
+   *  accounted with their former load. */
+  static xbt::signal<void(VirtualMachineImpl const&, s4u::Host*)> on_physical_host_change;
 
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
