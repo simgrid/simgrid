@@ -7,7 +7,7 @@ else()
   endforeach()
 endif()
 foreach(x lmm_usage core_usage core_usage2
-          cloud-sharing vm-exec-migration ptask_L07_usage wifi_usage wifi_usage_decay cm02-set-lat-bw cm02-tcpgamma issue105 ${optional_examples})
+          cloud-sharing vm-exec-migration vm-exec-termination ptask_L07_usage wifi_usage wifi_usage_decay cm02-set-lat-bw cm02-tcpgamma issue105 ${optional_examples})
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})

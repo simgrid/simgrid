@@ -44,6 +44,7 @@ public:
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();
+  void cancel() override;
   void finish() override;
 
   void reset();
@@ -51,6 +52,10 @@ public:
   /** Fired when a started exec moves to another host. The exec is still on its source host (see get_host()) when the
    *  signal is fired, and the second parameter is the destination host. */
   static xbt::signal<void(ExecImpl const&, s4u::Host*)> on_migration;
+  /** Fired when an exec stops consuming resources: completed, failed or canceled (also when its actor is killed or
+   *  terminates without waiting for it). Contrary to s4u::Exec::on_completion, this does not depend on someone waiting
+   *  for the exec. It may be fired more than once for a given exec. */
+  static xbt::signal<void(ExecImpl const&)> on_termination;
 };
 } // namespace simgrid::kernel::activity
 #endif

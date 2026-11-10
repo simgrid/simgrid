@@ -1,0 +1,39 @@
+#!/usr/bin/env tesh
+
+$ ./vm-exec-termination ${platfdir}/cluster_multi.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:master@node-0.1core.org) ### An actor gets killed while computing in a VM
+> [  1.200000] (1:master@node-0.1core.org) Passed: Killed actor
+> [  1.200000] (1:master@node-0.1core.org) ### An actor terminates without waiting for its exec
+> [  2.400000] (1:master@node-0.1core.org) Passed: Terminated actor
+> [  2.400000] (1:master@node-0.1core.org) ### An exec completes while nobody waits for it
+> [  3.600000] (1:master@node-0.1core.org) Passed: Exec never waited
+> [  3.600000] (1:master@node-0.1core.org) ### An exec gets canceled by its owner
+> [  4.800000] (1:master@node-0.1core.org) Passed: Canceled exec
+> [  4.800000] (1:master@node-0.1core.org) ### An exec completes normally (control case)
+> [  6.000000] (1:master@node-0.1core.org) Passed: Waited exec
+> [  6.000000] (1:master@node-0.1core.org) ## 0 test failed
+> [  6.000000] (0:maestro@) Total energy consumption: 0.700000 Joules (used hosts: 0.700000 Joules; unused/idle hosts: 0.000000)
+> [  6.000000] (0:maestro@) Energy consumption of host node-0.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-1.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-2.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-3.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-4.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-5.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-6.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-7.1core.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-0.2cores.org: 0.700000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-1.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-2.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-3.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-4.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-5.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-6.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-7.2cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-0.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-1.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-2.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-3.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-4.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-5.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-6.4cores.org: 0.000000 Joules
+> [  6.000000] (0:maestro@) Energy consumption of host node-7.4cores.org: 0.000000 Joules

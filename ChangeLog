@@ -14,6 +14,8 @@ S4U:
  - Fix the accounting of execs migrating in or out of a VM (with Exec::set_host() or Actor::set_host()). The source VM
    kept loading its PM (wasting energy) after the exec left, and the destination VM did not get any core of its PM to
    run it, which crashed the simulation. Migrating a suspended exec does not resume it anymore. (GitHub #297)
+ - Fix the accounting of execs terminating while running in a VM without being waited for: when their actor is killed,
+   when their actor terminates, or when they complete unobserved. The VM kept loading its PM forever.
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,

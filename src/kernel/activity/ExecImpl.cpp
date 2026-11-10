@@ -144,9 +144,16 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
   return *this;
 }
 
+void ExecImpl::cancel()
+{
+  ActivityImpl::cancel();
+  on_termination(*this);
+}
+
 void ExecImpl::finish()
 {
   XBT_DEBUG("ExecImpl::finish() in state %s, detached: %d", get_state_str(), is_detached());
+  on_termination(*this);
   if (model_action_ != nullptr) {
     if (auto const& hosts = get_hosts();
         std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
@@ -230,5 +237,6 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
  * Callbacks *
  *************/
 xbt::signal<void(ExecImpl const&, s4u::Host*)> ExecImpl::on_migration;
+xbt::signal<void(ExecImpl const&)> ExecImpl::on_termination;
 
 } // namespace simgrid::kernel::activity

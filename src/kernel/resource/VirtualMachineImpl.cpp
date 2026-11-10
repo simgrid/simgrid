@@ -115,16 +115,17 @@ void unaccount_exec(const activity::ExecImpl* exec)
 void on_exec_start(s4u::Exec const& exec)
 {
   const activity::ExecImpl* impl = get_exec_impl(exec);
-  // A starting exec cannot be accounted yet. If it is, the entry is stale: it belongs to a previous exec that was freed
-  // without firing on_completion (when its actor was killed) and whose address got reused. Reclaim it.
-  unaccount_exec(impl);
+  xbt_assert(accounted_execs.find(impl) == accounted_execs.end(), "Exec %s is started while already accounted in a VM",
+             impl->get_cname());
   if (not exec.is_suspended()) // An exec started in the suspended state will be accounted when resumed
     account_exec(impl, exec.get_host());
 }
 
-void on_exec_completion(s4u::Exec const& exec)
+/* We cannot rely on s4u::Exec::on_completion here: it is fired only when someone waits for the exec (or when it is
+ * detached), not when the exec ends unobserved or when its actor gets killed. Such an exec would remain accounted. */
+void on_exec_termination(activity::ExecImpl const& exec)
 {
-  unaccount_exec(get_exec_impl(exec));
+  unaccount_exec(&exec);
 }
 
 void on_exec_suspend(s4u::Exec const& exec)
@@ -159,7 +160,7 @@ VMModel::VMModel(const std::string& name) : HostModel(name)
 {
   s4u::Host::on_onoff_cb(host_onoff);
   s4u::Exec::on_start_cb(on_exec_start);
-  s4u::Exec::on_completion_cb(on_exec_completion);
+  activity::ExecImpl::on_termination.connect(on_exec_termination);
   s4u::Exec::on_suspend_cb(on_exec_suspend);
   s4u::Exec::on_resume_cb(on_exec_resume);
   activity::ExecImpl::on_migration.connect(on_exec_migration);
