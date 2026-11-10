@@ -83,6 +83,13 @@ Context::~Context()
     set_current(nullptr);
 }
 
+void Context::operator()() const
+{
+  // An actor killed before it ever ran is not started: its first simcall would never be answered.
+  if (not actor_->wannadie())
+    code_();
+}
+
 void Context::stop()
 {
   this->actor_->cleanup_from_self();

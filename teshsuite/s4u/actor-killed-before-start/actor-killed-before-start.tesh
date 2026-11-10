@@ -1,0 +1,4 @@
+$ ./actor-killed-before-start ${platfdir}/small_platform.xml
+> [Boivin:creator:(1) 0.000000] [s4u_test/INFO] Creating an actor
+> [Boivin:killer:(2) 0.000000] [s4u_test/INFO] Killing all other actors
+> [0.000000] [s4u_test/INFO] Returned from engine.run()

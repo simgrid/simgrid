@@ -1100,6 +1100,8 @@ include teshsuite/s4u/actor-autorestart/actor-autorestart.cpp
 include teshsuite/s4u/actor-autorestart/actor-autorestart.tesh
 include teshsuite/s4u/actor-destroyed-with-mutex/actor-destroyed-with-mutex.cpp
 include teshsuite/s4u/actor-destroyed-with-mutex/actor-destroyed-with-mutex.tesh
+include teshsuite/s4u/actor-killed-before-start/actor-killed-before-start.cpp
+include teshsuite/s4u/actor-killed-before-start/actor-killed-before-start.tesh
 include teshsuite/s4u/actor-suspend/actor-suspend.cpp
 include teshsuite/s4u/actor-suspend/actor-suspend.tesh
 include teshsuite/s4u/actor/actor.cpp
