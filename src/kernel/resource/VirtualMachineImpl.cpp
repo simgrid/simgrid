@@ -419,7 +419,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  CpuAction* new_cpu_action = destination->get_cpu()->execution_start(0, this->core_amount_);
+  CpuAction* new_cpu_action = destination->get_cpu()->execution_start(0, this->core_amount_, -1);
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
@@ -477,7 +477,7 @@ double VirtualMachineImpl::get_active_load() const
 void VirtualMachineImpl::on_physical_host_speed_change()
 {
   piface_->get_cpu()->reset_vcpu(physical_host_->get_cpu()); // The execs of the VM run at the new speed
-  update_action_weight();                                    // The VM loads its PM according to the new speed
+  update_action_weight(); // The cores needed by the bounded execs of the VM depend on the speed of the PM
 }
 
 void VirtualMachineImpl::update_action_weight()
@@ -504,7 +504,11 @@ void VirtualMachineImpl::update_action_weight()
   else
     action_->set_sharing_penalty(0.);
 
-  action_->set_bound(std::min(load * physical_host_->get_speed(), user_bound_));
+  // The action requests the cores needed by the execs, capped by the user bound of the VM. As the needs of the bounded
+  // execs depend on the speed of the PM, this must be recomputed when it changes (see on_physical_host_speed_change)
+  auto* action = dynamic_cast<CpuCas01Action*>(action_);
+  xbt_assert(action != nullptr, "VMs are only supported with the Cas01 CPU model");
+  action->set_requested_cores(load);
 }
 
 void VirtualMachineImpl::start_migration()

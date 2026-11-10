@@ -56,13 +56,19 @@ protected:
  * Action *
  **********/
 class CpuCas01Action : public CpuAction {
-  int requested_core_ = 1;
+  double requested_cores_ = 1;
+
+protected:
+  double get_intrinsic_bound() const override;
 
 public:
   CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int requested_core);
   CpuCas01Action(const CpuCas01Action&)            = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
-  int requested_core() const { return requested_core_; }
+  double get_requested_cores() const { return requested_cores_; }
+  /** Change the amount of cores that this action may use, and update its bound. It may be fractional, for example
+   *  for the action representing a VM on its PM, which only uses the cores needed by the execs it contains. */
+  void set_requested_cores(double cores);
 };
 
 } // namespace simgrid::kernel::resource

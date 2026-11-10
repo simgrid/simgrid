@@ -11,21 +11,6 @@ S4U:
    left in the queue, where a later put() or get() could match it (writing in a variable that was gone, in the case of
    get), and canceling it raised a CancelException in the canceling actor.
  - Host energy plugin: fix idle energy accounting for parallel executions.
- - Fix the accounting of execs migrating in or out of a VM (with Exec::set_host() or Actor::set_host()). The source VM
-   kept loading its PM (wasting energy) after the exec left, and the destination VM did not get any core of its PM to
-   run it, which crashed the simulation. Migrating a suspended exec does not resume it anymore. (GitHub #297)
- - Fix the accounting of execs terminating while running in a VM without being waited for: when their actor is killed,
-   when their actor terminates, or when they complete unobserved. The VM kept loading its PM forever.
- - VMs now load their PM according to the bounds of the execs they contain: an exec bounded to half a core in a VM
-   loads the PM by half a core instead of a full one, and the other activities of the PM can use the remaining
-   capacity (as shown by the cloud-capping example, whose expected output changed accordingly). Multi-threaded execs
-   are not concerned, as their bound is ignored by the CPU models. (GitHub #297)
- - Fix the execs of a VM that moves to another PM, with a live migration or VirtualMachine::set_pm(). They kept
-   running at the speed of the former PM, and the VM competed on its new PM as if it contained a single exec. Moving a
-   VM with set_pm() also accounted the energy of both PMs with their new load since their previous update. The
-   expected output of the vm-live-migration test changed accordingly. (GitHub #207)
- - VMs now follow the speed changes of their PM (with DVFS or a speed profile). Their execs kept running at the former
-   speed of the PM, and the VMs loaded their PM as if their execs were not bounded.
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,
@@ -58,6 +43,27 @@ Model-Checker:
 Core:
  - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust.
  - Implement raw contexts on arm64, so that this context factory is no longer limited to amd64.
+
+Kernel:
+ - Fix the accounting of execs migrating in or out of a VM (with Exec::set_host() or Actor::set_host()). The source VM
+   kept loading its PM (wasting energy) after the exec left, and the destination VM did not get any core of its PM to
+   run it, which crashed the simulation. Migrating a suspended exec does not resume it anymore. (GitHub #297)
+ - Fix the accounting of execs terminating while running in a VM without being waited for: when their actor is killed,
+   when their actor terminates, or when they complete unobserved. The VM kept loading its PM forever.
+ - VMs now load their PM according to the bounds of the execs they contain: an exec bounded to half a core in a VM
+   loads the PM by half a core instead of a full one, and the other activities of the PM can use the remaining
+   capacity (as shown by the cloud-capping example, whose expected output changed accordingly). Multi-threaded execs
+   are not concerned, as their bound is ignored by the CPU models. (GitHub #297)
+ - Fix the execs of a VM that moves to another PM, with a live migration or VirtualMachine::set_pm(). They kept
+   running at the speed of the former PM, and the VM competed on its new PM as if it contained a single exec. Moving a
+   VM with set_pm() also accounted the energy of both PMs with their new load since their previous update. The
+   expected output of the vm-live-migration test changed accordingly. (GitHub #207)
+ - VMs now follow the speed changes of their PM (with DVFS or a speed profile). Their execs kept running at the former
+   speed of the PM, and the VMs loaded their PM as if their execs were not bounded.
+ - Action::set_bound() is removed, as it changed the bound of an action without keeping track of the bound
+   requested by the user, which got lost when the bound was recomputed (on speed changes, migrations, ...). Use
+   Action::set_user_bound() instead, and make your actions define get_intrinsic_bound() for the bound imposed by the resources:
+   Action::update_bound() applies the min of both. (GitHub #306)
 
 SMPI:
  - Long-overdue big maintenance (AI-assisted)

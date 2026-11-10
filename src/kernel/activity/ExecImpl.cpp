@@ -215,7 +215,6 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
     new_action->set_sharing_penalty(old_action->get_sharing_penalty());
-    new_action->set_user_bound(old_action->get_user_bound());
     if (old_action->is_suspended()) // Do not resume a suspended exec by migrating it
       new_action->suspend();
 

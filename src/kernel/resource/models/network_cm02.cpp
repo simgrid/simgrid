@@ -437,16 +437,7 @@ void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const
     action->set_variable(get_maxmin_system()->variable_new(action, 1.0, -1.0, constraints_per_variable));
 
   /* after setting the variable, update the bounds depending on user configuration */
-  if (action->get_user_bound() < 0) {
-    get_maxmin_system()->update_variable_bound(
-        action->get_variable(),
-        (action->lat_current_ > 0 && cfg_tcp_gamma > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
-  } else {
-    get_maxmin_system()->update_variable_bound(
-        action->get_variable(), (action->lat_current_ > 0 && cfg_tcp_gamma > 0)
-                                    ? std::min(action->get_user_bound(), cfg_tcp_gamma / (2.0 * action->lat_current_))
-                                    : action->get_user_bound());
-  }
+  action->update_bound();
 }
 
 Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed)
@@ -562,14 +553,7 @@ void NetworkCm02Link::set_latency(double value)
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->sharing_penalty_ += delta;
-    if (action->get_user_bound() < 0 && NetworkModel::cfg_tcp_gamma > 0)
-      get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), NetworkModel::cfg_tcp_gamma /
-                                                                                          (2.0 * action->lat_current_));
-    else if (NetworkModel::cfg_tcp_gamma > 0) {
-      get_model()->get_maxmin_system()->update_variable_bound(
-          action->get_variable(),
-          std::min(action->get_user_bound(), NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
-    }
+    action->update_bound();
     if (NetworkModel::cfg_tcp_gamma == 0 ||
         action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
       XBT_DEBUG("Flow is limited BYBANDWIDTH");
@@ -585,6 +569,14 @@ void NetworkCm02Link::set_latency(double value)
 /**********
  * Action *
  **********/
+
+double NetworkCm02Action::get_intrinsic_bound() const
+{
+  /* The rate of a flow is limited by the TCP window, according to its latency */
+  if (lat_current_ > 0 && NetworkModel::cfg_tcp_gamma > 0)
+    return NetworkModel::cfg_tcp_gamma / (2.0 * lat_current_);
+  return -1;
+}
 
 void NetworkCm02Action::update_remains_lazy(double now)
 {

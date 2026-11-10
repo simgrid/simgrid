@@ -86,15 +86,8 @@ void CpuCas01::on_speed_change()
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
 
-  while (const auto* var = get_constraint()->get_variable(&elem)) {
-    const auto* action = static_cast<CpuCas01Action*>(var->get_id());
-    double bound       = action->requested_core() * speed_.scale * speed_.peak;
-    if (action->get_user_bound() > 0) {
-      bound = std::min(bound, action->get_user_bound());
-    }
-
-    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), bound);
-  }
+  while (const auto* var = get_constraint()->get_variable(&elem))
+    static_cast<CpuCas01Action*>(var->get_id())->update_bound();
 
   CpuImpl::on_speed_change();
 }
@@ -134,9 +127,6 @@ CpuAction* CpuCas01::execution_start(double size, int requested_cores, double us
   auto* action =
       new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
   action->set_user_bound(user_bound);
-  if (user_bound > 0 && user_bound < action->get_bound()) {
-    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), user_bound);
-  }
   if (factor_cpu_cb_)
     action->set_rate_factor(factor_cpu_cb_(*action->cpu0()->get_iface(), size));
 
@@ -182,11 +172,22 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
                                int requested_core)
     : CpuAction(model, cost, failed,
                 model->get_maxmin_system()->variable_new(this, 1.0 / requested_core, requested_core * speed, 1))
-    , requested_core_(requested_core)
+    , requested_cores_(requested_core)
 {
   if (model->is_update_lazy())
     set_last_update();
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
+}
+
+double CpuCas01Action::get_intrinsic_bound() const
+{
+  return requested_cores_ * cpu0()->get_speed(1.0) * cpu0()->get_speed_ratio();
+}
+
+void CpuCas01Action::set_requested_cores(double cores)
+{
+  requested_cores_ = cores;
+  update_bound();
 }
 
 } // namespace simgrid::kernel::resource

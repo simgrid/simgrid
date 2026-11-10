@@ -75,6 +75,9 @@ public:
 class NetworkCm02Action : public NetworkAction {
   friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed);
 
+protected:
+  double get_intrinsic_bound() const override;
+
 public:
   using NetworkAction::NetworkAction;
   void update_remains_lazy(double now) override;

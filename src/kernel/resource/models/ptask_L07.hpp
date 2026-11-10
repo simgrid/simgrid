@@ -158,7 +158,7 @@ public:
   L07Action& operator=(const L07Action&) = delete;
   ~L07Action() override;
 
-  void update_bound() const;
+  void update_bound() const override;
   double get_latency() const { return latency_; }
   void set_latency(double latency) { latency_ = latency; }
   void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }

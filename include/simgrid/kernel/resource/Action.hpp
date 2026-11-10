@@ -145,10 +145,14 @@ public:
   /** @brief Set the [state](@ref simgrid::kernel::resource::Action::State) of the current Action */
   virtual void set_state(Action::State state);
 
-  /** @brief Get the bound of the current Action */
+  /** @brief Get the bound of the current Action, as currently applied to its variable */
   double get_bound() const;
-  /** @brief Set the bound of the current Action */
-  void set_bound(double bound);
+  /** @brief Recompute and apply the bound of the current Action.
+   *
+   * The bound is the min of the bound imposed by the resources used by the action (see get_intrinsic_bound()) and of
+   * the bound requested by the user (see set_user_bound()). This must be called whenever one of them changes: there is
+   * no other way to change the bound of an action, so that the user bound never gets lost. */
+  virtual void update_bound() const;
 
   /** @brief Get the start time of the current action */
   double get_start_time() const { return start_time_; }
@@ -232,9 +236,17 @@ public:
   lmm::Variable* get_variable() const { return variable_; }
   void set_variable(lmm::Variable* var) { variable_ = var; }
 
+  /** @brief Get the bound requested by the user, or a non-positive value if none */
   double get_user_bound() const { return user_bound_; }
-  void set_user_bound(double bound) { user_bound_ = bound; }
+  /** @brief Set the bound requested by the user (non-positive for none), and update the bound of the action */
+  void set_user_bound(double bound);
 
+protected:
+  /** @brief The bound imposed by the resources used by this action, regardless of the user bound, or a negative value
+   *  if none. It must be expressed in the same unit as the user bound. */
+  virtual double get_intrinsic_bound() const { return -1; }
+
+public:
   double get_last_update() const { return last_update_; }
   void set_last_update();
 

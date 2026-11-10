@@ -99,15 +99,21 @@ double Action::get_rate() const
   return variable_ ? variable_->get_value() * factor_ : 0;
 }
 
-void Action::set_bound(double bound)
+void Action::set_user_bound(double bound)
 {
-  XBT_IN("(%p,%g)", this, bound);
-  if (variable_)
-    model_->get_maxmin_system()->update_variable_bound(variable_, bound);
+  user_bound_ = bound;
+  update_bound();
+}
 
-  if (model_->is_update_lazy() && get_last_update() != EngineImpl::get_clock())
-    model_->get_action_heap().remove(this);
-  XBT_OUT();
+void Action::update_bound() const
+{
+  if (variable_ == nullptr)
+    return;
+  double bound = get_intrinsic_bound();
+  if (user_bound_ > 0 && (bound < 0 || user_bound_ < bound))
+    bound = user_bound_;
+  XBT_DEBUG("Action %p: bound = %g", this, bound);
+  model_->get_maxmin_system()->update_variable_bound(variable_, bound);
 }
 
 void Action::ref()
