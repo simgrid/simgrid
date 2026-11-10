@@ -7,7 +7,7 @@ else()
   endforeach()
 endif()
 foreach(x lmm_usage core_usage core_usage2
-          cloud-sharing vm-exec-migration vm-exec-termination vm-exec-bound vm-pm-migration ptask_L07_usage wifi_usage wifi_usage_decay cm02-set-lat-bw cm02-tcpgamma issue105 ${optional_examples})
+          ptask_L07_usage wifi_usage wifi_usage_decay cm02-set-lat-bw cm02-tcpgamma issue105 ${optional_examples})
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -51,6 +51,16 @@ foreach(x small medium large)
   endif()
 endforeach()
 
+# cloud-matrix is run by a script that checks its output on the fly, instead of comparing it with a tesh file
+add_executable       (cloud-matrix EXCLUDE_FROM_ALL cloud-matrix/cloud-matrix.cpp)
+target_link_libraries(cloud-matrix simgrid)
+set_target_properties(cloud-matrix PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cloud-matrix)
+add_dependencies(tests cloud-matrix)
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/cloud-matrix/cloud-matrix.cpp)
+ADD_TEST(model-cloud-matrix "${PYTHON_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/cloud-matrix/cloud-matrix.py
+         ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster_multi.xml
+         ${VALGRIND_WRAPPER_UNBOXED} ${CMAKE_CURRENT_BINARY_DIR}/cloud-matrix/cloud-matrix)
+
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/vm-pm-migration/platform.xml PARENT_SCOPE)
+set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/cloud-matrix/cloud-matrix.py PARENT_SCOPE)

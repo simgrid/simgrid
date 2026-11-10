@@ -50,10 +50,11 @@
     -  were using exactly the same resource. If you send and receive
     -  at the same time, then each get half of the bandwidth.
     -
-    -  Also, the hosts have 4 cores.
+    -  Also, the hosts have 4 cores, and two pstates: they compute 1Gf/s per core by default, or 2Gf/s per core (and
+    -  then dissipate twice as much) when switched to pstate 1.
     -->
-  <cluster bb_bw="2.25GBps" bb_lat="500us" bb_sharing_policy="SHARED" bw="125MBps" core="4" id="halfduplex" lat="50us" prefix="node-" radical="0-7" sharing_policy="SHARED" speed="1Gf" suffix=".4cores.org">
-    <prop id="wattage_per_state" value="0.0:0.0:4.0" />
+  <cluster bb_bw="2.25GBps" bb_lat="500us" bb_sharing_policy="SHARED" bw="125MBps" core="4" id="halfduplex" lat="50us" prefix="node-" radical="0-7" sharing_policy="SHARED" speed="1Gf,2Gf" suffix=".4cores.org">
+    <prop id="wattage_per_state" value="0.0:0.0:4.0, 0.0:0.0:8.0" />
     <prop id="wattage_off" value="0.0" />
   </cluster>
 
