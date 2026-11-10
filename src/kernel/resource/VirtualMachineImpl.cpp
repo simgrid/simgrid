@@ -80,6 +80,7 @@ namespace {
 struct AccountedExec {
   VirtualMachineImpl* vm;
   int thread_count;
+  double bound;
 };
 std::unordered_map<const activity::ExecImpl*, AccountedExec> accounted_execs;
 
@@ -94,10 +95,11 @@ void account_exec(const activity::ExecImpl* exec, const s4u::Host* host)
   if (vm == nullptr || accounted_execs.find(exec) != accounted_execs.end())
     return;
   VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-  for (int i = 0; i < exec->get_thread_count(); i++)
-    vm_impl->add_active_exec();
+  // The bound of multi-threaded execs is ignored by the CPU models (see ExecImpl::start()), so ignore it here too
+  double bound = exec->get_thread_count() == 1 ? exec->get_bound() : 0.0;
+  vm_impl->add_active_exec(exec->get_thread_count(), bound);
   vm_impl->update_action_weight();
-  accounted_execs.try_emplace(exec, AccountedExec{vm_impl, exec->get_thread_count()});
+  accounted_execs.try_emplace(exec, AccountedExec{vm_impl, exec->get_thread_count(), bound});
 }
 
 void unaccount_exec(const activity::ExecImpl* exec)
@@ -105,10 +107,9 @@ void unaccount_exec(const activity::ExecImpl* exec)
   auto it = accounted_execs.find(exec);
   if (it == accounted_execs.end())
     return;
-  auto [vm_impl, thread_count] = it->second;
+  auto [vm_impl, thread_count, bound] = it->second;
   accounted_execs.erase(it);
-  for (int i = 0; i < thread_count; i++)
-    vm_impl->remove_active_exec();
+  vm_impl->remove_active_exec(thread_count, bound);
   vm_impl->update_action_weight();
 }
 
@@ -426,19 +427,58 @@ void VirtualMachineImpl::set_bound(double bound)
   update_action_weight();
 }
 
+void VirtualMachineImpl::add_active_exec(int thread_count, double bound)
+{
+  if (bound > 0)
+    active_bounds_.insert(bound);
+  else
+    active_threads_ += thread_count;
+}
+
+void VirtualMachineImpl::remove_active_exec(int thread_count, double bound)
+{
+  if (bound > 0) {
+    auto it = active_bounds_.find(bound);
+    xbt_assert(it != active_bounds_.end(), "VM %s: removing a bounded exec that is not accounted as active",
+               get_cname());
+    active_bounds_.erase(it);
+  } else {
+    xbt_assert(active_threads_ >= static_cast<unsigned>(thread_count),
+               "VM %s: removing more threads than accounted as active", get_cname());
+    active_threads_ -= thread_count;
+  }
+}
+
+double VirtualMachineImpl::get_active_load() const
+{
+  // A bounded exec uses the fraction of a core given by its bound, and never more than one core. The bounds are
+  // converted with the current speed of the PM, which may have changed since the exec started.
+  double core_speed = physical_host_->get_speed();
+  double load       = active_threads_;
+  for (double bound : active_bounds_)
+    load += std::min(1.0, bound / core_speed);
+  return load;
+}
+
 void VirtualMachineImpl::update_action_weight()
 {
-  /* The impact of the VM over its PM is the min between its vCPU amount and the amount of tasks it contains */
-  int impact = std::min(active_execs_, get_core_amount());
+  /* The VM competes on its PM like the execs it contains, up to its vCPU amount: each exec weighs for one competitor
+   * in the sharing, whatever its bound, exactly as if it was running directly on the PM. */
+  double weight =
+      std::min(static_cast<double>(active_threads_ + active_bounds_.size()), static_cast<double>(get_core_amount()));
+  /* But the VM cannot use more cores than what its execs need: a bounded exec only needs a fraction of a core. */
+  double load = std::min(get_active_load(), static_cast<double>(get_core_amount()));
 
-  XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %d (#tasks: %u)", this, impact, active_execs_);
+  XBT_DEBUG("set the weight of the dummy CPU action of VM%p on PM to %g and its bound to %g cores (#unbounded threads: "
+            "%u, #bounded execs: %zu)",
+            this, weight, load, active_threads_, active_bounds_.size());
 
-  if (impact > 0)
-    action_->set_sharing_penalty(1. / impact);
+  if (weight > 0)
+    action_->set_sharing_penalty(1. / weight);
   else
     action_->set_sharing_penalty(0.);
 
-  action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
+  action_->set_bound(std::min(load * physical_host_->get_speed(), user_bound_));
 }
 
 void VirtualMachineImpl::start_migration()

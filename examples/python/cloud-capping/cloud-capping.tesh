@@ -99,10 +99,10 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/cloud-capping.py $
 > [28020.000000] (48:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
 > [28020.000000] (49:worker1@VM0) bound to 76296000.000000 => duration 20.000000 (38148000.000000 flops/s)
 > [29000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, 25% for Task2@VM0
-> [29020.000000] (50:worker0@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [29013.333333] (50:worker0@Fafard) not bound => duration 13.333333 (57222000.000005 flops/s)
 > [29040.000000] (51:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
 > [30000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@VM0
-> [30020.000000] (52:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [30013.333333] (52:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57222000.000005 flops/s)
 > [30040.000000] (53:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
 > [31000.000000] (1:master_@Fafard) .
 > [31000.000000] (1:master_@Fafard) # 7. Put a single activity on the VM capped by 10%.

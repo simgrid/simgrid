@@ -5,6 +5,8 @@
 
 #include <simgrid/s4u/VirtualMachine.hpp>
 
+#include <set>
+
 #include "src/kernel/resource/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
@@ -60,12 +62,12 @@ public:
 
   void update_action_weight();
 
-  void add_active_exec() { active_execs_++; }
-  void remove_active_exec()
-  {
-    xbt_assert(active_execs_ > 0, "VM %s: removing an exec while none is accounted as active", get_cname());
-    active_execs_--;
-  }
+  /** Account an exec running in this VM. An exec with a positive bound uses a fraction of a core only, and is
+   *  accounted with its bound (in flop/s). Others use a full core per thread. */
+  void add_active_exec(int thread_count, double bound);
+  void remove_active_exec(int thread_count, double bound);
+  /** Amount of cores (possibly fractional) needed by the execs running in this VM, regardless of its own core amount */
+  double get_active_load() const;
 
   void start_migration();
   void end_migration();
@@ -75,7 +77,8 @@ public:
 private:
   s4u::VirtualMachine* piface_ = nullptr;
   Action* action_            = nullptr;
-  unsigned int active_execs_ = 0;
+  unsigned int active_threads_ = 0;     // threads of the active execs that are not bounded
+  std::multiset<double> active_bounds_; // bounds of the active execs that are bounded
   s4u::Host* physical_host_;
   unsigned int core_amount_;
   double user_bound_                   = std::numeric_limits<double>::max();

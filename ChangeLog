@@ -16,6 +16,10 @@ S4U:
    run it, which crashed the simulation. Migrating a suspended exec does not resume it anymore. (GitHub #297)
  - Fix the accounting of execs terminating while running in a VM without being waited for: when their actor is killed,
    when their actor terminates, or when they complete unobserved. The VM kept loading its PM forever.
+ - VMs now load their PM according to the bounds of the execs they contain: an exec bounded to half a core in a VM
+   loads the PM by half a core instead of a full one, and the other activities of the PM can use the remaining
+   capacity (as shown by the cloud-capping example, whose expected output changed accordingly). Multi-threaded execs
+   are not concerned, as their bound is ignored by the CPU models. (GitHub #297)
 
 Python:
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,

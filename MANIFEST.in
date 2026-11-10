@@ -1031,6 +1031,8 @@ include teshsuite/models/ptask-subflows/ptask-subflows.cpp
 include teshsuite/models/ptask-subflows/ptask-subflows.tesh
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.cpp
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.tesh
+include teshsuite/models/vm-exec-bound/vm-exec-bound.cpp
+include teshsuite/models/vm-exec-bound/vm-exec-bound.tesh
 include teshsuite/models/vm-exec-migration/vm-exec-migration.cpp
 include teshsuite/models/vm-exec-migration/vm-exec-migration.tesh
 include teshsuite/models/vm-exec-termination/vm-exec-termination.cpp

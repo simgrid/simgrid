@@ -38,6 +38,7 @@ public:
 
   unsigned int get_host_number() const { return static_cast<unsigned>(get_hosts().size()); }
   int get_thread_count() const { return thread_count_; }
+  double get_bound() const { return bound_; }
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
   double get_remaining() const override;
