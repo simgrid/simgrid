@@ -462,7 +462,13 @@ double VirtualMachineImpl::get_active_load() const
 void VirtualMachineImpl::update_action_weight()
 {
   /* The VM competes on its PM like the execs it contains, up to its vCPU amount: each exec weighs for one competitor
-   * in the sharing, whatever its bound, exactly as if it was running directly on the PM. */
+   * in the sharing, whatever its bound.
+   *
+   * This is only an approximation of running the execs directly on the PM, as a single variable cannot represent a
+   * mix of bounded and unbounded execs. The share that a bounded exec does not use goes to the whole VM, instead of
+   * being split between all competitors of the PM. For example, on a PM of 2 cores, a VM running an unbounded exec and
+   * an exec bounded to half a core competes with an exec of the PM: the unbounded exec of the VM gets 5/6 of a core
+   * and the exec of the PM 2/3, while they would both get 3/4 of a core on the PM. */
   double weight =
       std::min(static_cast<double>(active_threads_ + active_bounds_.size()), static_cast<double>(get_core_amount()));
   /* But the VM cannot use more cores than what its execs need: a bounded exec only needs a fraction of a core. */
