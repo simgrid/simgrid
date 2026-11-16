@@ -67,8 +67,12 @@ int PMPI_Ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm 
   CHECK_BUFFER(1, buf, count, datatype)
   CHECK_ROOT(4)
   CHECK_REQUEST(6)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast") + " with root " +
-                             std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(comm,
+                         std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast") + " with root " +
+                             std::to_string(root),
+                         comm->rank() == root ? std::vector<size_t>(comm->size(), count * datatype->size())
+                                              : std::vector<size_t>(comm->size()),
+                         simgrid::smpi::utils::bytes_with(comm->size(), root, count * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -116,25 +120,27 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
     CHECK_TYPE(6, recvtype)
     CHECK_COUNT(5, recvcount)
     CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
+    if (sendbuf != MPI_IN_PLACE)
+      CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
   } else {
     CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
   CHECK_ROOT(7)
   CHECK_REQUEST(9)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather") + " with root " +
-                             std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(
+      comm,
+      std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather") + " with root " +
+          std::to_string(root),
+      simgrid::smpi::utils::bytes_with(comm->size(), root, sendbuf == MPI_IN_PLACE ? 0 : sendcount * sendtype->size()),
+      rank == root ? std::vector<size_t>(comm->size(), recvcount * recvtype->size())
+                   : std::vector<size_t>(comm->size()))
 
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
   MPI_Datatype real_sendtype = sendtype;
-  if (rank == root){
-    if (sendbuf == MPI_IN_PLACE) {
-      real_sendcount = 0;
-      real_sendtype  = recvtype;
-    } else if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
-      XBT_WARN("MPI_(I)Gather : received size at root differs from sent size : %zu vs %zu", recvtype->size() * recvcount , sendtype->size() * sendcount);
-      return MPI_ERR_TRUNCATE;
-    }
+  if (rank == root && sendbuf == MPI_IN_PLACE) {
+    real_sendcount = 0;
+    real_sendtype  = recvtype;
   }
 
   const SmpiBenchGuard suspend_bench;
@@ -190,8 +196,13 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   }
   CHECK_ROOT(8)
   CHECK_REQUEST(10)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv") +
-                             " with root " + std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(
+      comm,
+      std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv") + " with root " +
+          std::to_string(root),
+      simgrid::smpi::utils::bytes_with(comm->size(), root, sendbuf == MPI_IN_PLACE ? 0 : sendcount * sendtype->size()),
+      rank == root ? simgrid::smpi::utils::bytes_with_each(comm->size(), recvcounts, recvtype)
+                   : std::vector<size_t>(comm->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -243,7 +254,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   CHECK_COMM(7)
   SET_BUF1(sendbuf)
   SET_BUF2(recvbuf)
-  int rank = comm->rank();
+  int rank = comm->rank(); // used by CHECK_NOT_IN_PLACE
   CHECK_NOT_IN_PLACE(4, recvbuf)
   if(sendbuf != MPI_IN_PLACE){
     CHECK_COUNT(2, sendcount)
@@ -253,8 +264,13 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   CHECK_COUNT(5, recvcount)
   CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
+  if (sendbuf != MPI_IN_PLACE)
+    CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
   CHECK_REQUEST(8)
-  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather")
+  CHECK_COLLECTIVE_SIZES(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallgather",
+                         std::vector<size_t>(comm->size(), sendbuf == MPI_IN_PLACE ? recvcount * recvtype->size()
+                                                                                   : sendcount * sendtype->size()),
+                         std::vector<size_t>(comm->size(), recvcount * recvtype->size()))
 
   if (sendbuf == MPI_IN_PLACE) {
     sendbuf   = static_cast<char*>(recvbuf) + recvtype->get_extent() * recvcount * comm->rank();
@@ -262,19 +278,13 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
     sendtype  = recvtype;
   }
 
-  if(recvtype->size() * recvcount !=  sendtype->size() * sendcount){
-    XBT_WARN("MPI_(I)Allgather : received size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount, sendtype->size() * sendcount);
-    return MPI_ERR_TRUNCATE;
-  }
-
   const SmpiBenchGuard suspend_bench;
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
-  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather",
+  TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallgather",
                      new simgrid::instr::CollTIData(
-                         request == MPI_REQUEST_IGNORED ? "allgather" : "iallgather", -1, -1.0,
-                         sendcount, recvcount,
+                         request == MPI_REQUEST_IGNORED ? "allgather" : "iallgather", -1, -1.0, sendcount, recvcount,
                          simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
@@ -311,7 +321,11 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   CHECK_V_BUFFER(recvbuf, recvcounts, displs, recvtype, comm->size())
   if (sendbuf != MPI_IN_PLACE)
     CHECK_SELF_BLOCK(sendcount, sendtype, recvcounts[rank], recvtype)
-  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv")
+  CHECK_COLLECTIVE_SIZES(
+      comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv",
+      std::vector<size_t>(
+          comm->size(), (sendbuf == MPI_IN_PLACE ? recvcounts[rank] * recvtype->size() : sendcount * sendtype->size())),
+      simgrid::smpi::utils::bytes_with_each(comm->size(), recvcounts, recvtype))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -365,20 +379,22 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     CHECK_COUNT(5, recvcount)
     CHECK_TYPE(6, recvtype)
     CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
+    if (rank == root)
+      CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
   }
-  CHECK_ROOT(8)
+  CHECK_ROOT(7)
   CHECK_REQUEST(9)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter") +
-                             " with root " + std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(
+      comm,
+      std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter") + " with root " +
+          std::to_string(root),
+      rank == root ? std::vector<size_t>(comm->size(), sendcount * sendtype->size())
+                   : std::vector<size_t>(comm->size()),
+      simgrid::smpi::utils::bytes_with(comm->size(), root, recvbuf == MPI_IN_PLACE ? 0 : recvcount * recvtype->size()))
 
   if (recvbuf == MPI_IN_PLACE) {
     recvtype  = sendtype;
     recvcount = sendcount;
-  }
-
-  if((rank == root) && (recvtype->size() * recvcount !=  sendtype->size() * sendcount)){
-    XBT_WARN("MPI_(I)Scatter : sent size to each process differs from receive size");
-    return MPI_ERR_TRUNCATE;
   }
 
   const SmpiBenchGuard suspend_bench;
@@ -436,8 +452,12 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   } else {
     CHECK_NOT_IN_PLACE_ROOT(5, recvbuf)
   }
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv") +
-                             " with root " + std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(comm,
+                         std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv") +
+                             " with root " + std::to_string(root),
+                         rank == root ? simgrid::smpi::utils::bytes_with_each(comm->size(), sendcounts, sendtype)
+                                      : std::vector<size_t>(comm->size()),
+                         simgrid::smpi::utils::bytes_with(comm->size(), root, recvcount * recvtype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -491,8 +511,12 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_OP(5, op, datatype)
   CHECK_ROOT(7)
   CHECK_REQUEST(8)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce") + " with op " +
-                             op->name() + " and root " + std::to_string(root))
+  CHECK_COLLECTIVE_SIZES(comm,
+                         std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce") + " with op " +
+                             op->name() + " and root " + std::to_string(root),
+                         simgrid::smpi::utils::bytes_with(comm->size(), root, count * datatype->size()),
+                         comm->rank() == root ? std::vector<size_t>(comm->size(), count * datatype->size())
+                                              : std::vector<size_t>(comm->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -548,8 +572,11 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   CHECK_BUFFER(1, sendbuf, count, datatype)
   CHECK_BUFFER(2, recvbuf, count, datatype)
   CHECK_REQUEST(7)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Alleduce" : "PMPI_Iallreduce") +
-                             " with op " + op->name())
+  CHECK_COLLECTIVE_SIZES(comm,
+                         std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce") +
+                             " with op " + op->name(),
+                         std::vector<size_t>(comm->size(), count * datatype->size()),
+                         std::vector<size_t>(comm->size(), count * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -588,8 +615,10 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_BUFFER(2,recvbuf,count, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
-  CHECK_COLLECTIVE(comm,
-                   std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan") + " with op " + op->name())
+  CHECK_COLLECTIVE_SIZES(
+      comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan") + " with op " + op->name(),
+      std::vector<size_t>(comm->size(), count * datatype->size()),
+      std::vector<size_t>(comm->size(), count * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -630,8 +659,10 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_BUFFER(2, recvbuf, count, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan") + " with op " +
-                             op->name())
+  CHECK_COLLECTIVE_SIZES(
+      comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan") + " with op " + op->name(),
+      std::vector<size_t>(comm->size(), count * datatype->size()),
+      std::vector<size_t>(comm->size(), count * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -678,8 +709,11 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     CHECK_BUFFER(1, sendbuf, recvcounts[i], datatype)
     CHECK_BUFFER(2, recvbuf, recvcounts[i], datatype)
   }
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter") +
-                             " with op " + op->name())
+  CHECK_COLLECTIVE_SIZES(comm,
+                         std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter") +
+                             " with op " + op->name(),
+                         simgrid::smpi::utils::bytes_with_each(comm->size(), recvcounts, datatype),
+                         std::vector<size_t>(comm->size(), recvcounts[comm->rank()] * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -727,9 +761,12 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   CHECK_BUFFER(2, recvbuf, recvcount, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
-  CHECK_COLLECTIVE(
-      comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block") +
-                " with op " + op->name())
+  CHECK_COLLECTIVE_SIZES(
+      comm,
+      std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block") +
+          " with op " + op->name(),
+      std::vector<size_t>(comm->size(), recvcount * datatype->size()),
+      std::vector<size_t>(comm->size(), recvcount * datatype->size()))
 
   const SmpiBenchGuard suspend_bench;
 
@@ -776,10 +813,14 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   }
   CHECK_TYPE(6, recvtype)
   CHECK_COUNT(5, recvcount)
-  CHECK_COUNT(5, recvcount)
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
+  if (sendbuf != MPI_IN_PLACE)
+    CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
   CHECK_REQUEST(8)
-  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall")
+  CHECK_COLLECTIVE_SIZES(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
+                         std::vector<size_t>(comm->size(), sendbuf == MPI_IN_PLACE ? recvcount * recvtype->size()
+                                                                                   : sendcount * sendtype->size()),
+                         std::vector<size_t>(comm->size(), recvcount * recvtype->size()))
 
   aid_t pid                  = simgrid::s4u::this_actor::get_pid();
   int real_sendcount         = sendcount;
@@ -791,11 +832,6 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   if (sendbuf == MPI_IN_PLACE) {
     real_sendcount = recvcount;
     real_sendtype  = recvtype;
-  }
-
-  if(recvtype->size() * recvcount !=  real_sendtype->size() * real_sendcount){
-    XBT_WARN("MPI_(I)Alltoall : receive size from each process differs from sent size : %zu vs %zu", recvtype->size() * recvcount,  real_sendtype->size() * real_sendcount);
-    return MPI_ERR_TRUNCATE;
   }
 
   const SmpiBenchGuard suspend_bench;
@@ -838,15 +874,18 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_NULL(6, MPI_ERR_COUNT, recvcounts)
   CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
   CHECK_REQUEST(10)
-  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv")
+  int size = comm->size();
+  CHECK_V_BUFFER(recvbuf, recvcounts, recvdispls, recvtype, size)
+  if (sendbuf != MPI_IN_PLACE) {
+    CHECK_V_BUFFER(sendbuf, sendcounts, senddispls, sendtype, size)
+    CHECK_SELF_BLOCK(sendcounts[comm->rank()], sendtype, recvcounts[comm->rank()], recvtype)
+  }
+  CHECK_COLLECTIVE_SIZES(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv",
+                         sendbuf == MPI_IN_PLACE ? simgrid::smpi::utils::bytes_with_each(size, recvcounts, recvtype)
+                                                 : simgrid::smpi::utils::bytes_with_each(size, sendcounts, sendtype),
+                         simgrid::smpi::utils::bytes_with_each(size, recvcounts, recvtype))
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
-  int size = comm->size();
-  if (sendbuf != MPI_IN_PLACE)
-    CHECK_V_BUFFER(sendbuf, sendcounts, senddispls, sendtype, size)
-  CHECK_V_BUFFER(recvbuf, recvcounts, recvdispls, recvtype, size)
-  if (sendbuf != MPI_IN_PLACE)
-    CHECK_SELF_BLOCK(sendcounts[comm->rank()], sendtype, recvcounts[comm->rank()], recvtype)
 
   const SmpiBenchGuard suspend_bench;
 
@@ -882,11 +921,6 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
       maxsize = (recvdispls[i] + recvcounts[i]) * dt_size_recv;
   }
   real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
-
-  if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
-    XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
-    return MPI_ERR_TRUNCATE;
-  }
 
   trace_sendcounts->insert(trace_sendcounts->end(), &real_sendcounts[0], &real_sendcounts[size]);
 

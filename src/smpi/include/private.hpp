@@ -650,11 +650,15 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_COMM2(num, comm)\
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
 
-#define CHECK_COLLECTIVE(comm, call)                                                                                   \
+#define CHECK_COLLECTIVE(comm, call) CHECK_COLLECTIVE_SIZES((comm), (call), {}, {})
+
+/* In pedantic mode, check the collective ordering and the bytes exchanged with each rank (sends and recvs are only
+ * evaluated in pedantic mode, see check_collectives_ordering()) */
+#define CHECK_COLLECTIVE_SIZES(comm, call, sends, recvs)                                                               \
   {                                                                                                                    \
     if (_smpi_cfg_pedantic) {                                                                                          \
       std::string call_string = (call);                                                                                \
-      CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string) != MPI_SUCCESS),               \
+      CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string, sends, recvs) != MPI_SUCCESS), \
                  MPI_ERR_OTHER, "%s: collective mismatch", call_string.c_str())                                        \
     }                                                                                                                  \
   }

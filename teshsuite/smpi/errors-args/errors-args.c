@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* Smoke test of the SMPI argument checks: every call below is erroneous, and must be reported and return an error.
- * It runs on a single rank, so that a collective failing on one rank cannot desynchronize the others. */
+ * On one rank, the local checks are tested. On two ranks, the checks comparing the arguments of several ranks are. */
 
 #include <mpi.h>
 #include <stdio.h>
@@ -16,9 +16,8 @@ static void expect_error(int ret, const char* what)
     printf("Error not detected: %s\n", what);
 }
 
-int main(int argc, char* argv[])
+static void local_errors(void)
 {
-  MPI_Init(&argc, &argv);
   int sbuf[4] = {0, 1, 2, 3};
   int* rbuf   = malloc(4 * sizeof(int)); /* malloc'ed so that SMPI knows its size */
   int counts[1];
@@ -44,6 +43,38 @@ int main(int argc, char* argv[])
   MPI_Wait(&req, MPI_STATUS_IGNORE);
 
   free(rbuf);
+}
+
+/* Rank 1 enters the collective first (its small send completes alone), so that the root detects the error and returns
+ * instead of waiting for data. */
+static void cross_rank_errors(int rank)
+{
+  int sbuf[2]   = {0, 1};
+  int rbuf[3]   = {0};
+  int counts[2] = {1, 1};
+  int displs[2] = {0, 1};
+  int token     = 0;
+
+  if (rank == 1) {
+    MPI_Gatherv(sbuf, 2, MPI_INT, NULL, NULL, NULL, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Send(&token, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+  } else {
+    MPI_Recv(&token, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    expect_error(MPI_Gatherv(sbuf, 1, MPI_INT, rbuf, counts, displs, MPI_INT, 0, MPI_COMM_WORLD), "pairwise size");
+  }
+}
+
+int main(int argc, char* argv[])
+{
+  int rank;
+  int size;
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  if (size == 1)
+    local_errors();
+  else
+    cross_rank_errors(rank);
   MPI_Finalize();
   return 0;
 }
