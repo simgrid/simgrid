@@ -56,7 +56,7 @@ void add_benched_time(double time){
 
 void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr)
 {
-  if (smpi_cfg_display_alloc()) {
+  if (smpi_cfg_display_alloc() || _smpi_cfg_pedantic) {
     alloc_metadata_t metadata;
     metadata.size = size;
     metadata.line = line;
@@ -281,7 +281,7 @@ size_t get_buffer_size(const void* buf){
 }
 
 void account_free(const void* ptr){
-  if (smpi_cfg_display_alloc()) {
+  if (smpi_cfg_display_alloc() || _smpi_cfg_pedantic) {
     allocs.erase(ptr);
   }
 }

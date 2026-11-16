@@ -1647,18 +1647,21 @@ This can ease debugging by going after the first reported error.
 
 .. _cfg=smpi/pedantic:
 
-Disable pedantic MPI errors
-...........................
+Enable pedantic MPI errors
+..........................
 
-**Option** ``smpi/pedantic`` **default:** on
+**Option** ``smpi/pedantic`` **default:** off
 
-By default, SMPI will report all errors it finds in MPI codes. Some of these errors
-may not be considered as errors by all developers. This flag can be turned off to
-avoid reporting some usually harmless mistakes.
-Concerned errors list (will be expanded in the future):
+When turned on, SMPI reports additional errors in MPI codes. Some of them may not be
+considered as errors by all developers, and some checks are costly. Concerned checks:
 
+ - All processes must call the same collective operations in the same order, with
+   the same root.
  - Calling MPI_Win_fence only once in a program, hence just opening an epoch without
    ever closing it.
+ - The size of the buffers allocated with malloc() is tracked (as with
+   :ref:`cfg=smpi/display-allocs`, but without the final report), so that MPI calls
+   using more memory than allocated are detected.
 
 .. _cfg=smpi/iprobe:
 
