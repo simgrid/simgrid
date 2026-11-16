@@ -1,4 +1,4 @@
-foreach(example borken-context corrupt-stack platform-mix)
+foreach(example borken-context corrupt-stack platform-mix several-profiles)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 

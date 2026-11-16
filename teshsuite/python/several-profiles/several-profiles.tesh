@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+p Profiles of every kind on several resources, all set from Python
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/several-profiles.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.500000] (1:watcher@C) A on, B on; L on, 1E+08 B/s, 1 ms
+> [  1.500000] (1:watcher@C) A off, B on; L on, 1E+08 B/s, 1 ms
+> [  2.500000] (1:watcher@C) A on, B off; L on, 5E+07 B/s, 2 ms
+> [  3.500000] (1:watcher@C) A on, B on; L off, 5E+07 B/s, 2 ms

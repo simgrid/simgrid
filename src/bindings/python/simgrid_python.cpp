@@ -1013,7 +1013,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "set_speed_profile",
           [](Host* h, const std::string& profile, double period) {
-            h->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+            h->set_speed_profile(
+                simgrid::kernel::profile::ProfileBuilder::from_string(h->get_name() + "_speed", profile, period));
           },
           "Specify a profile modeling the external load according to an exhaustive list. "
           "Each line of the profile describes timed events as ``date ratio``. "
@@ -1031,7 +1032,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "set_state_profile",
           [](Host* h, const std::string& profile, double period) {
-            h->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+            h->set_state_profile(
+                simgrid::kernel::profile::ProfileBuilder::from_string(h->get_name() + "_state", profile, period));
           },
           "Specify a profile modeling the churn. "
           "Each line of the profile describes timed events as ``date boolean``, where the boolean (0 or 1) tells "
@@ -1424,7 +1426,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "set_bandwidth_profile",
           [](Link* l, const std::string& profile, double period) {
-            l->set_bandwidth_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+            l->set_bandwidth_profile(
+                simgrid::kernel::profile::ProfileBuilder::from_string(l->get_name() + "_bandwidth", profile, period));
           },
           "Specify a profile modeling the external load according to an exhaustive list. "
           "Each line of the profile describes timed events as ``date bandwidth`` (in bytes per second). "
@@ -1442,7 +1445,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "set_latency_profile",
           [](Link* l, const std::string& profile, double period) {
-            l->set_latency_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+            l->set_latency_profile(
+                simgrid::kernel::profile::ProfileBuilder::from_string(l->get_name() + "_latency", profile, period));
           },
           "Specify a profile modeling the external load according to an exhaustive list. "
           "Each line of the profile describes timed events as ``date latency`` (in seconds). "
@@ -1460,7 +1464,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "set_state_profile",
           [](Link* l, const std::string& profile, double period) {
-            l->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+            l->set_state_profile(
+                simgrid::kernel::profile::ProfileBuilder::from_string(l->get_name() + "_state", profile, period));
           },
           "Specify a profile modeling the churn. "
           "Each line of the profile describes timed events as ``date boolean``, where the boolean (0 or 1) tells "
