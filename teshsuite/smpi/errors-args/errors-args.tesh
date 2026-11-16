@@ -1,0 +1,10 @@
+# Smoke test of the SMPI argument checks. The final MPI wrapper warnings (smpi_mpi) are hidden as they repeat the error code.
+
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 1 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/errors-args --cfg=smpi/pedantic:yes --cfg=smpi/errors-are-fatal:no --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=smpi_mpi.thres:error "--log=root.fmt:[%c/%p]%e%m%n"
+> [smpi_pmpi/WARNING] PMPI_Igatherv: block 0 (displs[0]=3, recvcounts[0]=2, type MPI_INT) ends at byte 20, outside of buffer recvbuf (16 bytes)
+> [smpi_pmpi/WARNING] PMPI_Igatherv: rank 0 sends 8 bytes to itself (sendcount=2 of MPI_INT) but receives 4 bytes (recvcounts[root]=1 of MPI_INT)
+> [smpi_pmpi/WARNING] PMPI_Ialltoallv: sendcounts[0] (=-1) cannot be negative
+> [smpi_request/WARNING] Message truncated: rank 0 sent 16 bytes of MPI_INT with tag 0 to rank 0, which receives at most 8 bytes
+> [smpi_request/WARNING] recv - returned MPI_ERR_TRUNCATE instead of MPI_SUCCESS
+> [smpi_request/WARNING] Mismatched datatypes: rank 0 sent MPI_INT with tag 1 to rank 0, which receives MPI_DOUBLE
+> [smpi_request/WARNING] recv - returned MPI_ERR_TYPE instead of MPI_SUCCESS
