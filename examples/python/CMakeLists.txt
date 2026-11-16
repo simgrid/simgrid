@@ -13,6 +13,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         activityset-testany activityset-waitall activityset-waitallfor activityset-waitany
         app-masterworkers
         cloud-capping cloud-migration cloud-simple
+        dag-failure-scheduling
         comm-dependent comm-wait comm-failure comm-host2host comm-pingpong
         comm-ready comm-suspend comm-throttling comm-waituntil
         energy-boot energy-exec energy-exec-ptask energy-link energy-vm energy-wifi
@@ -53,6 +54,7 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}   examples/python/actor-create/actor-create_d.xml
                                   examples/python/actor-lifetime/actor-lifetime_d.xml
                                   examples/python/app-masterworkers/app-masterworkers_d.xml
+                                  examples/python/dag-failure-scheduling/workflow.json
                                   examples/python/io-file-remote/io-file-remote_d.xml
                                   examples/python/platform-failures/platform-failures_d.xml
                                   PARENT_SCOPE)
