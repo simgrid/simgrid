@@ -179,9 +179,12 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   if(rank == root){
     SET_BUF2(recvbuf)
     CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
-    CHECK_TYPE(6, recvtype)
+    CHECK_TYPE(7, recvtype)
     CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
     CHECK_NULL(6, MPI_ERR_ARG, displs)
+    CHECK_V_BUFFER(recvbuf, recvcounts, displs, recvtype, comm->size())
+    if (sendbuf != MPI_IN_PLACE)
+      CHECK_SELF_BLOCK(sendcount, sendtype, recvcounts[root], recvtype)
   } else {
     CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
@@ -189,13 +192,6 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   CHECK_REQUEST(10)
   CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv") +
                              " with root " + std::to_string(root))
-
-  if (rank == root){
-    for (int i = 0; i < comm->size(); i++) {
-      CHECK_COUNT(5, recvcounts[i])
-      CHECK_BUFFER(4,recvbuf,recvcounts[i], recvtype)
-    }
-  }
 
   const SmpiBenchGuard suspend_bench;
 
@@ -303,7 +299,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   int rank = comm->rank();
   if(sendbuf != MPI_IN_PLACE)
     CHECK_TYPE(3, sendtype)
-  CHECK_TYPE(6, recvtype)
+  CHECK_TYPE(7, recvtype)
   CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
   CHECK_NULL(6, MPI_ERR_ARG, displs)
   if(sendbuf != MPI_IN_PLACE){
@@ -312,11 +308,10 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   }
   CHECK_REQUEST(9)
   CHECK_NOT_IN_PLACE(4, recvbuf)
-  for (int i = 0; i < comm->size(); i++) {
-    CHECK_COUNT(5, recvcounts[i])
-    CHECK_BUFFER(4, recvbuf, recvcounts[i], recvtype)
-  }
-  CHECK_COLLECTIVE(comm, MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv")
+  CHECK_V_BUFFER(recvbuf, recvcounts, displs, recvtype, comm->size())
+  if (sendbuf != MPI_IN_PLACE)
+    CHECK_SELF_BLOCK(sendcount, sendtype, recvcounts[rank], recvtype)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv")
 
   const SmpiBenchGuard suspend_bench;
 
@@ -420,11 +415,11 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   CHECK_COMM(9)
   int rank = comm->rank();
   if(recvbuf != MPI_IN_PLACE){
-    CHECK_COUNT(5, recvcount)
+    CHECK_COUNT(6, recvcount)
     CHECK_TYPE(7, recvtype)
-    CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
+    CHECK_BUFFER(5, recvbuf, recvcount, recvtype)
   }
-  CHECK_ROOT(9)
+  CHECK_ROOT(8)
   CHECK_REQUEST(10)
   if (rank == root) {
     SET_BUF1(sendbuf)
@@ -432,16 +427,14 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
     CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
     CHECK_NULL(3, MPI_ERR_ARG, displs)
     CHECK_TYPE(4, sendtype)
-    for (int i = 0; i < comm->size(); i++){
-      CHECK_COUNT(2, sendcounts[i])
-      CHECK_BUFFER(1, sendbuf, sendcounts[i], sendtype)
-    }
+    CHECK_V_BUFFER(sendbuf, sendcounts, displs, sendtype, comm->size())
     if (recvbuf == MPI_IN_PLACE) {
       recvtype  = sendtype;
       recvcount = sendcounts[rank];
     }
+    CHECK_SELF_BLOCK(sendcounts[root], sendtype, recvcount, recvtype)
   } else {
-    CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
+    CHECK_NOT_IN_PLACE_ROOT(5, recvbuf)
   }
   CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv") +
                              " with root " + std::to_string(root))
@@ -849,14 +842,11 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
-  for (int i = 0; i < size; i++) {
-    if(sendbuf != MPI_IN_PLACE){
-      CHECK_BUFFER(1, sendbuf, sendcounts[i], sendtype)
-      CHECK_COUNT(2, sendcounts[i])
-    }
-    CHECK_BUFFER(5, recvbuf, recvcounts[i], recvtype)
-    CHECK_COUNT(6, recvcounts[i])
-  }
+  if (sendbuf != MPI_IN_PLACE)
+    CHECK_V_BUFFER(sendbuf, sendcounts, senddispls, sendtype, size)
+  CHECK_V_BUFFER(recvbuf, recvcounts, recvdispls, recvtype, size)
+  if (sendbuf != MPI_IN_PLACE)
+    CHECK_SELF_BLOCK(sendcounts[comm->rank()], sendtype, recvcounts[comm->rank()], recvtype)
 
   const SmpiBenchGuard suspend_bench;
 
