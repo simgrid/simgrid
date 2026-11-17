@@ -521,6 +521,15 @@ int Win::lock(int lock_type, int rank, int /*assert*/)
 {
   MPI_Win target_win = connected_wins_[rank];
 
+  if (std::find(begin(target_win->lockers_), end(target_win->lockers_), rank_) != end(target_win->lockers_)) {
+    XBT_WARN("Attempt to lock rank %d of a MPI_Win that is already locked by this process", rank);
+    return MPI_ERR_RMA_SYNC;
+  }
+  if (_smpi_cfg_pedantic && opened_ > 0) { // only check in pedantic mode, as it's not clear this is illegal
+    XBT_WARN("Attempt to lock a MPI_Win within a fence epoch -missing MPI_Win_fence(MPI_MODE_NOSUCCEED) ?");
+    return MPI_ERR_RMA_SYNC;
+  }
+
   if ((lock_type == MPI_LOCK_EXCLUSIVE && target_win->mode_ != MPI_LOCK_SHARED)|| target_win->mode_ == MPI_LOCK_EXCLUSIVE){
     target_win->lock_mut_->lock();
     target_win->mode_+= lock_type;//add the lock_type to differentiate case when we are switching from EXCLUSIVE to SHARED (no release needed in the unlock)
@@ -537,6 +546,14 @@ int Win::lock(int lock_type, int rank, int /*assert*/)
 }
 
 int Win::lock_all(int assert){
+  // Check before taking any lock, so that an error leaves no lock taken. Other errors are caught by the first lock()
+  if (std::any_of(begin(connected_wins_), end(connected_wins_), [this](const MPI_Win& win) {
+        return std::find(begin(win->lockers_), end(win->lockers_), rank_) != end(win->lockers_);
+      })) {
+    XBT_WARN("Attempt to lock all ranks of a MPI_Win that is already locked by this process");
+    return MPI_ERR_RMA_SYNC;
+  }
+
   int retval = MPI_SUCCESS;
   for (int i = 0; i < comm_->size(); i++) {
     int ret = this->lock(MPI_LOCK_SHARED, i, assert);
