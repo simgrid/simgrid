@@ -109,15 +109,9 @@ int main(int argc, char* argv[])
       multiply_sampled(a, b, c, istart, iend, size);
     }
 
-    // Gather computed results.
-    MPI_Gather(c + (size/nproc*rank),
-               size*size/nproc,
-               MPI_FLOAT,
-               c + (size/nproc*rank),
-               size*size/nproc,
-               MPI_FLOAT,
-               0,
-               MPI_COMM_WORLD);
+    // Gather computed results. The root's block is already in place.
+    MPI_Gather(rank == 0 ? MPI_IN_PLACE : c + (size / nproc * rank), size * size / nproc, MPI_FLOAT,
+               c + (size / nproc * rank), size * size / nproc, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
         // Compute remaining multiplications
