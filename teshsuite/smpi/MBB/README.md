@@ -62,3 +62,8 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 - Cases depending on the buffering of point-to-point communications, run with both zero and infinite buffering
   (MBI's `P2PBuffering_*` cases, using `--cfg=smpi/buffering`).
 - Call orderings depending on the input of the program (MBI's `InputHazardCallOrdering_*` cases).
+
+## TODO
+
+- Free the buffers allocated by the generated cases (`Infrastructure/AllocCall.py` provides `get_free()`). SMPI reports
+  the unfreed buffers at the end of each explored trace, which bloats the logs of the failing cases.

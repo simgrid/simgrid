@@ -45,7 +45,6 @@ proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subproce
                         start_new_session=True)
 try:
     output = proc.communicate(timeout=300)[0]
-    print(output)
     # Same classification order as MBI's simgrid.py: the first matching pattern wins
     outcome = 'other'
     for (pattern, result) in [('MC is currently not supported here', 'failure'),
@@ -60,10 +59,15 @@ try:
             break
 except subprocess.TimeoutExpired:
     os.killpg(proc.pid, signal.SIGKILL)
-    print(proc.communicate()[0])
+    output = proc.communicate()[0]
     outcome = 'timeout'
 
 if outcome in ['timeout', 'failure', 'UNIMPLEMENTED', 'other'] or (outcome == 'OK') != (expect == 'OK'):
+    # Only show the beginning and the end of the output: the model-checker may print the same reports on each trace
+    lines = output.splitlines()
+    if len(lines) > 200:
+        lines = lines[:100] + [f"[{len(lines) - 200} lines omitted]"] + lines[-100:]
+    print("\n".join(lines))
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n")
     print(f"SimGrid gave the wrong result on {binary} ({outcome} instead of {detail}).")
     sys.exit(1)
