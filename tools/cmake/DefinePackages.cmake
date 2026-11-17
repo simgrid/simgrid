@@ -1066,6 +1066,7 @@ set(CMAKEFILES_TXT
   teshsuite/s4u/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
 
+  teshsuite/smpi/MBB/CMakeLists.txt
   teshsuite/smpi/MBI/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt

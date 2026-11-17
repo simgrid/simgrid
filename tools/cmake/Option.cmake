@@ -84,6 +84,8 @@ if(enable_smpi_MBI_testsuite)
   SET(enable_testsuite_smpi_MBI ON CACHE BOOL "Whether the test suite from MBI should be built." FORCE)
 endif()
 
+option(enable_testsuite_smpi_MBB "Whether the test suite from MPI-BugBench should be built (see also MBB_LEVEL)." off)
+
 option(enable_testsuite_McMini "Whether the test suite from McMini should be built." off)
 option(enable_testsuite_dpu    "Whether the test suite from DPU should be built." off)
 

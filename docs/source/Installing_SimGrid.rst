@@ -298,6 +298,9 @@ enable_testsuite_McMini (on/OFF)
 enable_testsuite_smpi_MBI (on/OFF)
   Adds many extra tests for the model checker module (targeting MPI applications).
 
+enable_testsuite_smpi_MBB (on/OFF)
+  Adds many extra tests for the model checker module (targeting MPI applications), from https://git-ce.rwth-aachen.de/hpc-public/mpi-bugbench
+
 enable_testsuite_smpi_MPICH3 (on/OFF)
   Adds many extra tests for the MPI module.
 
