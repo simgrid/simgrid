@@ -264,7 +264,8 @@ class GlobalConcurrencyErrorRMA(ErrorGenerator):
         for (ops1, ops2, hasconflict), sync_mode in combos:
             for shouldsync in [False, True]:
                 for (op1, op2) in itertools.product(ops1, ops2):
-                    self.tm = TemplateManager(min_ranks=3)
+                    # a third rank is only needed when both accesses are remote ones
+                    self.tm = TemplateManager(min_ranks=2 if op2 in self.buf_instructions else 3)
                     (win_declare, win_alloc, win_free) = get_allocated_window(
                         "mpi_win_create", cf.get("win"), cf.winbuf_var_name, "int", "10")
                     # window allocation boilerplate
