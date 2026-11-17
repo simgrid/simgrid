@@ -13,6 +13,7 @@ These files are modified only by patches meant to be sent upstream, so `upstream
 checkout to extract them. Local changes not merged upstream yet:
 
 - clang-format is not applied to the generated files unless `generate.py --clang_format` is given.
+- `generate.py --score_table` loads a precomputed scoring table, and `--save_score_table` saves the computed one.
 
 To update the copy from an MBB checkout in `$MBB`:
 
@@ -33,12 +34,10 @@ table that it computes from `real_world_data.csv.tar.gz`, a dataset of the MPI c
 (114 kB) instead of the dataset. Regenerate it when the dataset or `upstream/Infrastructure/ScoingModule/` changes:
 
 ```
-cd $MBB && tar xzf real_world_data.csv.tar.gz && cd scripts
-python3 -c "import pandas as pd
-from Infrastructure.ScoingModule.ScoringTable import get_scoring_table
-get_scoring_table(pd.read_csv('../output.csv', header=0, low_memory=False), c_only=True).to_csv('score_table.csv', index=False)"
-mv score_table.csv $SIMGRID/teshsuite/smpi/MBB/
+cd $MBB && tar xzf real_world_data.csv.tar.gz
+cd $SIMGRID/teshsuite/smpi/MBB
+python3 upstream/generate.py --generator_dir upstream/errors --level 2 --count_only \
+        --real_world_data $MBB/output.csv --save_score_table score_table.csv
 ```
 
-Reload it with `pd.read_csv('score_table.csv', header=0, dtype=str).astype({'score': float})` to get a table that
-generates exactly the same cases as the one computed from the dataset.
+`generate.py --score_table score_table.csv` then generates exactly the same cases as from the dataset.

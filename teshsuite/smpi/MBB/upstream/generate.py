@@ -17,6 +17,10 @@ if __name__ == "__main__":
                         help="Level of tests to generate. 1: simple cases, 2: caseswith sufficient coverage, 3: usage combinations found in real wolrd dataset, 4: all possible usage combinations")
     parser.add_argument("--real_world_data", default=None, required=False, action="store",
                         help="file of real world dataset, only relevant if level is 3")
+    parser.add_argument("--score_table", default=None, required=False, action="store",
+                        help="precomputed scoring table to use instead of the real world dataset")
+    parser.add_argument("--save_score_table", default=None, required=False, action="store",
+                        help="file where to save the scoring table computed from the real world dataset")
     parser.add_argument("--mpi_version", default="4.1", required=False, help="maximum MPI versions to use")
     parser.add_argument("--count_only", default=False, action="store_true", required=False,
                         help="Only count the cases dont generate them")
@@ -36,8 +40,13 @@ if __name__ == "__main__":
 
     score_table = None
     if ARGS.level in REAL_WORLD_FILTERING_LEVELS:
-        print("Read real world dataset and build scoring table")
-        score_table = get_scoring_table(pd.read_csv(ARGS.real_world_data, header=0, low_memory=False), c_only=True)
+        if ARGS.score_table:
+            score_table = pd.read_csv(ARGS.score_table, header=0, dtype=str).astype({"score": float})
+        else:
+            print("Read real world dataset and build scoring table")
+            score_table = get_scoring_table(pd.read_csv(ARGS.real_world_data, header=0, low_memory=False), c_only=True)
+            if ARGS.save_score_table:
+                score_table.to_csv(ARGS.save_score_table, index=False)
 
     gm = GeneratorManager(ARGS.generator_dir, score_table)
 
