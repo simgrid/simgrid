@@ -49,7 +49,8 @@ try:
                               ('Collective communication mismatch', 'Collective mismatch'),
                               ('DEADLOCK DETECTED', 'deadlock'), ('returned MPI_ERR', 'mpierr'),
                               ('Not yet implemented', 'UNIMPLEMENTED'), ('CRASH IN THE PROGRAM', 'failure'),
-                              ('Probable memory leaks in your code: SMPI detected', 'resleak'),
+                              # MBB never frees its plain buffers, so only leaked MPI handles are errors
+                              (r'Probable memory leaks in your code: SMPI detected \d+ unfreed MPI handles', 'resleak'),
                               ('DFS exploration ended.', 'OK')]:
         if re.search(pattern, output):
             outcome = result
