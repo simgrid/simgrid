@@ -43,3 +43,21 @@ python3 upstream/generate.py --generator_dir upstream/errors --level 2 --count_o
 ```
 
 `generate.py --score_table score_table.csv` then generates exactly the same cases as from the dataset.
+
+## Before dropping MBI
+
+MBB does not cover everything that `../MBI/` tests yet, at any generation level. The following should be added to MBB
+(preferably upstream) before removing MBI:
+
+- RMA epochs mixing `MPI_Win_lock` and `MPI_Win_lock_all` in both orders. MBB only nests epochs of the same kind or
+  after a fence, while these mixed cases exercise distinct checks in `Win::lock()` and `Win::lock_all()`.
+- Scan and Exscan with at least 3 processes, racing with an `MPI_ANY_SOURCE` reception. MBB only runs them with 2
+  processes, so no rank waits on several receptions at once (MBI's `MessageRace_{Scan,Exscan}_*_ok` cases).
+- Calls to `MPI_Allgatherv`, `MPI_Alltoallv`, `MPI_Iallgatherv`, `MPI_Ialltoallv`, `MPI_Iexscan`, `MPI_Group_excl`,
+  `MPI_Op_create` and `MPI_Op_free`, that MBB never uses.
+- Resource leaks (MBI's `ResLeak_*` cases) and missing starts of persistent requests (`ReqLifecycle_MissingStart_*`).
+- Missing waits on non-blocking collectives. MBB only has `MPI_Ibarrier`, while MBI covers 11 other ones
+  (`ReqLifecycle_MissingWait_I*`).
+- Cases depending on the buffering of point-to-point communications, run with both zero and infinite buffering
+  (MBI's `P2PBuffering_*` cases, using `--cfg=smpi/buffering`).
+- Call orderings depending on the input of the program (MBI's `InputHazardCallOrdering_*` cases).
