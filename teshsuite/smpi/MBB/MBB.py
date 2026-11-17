@@ -9,6 +9,7 @@
 
 import os
 import re
+import signal
 import subprocess
 import sys
 
@@ -39,9 +40,11 @@ cmd = cmd.replace("mpirun", f"{build_dir}/smpi_script/bin/smpirun -wrapper '{bui
                   "--cfg=smpi/barrier-finalization:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000")
 cmd = cmd.replace('${EXE}', binary)
 print(f"$ {cmd}", flush=True)
+# Run in a new session, to kill the whole process tree on timeout and not only the shell
+proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                        start_new_session=True)
 try:
-    output = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                            timeout=300).stdout
+    output = proc.communicate(timeout=300)[0]
     print(output)
     # Same classification order as MBI's simgrid.py: the first matching pattern wins
     outcome = 'other'
@@ -56,6 +59,8 @@ try:
             outcome = result
             break
 except subprocess.TimeoutExpired:
+    os.killpg(proc.pid, signal.SIGKILL)
+    print(proc.communicate()[0])
     outcome = 'timeout'
 
 if outcome in ['timeout', 'failure', 'UNIMPLEMENTED', 'other'] or (outcome == 'OK') != (expect == 'OK'):
