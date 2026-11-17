@@ -21,9 +21,10 @@ if (enable_testsuite_smpi_MBB)
     message(FATAL_ERROR "The MBB test suite needs the python modules pandas, numpy, tqdm and typing_extensions.")
   endif()
 
+  # Only generate the cases using the MPI version implemented by SMPI.
   # Levels 2 and 4 only generate the cases that are common in real-world codes, as scored in score_table.csv
   set(generate_args --generator_dir ${CMAKE_CURRENT_SOURCE_DIR}/upstream/errors --level ${MBB_LEVEL}
-                    --outpath ${CMAKE_BINARY_DIR}/MBB/tmp)
+                    --mpi_version 3.1 --outpath ${CMAKE_BINARY_DIR}/MBB/tmp)
   if (MBB_LEVEL EQUAL 2 OR MBB_LEVEL EQUAL 4)
     list(APPEND generate_args --score_table ${CMAKE_CURRENT_SOURCE_DIR}/score_table.csv)
   endif()
@@ -74,6 +75,8 @@ if (enable_testsuite_smpi_MBB)
     target_link_libraries(mbb_${basefile} simgrid)
     target_compile_options(mbb_${basefile} PRIVATE "-Wno-unused-variable")
     target_compile_options(mbb_${basefile} PRIVATE "-Wno-unused-but-set-variable")
+    # The InvalidParam-Request cases pass MPI_REQUEST_NULL where a MPI_Request* is expected
+    target_compile_options(mbb_${basefile} PRIVATE "-Wno-error=incompatible-pointer-types")
     set_target_properties(mbb_${basefile} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/MBB)
     add_dependencies(tests-mbb mbb_${basefile})
 

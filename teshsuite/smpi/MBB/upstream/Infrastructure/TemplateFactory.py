@@ -865,15 +865,15 @@ def get_intercomm(comm_create_func: str, tm: TemplateManager, before_idx: int = 
         tm.insert_instruction(call, before_instruction=before_inst)
         inst = Instruction("int triplet[3];"
                            "triplet[0] =0;"
-                           "triplet[1] =nprocs;"
+                           "triplet[1] =nprocs - 1;"
                            "triplet[2] =2;", identifier=identifier)
         tm.insert_instruction(inst, before_instruction=before_inst)
-        call = MPICallFactory.mpi_group_incl(world_group, "1", "&triplet", "&" +even_group)
+        call = MPICallFactory.mpi_group_range_incl(world_group, "1", "&triplet", "&" +even_group)
         call.set_identifier(identifier)
         tm.insert_instruction(call, before_instruction=before_inst)
         inst = Instruction("triplet[0] =1;", identifier=identifier)
         tm.insert_instruction(inst, before_instruction=before_inst)
-        call = MPICallFactory.mpi_group_incl(world_group, "1", "&triplet", "&" +odd_group)
+        call = MPICallFactory.mpi_group_range_incl(world_group, "1", "&triplet", "&" +odd_group)
         call.set_identifier(identifier)
         tm.insert_instruction(call, before_instruction=before_inst)
 

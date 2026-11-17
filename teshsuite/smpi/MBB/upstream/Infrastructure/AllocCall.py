@@ -7,7 +7,7 @@ from Infrastructure.Instruction import Instruction
 from Infrastructure.Variables import ERROR_MARKER_COMMENT_BEGIN, ERROR_MARKER_COMMENT_END
 
 alloc_template = """
-@{TYPE}@* @{NAME}@ = (@{TYPE}@*) @{FUNCTION}@(@{NUM}@ @{SEP}@ sizeof(@{TYPE}@)); 
+@{TYPE}@* @{NAME}@ = @{FUNCTION}@(@{NUM}@ @{SEP}@ sizeof(*@{NAME}@)); 
 """
 
 """
