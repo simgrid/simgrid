@@ -147,19 +147,19 @@ int main(int argc, char** argv)
       break;
   }
 
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, std::move(reduction)));
-  else if (get_model_checking_reduction() == ReductionMode::udpor)
-    explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
-  else if (_sg_mc_explore_algo == "DFS")
-    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, std::move(reduction)));
-  else if (_sg_mc_explore_algo == "parallel")
-    explo = std::unique_ptr<Exploration>(create_parallelized_exploration(argv_copy, std::move(reduction)));
-  else
-    explo = std::unique_ptr<Exploration>(create_befs_exploration(argv_copy, std::move(reduction)));
-
   ExitStatus status;
-  try {
+  try { // The application may already fail while the exploration starts it
+    if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+      explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, std::move(reduction)));
+    else if (get_model_checking_reduction() == ReductionMode::udpor)
+      explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
+    else if (_sg_mc_explore_algo == "DFS")
+      explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, std::move(reduction)));
+    else if (_sg_mc_explore_algo == "parallel")
+      explo = std::unique_ptr<Exploration>(create_parallelized_exploration(argv_copy, std::move(reduction)));
+    else
+      explo = std::unique_ptr<Exploration>(create_befs_exploration(argv_copy, std::move(reduction)));
+
     if (explo->empty()) {
       std::cerr
           << "Your program did not do any transition before terminating. I won't try to verify it, but that's OK.\n";
