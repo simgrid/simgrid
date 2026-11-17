@@ -723,6 +723,23 @@ XBT_PRIVATE void private_execute_flops(double flops);
                simgrid::smpi::utils::get_buffer_size(buf))                                                             \
   }
 
+/* In pedantic mode, check that the blocks of a v-collective receive buffer do not overlap */
+#define CHECK_V_OVERLAP(buf, counts, displs, datatype, n)                                                              \
+  {                                                                                                                    \
+    if (_smpi_cfg_pedantic) {                                                                                          \
+      auto [first_, second_] = simgrid::smpi::utils::overlapping_blocks((n), (counts), (displs), (datatype));          \
+      CHECK_ARGS(first_ != -1, MPI_ERR_BUFFER, "%s: blocks %d (%s=%d, %s=%d) and %d (%s=%d, %s=%d) of %s overlap",     \
+                 __func__, first_, _XBT_STRINGIFY(displs), (displs)[first_], _XBT_STRINGIFY(counts), (counts)[first_], \
+                 second_, _XBT_STRINGIFY(displs), (displs)[second_], _XBT_STRINGIFY(counts), (counts)[second_],        \
+                 _XBT_STRINGIFY(buf))                                                                                  \
+    }                                                                                                                  \
+  }
+
+/* The send and receive buffers of a collective must differ, MPI_IN_PLACE is meant for that */
+#define CHECK_NOT_ALIASED(sendbuf, recvbuf)                                                                            \
+  CHECK_ARGS((sendbuf) == (recvbuf) && (sendbuf) != nullptr, MPI_ERR_BUFFER,                                           \
+             "%s: sendbuf and recvbuf are the same buffer, use MPI_IN_PLACE instead", __func__)
+
 /* Collectives require the data sent by each process to another one to match in size what the other one receives.
  * This checks the block a process sends to itself. */
 #define CHECK_SELF_BLOCK(scount, stype, rcount, rtype)                                                                 \

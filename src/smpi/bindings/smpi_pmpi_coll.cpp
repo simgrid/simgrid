@@ -126,6 +126,8 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
     CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
   CHECK_ROOT(7)
+  if (rank == root)
+    CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(9)
   CHECK_COLLECTIVE_SIZES(
       comm,
@@ -189,12 +191,15 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
     CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
     CHECK_NULL(6, MPI_ERR_ARG, displs)
     CHECK_V_BUFFER(recvbuf, recvcounts, displs, recvtype, comm->size())
+    CHECK_V_OVERLAP(recvbuf, recvcounts, displs, recvtype, comm->size())
     if (sendbuf != MPI_IN_PLACE)
       CHECK_SELF_BLOCK(sendcount, sendtype, recvcounts[root], recvtype)
   } else {
     CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
   }
   CHECK_ROOT(8)
+  if (rank == root)
+    CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(10)
   CHECK_COLLECTIVE_SIZES(
       comm,
@@ -266,6 +271,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
   if (sendbuf != MPI_IN_PLACE)
     CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(8)
   CHECK_COLLECTIVE_SIZES(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallgather",
                          std::vector<size_t>(comm->size(), sendbuf == MPI_IN_PLACE ? recvcount * recvtype->size()
@@ -316,9 +322,11 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
     CHECK_COUNT(2, sendcount)
     CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
   }
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(9)
   CHECK_NOT_IN_PLACE(4, recvbuf)
   CHECK_V_BUFFER(recvbuf, recvcounts, displs, recvtype, comm->size())
+  CHECK_V_OVERLAP(recvbuf, recvcounts, displs, recvtype, comm->size())
   if (sendbuf != MPI_IN_PLACE)
     CHECK_SELF_BLOCK(sendcount, sendtype, recvcounts[rank], recvtype)
   CHECK_COLLECTIVE_SIZES(
@@ -383,6 +391,8 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
       CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
   }
   CHECK_ROOT(7)
+  if (rank == root)
+    CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(9)
   CHECK_COLLECTIVE_SIZES(
       comm,
@@ -436,6 +446,8 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
     CHECK_BUFFER(5, recvbuf, recvcount, recvtype)
   }
   CHECK_ROOT(8)
+  if (rank == root)
+    CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(10)
   if (rank == root) {
     SET_BUF1(sendbuf)
@@ -510,6 +522,8 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   }
   CHECK_OP(5, op, datatype)
   CHECK_ROOT(7)
+  if (comm->rank() == root)
+    CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(8)
   CHECK_COLLECTIVE_SIZES(comm,
                          std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce") + " with op " +
@@ -571,6 +585,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   CHECK_COUNT(3, count)
   CHECK_BUFFER(1, sendbuf, count, datatype)
   CHECK_BUFFER(2, recvbuf, count, datatype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(7)
   CHECK_COLLECTIVE_SIZES(comm,
                          std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce") +
@@ -613,6 +628,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_COUNT(3, count)
   CHECK_BUFFER(1,sendbuf,count, datatype)
   CHECK_BUFFER(2,recvbuf,count, datatype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
   CHECK_COLLECTIVE_SIZES(
@@ -657,6 +673,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_COUNT(3, count)
   CHECK_BUFFER(1, sendbuf, count, datatype)
   CHECK_BUFFER(2, recvbuf, count, datatype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
   CHECK_COLLECTIVE_SIZES(
@@ -702,6 +719,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   CHECK_NOT_IN_PLACE(2, recvbuf)
   CHECK_TYPE(4, datatype)
   CHECK_NULL(3, MPI_ERR_COUNT, recvcounts)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
   for (int i = 0; i < comm->size(); i++) {
@@ -759,6 +777,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   CHECK_COUNT(3, recvcount)
   CHECK_BUFFER(1, sendbuf, recvcount, datatype)
   CHECK_BUFFER(2, recvbuf, recvcount, datatype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
   CHECK_COLLECTIVE_SIZES(
@@ -816,6 +835,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
   if (sendbuf != MPI_IN_PLACE)
     CHECK_SELF_BLOCK(sendcount, sendtype, recvcount, recvtype)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(8)
   CHECK_COLLECTIVE_SIZES(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
                          std::vector<size_t>(comm->size(), sendbuf == MPI_IN_PLACE ? recvcount * recvtype->size()
@@ -873,9 +893,11 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_TYPE(8, recvtype)
   CHECK_NULL(6, MPI_ERR_COUNT, recvcounts)
   CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
+  CHECK_NOT_ALIASED(sendbuf, recvbuf)
   CHECK_REQUEST(10)
   int size = comm->size();
   CHECK_V_BUFFER(recvbuf, recvcounts, recvdispls, recvtype, size)
+  CHECK_V_OVERLAP(recvbuf, recvcounts, recvdispls, recvtype, size)
   if (sendbuf != MPI_IN_PLACE) {
     CHECK_V_BUFFER(sendbuf, sendcounts, senddispls, sendtype, size)
     CHECK_SELF_BLOCK(sendcounts[comm->rank()], sendtype, recvcounts[comm->rank()], recvtype)

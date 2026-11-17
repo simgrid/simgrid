@@ -338,6 +338,25 @@ int check_collectives_ordering(MPI_Comm comm, const std::string& call, std::vect
   return ret;
 }
 
+std::pair<int, int> overlapping_blocks(int n, const int* counts, const int* displs, MPI_Datatype datatype)
+{
+  if (datatype->size() != static_cast<size_t>(datatype->get_extent()))
+    return {-1, -1};
+  std::vector<int> order;
+  for (int i = 0; i < n; i++)
+    if (counts[i] > 0)
+      order.push_back(i);
+  std::sort(order.begin(), order.end(), [displs](int a, int b) { return displs[a] < displs[b]; });
+  int farthest = -1; // block reaching the farthest among the previous ones
+  for (int i : order) {
+    if (farthest != -1 && displs[i] < displs[farthest] + counts[farthest])
+      return {farthest, i};
+    if (farthest == -1 || displs[i] + counts[i] > displs[farthest] + counts[farthest])
+      farthest = i;
+  }
+  return {-1, -1};
+}
+
 std::vector<size_t> bytes_with(int n, int peer, size_t bytes)
 {
   std::vector<size_t> res(n);

@@ -33,6 +33,7 @@ static void local_errors(void)
   counts[0] = -1;
   expect_error(MPI_Alltoallv(sbuf, counts, displs, MPI_INT, rbuf, one, displs, MPI_INT, MPI_COMM_WORLD),
                "negative count");
+  expect_error(MPI_Allreduce(sbuf, sbuf, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD), "aliased buffers");
 
   MPI_Isend(sbuf, 4, MPI_INT, 0, 0, MPI_COMM_WORLD, &req);
   expect_error(MPI_Recv(rbuf, 2, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE), "truncation");
@@ -45,16 +46,18 @@ static void local_errors(void)
   free(rbuf);
 }
 
-/* Rank 1 enters the collective first (its small send completes alone), so that the root detects the error and returns
- * instead of waiting for data. */
+/* For the size mismatch, rank 1 enters the collective first (its small send completes alone), so that the root detects
+ * the error and returns instead of waiting for data. */
 static void cross_rank_errors(int rank)
 {
   int sbuf[2]   = {0, 1};
   int rbuf[3]   = {0};
   int counts[2] = {1, 1};
-  int displs[2] = {0, 1};
+  int displs[2] = {0, 0};
   int token     = 0;
 
+  expect_error(MPI_Allgatherv(sbuf, 1, MPI_INT, rbuf, counts, displs, MPI_INT, MPI_COMM_WORLD), "overlapping blocks");
+  displs[1] = 1;
   if (rank == 1) {
     MPI_Gatherv(sbuf, 2, MPI_INT, NULL, NULL, NULL, MPI_INT, 0, MPI_COMM_WORLD);
     MPI_Send(&token, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
