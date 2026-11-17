@@ -7,6 +7,7 @@
 
 #include "private.hpp"
 #include "smpi_config.hpp"
+#include "smpi_datatype.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "xbt/ex.h"
 #include "xbt/file.hpp"
@@ -16,6 +17,7 @@
 #include "xbt/sysdep.h"
 #include <algorithm>
 #include <boost/tokenizer.hpp>
+#include <map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
@@ -44,7 +46,14 @@ current_buffer_metadata_t current_buffer2;
 
 std::unordered_map<const void*, alloc_metadata_t> allocs;
 
-std::unordered_map<int, std::vector<std::string>> collective_calls;
+struct collective_call_t {
+  std::string name;
+  int arrived = 0;
+  std::vector<std::vector<size_t>> sends; // bytes sent by each rank to each rank, empty until known
+  std::vector<std::vector<size_t>> recvs; // bytes received by each rank from each rank, empty until known
+};
+// Collective calls not yet entered by all ranks, per communicator id and call index
+std::unordered_map<int, std::map<unsigned int, collective_call_t, std::less<>>> collective_calls;
 
 } // namespace
 
@@ -56,7 +65,7 @@ void add_benched_time(double time){
 
 void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr)
 {
-  if (smpi_cfg_display_alloc()) {
+  if (smpi_cfg_display_alloc() || _smpi_cfg_pedantic) {
     alloc_metadata_t metadata;
     metadata.size = size;
     metadata.line = line;
@@ -281,31 +290,85 @@ size_t get_buffer_size(const void* buf){
 }
 
 void account_free(const void* ptr){
-  if (smpi_cfg_display_alloc()) {
+  if (smpi_cfg_display_alloc() || _smpi_cfg_pedantic) {
     allocs.erase(ptr);
   }
 }
 
-int check_collectives_ordering(MPI_Comm comm, const std::string& call)
+int check_collectives_ordering(MPI_Comm comm, const std::string& call, std::vector<size_t> sends,
+                               std::vector<size_t> recvs)
 {
   unsigned int count = comm->get_collectives_count();
   comm->increment_collectives_count();
-  if (auto vec = collective_calls.find(comm->id()); vec == collective_calls.end()) {
-    collective_calls.try_emplace(comm->id(), std::vector<std::string>{call});
-  } else {
-    // are we the first ? add the call
-    if (vec->second.size() == count) {
-      vec->second.emplace_back(call);
-    } else if (vec->second.size() > count) {
-      if (vec->second[count] != call) {
-        XBT_WARN("Collective operation mismatch. For process %ld, expected %s, got %s",
-                 simgrid::s4u::this_actor::get_pid(), vec->second[count].c_str(), call.c_str());
-        return MPI_ERR_OTHER;
+  auto& calls             = collective_calls[comm->id()];
+  auto [entry, inserted]  = calls.try_emplace(count);
+  collective_call_t& coll = entry->second;
+  if (inserted)
+    coll.name = call;
+  int size = comm->size();
+  int rank = comm->rank();
+  int ret  = MPI_SUCCESS;
+
+  if (coll.name != call) {
+    XBT_WARN("Collective operation mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(),
+             coll.name.c_str(), call.c_str());
+    ret = MPI_ERR_OTHER;
+  } else if (not sends.empty()) {
+    coll.sends.resize(size);
+    coll.recvs.resize(size);
+    // The block exchanged with oneself is checked locally, and peers that did not arrive yet will check against us
+    for (int peer = 0; peer < size && ret == MPI_SUCCESS; peer++) {
+      if (peer == rank || coll.sends[peer].empty())
+        continue;
+      if (sends[peer] != coll.recvs[peer][rank]) {
+        XBT_WARN("%s: rank %d sends %zu bytes to rank %d, which expects %zu bytes", call.c_str(), rank, sends[peer],
+                 peer, coll.recvs[peer][rank]);
+        ret = MPI_ERR_OTHER;
+      } else if (recvs[peer] != coll.sends[peer][rank]) {
+        XBT_WARN("%s: rank %d expects %zu bytes from rank %d, which sends %zu bytes", call.c_str(), rank, recvs[peer],
+                 peer, coll.sends[peer][rank]);
+        ret = MPI_ERR_OTHER;
       }
-    } else {
-      THROW_IMPOSSIBLE;
     }
+    coll.sends[rank] = std::move(sends);
+    coll.recvs[rank] = std::move(recvs);
   }
-  return MPI_SUCCESS;
+  if (++coll.arrived == size)
+    calls.erase(entry);
+  return ret;
+}
+
+std::pair<int, int> overlapping_blocks(int n, const int* counts, const int* displs, MPI_Datatype datatype)
+{
+  if (datatype->size() != static_cast<size_t>(datatype->get_extent()))
+    return {-1, -1};
+  std::vector<int> order;
+  for (int i = 0; i < n; i++)
+    if (counts[i] > 0)
+      order.push_back(i);
+  std::sort(order.begin(), order.end(), [displs](int a, int b) { return displs[a] < displs[b]; });
+  int farthest = -1; // block reaching the farthest among the previous ones
+  for (int i : order) {
+    if (farthest != -1 && displs[i] < displs[farthest] + counts[farthest])
+      return {farthest, i};
+    if (farthest == -1 || displs[i] + counts[i] > displs[farthest] + counts[farthest])
+      farthest = i;
+  }
+  return {-1, -1};
+}
+
+std::vector<size_t> bytes_with(int n, int peer, size_t bytes)
+{
+  std::vector<size_t> res(n);
+  res[peer] = bytes;
+  return res;
+}
+
+std::vector<size_t> bytes_with_each(int n, const int* counts, MPI_Datatype datatype)
+{
+  std::vector<size_t> res(n);
+  for (int i = 0; i < n; i++)
+    res[i] = static_cast<size_t>(counts[i]) * datatype->size();
+  return res;
 }
 } // namespace simgrid::smpi::utils

@@ -4,7 +4,7 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-            type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
+            type-hvector type-indexed type-struct type-vector bug-17132 errors-args gh-139 timers privatization
             io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub replay-ti-colls)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
@@ -51,7 +51,7 @@ endif()
 # C tests
 foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-    type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
+    type-hvector type-indexed type-struct type-vector bug-17132 errors-args gh-139 timers privatization
     macro-shared auto-shared macro-partial-shared macro-partial-shared-communication
     io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub replay-ti-colls)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
@@ -95,7 +95,7 @@ if(enable_smpi)
 
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-    type-hvector type-indexed type-struct type-vector bug-17132 timers io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
+    type-hvector type-indexed type-struct type-vector bug-17132 errors-args timers io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
     ADD_TESH_FACTORIES(tesh-smpi-${x} "*" --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x}/${x}.tesh)
   endforeach()
 

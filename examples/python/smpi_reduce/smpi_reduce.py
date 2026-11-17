@@ -38,8 +38,9 @@ def pinger():
     np_in = np.random.randint(100, size=input_size, dtype=np.int32)
     this_actor.info(f"input buffer {np_in}")
     op = simgrid.smpi.MPI.Op.SUM
-    simgrid.smpi.MPI.Reduce(np_in, np_in, input_size, simgrid.smpi.MPI.Datatype.INT, op, 0, MPI_COMM_WORLD)
-    this_actor.info(f"result buffer {np_in}")
+    np_out = np_in.copy()  # Only the root receives the result
+    simgrid.smpi.MPI.Reduce(np_in, np_out, input_size, simgrid.smpi.MPI.Datatype.INT, op, 0, MPI_COMM_WORLD)
+    this_actor.info(f"result buffer {np_out}")
 
     simgrid.smpi.MPI.Finalize()
 

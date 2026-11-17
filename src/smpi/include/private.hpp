@@ -650,11 +650,15 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_COMM2(num, comm)\
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
 
-#define CHECK_COLLECTIVE(comm, call)                                                                                   \
+#define CHECK_COLLECTIVE(comm, call) CHECK_COLLECTIVE_SIZES((comm), (call), {}, {})
+
+/* In pedantic mode, check the collective ordering and the bytes exchanged with each rank (sends and recvs are only
+ * evaluated in pedantic mode, see check_collectives_ordering()) */
+#define CHECK_COLLECTIVE_SIZES(comm, call, sends, recvs)                                                               \
   {                                                                                                                    \
     if (_smpi_cfg_pedantic) {                                                                                          \
       std::string call_string = (call);                                                                                \
-      CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string) != MPI_SUCCESS),               \
+      CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string, sends, recvs) != MPI_SUCCESS), \
                  MPI_ERR_OTHER, "%s: collective mismatch", call_string.c_str())                                        \
     }                                                                                                                  \
   }
@@ -701,6 +705,50 @@ XBT_PRIVATE void private_execute_flops(double flops);
 
 #define CHECK_COUNT(num, count)\
   CHECK_NEGATIVE((num), MPI_ERR_COUNT, (count))
+
+/* Check the counts and displacements of a v-collective: no count is negative and each block fits in the buffer. */
+#define CHECK_V_BUFFER(buf, counts, displs, datatype, n)                                                               \
+  for (int i_ = 0; i_ < (n); i_++) {                                                                                   \
+    CHECK_ARGS((counts)[i_] < 0, MPI_ERR_COUNT, "%s: %s[%d] (=%d) cannot be negative", __func__,                       \
+               _XBT_STRINGIFY(counts), i_, (counts)[i_])                                                               \
+    CHECK_ARGS((buf) == nullptr && (counts)[i_] > 0, MPI_ERR_BUFFER, "%s: %s cannot be NULL if %s[%d] > 0", __func__,  \
+               _XBT_STRINGIFY(buf), _XBT_STRINGIFY(counts), i_)                                                        \
+    MPI_Aint end_ = (static_cast<MPI_Aint>((displs)[i_]) + (counts)[i_]) * (datatype)->get_extent();                   \
+    CHECK_ARGS((counts)[i_] > 0 &&                                                                                     \
+                   (end_ < 0 || simgrid::smpi::utils::get_buffer_size(buf) < static_cast<size_t>(end_)),               \
+               MPI_ERR_BUFFER,                                                                                         \
+               "%s: block %d (%s[%d]=%d, %s[%d]=%d, type %s) ends at byte %ld, outside of buffer %s (%zu bytes)",      \
+               __func__, i_, _XBT_STRINGIFY(displs), i_, (displs)[i_], _XBT_STRINGIFY(counts), i_, (counts)[i_],       \
+               (datatype)->name().c_str(), static_cast<long>(end_), _XBT_STRINGIFY(buf),                               \
+               simgrid::smpi::utils::get_buffer_size(buf))                                                             \
+  }
+
+/* In pedantic mode, check that the blocks of a v-collective receive buffer do not overlap */
+#define CHECK_V_OVERLAP(buf, counts, displs, datatype, n)                                                              \
+  {                                                                                                                    \
+    if (_smpi_cfg_pedantic) {                                                                                          \
+      auto [first_, second_] = simgrid::smpi::utils::overlapping_blocks((n), (counts), (displs), (datatype));          \
+      CHECK_ARGS(first_ != -1, MPI_ERR_BUFFER, "%s: blocks %d (%s=%d, %s=%d) and %d (%s=%d, %s=%d) of %s overlap",     \
+                 __func__, first_, _XBT_STRINGIFY(displs), (displs)[first_], _XBT_STRINGIFY(counts), (counts)[first_], \
+                 second_, _XBT_STRINGIFY(displs), (displs)[second_], _XBT_STRINGIFY(counts), (counts)[second_],        \
+                 _XBT_STRINGIFY(buf))                                                                                  \
+    }                                                                                                                  \
+  }
+
+/* The send and receive buffers of a collective must differ, MPI_IN_PLACE is meant for that */
+#define CHECK_NOT_ALIASED(sendbuf, recvbuf)                                                                            \
+  CHECK_ARGS((sendbuf) == (recvbuf) && (sendbuf) != nullptr, MPI_ERR_BUFFER,                                           \
+             "%s: sendbuf and recvbuf are the same buffer, use MPI_IN_PLACE instead", __func__)
+
+/* Collectives require the data sent by each process to another one to match in size what the other one receives.
+ * This checks the block a process sends to itself. */
+#define CHECK_SELF_BLOCK(scount, stype, rcount, rtype)                                                                 \
+  CHECK_ARGS(static_cast<size_t>(scount) * (stype)->size() != static_cast<size_t>(rcount) * (rtype)->size(),           \
+             MPI_ERR_COUNT,                                                                                            \
+             "%s: rank %d sends %zu bytes to itself (%s=%d of %s) but receives %zu bytes (%s=%d of %s)", __func__,     \
+             comm->rank(), static_cast<size_t>(scount) * (stype)->size(), _XBT_STRINGIFY(scount), (scount),            \
+             (stype)->name().c_str(), static_cast<size_t>(rcount) * (rtype)->size(), _XBT_STRINGIFY(rcount), (rcount), \
+             (rtype)->name().c_str())
 
 #define CHECK_TYPE(num, datatype)\
   {\

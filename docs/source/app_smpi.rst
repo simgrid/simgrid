@@ -841,6 +841,57 @@ execute it directly (**not** with smpirun).
       .. showfile:: examples/smpi/smpi_s4u_masterworker/deployment_masterworker_mailbox_smpi.xml
          :language: xml
 
+.. _SMPI_checks:
+
+------------------------------------
+Debugging MPI applications with SMPI
+------------------------------------
+
+The MPI standard leaves the behavior of erroneous programs undefined, and actual implementations check very little to
+remain fast: a wrong argument often results in silent data corruption or in a deadlock far away from its cause. SMPI
+checks the arguments of MPI calls instead, and reports the faulty function, parameter and values. As all ranks run in
+the same process, it can also compare the arguments given by several ranks, which distributed implementations cannot
+do cheaply.
+
+..................
+Families of checks
+..................
+
+**Local arguments** (always active). Handles must be valid and not freed; counts, ranks, tags and roots must be in
+range; operations must apply to the datatype; ``MPI_IN_PLACE`` must only be used where allowed. The send and receive
+buffers of a collective must differ, as MPI forbids aliasing of output arguments (use ``MPI_IN_PLACE`` instead). The
+counts and displacements of v-collectives (``MPI_Gatherv`` and friends) must be consistent with the buffer, and the
+data a rank sends to itself must match what it receives.
+
+**Buffer sizes**. When :ref:`cfg=smpi/display-allocs` or :ref:`cfg=smpi/pedantic` is set, SMPI tracks the size of the
+memory allocated with ``malloc()``, and reports MPI calls that would read or write beyond. Buffers on the stack or in
+global variables are not checked.
+
+**Message matching**. A message larger than the receive buffer is an error in MPI (``MPI_ERR_TRUNCATE``), and the
+datatypes of the sender and the receiver must match. Both are reported with the involved ranks and tag. Derived
+datatypes are not compared yet.
+
+**Consistency across ranks** (only with :ref:`cfg=smpi/pedantic`). MPI requires all ranks of a communicator to call the
+same collectives in the same order, with the same root and operation, and the amount of data sent by each rank to
+another to match what the other receives. SMPI reports the rank that differs. It also checks that the blocks of the
+receive buffer of a v-collective do not overlap, as MPI forbids writing a location twice. These checks cost memory and
+time with many ranks, which is why they are not active by default.
+
+**Resource leaks**. :ref:`cfg=smpi/list-leaks` reports the MPI handles that were never freed, and
+:ref:`cfg=smpi/display-allocs` the buffers allocated but not freed.
+
+............................
+Getting the most out of SMPI
+............................
+
+- Run your application once with ``--cfg=smpi/pedantic:yes`` to enable all checks.
+- By default, the first error aborts the simulation, which is easy to debug. Use ``--cfg=smpi/errors-are-fatal:no`` to
+  see all errors in one run instead, keeping in mind that a collective failing on some ranks only may desynchronize the
+  others, so that subsequent reports may be consequences of the first one.
+- Add ``--cfg=smpi/list-leaks:10`` to find the handles that your application forgets to free.
+- Compile with ``smpicc -trace-call-location`` so that the reports about handles and allocations point to your source
+  code.
+
 -------------------------
 Troubleshooting with SMPI
 -------------------------

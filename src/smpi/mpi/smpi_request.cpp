@@ -122,8 +122,6 @@ bool Request::match_types(MPI_Datatype stype, MPI_Datatype rtype){
      (stype->duplicated_datatype()!=MPI_DATATYPE_NULL && match_types(stype->duplicated_datatype(), rtype)) ||
      (rtype->duplicated_datatype()!=MPI_DATATYPE_NULL && match_types(stype, rtype->duplicated_datatype())))
     match = true;
-  if (not match)
-    XBT_WARN("Mismatched datatypes : sending %s and receiving %s", stype->name().c_str(), rtype->name().c_str());
   return match;
 }
 
@@ -148,14 +146,26 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     }
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 && receiver->real_size_ < sender->real_size_) {
-      XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_,
-                sender->real_size_);
+    // Both sides of a match call this function, so each problem is reported only once. The group is only retrieved
+    // when reporting, as it needs an SMPI actor on MPI_COMM_UNINITIALIZED while matching may run in maestro.
+    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 && receiver->real_size_ < sender->real_size_ &&
+        not receiver->truncated_) {
+      const Group* group = receiver->comm_->group();
+      XBT_WARN(
+          "Message truncated: rank %d sent %zu bytes of %s with tag %d to rank %d, which receives at most %zu bytes",
+          group->rank(sender->src_), sender->real_size_, sender->type_->name().c_str(), sender->tag_,
+          group->rank(receiver->dst_), receiver->real_size_);
       receiver->truncated_ = true;
     }
     //0-sized datatypes/counts should not interfere and match
-    if (sender->real_size_ != 0 && receiver->real_size_ != 0 && not match_types(sender->type_, receiver->type_))
+    if (sender->real_size_ != 0 && receiver->real_size_ != 0 && not receiver->unmatched_types_ &&
+        not match_types(sender->type_, receiver->type_)) {
+      const Group* group = receiver->comm_->group();
+      XBT_WARN("Mismatched datatypes: rank %d sent %s with tag %d to rank %d, which receives %s",
+               group->rank(sender->src_), sender->type_->name().c_str(), sender->tag_, group->rank(receiver->dst_),
+               receiver->type_->name().c_str());
       receiver->unmatched_types_ = true;
+    }
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
                                            // the receiver
@@ -1139,6 +1149,8 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
 
   if ((*request)->truncated_)
     ret = MPI_ERR_TRUNCATE;
+  else if ((*request)->unmatched_types_)
+    ret = MPI_ERR_TYPE;
 
   if ((*request)->flags_ & MPI_REQ_NBC)
     finish_nbc_requests(request, 0);

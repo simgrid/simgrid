@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 // Methods used to parse and store the values for timing injections in smpi
@@ -30,7 +31,17 @@ XBT_PUBLIC void set_current_handle(F2C* handle);
 XBT_PUBLIC void set_current_buffer(int i, const char* name, const void* handle);
 XBT_PUBLIC size_t get_buffer_size(const void* ptr);
 XBT_PUBLIC void account_free(const void* ptr);
-XBT_PUBLIC int check_collectives_ordering(MPI_Comm comm, const std::string& call);
+/* Check that all ranks of comm call the same collectives in the same order. If sends and recvs are given, they hold
+ * the bytes this rank sends to and receives from each rank of comm, and are checked against the other ranks. */
+XBT_PUBLIC int check_collectives_ordering(MPI_Comm comm, const std::string& call, std::vector<size_t> sends = {},
+                                          std::vector<size_t> recvs = {});
+/* Two overlapping blocks of a v-collective buffer, or {-1, -1}. Only contiguous datatypes are checked, as the blocks of
+ * other datatypes may legally interleave. */
+XBT_PUBLIC std::pair<int, int> overlapping_blocks(int n, const int* counts, const int* displs, MPI_Datatype datatype);
+/* Bytes exchanged with each of the n ranks, when only peer is concerned */
+XBT_PUBLIC std::vector<size_t> bytes_with(int n, int peer, size_t bytes);
+/* Bytes exchanged with each of the n ranks, given as counts of datatype */
+XBT_PUBLIC std::vector<size_t> bytes_with_each(int n, const int* counts, MPI_Datatype datatype);
 
 } // namespace simgrid::smpi::utils
 #endif
