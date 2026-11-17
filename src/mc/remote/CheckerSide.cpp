@@ -394,14 +394,7 @@ Aid CheckerSide::get_aid_of_next_transition()
 
 void CheckerSide::sync_with_app()
 {
-  /* Handle an ASSERTION message if any */
-  auto [more_data, type] = get_channel().peek_message_type();
-  if (not more_data) // The app closed the socket. It must be dead by now.
-    handle_waitpid();
-
-  if (type == MessageType::ASSERTION_FAILED)
-    Exploration::get_instance()->report_assertion_failure(); // This is a noreturn function
-
+  peek_assertion_failure(); // Does not return in case of failure
   if (is_one_way)
     return;
 
@@ -420,17 +413,20 @@ void CheckerSide::wait_for_requests()
   sync_with_app();
 }
 
-void CheckerSide::handle_dead_child(int status)
+bool CheckerSide::handle_dead_child(int status)
 {
-  // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
+  /* PTRACE_O_TRACEEXIT stops the child at the beginning of its exit, which lets us read its exit status. It then
+   * remains stopped until we resume it, so resume it to let it finish dying: the next waitpid() reports its actual
+   * death. */
   if (status >> 8 == (SIGTRAP | (PTRACE_EVENT_EXIT << 8))) {
     unsigned long eventmsg;
     xbt_assert(ptrace(PTRACE_GETEVENTMSG, pid_, 0, &eventmsg) != -1, "Could not get exit status");
-    status = static_cast<int>(eventmsg);
-    if (WIFSIGNALED(status)) {
-      Exploration::get_instance()->report_crash(status);
-    }
+
+    if (int exit_status = static_cast<int>(eventmsg); WIFSIGNALED(exit_status) && not killed_by_us_)
+      Exploration::get_instance()->report_crash(exit_status);
+    xbt_assert(ptrace(PTRACE_CONT, pid_, 0, 0) != -1, "Could not PTRACE_CONT: %s", strerror(errno));
+    return true;
   }
 #endif
 
@@ -444,37 +440,30 @@ void CheckerSide::handle_dead_child(int status)
     ptrace(PT_CONTINUE, pid_, (caddr_t)1, WSTOPSIG(status));
 #endif
     xbt_assert(errno == 0, "Could not PTRACE_CONT: %s", strerror(errno));
+    return true;
   }
 
-  else if (WIFSIGNALED(status)) {
-    if (not killed_by_us_) // We did not send the kill signal ourselves, so report it
-      Exploration::get_instance()->report_crash(status);
-  } else if (WIFEXITED(status)) {
-    XBT_DEBUG("Child process is over");
-  }
+  if (WIFSIGNALED(status) && not killed_by_us_) // We did not send the kill signal ourselves, so report it
+    Exploration::get_instance()->report_crash(status);
+  XBT_DEBUG("Child process is over");
+  return false;
 }
 
 void CheckerSide::handle_waitpid()
 {
-  XBT_DEBUG("%d checks for wait event. %s", getpid(),
+  XBT_DEBUG("%d waits for the end of %d. %s", getpid(), pid_,
             child_checker_ == nullptr ? "Wait directly." : "Ask our proxy to wait for its child.");
 
+  int status;
   if (child_checker_ == nullptr) { // Wait directly
-    int status;
-    pid_t pid;
-    while ((pid = waitpid(-1, &status, WNOHANG)) != 0) {
-      if (pid == -1) {
-        xbt_assert(errno == ECHILD, "Could not wait for pid: %s", strerror(errno));
-        break; // Having no more children to wait for is OK
-      }
+    /* The root application is ptraced, so waitpid() also reports its ptrace stops (signal delivery, exit event) before
+     * its actual death. Each of them must be handled before waiting again. */
+    do {
+      xbt_assert(waitpid(pid_, &status, WAITPID_CHECKED_FLAGS) == pid_, "Could not wait for pid %d: %s", pid_,
+                 strerror(errno));
+    } while (handle_dead_child(status));
 
-      if (pid == get_pid())
-        handle_dead_child(status);
-      else
-        THROW_IMPOSSIBLE;
-    }
-
-  } else { // Ask our proxy to wait for us
+  } else { // Ask our proxy to wait for us. The proxied application is not ptraced, so the proxy only reports its death
     s_mc_message_int_t request = {};
     request.type               = MessageType::WAIT_CHILD;
     request.value              = pid_;
@@ -483,8 +472,10 @@ void CheckerSide::handle_waitpid()
 
     auto answer = (s_mc_message_int_t*)child_checker_->get_channel().expect_message(
         sizeof(s_mc_message_int_t), MessageType::WAIT_CHILD_REPLY, "Could not receive MessageType::WAIT_CHILD_REPLY");
-
-    handle_dead_child(answer->value);
+    status = answer->value;
+    if (WIFSIGNALED(status) && not killed_by_us_) // We did not send the kill signal ourselves, so report it
+      Exploration::get_instance()->report_crash(status);
+    XBT_DEBUG("Child process is over");
   }
 }
 

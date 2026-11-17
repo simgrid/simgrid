@@ -31,8 +31,13 @@ class CheckerSide {
   // When max-depth is reached, we kill the child process but we don't want to report this as a failure
   bool killed_by_us_ = false;
 
-  void handle_dead_child(int status); // Launched when the dying child is the PID we follow
-  void handle_waitpid();              // Launched when receiving a sigchild
+  /* Handles one waitpid() status of our ptraced child: resumes it if stopped, reports its crash if any (noreturn).
+   * Returns whether the child is still alive, i.e. whether more statuses are to come. */
+  bool handle_dead_child(int status);
+  /* Called when the application closed its socket, so it is dying. SIGCHLD is left to its default disposition and
+   * never handled, so this is the only place where our child gets reaped: there is exactly one process to wait for
+   * and no death can be missed. Blocks until the child is dead, reporting its crash if any (noreturn). */
+  void handle_waitpid();
 
 public:
   explicit CheckerSide(int socket, CheckerSide* child_checker);
@@ -59,7 +64,8 @@ public:
   /** Ask the application to run one step. A transition is built iff new_transition = true */
   Transition* handle_simcall(Aid aid, int times_considered, bool new_transition);
 
-  /** Check whether there is an assertion failure on the wire */
+  /** Check whether there is an assertion failure on the wire, or whether the application died.
+   *  Does not return if the application failed an assertion or crashed: the failure gets reported instead. */
   void peek_assertion_failure();
 
   /** Ask the application to run a full sequence of transition. The checker will receive |to_replay_and_actor_status|
