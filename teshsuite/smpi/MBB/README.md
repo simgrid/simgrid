@@ -13,7 +13,7 @@ The `upstream/` directory is a copy of the test generator of MPI-BugBench
 These files are modified only by patches meant to be sent upstream, so `upstream/` can be diffed against an MBB
 checkout to extract them. Local changes not merged upstream yet:
 
-- none
+- clang-format is not applied to the generated files unless `generate.py --clang_format` is given.
 
 To update the copy from an MBB checkout in `$MBB`:
 

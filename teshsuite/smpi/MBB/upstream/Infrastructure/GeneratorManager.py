@@ -72,7 +72,7 @@ class GeneratorManager:
 
     def generate(self, outpath: str | Path | os.PathLike[str], filterlist_: typing.Sequence[str] = None,
                  print_progress_bar: bool = True, overwrite: bool = True, generation_level: int = BASIC_TEST_LEVEL,
-                 try_compile: bool = False, max_mpi_version: str = "4.0", use_clang_format: bool = True):
+                 try_compile: bool = False, max_mpi_version: str = "4.0", use_clang_format: bool = False):
         """
         Generates test cases based on the specified parameters.
         Parameters:
@@ -82,7 +82,7 @@ class GeneratorManager:
             - `overwrite` (bool, optional): Whether to overwrite existing files. Defaults to True.
             - `generation_level` (int, optional): Level of cases to generate (1,2,3). Defaults to 1, only basic testcases, 2: testcases that should have sufficient coverage, 3: al cases..
             - `try_compile` (bool, optional): Whether to try compiling the generated test cases. Defaults to False.
-            - `use_clang_format` (bool, optional): Whether to format the generated test cases. Defaults to True.
+            - `use_clang_format` (bool, optional): Whether to format the generated test cases. Defaults to False.
             - `max_mpi_version` (float, optional): The maximum MPI version allowed for generated test cases. Defaults to 4.0.
 
         Returns:

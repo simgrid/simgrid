@@ -20,6 +20,8 @@ if __name__ == "__main__":
     parser.add_argument("--mpi_version", default="4.1", required=False, help="maximum MPI versions to use")
     parser.add_argument("--count_only", default=False, action="store_true", required=False,
                         help="Only count the cases dont generate them")
+    parser.add_argument("--clang_format", default=False, action="store_true", required=False,
+                        help="Format the generated codes with clang-format")
 
     debug = parser.add_argument_group("Debug", "Arguments used to debug and test the generation progess")
     debug.add_argument("--generator_dir", action="store", default="scripts/errors", required=False,
@@ -50,6 +52,7 @@ if __name__ == "__main__":
         gm.count_generated_cases(generation_level=ARGS.level, max_mpi_version=ARGS.mpi_version)
         exit()
 
-    gm.generate(gencodes_dir, try_compile=ARGS.compile, generation_level=ARGS.level, max_mpi_version=ARGS.mpi_version)
+    gm.generate(gencodes_dir, try_compile=ARGS.compile, generation_level=ARGS.level, max_mpi_version=ARGS.mpi_version,
+                use_clang_format=ARGS.clang_format)
 
     pass
