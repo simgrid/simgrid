@@ -114,14 +114,7 @@ for s in gen.isend + gen.psend:
         replace['errormsg'] = 'OK'
         gen.make_file(template, f'ReqLifecycle_{s}_{r}_ok.c', replace)
 
-        # Generate the code with a missing wait
-        replace = patterns.copy()
-        replace['shortdesc'] = 'Missing wait'
-        replace['longdesc'] = 'Missing Wait. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no completion.'
-        replace['outcome'] = 'ERROR: MissingWait'
-        replace['errormsg'] = 'ERROR: MissingWait'
-        replace['fini1'] = ' /* MBIERROR MISSING: ' + wait + ' */'
-        gen.make_file(template, f'ReqLifecycle_MissingWait_{s}_{r}_nok.c', replace)
+        # No missing wait case here: the code would still free the active request, which is legal (see MPI_Request_free)
 
         if s in gen.psend:
             # Generate the code with a missing start - persistent only
