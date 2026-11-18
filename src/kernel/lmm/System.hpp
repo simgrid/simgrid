@@ -573,7 +573,6 @@ private:
   /** @brief Given a variable, update modified_constraint_set_ */
   void update_modified_cnst_set_from_variable(const Variable* var);
   void update_modified_cnst_set(Constraint* cnst);
-  void update_modified_cnst_set_rec(const Constraint* cnst);
   /** @brief Remove all constraints of the modified_constraint_set. */
   void remove_all_modified_cnst_set();
 

@@ -6,7 +6,7 @@ endforeach()
 
 foreach(x actor actor-autorestart actor-suspend actor-destroyed-with-mutex actor-killed-before-start
         activity-lifecycle
-        comm-get-sender comm-pt2pt comm-fault-scenarios
+        comm-get-sender comm-long-route comm-pt2pt comm-fault-scenarios
         cloud-interrupt-migration cloud-two-execs
       	monkey-masterworkers monkey-semaphore
         concurrent_rw
@@ -47,7 +47,7 @@ foreach(x actor actor-autorestart actor-suspend activity-lifecycle actor-destroy
 endforeach()
 
 foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-disks host-on-off-recv
-        comm-fault-scenarios host-multicore-speed-file is-router listen_async
+        comm-fault-scenarios comm-long-route host-multicore-speed-file is-router listen_async
         monkey-masterworkers monkey-semaphore
         pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

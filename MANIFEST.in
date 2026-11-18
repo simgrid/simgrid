@@ -1116,6 +1116,8 @@ include teshsuite/s4u/comm-fault-scenarios/comm-fault-scenarios.cpp
 include teshsuite/s4u/comm-fault-scenarios/comm-fault-scenarios.tesh
 include teshsuite/s4u/comm-get-sender/comm-get-sender.cpp
 include teshsuite/s4u/comm-get-sender/comm-get-sender.tesh
+include teshsuite/s4u/comm-long-route/comm-long-route.cpp
+include teshsuite/s4u/comm-long-route/comm-long-route.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw-bmf.tesh
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
