@@ -703,12 +703,13 @@ XBT_PRIVATE void private_execute_flops(double flops);
              "%s: param %d message size %zd exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
   }
 
-/* Point-to-point buffers cannot be MPI_IN_PLACE (only meaningful in collectives), nor MPI_BOTTOM with a basic datatype
- * (MPI_BOTTOM is only meaningful with a derived datatype giving absolute addresses) */
+/* Point-to-point buffers cannot be MPI_IN_PLACE (only meaningful in collectives), nor MPI_BOTTOM with a predefined
+ * datatype (MPI_BOTTOM is only meaningful with a derived datatype giving absolute addresses) */
 #define CHECK_P2P_BUFFER(num, buf, count, datatype)                                                                    \
-  {CHECK_ARGS((buf) == MPI_IN_PLACE || ((buf) == MPI_BOTTOM && (count) > 0 && (datatype)->is_basic()), MPI_ERR_BUFFER, \
-              "%s: param %d %s cannot be MPI_IN_PLACE, nor MPI_BOTTOM with a basic datatype", __func__, (num),         \
-              _XBT_STRINGIFY(buf)) CHECK_BUFFER(num, buf, count, datatype)}
+  {CHECK_ARGS((buf) == MPI_IN_PLACE ||                                                                                 \
+                  ((buf) == MPI_BOTTOM && (count) > 0 && ((datatype)->flags() & DT_FLAG_PREDEFINED)),                  \
+              MPI_ERR_BUFFER, "%s: param %d %s cannot be MPI_IN_PLACE, nor MPI_BOTTOM with a predefined datatype",     \
+              __func__, (num), _XBT_STRINGIFY(buf)) CHECK_BUFFER(num, buf, count, datatype)}
 
 /* Check an array of requests, that cannot be NULL unless empty */
 #define CHECK_REQUESTS(num, count, requests)                                                                           \

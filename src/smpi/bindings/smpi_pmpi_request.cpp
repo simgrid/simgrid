@@ -9,6 +9,8 @@
 #include "smpi_request.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
+#include <algorithm>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 
 static aid_t getPid(MPI_Comm comm, int id)
@@ -130,6 +132,8 @@ int PMPI_Startall(int count, MPI_Request * requests)
       } else {
         CHECK_ARGS((requests[i]->flags() & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0, MPI_ERR_REQUEST,
                    "%s: param 2 request %d is still active", __func__, i)
+        CHECK_ARGS(std::find(requests, requests + i, requests[i]) != requests + i, MPI_ERR_REQUEST,
+                   "%s: param 2 request %d appears twice", __func__, i)
       }
     }
     if(retval != MPI_ERR_REQUEST) {

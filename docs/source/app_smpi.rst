@@ -859,11 +859,11 @@ Families of checks
 
 **Local arguments** (always active). Handles must be valid and not freed; counts, ranks, tags and roots must be in
 range; operations must apply to the datatype; ``MPI_IN_PLACE`` must only be used where allowed, and point-to-point
-buffers cannot be ``MPI_BOTTOM`` with a basic datatype and a positive count. Arrays of requests and indices cannot be
-``NULL`` unless empty, and ``MPI_Start`` or ``MPI_Startall`` cannot restart a request that is still active. The send and
-receive buffers of a collective must differ, as MPI forbids aliasing of output arguments (use ``MPI_IN_PLACE`` instead).
-The counts and displacements of v-collectives (``MPI_Gatherv`` and friends) must be consistent with the buffer, and the
-data a rank sends to itself must match what it receives.
+buffers cannot be ``MPI_BOTTOM`` with a predefined datatype and a positive count. Arrays of requests and indices cannot
+be ``NULL`` unless empty, and ``MPI_Start`` or ``MPI_Startall`` cannot restart a request that is still active, nor start
+the same request twice. The send and receive buffers of a collective must differ, as MPI forbids aliasing of output
+arguments (use ``MPI_IN_PLACE`` instead). The counts and displacements of v-collectives (``MPI_Gatherv`` and friends)
+must be consistent with the buffer, and the data a rank sends to itself must match what it receives.
 
 **Buffer sizes**. When :ref:`cfg=smpi/display-allocs` or :ref:`cfg=smpi/pedantic` is set, SMPI tracks the size of the
 memory allocated with ``malloc()``, and reports MPI calls that would read or write beyond. Buffers on the stack or in
