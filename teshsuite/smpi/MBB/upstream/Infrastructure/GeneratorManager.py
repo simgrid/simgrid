@@ -217,7 +217,9 @@ class GeneratorManager:
         if print_discovery:
             print("Discover Generators:")
         for root, dirs, files in os.walk(path):
-            for file in files:
+            # sort the traversal: the order of the generators decides the numbering of the cases
+            dirs.sort()
+            for file in sorted(files):
                 if file.endswith('.py'):
                     module = import_module(root, file)
                     for name, obj in inspect.getmembers(module):

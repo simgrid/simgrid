@@ -17,6 +17,7 @@ checkout to extract them. Local changes not merged upstream yet:
 - Allocations no longer cast to the allocated type (invalid C for anonymous structs such as the MPI_2INT buffer),
   and `mpi_intercomm_create_from_groups` builds its groups with `MPI_Group_range_incl` and a valid last rank.
 - The RMA GlobalConcurrency cases only use a third rank when both accesses are remote ones.
+- The generators are discovered in a sorted order, so that the cases are numbered the same way on every machine.
 
 To update the copy from an MBB checkout in `$MBB`:
 
@@ -70,25 +71,25 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 259 failing cases at level 2 (November 2026), by where the fix belongs.
+Categorization of the cases still failing at level 2 (November 2026), by where the fix belongs.
 
-| Fix in     | Cases | Problem |
-| ---------- | ----- | --- |
-| MBB        |   1   | `Correct-mpi_gather`: `ParamMatchingType.py` passes `MPI_IN_PLACE` as sendbuf on non-root ranks too |
-| MBB        |   8   | `Correct-lock-*_localbuf*`: the local access is an RMA call to rank 0, but only rank 1 is locked |
-| MBB        |   2   | `InvalidParam-Request-mpi_wait{any,some}-001`: the duplicated request is not within `count` |
-| MBB        |   1   | `InvalidParam-array_of_indices-mpi_waitsome-002`: an uninitialized pointer cannot be detected |
-| SMPI       |   31  | `MPI_IN_PLACE`, or `MPI_BOTTOM` with a basic datatype, given as point-to-point buffer |
-| SMPI       |   9   | `NULL` arrays of requests or indices, `MPI_Initialized(NULL)`, `MPI_Start` on an active request |
-| SMPI       |   3   | `InvalidParam-001`, `-011` and `-013` (RMA): not understood yet |
-| SMPI       |   14  | Invalid status: `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` are all `NULL` in `smpi.h` |
-| SMPI       |   8   | Buffer used after `free()`: the malloc interception should remember the freed blocks |
-| SMPI       |   42  | Mismatched datatypes: `Request::match_types` accepts `MPI_BYTE` with anything, ignores derived types |
-| SMPI       |   6   | `MPI_Comm_idup` is not implemented |
-| SMPI       |   12  | `MPI_Intercomm_create` is not implemented (no intercommunicators in SMPI) |
-| simgrid-mc |   59  | `MPI_Probe` unsupported by the model-checker, `MPI_Mprobe` and `MPI_Improbe` not implemented |
-| simgrid-mc |   38  | Timeouts of `Correct-lockall-*` and `Correct-rmarequest-*`, using `MPI_Win_lock_all` on 3 ranks |
-| none yet | 25 | `LocalParameterMissmatch`: the C type of the buffer is not known at runtime |
+| Fix in     | Cases | Problem                                                                                |
+| ---------- | ----- | -------------------------------------------------------------------------------------- |
+| MBB        |   1   | `Correct-mpi_gather`: `MPI_IN_PLACE` given as sendbuf on non-root ranks too            |
+| MBB        |   8   | `Correct-lock-*_localbuf*`: local access is an RMA to rank 0, but rank 1 is locked     |
+| MBB        |   2   | `InvalidParam-Request-mpi_wait{any,some}-001`: duplicated request beyond `count`       |
+| MBB        |   1   | `InvalidParam-array_of_indices-mpi_waitsome-002`: uninitialized pointer, undetectable  |
+| SMPI       |   3   | `InvalidParam-001`, `-011` and `-013` (RMA): not understood yet                        |
+| SMPI       |   14  | Invalid status: `MPI_STATUS[ES]_IGNORE` and `NULL` are all `NULL` in `smpi.h`          |
+| SMPI       |   8   | Buffer used after `free()`: the malloc interception should remember freed blocks       |
+| SMPI       |   42  | Mismatched datatypes: `match_types` accepts `MPI_BYTE` with all, ignores derived types |
+| SMPI       |   6   | `MPI_Comm_idup` is not implemented                                                     |
+| SMPI       |   12  | `MPI_Intercomm_create` is not implemented (no intercommunicators in SMPI)              |
+| simgrid-mc |   59  | `MPI_Probe` unsupported in MC, `MPI_Mprobe` and `MPI_Improbe` not implemented          |
+| simgrid-mc |   30  | Timeouts of `Correct-{lockall,rmarequest}-*`: `MPI_Win_lock_all` on 3 ranks            |
+| none yet   |   25  | `LocalParameterMissmatch`: the C type of the buffer is not known at runtime            |
 
-The first two SMPI lines are addressed by the argument checks added to `smpi_pmpi_request.cpp` and
-`smpi_pmpi.cpp`. 8 of the timeouts should be gone with 2 ranks instead of 3 (see the local changes above).
+Fixing `LocalParameterMissmatch` is difficult because it's a mismatch between the type of the C buffer and the MPI datatype,
+such as an int* buffer sent as MPI_FLOAT. SimGrid correctly detects the issue when the size differs, but not when the size
+matches. Detecting this requires knowing the type of each allocation, as TypeART does for MUST. That could perhaps be done one
+day through mclang instrumentation, but it's ways beyond the scope for now.
