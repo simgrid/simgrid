@@ -78,15 +78,14 @@ Categorization of the cases still failing at level 2 (November 2026), by where t
 | MBB        |   1   | `Correct-mpi_gather`: `MPI_IN_PLACE` given as sendbuf on non-root ranks too            |
 | MBB        |   8   | `Correct-lock-*_localbuf*`: local access is an RMA to rank 0, but rank 1 is locked     |
 | MBB        |   2   | `InvalidParam-Request-mpi_wait{any,some}-001`: duplicated request beyond `count`       |
-| MBB        |   1   | `InvalidParam-array_of_indices-mpi_waitsome-002`: uninitialized pointer, undetectable  |
-| SMPI       |   3   | `InvalidParam-001`, `-011` and `-013` (RMA): not understood yet                        |
+| MBB        |   2   | Uninitialized `waitsome` indices or `MPI_Win` handle: undetectable at runtime          |
 | SMPI       |   14  | Invalid status: `MPI_STATUS[ES]_IGNORE` and `NULL` are all `NULL` in `smpi.h`          |
 | SMPI       |   8   | Buffer used after `free()`: the malloc interception should remember freed blocks       |
 | SMPI       |   42  | Mismatched datatypes: `match_types` accepts `MPI_BYTE` with all, ignores derived types |
 | SMPI       |   6   | `MPI_Comm_idup` is not implemented                                                     |
 | SMPI       |   12  | `MPI_Intercomm_create` is not implemented (no intercommunicators in SMPI)              |
 | simgrid-mc |   59  | `MPI_Probe` unsupported in MC, `MPI_Mprobe` and `MPI_Improbe` not implemented          |
-| simgrid-mc |   30  | Timeouts of `Correct-{lockall,rmarequest}-*`: `MPI_Win_lock_all` on 3 ranks            |
+| simgrid-mc |   26  | Timeouts of `Correct-{lockall,rmarequest}-*`: `MPI_Win_lock_all` on 3 ranks            |
 | none yet   |   25  | `LocalParameterMissmatch`: the C type of the buffer is not known at runtime            |
 
 Fixing `LocalParameterMissmatch` is difficult because it's a mismatch between the type of the C buffer and the MPI datatype,

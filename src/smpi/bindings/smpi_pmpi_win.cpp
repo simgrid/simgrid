@@ -46,6 +46,7 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
 
 int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
   CHECK_COMM(5)
+  CHECK_NULL(5, MPI_ERR_ARG, base)
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   void* ptr = xbt_malloc(size);
@@ -57,6 +58,7 @@ int PMPI_Win_allocate( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm com
 
 int PMPI_Win_allocate_shared( MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *base, MPI_Win *win){
   CHECK_COMM(5)
+  CHECK_NULL(5, MPI_ERR_ARG, base)
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   void* ptr = nullptr;
@@ -404,6 +406,9 @@ int PMPI_Rget_accumulate(const void* origin_addr, int origin_count, MPI_Datatype
 }
 
 int PMPI_Fetch_and_op(const void *origin_addr, void *result_addr, MPI_Datatype dtype, int target_rank, MPI_Aint target_disp, MPI_Op op, MPI_Win win){
+  // The origin buffer is only ignored by MPI_NO_OP
+  CHECK_ARGS(origin_addr == nullptr && op != MPI_NO_OP, MPI_ERR_BUFFER,
+             "%s: param 1 origin_addr cannot be NULL unless op is MPI_NO_OP", __func__)
   return PMPI_Get_accumulate(origin_addr, origin_addr==nullptr?0:1, dtype, result_addr, 1, dtype, target_rank, target_disp, 1, dtype, op, win);
 }
 
