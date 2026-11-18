@@ -691,53 +691,54 @@ void System::update_constraint_bound(Constraint* cnst, double bound)
   cnst->bound_ = bound;
 }
 
-/** @brief Update the constraint set propagating recursively to other constraints so the system should not be entirely
- *  computed.
- *
- *  @param cnst the Constraint* affected by the change
- *
- *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
- *  constraint change is propagated to the list of constraints for each variable.
- */
-void System::update_modified_cnst_set_rec(const Constraint* cnst)
-{
-  for (Element const& elem : cnst->enabled_element_set_) {
-    Variable* var = elem.variable;
-    for (Element const& elem2 : var->cnsts_) {
-      if (var->visited_ == visited_counter_)
-        break;
-      if (elem2.constraint != cnst && not elem2.constraint->modified_constraint_set_hook_.is_linked()) {
-        modified_constraint_set.push_back(*elem2.constraint);
-        update_modified_cnst_set_rec(elem2.constraint);
-      }
-    }
-    // var will be ignored in later visits as long as sys->visited_counter does not move
-    var->visited_ = visited_counter_;
-  }
-}
-
 void System::update_modified_cnst_set_from_variable(const Variable* var)
 {
   /* nothing to update in these cases:
    * - selective update not active, all variables are active
    * - variable doesn't use any constraint
-   * - variable is disabled (sharing penalty <= 0): we iterate only through the enabled_variables in
-   * update_modified_cnst_set_rec */
+   * - variable is disabled (sharing penalty <= 0): update_modified_cnst_set only goes through the enabled variables */
   if (not selective_update_active || var->cnsts_.empty() || var->sharing_penalty_ <= 0)
     return;
 
   /* Normally, if the conditions above are true, specially variable is enabled, we can call
-   * modified_set over the first contraint only, since the recursion in update_modified_cnst_set_rec
+   * modified_set over the first contraint only, since update_modified_cnst_set
    * will iterate over the other constraints of this variable */
   update_modified_cnst_set(var->cnsts_[0].constraint);
 }
 
+/** @brief Add the constraint to the modified set, along with every constraint it is connected to
+ *
+ *  @param cnst the Constraint* affected by the change
+ *
+ *  Selects only the constraints that may have changed, so that the system does not have to be entirely recomputed. A
+ *  change propagates from a constraint to every constraint of its enabled variables, and on from there.
+ *
+ *  The modified set serves as the work list: constraints are appended to it as they are found, and the loop reaches
+ *  them in turn. This uses no recursion, as a variable may span so many constraints (e.g., a parallel task over many
+ *  links) that one call per constraint overflows the stack.
+ */
 void System::update_modified_cnst_set(Constraint* cnst)
 {
-  /* nothing to do if selective update isn't active */
-  if (selective_update_active && not cnst->modified_constraint_set_hook_.is_linked()) {
-    modified_constraint_set.push_back(*cnst);
-    update_modified_cnst_set_rec(cnst);
+  /* nothing to do if selective update isn't active, or if cnst is already in the set */
+  if (not selective_update_active || cnst->modified_constraint_set_hook_.is_linked()) {
+    return;
+  }
+
+  modified_constraint_set.push_back(*cnst);
+  for (auto it = modified_constraint_set.iterator_to(*cnst); it != modified_constraint_set.end(); ++it) {
+    for (Element const& elem : it->enabled_element_set_) {
+      Variable* var = elem.variable;
+      // var is ignored in later visits as long as visited_counter_ does not move
+      if (var->visited_ == visited_counter_) {
+        continue;
+      }
+      var->visited_ = visited_counter_;
+      for (Element const& elem2 : var->cnsts_) {
+        if (not elem2.constraint->modified_constraint_set_hook_.is_linked()) {
+          modified_constraint_set.push_back(*elem2.constraint);
+        }
+      }
+    }
   }
 }
 
