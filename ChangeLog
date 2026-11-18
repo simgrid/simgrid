@@ -69,6 +69,9 @@ Kernel (all AI-assisted):
    amount of flops computed per second, by all the threads or on all the hosts. (GitHub #306)
  - Multi-threaded execs keep their threads when migrating. They became sequential after a migration.
  - ptask model: the rate of communications is now honored, and the bound of sequential execs is now supported.
+ - Linking an activity to many resources is much faster when these resources are used by few other activities.
+   To find out whether the activity already uses a resource, SimGrid now searches the activities on that resource
+   whenever there are fewer of them than resources used by the activity.
 
 SMPI (all AI-assisted):
  - Long-overdue big maintenance
