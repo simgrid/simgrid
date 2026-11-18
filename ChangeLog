@@ -12,7 +12,11 @@ S4U:
    get), and canceling it raised a CancelException in the canceling actor.
  - Host energy plugin: fix idle energy accounting for parallel executions (AI-assisted).
 
-Python (all AI-assisted):
+Python:
+ - Fix Host.set_speed_profile(), Host.set_state_profile(), Link.set_bandwidth_profile(),
+   Link.set_latency_profile() and Link.set_state_profile(): every profile was registered under an empty name,
+   so setting a second one aborted with "Refusing to define trace  twice". Each now gets a name derived from
+   its resource.
  - Comm, Exec and Io now share the same activity API: name (read/write), state_str, start_time, finish_time,
    is_assigned, dependencies_solved, add_successor(), remove_successor(), start(), cancel(), test(), wait(),
    wait_for(), wait_until(), suspend(), resume(), detach() and the on_*_cb() / on_this_*_cb() signals.
