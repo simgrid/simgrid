@@ -24,8 +24,9 @@ class Win : public F2C, public Keyval {
   int assert_ = 0;
   MPI_Info info_;
   MPI_Comm comm_;
+  // Pending RMA requests. Actors are scheduled cooperatively, so the code between two blocking calls is atomic and
+  // modifying this vector needs no mutex, as long as no reference to its content is kept across a blocking call.
   std::vector<MPI_Request> requests_;
-  s4u::MutexPtr mut_ = s4u::Mutex::create();
   s4u::BarrierPtr bar_;
   std::vector<MPI_Win> connected_wins_;
   std::string name_;

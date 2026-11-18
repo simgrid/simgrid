@@ -97,7 +97,7 @@ int Win::del(Win* win){
   }
   if (win->allocated_)
     xbt_free(win->base_);
-  for (auto m : {win->mut_, win->lock_mut_, win->atomic_mut_})
+  for (auto m : {win->lock_mut_, win->atomic_mut_})
     if (m->get_owner() != nullptr)
       m->unlock();
 
@@ -242,15 +242,13 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
 
     if(request!=nullptr){
       *request=sreq;
-    }else{
-      const std::scoped_lock lock(*mut_);
+    } else {
       requests_.push_back(sreq);
     }
 
-    //push request to receiver's win
-    const std::scoped_lock recv_lock(*recv_win->mut_);
-    recv_win->requests_.push_back(rreq);
+    // start the receive, and only then push it to receiver's win, so that its owner never waits for an unstarted one
     rreq->start();
+    recv_win->requests_.push_back(rreq);
   } else {
     XBT_DEBUG("Entering MPI_Put from myself to myself, rank %d", target_rank);
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
@@ -285,17 +283,14 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     //start the send, with another process than us as sender.
     sreq->start();
     // push request to sender's win
-    if (const std::scoped_lock send_lock(*send_win->mut_); true) {
-      send_win->requests_.push_back(sreq);
-    }
+    send_win->requests_.push_back(sreq);
 
     //start recv
     rreq->start();
 
     if(request!=nullptr){
       *request=rreq;
-    }else{
-      const std::scoped_lock lock(*mut_);
+    } else {
       requests_.push_back(rreq);
     }
   } else {
@@ -335,15 +330,12 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   // start send
   sreq->start();
   // push request to receiver's win
-  if (const std::scoped_lock recv_lock(*recv_win->mut_); true) {
-    recv_win->requests_.push_back(rreq);
-    rreq->start();
-  }
+  rreq->start();
+  recv_win->requests_.push_back(rreq);
 
   if (request != nullptr) {
     *request = sreq;
   } else {
-    const std::scoped_lock lock(*mut_);
     requests_.push_back(sreq);
   }
 
@@ -625,24 +617,17 @@ Win* Win::f2c(int id){
 }
 
 int Win::finish_comms(){
-  // This (simulated) mutex ensures that no process pushes to the vector of requests during the waitall.
-  // Without this, the vector could get redimensioned when another process pushes.
-  // This would result in the array used by Request::waitall() to be invalidated.
-  // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
-  const std::scoped_lock lock(*mut_);
-  //Finish own requests
-  int size = static_cast<int>(requests_.size());
-  if (size > 0) {
-    MPI_Request* treqs = requests_.data();
-    Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
-    requests_.clear();
-  }
+  // Take the requests out of the vector before waiting, as other actors may push new ones meanwhile
+  std::vector<MPI_Request> myreqs;
+  myreqs.swap(requests_);
+  int size = static_cast<int>(myreqs.size());
+  if (size > 0)
+    Request::waitall(size, myreqs.data(), MPI_STATUSES_IGNORE);
   return size;
 }
 
 int Win::finish_comms(int rank){
-  // See comment about the mutex in finish_comms() above
-  const std::scoped_lock lock(*mut_);
+  // Take the requests out of the vector before waiting, as other actors may push new ones meanwhile
   // Finish own requests
   // Let's see if we're either the destination or the sender of this request
   // because we only wait for requests that we are responsible for.
