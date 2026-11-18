@@ -71,24 +71,65 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the cases still failing at level 2 (November 2026), by where the fix belongs.
+Categorization of the cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
-| Fix in     | Cases | Problem                                                                                |
-| ---------- | ----- | -------------------------------------------------------------------------------------- |
-| MBB        |   1   | `Correct-mpi_gather`: `MPI_IN_PLACE` given as sendbuf on non-root ranks too            |
-| MBB        |   8   | `Correct-lock-*_localbuf*`: local access is an RMA to rank 0, but rank 1 is locked     |
-| MBB        |   2   | `InvalidParam-Request-mpi_wait{any,some}-001`: duplicated request beyond `count`       |
-| MBB        |   2   | Uninitialized `waitsome` indices or `MPI_Win` handle: undetectable at runtime          |
-| SMPI       |   14  | Invalid status: `MPI_STATUS[ES]_IGNORE` and `NULL` are all `NULL` in `smpi.h`          |
-| SMPI       |   8   | Buffer used after `free()`: the malloc interception should remember freed blocks       |
-| SMPI       |   42  | Mismatched datatypes: `match_types` accepts `MPI_BYTE` with all, ignores derived types |
-| SMPI       |   6   | `MPI_Comm_idup` is not implemented                                                     |
-| SMPI       |   12  | `MPI_Intercomm_create` is not implemented (no intercommunicators in SMPI)              |
-| simgrid-mc |   59  | `MPI_Probe` unsupported in MC, `MPI_Mprobe` and `MPI_Improbe` not implemented          |
-| simgrid-mc |   26  | Timeouts of `Correct-{lockall,rmarequest}-*`: `MPI_Win_lock_all` on 3 ranks            |
-| none yet   |   25  | `LocalParameterMissmatch`: the C type of the buffer is not known at runtime            |
+### Bugs in MBB (12 cases)
 
-Fixing `LocalParameterMissmatch` is difficult because it's a mismatch between the type of the C buffer and the MPI datatype,
-such as an int* buffer sent as MPI_FLOAT. SimGrid correctly detects the issue when the size differs, but not when the size
-matches. Detecting this requires knowing the type of each allocation, as TypeART does for MUST. That could perhaps be done one
-day through mclang instrumentation, but it's ways beyond the scope for now.
+These cases are wrong: SimGrid rightfully reports an error on a correct program, or the program is not erroneous.
+
+- `Correct-mpi_gather-002` (1 case, reported as `MPI_ERR_BUFFER`): `errors/coll/ParamMatchingType.py` passes
+  `MPI_IN_PLACE` as the send buffer on every rank, while MPI only allows it at the root of rooted collectives. The
+  generator should only use `MPI_IN_PLACE` at the root.
+- `Correct-lock-*_localbuf*` (8 cases, reported as `MPI_ERR_WIN`): in the `lock` synchronization of
+  `errors/rma/GlobalConcurrency.py`, rank 1 locks the window of rank 1, but the `localbufread` and `localbufwrite`
+  accesses are implemented as RMA calls (`MPI_Put` or `MPI_Get` from the local window buffer) targeting rank 0,
+  where no epoch is open. The generator should also lock rank 0, or use a plain load or store for these accesses.
+- `InvalidParam-Request-mpi_waitany-001` and `InvalidParam-Request-mpi_waitsome-001` (2 cases, not detected): the
+  request appears twice in the array, but `count` is 1, so only the first entry is used and the program is correct.
+  The generator should pass a count of 2.
+- The `InvalidParam-*` case calling `MPI_Win_fence` on an uninitialized `MPI_Win` (1 case, crashing): uninitialized
+  handles or pointers are undefined behavior that no runtime can reliably detect. The same goes for
+  `InvalidParam-array_of_indices-mpi_waitsome-002`, which passes only because its uninitialized pointer happens to be
+  `NULL`. Such cases should rather be dropped from MBB.
+
+### Missing checks in SMPI (64 cases)
+
+- Invalid statuses (14 cases, not detected): `InvalidParam-Status-*` pass `NULL` as status, or `MPI_STATUSES_IGNORE`
+  where a single status is expected. In C, `smpi.h` defines `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` all
+  as `NULL`, so SMPI cannot tell them apart. They should become distinct sentinel values, as in MPICH.
+- Buffers used after `free()` (8 cases, not detected): `InvalidParam-Buffer-*-005` free the buffer before using it.
+  The interception of `malloc` and `free` should remember the freed blocks, so that `CHECK_BUFFER` rejects them.
+- Mismatched datatypes between sender and receiver (42 cases, not detected): `GlobalParameterMissmatch-Dtype-*` and
+  `GlobalParameterMissmatch-Type-mpi_bcast-*`. `Request::match_types()` accepts `MPI_BYTE` and `MPI_PACKED` with any
+  other datatype, and never compares derived datatypes, so a `MPI_BYTE` received as `MPI_INT`, or a
+  `contiguous(2, MPI_INT)` received as `MPI_DOUBLE`, go unnoticed. Comparing the type signatures (the flattened
+  sequences of basic types) would fix it, at least in pedantic mode.
+
+### Missing features in SMPI (18 cases)
+
+- `MPI_Comm_idup` is not implemented (6 cases, reported as `UNIMPLEMENTED`). It should be easy to add on top of
+  `MPI_Comm_dup`.
+- `MPI_Intercomm_create` is not implemented (12 cases, reported as `UNIMPLEMENTED`), as SMPI has no intercommunicators
+  at all. This is a significant work.
+
+### Limitations of simgrid-mc (85 cases)
+
+- Probes (59 cases): `MPI_Probe` aborts under the model-checker (`smpi_request.cpp`: "MPI_Probe is not supported yet
+  in MC mode"), in 4 cases (`CallOrdering-mpi_probe-*`, `GlobalParameterMissmatch-Tag-mpi_probe-*`,
+  `InvalidParam-Status-mpi_probe-*`). `MPI_Mprobe` and `MPI_Improbe` (55 cases) are not even implemented in SMPI. They
+  all need a dedicated transition in the model-checker, depending on the sends to the probed mailbox, and only enabled
+  when a matching message exists.
+- Timeouts (26 cases): `Correct-lockall-*` and `Correct-rmarequest-*` on 3 ranks, all involving atomic RMA operations
+  (`MPI_Accumulate`, `MPI_Raccumulate`, `MPI_Get_accumulate`, `MPI_Fetch_and_op`, `MPI_Compare_and_swap`) or
+  `MPI_Rget`. The state space is estimated to 10^8 to 10^9 states with ODPOR, for programs of a dozen lines. In a
+  trace of about 270 transitions, 27% are lock/wait/unlock of the `Win::mut_` mutexes, that each rank takes on the
+  windows of the others, and 67% are point-to-point messages coming from the barriers and collectives used by the
+  window creation and synchronization. `Win::mut_` is not needed with cooperative scheduling, and removing it is the
+  first thing to try. The collectives used by the RMA synchronization are the next suspects.
+
+### Out of reach for now (25 cases)
+
+- `LocalParameterMissmatch-*` (25 cases, not detected): the C type of the buffer differs from the MPI datatype, such as
+  an `int*` buffer sent as `MPI_FLOAT`. SimGrid detects the issue when the sizes differ (110 other cases of this
+  family pass), but not when they match. Detecting this requires knowing the type of each allocation, as TypeART does
+  for MUST. That could perhaps be done one day through `mclang` instrumentation, but it is way beyond our scope for now.
