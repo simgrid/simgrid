@@ -6,11 +6,12 @@
 """
 Dynamic list scheduling of a workflow on hosts that fail and come back.
 
-The workflow is read from a WfFormat JSON file (https://github.com/wfcommons/wfformat), the format of the C++
-dag-from-json examples. A controller actor places each ready task on an idle host, starts the transfers of its input
-files and its execution, and reacts to completions, host failures and reboots. When a host is turned off, the
-execution running on it fails and the task is placed again elsewhere. Output files stay on the disk of the host that
-wrote them, so they can be fetched again once that host is back on.
+The workflow is read from a WfFormat JSON file (https://github.com/wfcommons/wfformat) in the layout introduced by
+WfFormat 1.5, with separate "specification" and "execution" sections, which the current WfCommons workflow instances
+use. The C++ create_DAG_from_json() reads the older 1.4 layout. A controller actor places each ready task on an idle
+host, starts the transfers of its input files and its execution, and reacts to completions, host failures and reboots.
+When a host is turned off, the execution running on it fails and the task is placed again elsewhere. Output files stay
+on the disk of the host that wrote them, so they can be fetched again once that host is back on.
 
 Policies (--policy):
   minmin  Min-Min, as in examples/cpp/dag-scheduling: the (task, host) pair that finishes first goes first.
@@ -19,11 +20,11 @@ Policies (--policy):
           during the task: EFT + w * p_fail * (EFT - now), with p_fail = 1 - exp(-rate * (EFT - now)) and
           w = --risk-weight. The policy knows each host's failure rate.
 
-A chaos actor turns hosts off at seeded random dates drawn from --rate (failures per host per second; hosts w03,
-w07, w11 and w15 fail four times as often) and back on --downtime seconds later, like the cmonkey plugin does for a
-single host. The plugin itself can be used instead (--rate 0 --cfg=plugin:cmonkey ...).
+One chaos actor per host turns it off at seeded random dates drawn from --rate (failures per host per second; hosts
+w03, w07, w11 and w15 fail four times as often) and back on --downtime seconds later, like the cmonkey plugin does
+for a single host. The plugin itself can be used instead (--rate 0 --cfg=plugin:cmonkey ...).
 
-Usage: dag-failure-scheduling.py workflow.json [--policy P] [--rate R] [--downtime D] [--seed S] [--json]
+Usage: dag-failure-scheduling.py workflow.json [--policy P] [--rate R] [--downtime D] [--seed S]
 """
 
 import argparse
@@ -103,29 +104,14 @@ def build_platform(e):
     return ctl, hosts
 
 
-def failure_schedule(hosts, rate, downtime, seed, horizon):
-    """Seeded Poisson failures: (date, host, back_on) events. Hosts w03, w07, w11 and w15 fail 4 times as often."""
-    rates, events = {}, []
-    for i, h in enumerate(hosts):
-        rates[h.name] = rate * (4 if i % 4 == 3 else 1)
-        rng, t = random.Random(seed * 1000 + i), 0.0
-        while rates[h.name] > 0:
-            t += rng.expovariate(rates[h.name])
-            if t > horizon:
-                break
-            events += [(t, i, False), (t + downtime, i, True)]
-            t += downtime
-    return rates, [(date, hosts[i], on) for date, i, on in sorted(events, key=lambda ev: (ev[0], ev[1]))]
-
-
-def chaos(events):
-    """Turn hosts off and back on at the given dates, as the cmonkey plugin does for a single host."""
-    for date, host, back_on in events:
-        this_actor.sleep_until(date)
-        if back_on:
-            host.turn_on()
-        else:
-            host.turn_off()
+def chaos(host, rate, downtime, seed):
+    """Turn the host off after exponentially distributed delays and back on after the downtime, forever."""
+    rng = random.Random(seed)
+    while True:
+        this_actor.sleep_for(rng.expovariate(rate))
+        host.turn_off()
+        this_actor.sleep_for(downtime)
+        host.turn_on()
 
 
 class Controller:
@@ -208,8 +194,7 @@ class Controller:
             self.stats["reruns"] += 1
             started = execution.start_time                 # SimGrid resets 'remaining' on failure, so use the clock
             self.stats["wasted_s"] += max(0.0, Engine.clock - started) if 0 <= started <= Engine.clock else 0.0
-            if not self.args.json:
-                this_actor.info(f"'{task}' failed on {host.name}: placing it again")
+            this_actor.info(f"'{task}' failed on {host.name}: placing it again")
         else:
             self.stats["transfer_retries"] += 1
         for activity in comms + [execution]:
@@ -259,8 +244,7 @@ class Controller:
                 if self.missing[c] == 0:
                     self.ready.add(c)
         sg_host_energy_update_all()
-        self.stats.update(makespan=Engine.clock, completed=left == 0,
-                          energy_J=sum(h.consumed_energy for h in self.hosts))
+        self.stats.update(makespan=Engine.clock, energy_J=sum(h.consumed_energy for h in self.hosts))
 
 
 def main():
@@ -274,26 +258,23 @@ def main():
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--horizon", type=float, default=1e6, help="give up at this simulated time")
     parser.add_argument("--poll", type=float, default=1.0, help="re-check interval while a host is off")
-    parser.add_argument("--json", action="store_true", help="print a JSON summary instead of the log")
     args, _ = parser.parse_known_args([a for a in sys.argv[1:] if not a.startswith(("--cfg", "--log"))])
 
     sg_host_energy_plugin_init()
     wf = load_workflow(args.workflow)
     ctl, hosts = build_platform(e)
-    rates, events = failure_schedule(hosts, args.rate, args.downtime, args.seed, args.horizon)
+    rates = {h.name: args.rate * (4 if i % 4 == 3 else 1) for i, h in enumerate(hosts)}
     controller = Controller(wf, hosts, rates, args)
     ctl.add_actor("controller", controller.run)
-    if events:
-        ctl.add_actor("chaos", chaos, events).daemonize()
+    for i, h in enumerate(hosts):
+        if rates[h.name] > 0:   # the chaos actors run on the controller host, which never fails
+            ctl.add_actor(f"chaos-{h.name}", chaos, h, rates[h.name], args.downtime, args.seed * 1000 + i).daemonize()
     e.run()
 
     stats = controller.stats
-    if args.json:
-        print(json.dumps({**stats, "hosts": [h.name for h in e.all_hosts], "tasks": len(wf["order"])}))
-    else:
-        this_actor.info(f"Makespan {stats['makespan']:.2f} s, {stats['reruns']} re-runs "
-                        f"({stats['wasted_s']:.2f} s lost), {stats['transfer_retries']} transfer retries, "
-                        f"{stats['energy_J']:.0f} J")
+    this_actor.info(f"Makespan {stats['makespan']:.2f} s, {stats['reruns']} re-runs "
+                    f"({stats['wasted_s']:.2f} s lost), {stats['transfer_retries']} transfer retries, "
+                    f"{stats['energy_J']:.0f} J")
 
 
 if __name__ == "__main__":
