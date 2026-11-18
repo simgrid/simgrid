@@ -223,8 +223,9 @@ int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
 }
 
 int PMPI_Initialized(int* flag) {
-   *flag=(smpi_process()!=nullptr && smpi_process()->initialized());
-   return MPI_SUCCESS;
+  CHECK_NULL(1, MPI_ERR_ARG, flag)
+  *flag = (smpi_process() != nullptr && smpi_process()->initialized());
+  return MPI_SUCCESS;
 }
 
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info /*info*/, void* baseptr)

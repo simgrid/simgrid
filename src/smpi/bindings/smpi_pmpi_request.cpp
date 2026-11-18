@@ -16,14 +16,14 @@ static aid_t getPid(MPI_Comm comm, int id)
   return comm->group()->actor(id);
 }
 
-#define CHECK_SEND_INPUTS\
-  SET_BUF1(buf)\
-  CHECK_COUNT(2, count)\
-  CHECK_TYPE(3, datatype)\
-  CHECK_BUFFER(1, buf, count, datatype)\
-  CHECK_COMM(6)\
-  if(dst!= MPI_PROC_NULL)\
-    CHECK_RANK(4, dst, comm)\
+#define CHECK_SEND_INPUTS                                                                                              \
+  SET_BUF1(buf)                                                                                                        \
+  CHECK_COUNT(2, count)                                                                                                \
+  CHECK_TYPE(3, datatype)                                                                                              \
+  CHECK_P2P_BUFFER(1, buf, count, datatype)                                                                            \
+  CHECK_COMM(6)                                                                                                        \
+  if (dst != MPI_PROC_NULL)                                                                                            \
+    CHECK_RANK(4, dst, comm)                                                                                           \
   CHECK_TAG(5, tag)
 
 #define CHECK_ISEND_INPUTS\
@@ -31,17 +31,17 @@ static aid_t getPid(MPI_Comm comm, int id)
   *request = MPI_REQUEST_NULL;\
   CHECK_SEND_INPUTS
 
-#define CHECK_IRECV_INPUTS\
-  SET_BUF1(buf)\
-  CHECK_REQUEST(7)\
-  *request = MPI_REQUEST_NULL;\
-  CHECK_COUNT(2, count)\
-  if (src != MPI_PROC_NULL)\
-    CHECK_TYPE(3, datatype)\
-  CHECK_BUFFER(1, buf, count, datatype)\
-  CHECK_COMM(6)\
-  if(src!=MPI_ANY_SOURCE && src!=MPI_PROC_NULL)\
-    CHECK_RANK(4, src, comm)\
+#define CHECK_IRECV_INPUTS                                                                                             \
+  SET_BUF1(buf)                                                                                                        \
+  CHECK_REQUEST(7)                                                                                                     \
+  *request = MPI_REQUEST_NULL;                                                                                         \
+  CHECK_COUNT(2, count)                                                                                                \
+  if (src != MPI_PROC_NULL)                                                                                            \
+    CHECK_TYPE(3, datatype)                                                                                            \
+  CHECK_P2P_BUFFER(1, buf, count, datatype)                                                                            \
+  CHECK_COMM(6)                                                                                                        \
+  if (src != MPI_ANY_SOURCE && src != MPI_PROC_NULL)                                                                   \
+    CHECK_RANK(4, src, comm)                                                                                           \
   CHECK_TAG(5, tag)
 /* PMPI User level calls */
 
@@ -97,6 +97,8 @@ int PMPI_Start(MPI_Request * request)
     retval = MPI_ERR_REQUEST;
   } else {
     MPI_Request req = *request;
+    CHECK_ARGS((req->flags() & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0, MPI_ERR_REQUEST,
+               "%s: param 1 request is still active", __func__)
     aid_t my_proc_id = (req->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("Start", MPI_COMM_WORLD->group()->rank(req->dst()), req->size(), req->tag(),
@@ -125,6 +127,9 @@ int PMPI_Startall(int count, MPI_Request * requests)
     for (int i = 0; i < count; i++) {
       if(requests[i] == MPI_REQUEST_NULL) {
         retval = MPI_ERR_REQUEST;
+      } else {
+        CHECK_ARGS((requests[i]->flags() & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0, MPI_ERR_REQUEST,
+                   "%s: param 2 request %d is still active", __func__, i)
       }
     }
     if(retval != MPI_ERR_REQUEST) {
@@ -238,7 +243,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   CHECK_COUNT(2, count)
   if (src != MPI_PROC_NULL)
     CHECK_TYPE(3, datatype)
-  CHECK_BUFFER(1, buf, count, datatype)
+  CHECK_P2P_BUFFER(1, buf, count, datatype)
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
   CHECK_STATUS(7, MPI_ERR_ARG, status)
@@ -389,8 +394,8 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
   CHECK_TAG(5, sendtag)
   CHECK_COUNT(7, recvcount)
   CHECK_TYPE(8, recvtype)
-  CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
-  CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
+  CHECK_P2P_BUFFER(1, sendbuf, sendcount, sendtype)
+  CHECK_P2P_BUFFER(6, recvbuf, recvcount, recvtype)
   CHECK_ARGS(sendbuf == recvbuf && sendcount > 0 && recvcount > 0, MPI_ERR_BUFFER,
              "%s: Invalid parameters 1 and 6: sendbuf and recvbuf must be disjoint", __func__)
   CHECK_TAG(10, recvtag)
@@ -451,8 +456,8 @@ int PMPI_Isendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, in
   CHECK_TAG(5, sendtag)
   CHECK_COUNT(7, recvcount)
   CHECK_TYPE(8, recvtype)
-  CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
-  CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
+  CHECK_P2P_BUFFER(1, sendbuf, sendcount, sendtype)
+  CHECK_P2P_BUFFER(6, recvbuf, recvcount, recvtype)
   CHECK_ARGS(sendbuf == recvbuf && sendcount > 0 && recvcount > 0, MPI_ERR_BUFFER,
              "%s: Invalid parameters 1 and 6: sendbuf and recvbuf must be disjoint", __func__)
   CHECK_TAG(10, recvtag)
@@ -507,7 +512,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
   SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
-  CHECK_BUFFER(1, buf, count, datatype)
+  CHECK_P2P_BUFFER(1, buf, count, datatype)
   CHECK_STATUS(9, MPI_ERR_ARG, status)
 
   int size = datatype->get_extent() * count;
@@ -531,7 +536,7 @@ int PMPI_Isendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst,
   SET_BUF1(buf)
   CHECK_COUNT(2, count)
   CHECK_TYPE(3, datatype)
-  CHECK_BUFFER(1, buf, count, datatype)
+  CHECK_P2P_BUFFER(1, buf, count, datatype)
   CHECK_REQUEST(10)
   *request = MPI_REQUEST_NULL;
 
@@ -578,6 +583,7 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
 {
   int retval = 0;
   CHECK_COUNT(1, count)
+  CHECK_REQUESTS(2, count, requests)
   CHECK_STATUS(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (index == nullptr || flag == nullptr) {
@@ -595,6 +601,7 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
 {
   int retval = 0;
   CHECK_COUNT(1, count)
+  CHECK_REQUESTS(2, count, requests)
   CHECK_STATUSES(4, MPI_ERR_ARG, statuses)
   const SmpiBenchGuard suspend_bench;
   if (flag == nullptr) {
@@ -612,6 +619,8 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
+  CHECK_REQUESTS(2, incount, requests)
+  CHECK_ARGS(incount > 0 && indices == nullptr, MPI_ERR_ARG, "%s: param 4 indices cannot be NULL", __func__)
   CHECK_STATUSES(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
@@ -731,6 +740,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   if (count <= 0)
     return MPI_SUCCESS;
 
+  CHECK_REQUESTS(2, count, requests)
   CHECK_STATUS(4, MPI_ERR_ARG, status)
 
   const SmpiBenchGuard suspend_bench;
@@ -764,6 +774,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
   const SmpiBenchGuard suspend_bench;
   CHECK_COUNT(1, count)
+  CHECK_REQUESTS(2, count, requests)
   CHECK_STATUSES(3, MPI_ERR_ARG, status)
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
@@ -795,6 +806,8 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
+  CHECK_REQUESTS(2, incount, requests)
+  CHECK_ARGS(incount > 0 && indices == nullptr, MPI_ERR_ARG, "%s: param 4 indices cannot be NULL", __func__)
   CHECK_STATUSES(5, MPI_ERR_ARG, status)
   const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
