@@ -75,7 +75,10 @@ Kernel (all AI-assisted):
  - ptask model: the rate of communications is now honored, and the bound of sequential execs is now supported.
  - Activities using very many resources (e.g., a parallel exec over all pairs of many hosts, or a communication over a
    route of many links) no longer crash the simulation. Finding the constraints affected by a change took one nested
-   call per constraint, which overflowed the stack beyond about 87,000 of them.
+   call per constraint, which overflowed the stack beyond about 87,000 of them (FramaGit #199).
+- Linking an activity to many resources is much faster when these resources are used by few other activities.
+   To find out whether the activity already uses a resource, SimGrid now searches the activities on that resource
+   whenever there are fewer of them than resources used by the activity (FramaGit #200).
 
 SMPI (all AI-assisted):
  - Long-overdue big maintenance
