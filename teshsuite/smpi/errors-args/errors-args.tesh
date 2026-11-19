@@ -10,6 +10,9 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 1 -platform ${platfdir:=.}/s
 > [smpi_request/WARNING] recv - returned MPI_ERR_TRUNCATE instead of MPI_SUCCESS
 > [smpi_request/WARNING] Mismatched datatypes: rank 0 sent MPI_INT with tag 1 to rank 0, which receives MPI_DOUBLE
 > [smpi_request/WARNING] recv - returned MPI_ERR_TYPE instead of MPI_SUCCESS
+> [smpi_pmpi/WARNING] PMPI_Bsend: no buffer attached with MPI_Buffer_attach
+> [smpi_pmpi/WARNING] PMPI_Request_free: freeing a pending receive request, whose completion cannot be known anymore
+> [smpi_pmpi/WARNING] PMPI_Finalize: 1 receive(s) posted by rank 0 were never matched
 
 p Checks comparing the arguments of several ranks
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/errors-args --cfg=smpi/pedantic:yes --cfg=smpi/errors-are-fatal:no --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=smpi_mpi.thres:error "--log=root.fmt:[%c/%p]%e%m%n"
@@ -17,3 +20,4 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ${platfdir:=.}/s
 > [smpi_pmpi/WARNING] PMPI_Iallgatherv: blocks 0 (displs=0, recvcounts=1) and 1 (displs=0, recvcounts=1) of recvbuf overlap
 > [smpi_utils/WARNING] PMPI_Gatherv with root 0: rank 0 expects 4 bytes from rank 1, which sends 8 bytes
 > [smpi_pmpi/WARNING] PMPI_Gatherv with root 0: collective mismatch
+> [smpi_pmpi/WARNING] PMPI_Finalize: 1 message(s) sent to rank 0 never received, the first from rank 1 with tag -2223 (8 bytes)

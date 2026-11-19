@@ -43,6 +43,11 @@ static void local_errors(void)
   expect_error(MPI_Recv(&d, 1, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE), "type mismatch");
   MPI_Wait(&req, MPI_STATUS_IGNORE);
 
+  expect_error(MPI_Bsend(sbuf, 1, MPI_INT, 0, 2, MPI_COMM_WORLD), "no buffer attached");
+  /* Reported as legal but risky, and left unmatched until MPI_Finalize, which reports it again */
+  MPI_Irecv(&d, 1, MPI_DOUBLE, 0, 3, MPI_COMM_WORLD, &req);
+  MPI_Request_free(&req);
+
   free(rbuf);
 }
 
