@@ -716,6 +716,19 @@ XBT_PRIVATE void private_execute_flops(double flops);
   CHECK_ARGS((count) > 0 && (requests) == nullptr, MPI_ERR_REQUEST, "%s: param %d %s cannot be NULL", __func__, (num), \
              _XBT_STRINGIFY(requests))
 
+/* A buffered send needs an attached buffer, large enough for the message and MPI_BSEND_OVERHEAD */
+#define CHECK_BSEND_BUFFER(count, datatype)                                                                            \
+  {                                                                                                                    \
+    int bsend_buf_size_ = 0;                                                                                           \
+    void* bsend_buf_    = nullptr;                                                                                     \
+    smpi_process()->bsend_buffer(&bsend_buf_, &bsend_buf_size_);                                                       \
+    CHECK_ARGS(bsend_buf_ == nullptr, MPI_ERR_BUFFER, "%s: no buffer attached with MPI_Buffer_attach", __func__)       \
+    MPI_Aint needed_ = (datatype)->get_extent() * (count) + MPI_BSEND_OVERHEAD;                                        \
+    CHECK_ARGS(bsend_buf_size_ < needed_, MPI_ERR_BUFFER,                                                              \
+               "%s: the attached buffer (%d bytes) is smaller than the message plus MPI_BSEND_OVERHEAD (%ld bytes)",   \
+               __func__, bsend_buf_size_, static_cast<long>(needed_))                                                  \
+  }
+
 #define CHECK_COUNT(num, count)\
   CHECK_NEGATIVE((num), MPI_ERR_COUNT, (count))
 

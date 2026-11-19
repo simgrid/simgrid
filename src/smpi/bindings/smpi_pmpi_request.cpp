@@ -313,11 +313,7 @@ int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
   const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id   = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced   = getPid(comm, dst);
-  int bsend_buf_size = 0;
-  void* bsend_buf = nullptr;
-  smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
-  if (bsend_buf == nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD)
-    return MPI_ERR_BUFFER;
+  CHECK_BSEND_BUFFER(count, datatype)
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("bsend", MPI_COMM_WORLD->group()->rank(dst_traced),
                                                      count,
@@ -337,11 +333,7 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
   const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id   = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst    = getPid(comm, dst);
-  int bsend_buf_size = 0;
-  void* bsend_buf = nullptr;
-  smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
-  if (bsend_buf == nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD)
-    return MPI_ERR_BUFFER;
+  CHECK_BSEND_BUFFER(count, datatype)
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("ibsend", MPI_COMM_WORLD->group()->rank(trace_dst),
                                                      count,
@@ -357,17 +349,9 @@ int PMPI_Bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, 
   CHECK_ISEND_INPUTS
 
   const SmpiBenchGuard suspend_bench;
-  int retval = 0;
-  int bsend_buf_size = 0;
-  void* bsend_buf = nullptr;
-  smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
-  if( bsend_buf==nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD ) {
-    retval = MPI_ERR_BUFFER;
-  } else {
-    *request = simgrid::smpi::Request::bsend_init(buf, count, datatype, dst, tag, comm);
-    retval   = MPI_SUCCESS;
-  }
-  return retval;
+  CHECK_BSEND_BUFFER(count, datatype)
+  *request = simgrid::smpi::Request::bsend_init(buf, count, datatype, dst, tag, comm);
+  return MPI_SUCCESS;
 }
 
 int PMPI_Ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
