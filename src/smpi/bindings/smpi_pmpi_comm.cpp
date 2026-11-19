@@ -110,6 +110,7 @@ int PMPI_Comm_free(MPI_Comm * comm)
   CHECK_NULL(1, MPI_ERR_ARG, comm)
   CHECK_COMM2(1, *comm)
   CHECK_MPI_NULL(1, MPI_COMM_WORLD, MPI_ERR_COMM, *comm)
+  CHECK_COLLECTIVE(*comm, __func__)
   simgrid::smpi::Comm::destroy(*comm);
   *comm = MPI_COMM_NULL;
   return MPI_SUCCESS;
@@ -120,6 +121,7 @@ int PMPI_Comm_disconnect(MPI_Comm * comm)
   /* TODO: wait until all communication in comm are done */
   CHECK_NULL(1, MPI_ERR_ARG, comm)
   CHECK_COMM2(1, *comm)
+  CHECK_COLLECTIVE(*comm, __func__)
   simgrid::smpi::Comm::destroy(*comm);
   *comm = MPI_COMM_NULL;
   return MPI_SUCCESS;
