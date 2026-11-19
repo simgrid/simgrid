@@ -8,12 +8,15 @@
 #include "simgrid/instr.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/version.h"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
+#include "smpi_request.hpp"
 #include "smpi_status.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
@@ -67,6 +70,22 @@ int PMPI_Finalize()
 {
   smpi_bench_end();
   CHECK_COLLECTIVE(smpi_process()->comm_world(), "MPI_Finalize")
+  // Communications left in our mailboxes: messages sent to us and never received, or receives never matched
+  if (_smpi_cfg_pedantic)
+    for (const simgrid::s4u::Mailbox* mbox : {smpi_process()->mailbox(), smpi_process()->mailbox_small()}) {
+      if (mbox->empty())
+        continue;
+      const auto comm = mbox->front();
+      if (comm->get_type() == simgrid::kernel::activity::CommImplType::SEND) {
+        const auto* req = static_cast<simgrid::smpi::Request*>(comm->src_match_data_);
+        XBT_WARN("%s: %zu message(s) sent to rank %d never received, the first from rank %d with tag %d (%zu bytes)",
+                 __func__, mbox->size(), smpi_process()->comm_world()->rank(), req->comm()->group()->rank(req->src()),
+                 req->tag(), req->size());
+      } else {
+        XBT_WARN("%s: %zu receive(s) posted by rank %d were never matched", __func__, mbox->size(),
+                 smpi_process()->comm_world()->rank());
+      }
+    }
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   smpi_process()->mark_as_finalizing();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));
