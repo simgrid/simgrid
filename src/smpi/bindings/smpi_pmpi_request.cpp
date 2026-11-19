@@ -166,6 +166,10 @@ int PMPI_Request_free(MPI_Request * request)
 
   const SmpiBenchGuard suspend_bench;
   if (*request != MPI_REQUEST_NULL) {
+    // Legal, but the completion of a pending receive cannot be known anymore, so its buffer cannot be safely reused
+    if (_smpi_cfg_pedantic && ((*request)->flags() & MPI_REQ_RECV) &&
+        ((*request)->flags() & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0)
+      XBT_WARN("%s: freeing a pending receive request, whose completion cannot be known anymore", __func__);
     (*request)->mark_as_deleted();
     /* A request that is neither matched nor completed is still referenced by the mailbox as the
      * match data of its pending comm. Deleting it here would leave a dangling pointer that the
