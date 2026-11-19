@@ -293,20 +293,47 @@ Element& System::expand_add_to_elem(Element& elem, const Constraint* cnst, doubl
   return elem;
 }
 
+/** @brief Returns the element linking var to cnst, or nullptr if there is none
+ *
+ *  Searches whichever side holds fewer elements: a variable can use many constraints (e.g., a long route), and a
+ *  constraint can be used by many variables (e.g., a busy link).
+ */
+static Element* find_elem(Constraint* cnst, Variable* var)
+{
+  // Search var's side if it is not longer than cnst's, whose elements are the enabled ones plus the disabled ones
+  if (var->cnsts_.size() <= cnst->enabled_element_set_.size() + cnst->disabled_element_set_.size()) {
+    auto it =
+        std::find_if(begin(var->cnsts_), end(var->cnsts_), [cnst](Element const& x) { return x.constraint == cnst; });
+    return it == end(var->cnsts_) ? nullptr : &*it;
+  }
+
+  // If var is linked to cnst more than once (see force_creation in expand), return the same element as searching
+  // var->cnsts_ would: the first one there, which is the one at the lowest address.
+  Element* found = nullptr;
+  for (Element& elem : cnst->enabled_element_set_) {
+    if (elem.variable == var && (found == nullptr || &elem < found)) {
+      found = &elem;
+    }
+  }
+  for (Element& elem : cnst->disabled_element_set_) {
+    if (elem.variable == var && (found == nullptr || &elem < found)) {
+      found = &elem;
+    }
+  }
+  return found;
+}
+
 void System::expand(Constraint* cnst, Variable* var, double consumption_weight, bool force_creation)
 {
   modified_ = true;
 
-  auto elem_it =
-      std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
-
-  bool reuse_elem = elem_it != end(var->cnsts_) && not force_creation;
-  if (reuse_elem && var->sharing_penalty_ != 0.0) {
+  Element* existing = force_creation ? nullptr : find_elem(cnst, var);
+  if (existing != nullptr && var->sharing_penalty_ != 0.0) {
     /* before changing it, decreases concurrency on constraint, it'll be added back later */
-    elem_it->decrease_concurrency();
+    existing->decrease_concurrency();
   }
-  Element& elem = reuse_elem ? expand_add_to_elem(*elem_it, cnst, consumption_weight)
-                             : expand_create_elem(cnst, var, consumption_weight);
+  Element& elem = existing != nullptr ? expand_add_to_elem(*existing, cnst, consumption_weight)
+                                      : expand_create_elem(cnst, var, consumption_weight);
 
   // Check if we need to disable the variable
   if (var->sharing_penalty_ != 0) {
