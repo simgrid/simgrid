@@ -1081,6 +1081,8 @@ include teshsuite/python/corrupt-stack/corrupt-stack.tesh
 include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
 include teshsuite/python/platform-mix/platform-mix.py
 include teshsuite/python/platform-mix/platform-mix.tesh
+include teshsuite/python/several-profiles/several-profiles.py
+include teshsuite/python/several-profiles/several-profiles.tesh
 include teshsuite/s4u/../catch_simgrid.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
