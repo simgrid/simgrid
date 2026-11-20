@@ -880,7 +880,10 @@ receive buffer of a v-collective do not overlap, as MPI forbids writing a locati
 time with many ranks, which is why they are not active by default.
 
 **Resource leaks**. :ref:`cfg=smpi/list-leaks` reports the MPI handles that were never freed, and
-:ref:`cfg=smpi/display-allocs` the buffers allocated but not freed.
+:ref:`cfg=smpi/display-allocs` the buffers allocated but not freed. With :ref:`cfg=smpi/pedantic`, ``MPI_Finalize``
+also reports the messages sent to the rank and never received, and the receives it posted and that were never matched,
+usually the sign of a wrong rank or tag. Freeing a pending receive request is reported as well: this is legal, but the
+application cannot know anymore when its buffer can be reused.
 
 ............................
 Getting the most out of SMPI
