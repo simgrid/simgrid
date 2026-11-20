@@ -44,6 +44,10 @@ static void local_errors(void)
   MPI_Wait(&req, MPI_STATUS_IGNORE);
 
   expect_error(MPI_Bsend(sbuf, 1, MPI_INT, 0, 2, MPI_COMM_WORLD), "no buffer attached");
+  int two[1]  = {2};
+  int zero[1] = {0};
+  MPI_Comm cart;
+  expect_error(MPI_Cart_create(MPI_COMM_WORLD, 1, two, zero, 0, &cart), "topology too large");
   /* Reported as legal but risky, and left unmatched until MPI_Finalize, which reports it again */
   MPI_Irecv(&d, 1, MPI_DOUBLE, 0, 3, MPI_COMM_WORLD, &req);
   MPI_Request_free(&req);

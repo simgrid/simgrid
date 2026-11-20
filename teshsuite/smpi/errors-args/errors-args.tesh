@@ -24,6 +24,8 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 1 -platform ${platfdir:=.}/s
 > [smpi_pmpi/WARNING] PMPI_Bsend: no buffer attached with MPI_Buffer_attach().
 >   Buffered sends copy the message into the buffer attached with MPI_Buffer_attach(), which
 >   must hold all pending buffered messages, each plus MPI_BSEND_OVERHEAD (see MPI_Pack_size()).
+> [smpi_pmpi/WARNING] PMPI_Cart_create: the product of dims (2) is larger than the size of the communicator (1).
+>   A Cartesian topology cannot have more processes than the communicator it is built from.
 > [smpi_pmpi/WARNING] PMPI_Request_free: freeing a pending receive request.
 >   This is legal, but the application cannot know anymore when the data has arrived, so it can neither
 >   read nor reuse the buffer safely. Complete the request with MPI_Wait() or MPI_Test() instead.

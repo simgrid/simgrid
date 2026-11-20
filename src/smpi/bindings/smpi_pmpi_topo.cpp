@@ -22,8 +22,20 @@ int PMPI_Cart_create(MPI_Comm comm, int ndims, const int* dims, const int* perio
     CHECK_NULL(6, MPI_ERR_ARG, comm_cart)
   }
   CHECK_NEGATIVE(2, MPI_ERR_ARG, ndims)
-  for (int i = 0; i < ndims; i++)
-    CHECK_NEGATIVE(2, MPI_ERR_ARG, dims[i])
+  int product = 1;
+  for (int i = 0; i < ndims; i++) {
+    CHECK_NEGATIVE(3, MPI_ERR_ARG, dims[i])
+    product *= dims[i];
+  }
+  CHECK_ARGS(product > comm->size(), MPI_ERR_ARG,
+             "%s: the product of dims (%d) is larger than the size of the communicator (%d).\n"
+             "  A Cartesian topology cannot have more processes than the communicator it is built from.",
+             __func__, product, comm->size())
+  if (_smpi_cfg_pedantic && product < comm->size() && comm->rank() == 0)
+    XBT_WARN("%s: the product of dims (%d) is smaller than the size of the communicator (%d), so %d ranks get "
+             "MPI_COMM_NULL.\n"
+             "  This is legal, but usually comes from a wrong computation of dims (see MPI_Dims_create()).",
+             __func__, product, comm->size(), comm->size() - product);
   CHECK_COLLECTIVE(comm, __func__)
   const auto* topo = new simgrid::smpi::Topo_Cart(comm, ndims, dims, periodic, reorder, comm_cart);
   if (*comm_cart == MPI_COMM_NULL) {
