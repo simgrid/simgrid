@@ -10,11 +10,15 @@
 #include "smpi_config.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_host.hpp"
+#include "src/instr/instr_smpi.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "src/smpi/include/smpi_comm.hpp"
+#include "src/smpi/include/smpi_group.hpp"
+#include "src/smpi/include/smpi_request.hpp"
 #include "src/sthread/sthread.h"
 #include "xbt/asserts.h"
 #include "xbt/config.hpp"
@@ -620,6 +624,46 @@ int SMPI_is_inited()
 }
 
 // Called either directly from the user code, or from the code called by smpirun
+/* On deadlock, tell what each blocked rank waits for, in MPI terms */
+static void smpi_report_deadlock()
+{
+  bool header_printed = false;
+  for (auto const& actor : simgrid::s4u::Engine::get_instance()->get_all_actors()) {
+    auto* ext = actor->extension<simgrid::smpi::ActorExt>();
+    if (ext == nullptr)
+      continue;
+    for (auto const& activity : actor->get_impl()->waiting_synchros_) {
+      const auto* comm = dynamic_cast<simgrid::kernel::activity::CommImpl*>(activity.get());
+      if (comm == nullptr)
+        continue;
+      bool sending    = comm->src_actor_.get() == actor->get_impl();
+      const auto* req = static_cast<simgrid::smpi::Request*>(sending ? comm->src_match_data_ : comm->dst_match_data_);
+      if (req == nullptr)
+        continue;
+      // The group is retrieved without smpi_process(), as this runs in maestro
+      MPI_Comm mpi_comm = req->comm() == MPI_COMM_UNINITIALIZED ? ext->comm_world() : req->comm();
+      if (mpi_comm == MPI_COMM_NULL)
+        continue;
+      if (not header_printed) {
+        XBT_INFO("In MPI terms (compile with smpicc -trace-call-location to get the source locations):");
+        header_printed = true;
+      }
+      MPI_Group group      = mpi_comm->group();
+      aid_t peer           = sending ? req->dst() : req->src();
+      std::string peer_str = peer == MPI_ANY_SOURCE ? "any rank" : "rank " + std::to_string(group->rank(peer));
+      std::string tag_str  = req->tag() == MPI_ANY_TAG ? "any tag"
+                             : req->tag() < 0          ? "the internal tag of a collective"
+                                                       : "tag " + std::to_string(req->tag());
+      const auto* loc      = ext->call_location();
+      std::string where    = loc->filename.empty() ? ""
+                                                   : " in " + loc->func_call + " at " + loc->filename + ":" +
+                                                         std::to_string(loc->linenumber);
+      XBT_INFO(" - rank %d is blocked%s, %s %s with %s (%zu bytes)", group->rank(actor->get_pid()), where.c_str(),
+               sending ? "sending to" : "receiving from", peer_str.c_str(), tag_str.c_str(), req->size());
+    }
+  }
+}
+
 void SMPI_init(){
   smpi_init_options_internal(false);
   simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
@@ -635,6 +679,7 @@ void SMPI_init(){
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
   }
+  simgrid::s4u::Engine::on_deadlock_cb(smpi_report_deadlock);
   smpi_init_papi();
   smpi_check_options();
 }

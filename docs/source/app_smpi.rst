@@ -899,8 +899,8 @@ Getting the most out of SMPI
   implementations, so two ranks that both send to each other before receiving work with small messages, but deadlock
   with large ones or on another implementation. With 0, every send waits for its receive, and SimGrid reports such
   deadlocks.
-- Compile with ``smpicc -trace-call-location`` so that the reports about handles and allocations point to your source
-  code.
+- Compile with ``smpicc -trace-call-location`` so that the reports about leaked handles and allocations, and the
+  deadlock reports, point to your source code.
 
 -------------------------
 Troubleshooting with SMPI

@@ -1,0 +1,8 @@
+# On deadlock, SMPI tells what each blocked rank waits for. The kernel's own list of blocked actors is hidden.
+
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/deadlock-report --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=ker_engine.thres:critical "--log=root.fmt:[%c/%p]%e%m%n"
+> [ker_engine/CRITICAL] Oops! Deadlock detected, some activities are still around but will never complete. This usually happens when the user code is not perfectly clean.
+> [smpi_kernel/INFO] In MPI terms (compile with smpicc -trace-call-location to get the source locations):
+> [smpi_kernel/INFO]  - rank 0 is blocked in MPI_Recv at deadlock-report.c:18, receiving from rank 1 with tag 7 (4 bytes)
+> [smpi_kernel/INFO]  - rank 1 is blocked in MPI_Recv at deadlock-report.c:20, receiving from any rank with any tag (4 bytes)
+> [smpi/INFO] Stalling SMPI instance: smpirun. Do all your MPI ranks call MPI_Finalize()?
