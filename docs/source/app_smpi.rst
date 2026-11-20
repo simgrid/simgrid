@@ -894,6 +894,11 @@ Getting the most out of SMPI
   see all errors in one run instead, keeping in mind that a collective failing on some ranks only may desynchronize the
   others, so that subsequent reports may be consequences of the first one.
 - Add ``--cfg=smpi/list-leaks:10`` to find the handles that your application forgets to free.
+- Run with ``--cfg=smpi/send-is-detached-thresh:0`` to reveal the deadlocks that only stay hidden because small messages
+  are buffered. By default, a send smaller than :ref:`cfg=smpi/send-is-detached-thresh` returns at once, as in most MPI
+  implementations, so two ranks that both send to each other before receiving work with small messages, but deadlock
+  with large ones or on another implementation. With 0, every send waits for its receive, and SimGrid reports such
+  deadlocks.
 - Compile with ``smpicc -trace-call-location`` so that the reports about handles and allocations point to your source
   code.
 
