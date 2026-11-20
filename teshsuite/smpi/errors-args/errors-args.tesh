@@ -2,22 +2,48 @@
 
 p Local checks
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 1 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/errors-args --cfg=smpi/pedantic:yes --cfg=smpi/errors-are-fatal:no --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=smpi_mpi.thres:error "--log=root.fmt:[%c/%p]%e%m%n"
-> [smpi_pmpi/WARNING] PMPI_Igatherv: block 0 (displs[0]=3, recvcounts[0]=2, type MPI_INT) ends at byte 20, outside of buffer recvbuf (16 bytes)
-> [smpi_pmpi/WARNING] PMPI_Igatherv: rank 0 sends 8 bytes to itself (sendcount=2 of MPI_INT) but receives 4 bytes (recvcounts[root]=1 of MPI_INT)
+> [smpi_pmpi/WARNING] PMPI_Igatherv: block 0 (displs[0]=3, recvcounts[0]=2, type MPI_INT) ends at byte 20, outside of buffer recvbuf (16 bytes).
+>   Block i starts displs[i] elements of the datatype (not bytes) after the beginning of the buffer: check
+>   that displs and counts describe the layout of the buffer.
+> [smpi_pmpi/WARNING] PMPI_Igatherv: rank 0 sends 8 bytes to itself (sendcount=2 of MPI_INT) but receives 4 bytes (recvcounts[root]=1 of MPI_INT).
+>   In a collective, the data sent to a rank must have the size of what it receives. Here both are the
+>   block of rank 0, so its send and receive arguments are inconsistent.
 > [smpi_pmpi/WARNING] PMPI_Ialltoallv: sendcounts[0] (=-1) cannot be negative
-> [smpi_pmpi/WARNING] PMPI_Iallreduce: sendbuf and recvbuf are the same buffer, use MPI_IN_PLACE instead
-> [smpi_request/WARNING] Message truncated: rank 0 sent 16 bytes of MPI_INT with tag 0 to rank 0, which receives at most 8 bytes
+> [smpi_pmpi/WARNING] PMPI_Iallreduce: sendbuf and recvbuf are the same buffer.
+>   MPI forbids using an output buffer as another argument, as the data could be overwritten while being
+>   read. To work in place, pass MPI_IN_PLACE instead of the send buffer (of the receive buffer at the
+>   root of MPI_Scatter and MPI_Scatterv).
+> [smpi_request/WARNING] Message truncated: rank 0 sent 16 bytes of MPI_INT with tag 0 to rank 0, which receives at most 8 bytes.
+>   The receive buffer must be large enough for the whole message: check the count and datatype of both
+>   calls, and that the message matched the intended receive (source and tag).
 > [smpi_request/WARNING] recv - returned MPI_ERR_TRUNCATE instead of MPI_SUCCESS
-> [smpi_request/WARNING] Mismatched datatypes: rank 0 sent MPI_INT with tag 1 to rank 0, which receives MPI_DOUBLE
+> [smpi_request/WARNING] Mismatched datatypes: rank 0 sent MPI_INT with tag 1 to rank 0, which receives MPI_DOUBLE.
+>   The datatypes of a send and of the matching receive must describe the same sequence of basic types,
+>   or the received values are meaningless (for example, the bytes of an int read as a double).
 > [smpi_request/WARNING] recv - returned MPI_ERR_TYPE instead of MPI_SUCCESS
-> [smpi_pmpi/WARNING] PMPI_Bsend: no buffer attached with MPI_Buffer_attach
-> [smpi_pmpi/WARNING] PMPI_Request_free: freeing a pending receive request, whose completion cannot be known anymore
-> [smpi_pmpi/WARNING] PMPI_Finalize: 1 receive(s) posted by rank 0 were never matched
+> [smpi_pmpi/WARNING] PMPI_Bsend: no buffer attached with MPI_Buffer_attach().
+>   Buffered sends copy the message into the buffer attached with MPI_Buffer_attach(), which
+>   must hold all pending buffered messages, each plus MPI_BSEND_OVERHEAD (see MPI_Pack_size()).
+> [smpi_pmpi/WARNING] PMPI_Request_free: freeing a pending receive request.
+>   This is legal, but the application cannot know anymore when the data has arrived, so it can neither
+>   read nor reuse the buffer safely. Complete the request with MPI_Wait() or MPI_Test() instead.
+> [smpi_pmpi/WARNING] PMPI_Finalize: 1 receive(s) posted by rank 0 were never matched.
+>   No message arrived for them. This usually comes from a receive with the wrong source or tag, or
+>   from a missing send. Cancel the receives that are not needed with MPI_Cancel().
 
 p Checks comparing the arguments of several ranks
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/errors-args --cfg=smpi/pedantic:yes --cfg=smpi/errors-are-fatal:no --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --log=smpi_mpi.thres:error "--log=root.fmt:[%c/%p]%e%m%n"
-> [smpi_pmpi/WARNING] PMPI_Iallgatherv: blocks 0 (displs=0, recvcounts=1) and 1 (displs=0, recvcounts=1) of recvbuf overlap
-> [smpi_pmpi/WARNING] PMPI_Iallgatherv: blocks 0 (displs=0, recvcounts=1) and 1 (displs=0, recvcounts=1) of recvbuf overlap
-> [smpi_utils/WARNING] PMPI_Gatherv with root 0: rank 0 expects 4 bytes from rank 1, which sends 8 bytes
-> [smpi_pmpi/WARNING] PMPI_Gatherv with root 0: collective mismatch
-> [smpi_pmpi/WARNING] PMPI_Finalize: 1 message(s) sent to rank 0 never received, the first from rank 1 with tag -2223 (8 bytes)
+> [smpi_pmpi/WARNING] PMPI_Iallgatherv: blocks 0 (displs=0, recvcounts=1) and 1 (displs=0, recvcounts=1) of recvbuf overlap.
+>   MPI forbids writing a location twice in one call, as the result would depend on the arrival order.
+>   Check the displacements: they count elements of the datatype, not bytes.
+> [smpi_pmpi/WARNING] PMPI_Iallgatherv: blocks 0 (displs=0, recvcounts=1) and 1 (displs=0, recvcounts=1) of recvbuf overlap.
+>   MPI forbids writing a location twice in one call, as the result would depend on the arrival order.
+>   Check the displacements: they count elements of the datatype, not bytes.
+> [smpi_utils/WARNING] PMPI_Gatherv with root 0: rank 0 expects 4 bytes from rank 1, which sends 8 bytes.
+>   In a collective, the data that a rank sends to another must have the size of what the other receives.
+>   Otherwise, the received data is truncated or incomplete. Check the counts and datatypes given on both
+>   ranks (in v-collectives, the entry of the other rank in the counts array). 
+> [smpi_pmpi/WARNING] PMPI_Gatherv with root 0: inconsistent call across ranks (see above)
+> [smpi_pmpi/WARNING] PMPI_Finalize: 1 message(s) sent to rank 0 never received, the first from rank 1 with tag -2223 (8 bytes).
+>   Every message must be received before the application ends. This usually comes from a send to
+>   the wrong rank or with the wrong tag, or from a missing receive.

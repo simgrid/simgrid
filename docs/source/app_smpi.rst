@@ -843,9 +843,9 @@ execute it directly (**not** with smpirun).
 
 .. _SMPI_checks:
 
-------------------------------------
-Debugging MPI applications with SMPI
-------------------------------------
+------------------------------
+MPI correctness checks in SMPI
+------------------------------
 
 The MPI standard leaves the behavior of erroneous programs undefined, and actual implementations check very little to
 remain fast: a wrong argument often results in silent data corruption or in a deadlock far away from its cause. SMPI

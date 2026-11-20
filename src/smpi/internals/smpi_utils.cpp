@@ -310,23 +310,31 @@ int check_collectives_ordering(MPI_Comm comm, const std::string& call, std::vect
   int ret  = MPI_SUCCESS;
 
   if (coll.name != call) {
-    XBT_WARN("Collective operation mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(),
-             coll.name.c_str(), call.c_str());
+    XBT_WARN(
+        "%s: rank %d calls %s where other ranks called %s.\n"
+        "  All ranks of a communicator must call the same collectives in the same order, with the same root and\n"
+        "  operation. Otherwise, the application deadlocks or mixes the data of unrelated operations. If you want\n"
+        "  to restrict a collective to some ranks, you need to create a communicator of those ranks.",
+        call.c_str(), rank, call.c_str(), coll.name.c_str());
     ret = MPI_ERR_OTHER;
   } else if (not sends.empty()) {
     coll.sends.resize(size);
     coll.recvs.resize(size);
+    const char* explanation =
+        "  In a collective, the data that a rank sends to another must have the size of what the other receives.\n"
+        "  Otherwise, the received data is truncated or incomplete. Check the counts and datatypes given on both\n"
+        "  ranks (in v-collectives, the entry of the other rank in the counts array). ";
     // The block exchanged with oneself is checked locally, and peers that did not arrive yet will check against us
     for (int peer = 0; peer < size && ret == MPI_SUCCESS; peer++) {
       if (peer == rank || coll.sends[peer].empty())
         continue;
       if (sends[peer] != coll.recvs[peer][rank]) {
-        XBT_WARN("%s: rank %d sends %zu bytes to rank %d, which expects %zu bytes", call.c_str(), rank, sends[peer],
-                 peer, coll.recvs[peer][rank]);
+        XBT_WARN("%s: rank %d sends %zu bytes to rank %d, which expects %zu bytes.\n%s", call.c_str(), rank,
+                 sends[peer], peer, coll.recvs[peer][rank], explanation);
         ret = MPI_ERR_OTHER;
       } else if (recvs[peer] != coll.sends[peer][rank]) {
-        XBT_WARN("%s: rank %d expects %zu bytes from rank %d, which sends %zu bytes", call.c_str(), rank, recvs[peer],
-                 peer, coll.sends[peer][rank]);
+        XBT_WARN("%s: rank %d expects %zu bytes from rank %d, which sends %zu bytes.\n%s", call.c_str(), rank,
+                 recvs[peer], peer, coll.sends[peer][rank], explanation);
         ret = MPI_ERR_OTHER;
       }
     }

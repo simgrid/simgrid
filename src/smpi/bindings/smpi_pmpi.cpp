@@ -78,12 +78,16 @@ int PMPI_Finalize()
       const auto comm = mbox->front();
       if (comm->get_type() == simgrid::kernel::activity::CommImplType::SEND) {
         const auto* req = static_cast<simgrid::smpi::Request*>(comm->src_match_data_);
-        XBT_WARN("%s: %zu message(s) sent to rank %d never received, the first from rank %d with tag %d (%zu bytes)",
+        XBT_WARN("%s: %zu message(s) sent to rank %d never received, the first from rank %d with tag %d (%zu bytes).\n"
+                 "  Every message must be received before the application ends. This usually comes from a send to\n"
+                 "  the wrong rank or with the wrong tag, or from a missing receive.",
                  __func__, mbox->size(), smpi_process()->comm_world()->rank(), req->comm()->group()->rank(req->src()),
                  req->tag(), req->size());
       } else {
-        XBT_WARN("%s: %zu receive(s) posted by rank %d were never matched", __func__, mbox->size(),
-                 smpi_process()->comm_world()->rank());
+        XBT_WARN("%s: %zu receive(s) posted by rank %d were never matched.\n"
+                 "  No message arrived for them. This usually comes from a receive with the wrong source or tag, or\n"
+                 "  from a missing send. Cancel the receives that are not needed with MPI_Cancel().",
+                 __func__, mbox->size(), smpi_process()->comm_world()->rank());
       }
     }
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();

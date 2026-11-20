@@ -152,7 +152,9 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
         not receiver->truncated_) {
       const Group* group = receiver->comm_->group();
       XBT_WARN(
-          "Message truncated: rank %d sent %zu bytes of %s with tag %d to rank %d, which receives at most %zu bytes",
+          "Message truncated: rank %d sent %zu bytes of %s with tag %d to rank %d, which receives at most %zu bytes.\n"
+          "  The receive buffer must be large enough for the whole message: check the count and datatype of both\n"
+          "  calls, and that the message matched the intended receive (source and tag).",
           group->rank(sender->src_), sender->real_size_, sender->type_->name().c_str(), sender->tag_,
           group->rank(receiver->dst_), receiver->real_size_);
       receiver->truncated_ = true;
@@ -161,7 +163,9 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     if (sender->real_size_ != 0 && receiver->real_size_ != 0 && not receiver->unmatched_types_ &&
         not match_types(sender->type_, receiver->type_)) {
       const Group* group = receiver->comm_->group();
-      XBT_WARN("Mismatched datatypes: rank %d sent %s with tag %d to rank %d, which receives %s",
+      XBT_WARN("Mismatched datatypes: rank %d sent %s with tag %d to rank %d, which receives %s.\n"
+               "  The datatypes of a send and of the matching receive must describe the same sequence of basic types,\n"
+               "  or the received values are meaningless (for example, the bytes of an int read as a double).",
                group->rank(sender->src_), sender->type_->name().c_str(), sender->tag_, group->rank(receiver->dst_),
                receiver->type_->name().c_str());
       receiver->unmatched_types_ = true;

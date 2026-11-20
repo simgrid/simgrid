@@ -600,9 +600,15 @@ XBT_PRIVATE void private_execute_flops(double flops);
   {                                                                                                                    \
     int init_flag = 0;                                                                                                 \
     PMPI_Initialized(&init_flag);                                                                                      \
-    CHECK_ARGS(not init_flag, MPI_ERR_OTHER, "%s: MPI_Init was not called !", __func__)                                \
+    CHECK_ARGS(                                                                                                        \
+        not init_flag, MPI_ERR_OTHER,                                                                                  \
+        "%s: called before MPI_Init(). MPI functions can only be called between MPI_Init() and MPI_Finalize().",       \
+        __func__)                                                                                                      \
     PMPI_Finalized(&init_flag);                                                                                        \
-    CHECK_ARGS(init_flag, MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)                            \
+    CHECK_ARGS(                                                                                                        \
+        init_flag, MPI_ERR_OTHER,                                                                                      \
+        "%s: called after MPI_Finalize(). MPI functions can only be called between MPI_Init() and MPI_Finalize().",    \
+        __func__)                                                                                                      \
   }
 
 #define CHECK_VAL(num, val, err, value)\
@@ -639,13 +645,13 @@ XBT_PRIVATE void private_execute_flops(double flops);
     CHECK_NULL(num, err, ptr)\
   }
 
-#define CHECK_NEGATIVE(num, err, val)\
-  CHECK_ARGS((val) < 0, (err),\
-             "%s: param %d %s cannot be negative", __func__, (num), _XBT_STRINGIFY(val))
+#define CHECK_NEGATIVE(num, err, val)                                                                                  \
+  CHECK_ARGS((val) < 0, (err), "%s: param %d %s (=%lld) cannot be negative", __func__, (num), _XBT_STRINGIFY(val),     \
+             static_cast<long long>(val))
 
-#define CHECK_NEGATIVE_OR_ZERO(num, err, val)\
-  CHECK_ARGS((val) <= 0, (err),\
-             "%s: param %d %s cannot be negative or 0", __func__, (num), _XBT_STRINGIFY(val))
+#define CHECK_NEGATIVE_OR_ZERO(num, err, val)                                                                          \
+  CHECK_ARGS((val) <= 0, (err), "%s: param %d %s (=%lld) must be positive", __func__, (num), _XBT_STRINGIFY(val),      \
+             static_cast<long long>(val))
 
 #define CHECK_COMM2(num, comm)\
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
@@ -659,13 +665,16 @@ XBT_PRIVATE void private_execute_flops(double flops);
     if (_smpi_cfg_pedantic) {                                                                                          \
       std::string call_string = (call);                                                                                \
       CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string, sends, recvs) != MPI_SUCCESS), \
-                 MPI_ERR_OTHER, "%s: collective mismatch", call_string.c_str())                                        \
+                 MPI_ERR_OTHER, "%s: inconsistent call across ranks (see above)", call_string.c_str())                 \
     }                                                                                                                  \
   }
 
-#define CHECK_DELETED(num, err, obj)\
-  CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num),\
-  _XBT_STRINGIFY(obj))
+#define CHECK_DELETED(num, err, obj)                                                                                   \
+  CHECK_ARGS((obj)->deleted(), (err),                                                                                  \
+             "%s: param %d %s has already been freed.\n"                                                               \
+             "  A handle cannot be used after being freed: keep the object alive while it is used, and check that\n"   \
+             "  it is not freed twice.",                                                                               \
+             __func__, (num), _XBT_STRINGIFY(obj))
 
 #define CHECK_COMM(num)\
   {\
@@ -692,23 +701,27 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define SET_BUF2(buf)\
     simgrid::smpi::utils::set_current_buffer(2, _XBT_STRINGIFY(buf), buf);
 
-#define CHECK_BUFFER2(num,buf,count)\
-    CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER,\
-             "%s: param %d %s cannot be NULL if %s > 0",__func__, (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count))\
+#define CHECK_BUFFER2(num, buf, count)                                                                                 \
+  CHECK_ARGS((buf) == nullptr && (count) > 0, MPI_ERR_BUFFER, "%s: param %d %s cannot be NULL if %s > 0", __func__,    \
+             (num), _XBT_STRINGIFY(buf), _XBT_STRINGIFY(count))
 
-#define CHECK_BUFFER(num,buf,count,datatype)\
-  {\
-    CHECK_BUFFER2(num,buf,count)\
-    CHECK_ARGS( simgrid::smpi::utils::get_buffer_size(buf) < (size_t)(count*datatype->get_extent()), MPI_ERR_BUFFER,\
-             "%s: param %d message size %zd exceeds buffer %s size %zu",__func__, (num), count*datatype->get_extent(), _XBT_STRINGIFY(buf), simgrid::smpi::utils::get_buffer_size(buf))\
-  }
+#define CHECK_BUFFER(num, buf, count, datatype)                                                                        \
+  {CHECK_BUFFER2(num, buf, count) CHECK_ARGS(                                                                          \
+      simgrid::smpi::utils::get_buffer_size(buf) < (size_t)(count * datatype->get_extent()), MPI_ERR_BUFFER,           \
+      "%s: param %d: the data (%zd bytes) does not fit in buffer %s (%zu bytes allocated).\n"                          \
+      "  MPI would access memory beyond the allocation: check the count, the datatype and the allocated size.",        \
+      __func__, (num), count * datatype->get_extent(), _XBT_STRINGIFY(buf),                                            \
+      simgrid::smpi::utils::get_buffer_size(buf))}
 
 /* Point-to-point buffers cannot be MPI_IN_PLACE (only meaningful in collectives), nor MPI_BOTTOM with a predefined
  * datatype (MPI_BOTTOM is only meaningful with a derived datatype giving absolute addresses) */
 #define CHECK_P2P_BUFFER(num, buf, count, datatype)                                                                    \
   {CHECK_ARGS((buf) == MPI_IN_PLACE ||                                                                                 \
                   ((buf) == MPI_BOTTOM && (count) > 0 && ((datatype)->flags() & DT_FLAG_PREDEFINED)),                  \
-              MPI_ERR_BUFFER, "%s: param %d %s cannot be MPI_IN_PLACE, nor MPI_BOTTOM with a predefined datatype",     \
+              MPI_ERR_BUFFER,                                                                                          \
+              "%s: param %d %s cannot be MPI_IN_PLACE, nor MPI_BOTTOM with a predefined datatype.\n"                   \
+              "  MPI_IN_PLACE is only meaningful in collectives, and MPI_BOTTOM only with a derived datatype giving\n" \
+              "  absolute addresses.",                                                                                 \
               __func__, (num), _XBT_STRINGIFY(buf)) CHECK_BUFFER(num, buf, count, datatype)}
 
 /* Check an array of requests, that cannot be NULL unless empty */
@@ -722,11 +735,16 @@ XBT_PRIVATE void private_execute_flops(double flops);
     int bsend_buf_size_ = 0;                                                                                           \
     void* bsend_buf_    = nullptr;                                                                                     \
     smpi_process()->bsend_buffer(&bsend_buf_, &bsend_buf_size_);                                                       \
-    CHECK_ARGS(bsend_buf_ == nullptr, MPI_ERR_BUFFER, "%s: no buffer attached with MPI_Buffer_attach", __func__)       \
+    const char* bsend_hint_ =                                                                                          \
+        "  Buffered sends copy the message into the buffer attached with MPI_Buffer_attach(), which\n"                 \
+        "  must hold all pending buffered messages, each plus MPI_BSEND_OVERHEAD (see MPI_Pack_size()).";              \
+    CHECK_ARGS(bsend_buf_ == nullptr, MPI_ERR_BUFFER, "%s: no buffer attached with MPI_Buffer_attach().\n%s",          \
+               __func__, bsend_hint_)                                                                                  \
     MPI_Aint needed_ = (datatype)->get_extent() * (count) + MPI_BSEND_OVERHEAD;                                        \
-    CHECK_ARGS(bsend_buf_size_ < needed_, MPI_ERR_BUFFER,                                                              \
-               "%s: the attached buffer (%d bytes) is smaller than the message plus MPI_BSEND_OVERHEAD (%ld bytes)",   \
-               __func__, bsend_buf_size_, static_cast<long>(needed_))                                                  \
+    CHECK_ARGS(                                                                                                        \
+        bsend_buf_size_ < needed_, MPI_ERR_BUFFER,                                                                     \
+        "%s: the attached buffer (%d bytes) is smaller than the message plus MPI_BSEND_OVERHEAD (%ld bytes).\n%s",     \
+        __func__, bsend_buf_size_, static_cast<long>(needed_), bsend_hint_)                                            \
   }
 
 #define CHECK_COUNT(num, count)\
@@ -740,13 +758,15 @@ XBT_PRIVATE void private_execute_flops(double flops);
     CHECK_ARGS((buf) == nullptr && (counts)[i_] > 0, MPI_ERR_BUFFER, "%s: %s cannot be NULL if %s[%d] > 0", __func__,  \
                _XBT_STRINGIFY(buf), _XBT_STRINGIFY(counts), i_)                                                        \
     MPI_Aint end_ = (static_cast<MPI_Aint>((displs)[i_]) + (counts)[i_]) * (datatype)->get_extent();                   \
-    CHECK_ARGS((counts)[i_] > 0 &&                                                                                     \
-                   (end_ < 0 || simgrid::smpi::utils::get_buffer_size(buf) < static_cast<size_t>(end_)),               \
-               MPI_ERR_BUFFER,                                                                                         \
-               "%s: block %d (%s[%d]=%d, %s[%d]=%d, type %s) ends at byte %ld, outside of buffer %s (%zu bytes)",      \
-               __func__, i_, _XBT_STRINGIFY(displs), i_, (displs)[i_], _XBT_STRINGIFY(counts), i_, (counts)[i_],       \
-               (datatype)->name().c_str(), static_cast<long>(end_), _XBT_STRINGIFY(buf),                               \
-               simgrid::smpi::utils::get_buffer_size(buf))                                                             \
+    CHECK_ARGS(                                                                                                        \
+        (counts)[i_] > 0 && (end_ < 0 || simgrid::smpi::utils::get_buffer_size(buf) < static_cast<size_t>(end_)),      \
+        MPI_ERR_BUFFER,                                                                                                \
+        "%s: block %d (%s[%d]=%d, %s[%d]=%d, type %s) ends at byte %ld, outside of buffer %s (%zu bytes).\n"           \
+        "  Block i starts displs[i] elements of the datatype (not bytes) after the beginning of the buffer: check\n"   \
+        "  that displs and counts describe the layout of the buffer.",                                                 \
+        __func__, i_, _XBT_STRINGIFY(displs), i_, (displs)[i_], _XBT_STRINGIFY(counts), i_, (counts)[i_],              \
+        (datatype)->name().c_str(), static_cast<long>(end_), _XBT_STRINGIFY(buf),                                      \
+        simgrid::smpi::utils::get_buffer_size(buf))                                                                    \
   }
 
 /* In pedantic mode, check that the blocks of a v-collective receive buffer do not overlap */
@@ -754,54 +774,70 @@ XBT_PRIVATE void private_execute_flops(double flops);
   {                                                                                                                    \
     if (_smpi_cfg_pedantic) {                                                                                          \
       auto [first_, second_] = simgrid::smpi::utils::overlapping_blocks((n), (counts), (displs), (datatype));          \
-      CHECK_ARGS(first_ != -1, MPI_ERR_BUFFER, "%s: blocks %d (%s=%d, %s=%d) and %d (%s=%d, %s=%d) of %s overlap",     \
-                 __func__, first_, _XBT_STRINGIFY(displs), (displs)[first_], _XBT_STRINGIFY(counts), (counts)[first_], \
-                 second_, _XBT_STRINGIFY(displs), (displs)[second_], _XBT_STRINGIFY(counts), (counts)[second_],        \
-                 _XBT_STRINGIFY(buf))                                                                                  \
+      CHECK_ARGS(                                                                                                      \
+          first_ != -1, MPI_ERR_BUFFER,                                                                                \
+          "%s: blocks %d (%s=%d, %s=%d) and %d (%s=%d, %s=%d) of %s overlap.\n"                                        \
+          "  MPI forbids writing a location twice in one call, as the result would depend on the arrival order.\n"     \
+          "  Check the displacements: they count elements of the datatype, not bytes.",                                \
+          __func__, first_, _XBT_STRINGIFY(displs), (displs)[first_], _XBT_STRINGIFY(counts), (counts)[first_],        \
+          second_, _XBT_STRINGIFY(displs), (displs)[second_], _XBT_STRINGIFY(counts), (counts)[second_],               \
+          _XBT_STRINGIFY(buf))                                                                                         \
     }                                                                                                                  \
   }
 
 /* The send and receive buffers of a collective must differ, MPI_IN_PLACE is meant for that */
 #define CHECK_NOT_ALIASED(sendbuf, recvbuf)                                                                            \
-  CHECK_ARGS((sendbuf) == (recvbuf) && (sendbuf) != nullptr, MPI_ERR_BUFFER,                                           \
-             "%s: sendbuf and recvbuf are the same buffer, use MPI_IN_PLACE instead", __func__)
+  CHECK_ARGS(                                                                                                          \
+      (sendbuf) == (recvbuf) && (sendbuf) != nullptr, MPI_ERR_BUFFER,                                                  \
+      "%s: sendbuf and recvbuf are the same buffer.\n"                                                                 \
+      "  MPI forbids using an output buffer as another argument, as the data could be overwritten while being\n"       \
+      "  read. To work in place, pass MPI_IN_PLACE instead of the send buffer (of the receive buffer at the\n"         \
+      "  root of MPI_Scatter and MPI_Scatterv).",                                                                      \
+      __func__)
 
 /* Collectives require the data sent by each process to another one to match in size what the other one receives.
  * This checks the block a process sends to itself. */
 #define CHECK_SELF_BLOCK(scount, stype, rcount, rtype)                                                                 \
   CHECK_ARGS(static_cast<size_t>(scount) * (stype)->size() != static_cast<size_t>(rcount) * (rtype)->size(),           \
              MPI_ERR_COUNT,                                                                                            \
-             "%s: rank %d sends %zu bytes to itself (%s=%d of %s) but receives %zu bytes (%s=%d of %s)", __func__,     \
-             comm->rank(), static_cast<size_t>(scount) * (stype)->size(), _XBT_STRINGIFY(scount), (scount),            \
+             "%s: rank %d sends %zu bytes to itself (%s=%d of %s) but receives %zu bytes (%s=%d of %s).\n"             \
+             "  In a collective, the data sent to a rank must have the size of what it receives. Here both are the\n"  \
+             "  block of rank %d, so its send and receive arguments are inconsistent.",                                \
+             __func__, comm->rank(), static_cast<size_t>(scount) * (stype)->size(), _XBT_STRINGIFY(scount), (scount),  \
              (stype)->name().c_str(), static_cast<size_t>(rcount) * (rtype)->size(), _XBT_STRINGIFY(rcount), (rcount), \
-             (rtype)->name().c_str())
+             (rtype)->name().c_str(), comm->rank())
 
-#define CHECK_TYPE(num, datatype)\
-  {\
-    CHECK_MPI_NULL((num), MPI_DATATYPE_NULL, MPI_ERR_TYPE, (datatype))\
-    CHECK_ARGS((not (datatype)->is_valid()), MPI_ERR_TYPE,\
-             "%s: param %d %s is invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
-    CHECK_DELETED((num), MPI_ERR_TYPE, datatype)\
-    if (not datatype->is_basic())\
-      simgrid::smpi::utils::set_current_handle(datatype);\
+#define CHECK_TYPE(num, datatype)                                                                                      \
+  {                                                                                                                    \
+    CHECK_MPI_NULL((num), MPI_DATATYPE_NULL, MPI_ERR_TYPE, (datatype))                                                 \
+    CHECK_ARGS((not(datatype)->is_valid()), MPI_ERR_TYPE,                                                              \
+               "%s: param %d %s is not committed: call MPI_Type_commit() before using it in a communication.",         \
+               __func__, (num), _XBT_STRINGIFY(datatype));                                                             \
+    CHECK_DELETED((num), MPI_ERR_TYPE, datatype)                                                                       \
+    if (not datatype->is_basic())                                                                                      \
+      simgrid::smpi::utils::set_current_handle(datatype);                                                              \
   }
 
-#define CHECK_OP(num, op, type)\
-  {\
-  CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))\
-  CHECK_ARGS((op == MPI_REPLACE || op == MPI_NO_OP), MPI_ERR_OP,\
-             "%s: param %d op %s cannot be used in non RMA calls", __func__, (num), _XBT_STRINGIFY(op));\
-  CHECK_DELETED((num), MPI_ERR_OP, op)\
-  if (not op->is_predefined())\
-    simgrid::smpi::utils::set_current_handle(op);\
-  CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,\
-             "%s: param %d op %s can't be applied to type %s", __func__, (num), _XBT_STRINGIFY(op), type->name().c_str());\
+#define CHECK_OP(num, op, type)                                                                                        \
+  {                                                                                                                    \
+    CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))                                                               \
+    CHECK_ARGS((op == MPI_REPLACE || op == MPI_NO_OP), MPI_ERR_OP,                                                     \
+               "%s: param %d op %s cannot be MPI_REPLACE or MPI_NO_OP, which are reserved to one-sided operations.",   \
+               __func__, (num), _XBT_STRINGIFY(op));                                                                   \
+    CHECK_DELETED((num), MPI_ERR_OP, op)                                                                               \
+    if (not op->is_predefined())                                                                                       \
+      simgrid::smpi::utils::set_current_handle(op);                                                                    \
+    CHECK_ARGS(((op)->allowed_types() && (((op)->allowed_types() & (type)->flags()) == 0)), MPI_ERR_OP,                \
+               "%s: param %d op %s cannot be applied to type %s.\n"                                                    \
+               "  Predefined operations only apply to some datatypes (for example MPI_SUM to numbers, MPI_LAND to\n"   \
+               "  integers). Change the datatype, or define the operation with MPI_Op_create().",                      \
+               __func__, (num), _XBT_STRINGIFY(op), type->name().c_str());                                             \
   }
 
-#define CHECK_ROOT(num)\
-  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,\
-             "%s: param %d root (=%d) cannot be negative or larger than communicator size (=%d)", __func__, (num),\
-             root, comm->size())
+#define CHECK_ROOT(num)                                                                                                \
+  CHECK_ARGS((root < 0 || root >= comm->size()), MPI_ERR_ROOT,                                                         \
+             "%s: param %d root (=%d) is not a rank of the communicator, which has %d ranks.", __func__, (num), root,  \
+             comm->size())
 
 #define CHECK_INFO(num,info)\
   {\
@@ -810,9 +846,10 @@ XBT_PRIVATE void private_execute_flops(double flops);
     simgrid::smpi::utils::set_current_handle(info);\
   }
 
-#define CHECK_TAG(num,tag)\
-  CHECK_ARGS(((tag) < 0 && (tag) !=  MPI_ANY_TAG), MPI_ERR_TAG,\
-             "%s: param %d %s (=%d) cannot be negative", __func__, (num), _XBT_STRINGIFY(tag), (tag))
+#define CHECK_TAG(num, tag)                                                                                            \
+  CHECK_ARGS(((tag) < 0 && (tag) != MPI_ANY_TAG), MPI_ERR_TAG,                                                         \
+             "%s: param %d %s (=%d) cannot be negative: tags range from 0 to MPI_TAG_UB.", __func__, (num),            \
+             _XBT_STRINGIFY(tag), (tag))
 
 #define CHECK_FILE(num, fh)\
   CHECK_MPI_NULL((num), MPI_FILE_NULL, MPI_ERR_FILE, (fh))
@@ -828,10 +865,10 @@ XBT_PRIVATE void private_execute_flops(double flops);
   CHECK_MPI_NULL((num), MPI_WIN_NULL, MPI_ERR_WIN, (win))\
   simgrid::smpi::utils::set_current_handle(win);\
   }
-#define CHECK_RANK(num, rank, comm)\
-  CHECK_ARGS(((rank) >= (comm)->size() || (rank) <0), MPI_ERR_RANK,\
-             "%s: param %d %s (=%d) cannot be < 0 or > %d", __func__, (num), _XBT_STRINGIFY(rank),\
-             (rank), (comm)->size() )
+#define CHECK_RANK(num, rank, comm)                                                                                    \
+  CHECK_ARGS(((rank) >= (comm)->size() || (rank) < 0), MPI_ERR_RANK,                                                   \
+             "%s: param %d %s (=%d) is not a rank of the communicator, which has %d ranks.", __func__, (num),          \
+             _XBT_STRINGIFY(rank), (rank), (comm)->size())
 
 #define CHECK_PROC_RMA(num,proc,win)\
   {\
@@ -839,13 +876,16 @@ XBT_PRIVATE void private_execute_flops(double flops);
     CHECK_RANK(num, proc, (win)->comm())\
   }
 
-#define CHECK_NOT_IN_PLACE_ROOT(num, buf)\
-  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,\
-             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d with root %d", __func__, (num), _XBT_STRINGIFY(buf),  \
-             rank, root)
+#define CHECK_NOT_IN_PLACE_ROOT(num, buf)                                                                              \
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
+             "%s: param %d %s cannot be MPI_IN_PLACE on rank %d (root is %d).\n"                                       \
+             "  In rooted collectives, only the root can use MPI_IN_PLACE: as the send buffer of gathers and\n"        \
+             "  reductions, as the receive buffer of scatters.",                                                       \
+             __func__, (num), _XBT_STRINGIFY(buf), rank, root)
 
-#define CHECK_NOT_IN_PLACE(num, buf)\
-  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,\
-             "%s: param %d %s cannot be MPI_IN_PLACE for rank %d", __func__, (num), _XBT_STRINGIFY(buf), rank)
+#define CHECK_NOT_IN_PLACE(num, buf)                                                                                   \
+  CHECK_ARGS((buf == MPI_IN_PLACE), MPI_ERR_BUFFER,                                                                    \
+             "%s: param %d %s cannot be MPI_IN_PLACE (rank %d): in this collective, only the send buffer can be.",     \
+             __func__, (num), _XBT_STRINGIFY(buf), rank)
 
 #endif
