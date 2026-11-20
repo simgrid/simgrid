@@ -1,0 +1,26 @@
+#!/usr/bin/env tesh
+
+p Schedule a small workflow with HEFT while hosts fail and come back
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/dag-failure-scheduling.py ${srcdir:=.}/workflow.json --policy heft --rate 0.03 --downtime 5 --seed 3 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=host_energy.thres:warning
+> [  3.912928] (1:controller@ctl) 'project_1' failed on w14: placing it again
+> [ 10.123297] (1:controller@ctl) 'project_1' failed on w08: placing it again
+> [ 10.301283] (1:controller@ctl) 'project_3' failed on w12: placing it again
+> [ 56.844994] (0:maestro@) Makespan 56.84 s, 3 re-runs (20.42 s lost), 1 transfer retries, 77591 J
+
+p Same failures with Min-Min
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/dag-failure-scheduling.py ${srcdir:=.}/workflow.json --policy minmin --rate 0.03 --downtime 5 --seed 3 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=host_energy.thres:warning
+> [  3.912928] (1:controller@ctl) 'project_2' failed on w14: placing it again
+> [ 10.123297] (1:controller@ctl) 'project_2' failed on w08: placing it again
+> [ 10.301283] (1:controller@ctl) 'project_2' failed on w12: placing it again
+> [ 33.927893] (1:controller@ctl) 'background_3' failed on w15: placing it again
+> [ 60.846599] (0:maestro@) Makespan 60.85 s, 4 re-runs (13.00 s lost), 0 transfer retries, 81537 J
+
+p Same failures with the failure-aware placement
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/dag-failure-scheduling.py ${srcdir:=.}/workflow.json --policy risk --rate 0.03 --downtime 5 --seed 3 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=host_energy.thres:warning
+> [  3.912928] (1:controller@ctl) 'project_1' failed on w14: placing it again
+> [ 10.301283] (1:controller@ctl) 'project_3' failed on w12: placing it again
+> [ 15.918266] (1:controller@ctl) 'diff_0' failed on w08: placing it again
+> [ 56.003947] (0:maestro@) Makespan 56.00 s, 3 re-runs (14.80 s lost), 0 transfer retries, 75910 J

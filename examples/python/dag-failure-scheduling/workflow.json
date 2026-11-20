@@ -1,0 +1,419 @@
+{
+ "name": "montage-like",
+ "description": "Small Montage-like workflow for the dag-failure-scheduling example",
+ "schemaVersion": "1.5",
+ "workflow": {
+  "specification": {
+   "tasks": [
+    {
+     "name": "project_0",
+     "id": "project_0",
+     "parents": [],
+     "children": [
+      "diff_0",
+      "background_0"
+     ],
+     "inputFiles": [
+      "raw0.fits"
+     ],
+     "outputFiles": [
+      "proj0.fits"
+     ]
+    },
+    {
+     "name": "project_1",
+     "id": "project_1",
+     "parents": [],
+     "children": [
+      "diff_0",
+      "diff_1",
+      "background_1"
+     ],
+     "inputFiles": [
+      "raw1.fits"
+     ],
+     "outputFiles": [
+      "proj1.fits"
+     ]
+    },
+    {
+     "name": "project_2",
+     "id": "project_2",
+     "parents": [],
+     "children": [
+      "diff_1",
+      "diff_2",
+      "background_2"
+     ],
+     "inputFiles": [
+      "raw2.fits"
+     ],
+     "outputFiles": [
+      "proj2.fits"
+     ]
+    },
+    {
+     "name": "project_3",
+     "id": "project_3",
+     "parents": [],
+     "children": [
+      "diff_2",
+      "background_3"
+     ],
+     "inputFiles": [
+      "raw3.fits"
+     ],
+     "outputFiles": [
+      "proj3.fits"
+     ]
+    },
+    {
+     "name": "diff_0",
+     "id": "diff_0",
+     "parents": [
+      "project_0",
+      "project_1"
+     ],
+     "children": [
+      "concat"
+     ],
+     "inputFiles": [
+      "proj0.fits",
+      "proj1.fits"
+     ],
+     "outputFiles": [
+      "diff0.tbl"
+     ]
+    },
+    {
+     "name": "diff_1",
+     "id": "diff_1",
+     "parents": [
+      "project_1",
+      "project_2"
+     ],
+     "children": [
+      "concat"
+     ],
+     "inputFiles": [
+      "proj1.fits",
+      "proj2.fits"
+     ],
+     "outputFiles": [
+      "diff1.tbl"
+     ]
+    },
+    {
+     "name": "diff_2",
+     "id": "diff_2",
+     "parents": [
+      "project_2",
+      "project_3"
+     ],
+     "children": [
+      "concat"
+     ],
+     "inputFiles": [
+      "proj2.fits",
+      "proj3.fits"
+     ],
+     "outputFiles": [
+      "diff2.tbl"
+     ]
+    },
+    {
+     "name": "concat",
+     "id": "concat",
+     "parents": [
+      "diff_0",
+      "diff_1",
+      "diff_2"
+     ],
+     "children": [
+      "bgmodel"
+     ],
+     "inputFiles": [
+      "diff0.tbl",
+      "diff1.tbl",
+      "diff2.tbl"
+     ],
+     "outputFiles": [
+      "fits.tbl"
+     ]
+    },
+    {
+     "name": "bgmodel",
+     "id": "bgmodel",
+     "parents": [
+      "concat"
+     ],
+     "children": [
+      "background_0",
+      "background_1",
+      "background_2",
+      "background_3"
+     ],
+     "inputFiles": [
+      "fits.tbl"
+     ],
+     "outputFiles": [
+      "corrections.tbl"
+     ]
+    },
+    {
+     "name": "background_0",
+     "id": "background_0",
+     "parents": [
+      "bgmodel",
+      "project_0"
+     ],
+     "children": [
+      "add"
+     ],
+     "inputFiles": [
+      "corrections.tbl",
+      "proj0.fits"
+     ],
+     "outputFiles": [
+      "bg0.fits"
+     ]
+    },
+    {
+     "name": "background_1",
+     "id": "background_1",
+     "parents": [
+      "bgmodel",
+      "project_1"
+     ],
+     "children": [
+      "add"
+     ],
+     "inputFiles": [
+      "corrections.tbl",
+      "proj1.fits"
+     ],
+     "outputFiles": [
+      "bg1.fits"
+     ]
+    },
+    {
+     "name": "background_2",
+     "id": "background_2",
+     "parents": [
+      "bgmodel",
+      "project_2"
+     ],
+     "children": [
+      "add"
+     ],
+     "inputFiles": [
+      "corrections.tbl",
+      "proj2.fits"
+     ],
+     "outputFiles": [
+      "bg2.fits"
+     ]
+    },
+    {
+     "name": "background_3",
+     "id": "background_3",
+     "parents": [
+      "bgmodel",
+      "project_3"
+     ],
+     "children": [
+      "add"
+     ],
+     "inputFiles": [
+      "corrections.tbl",
+      "proj3.fits"
+     ],
+     "outputFiles": [
+      "bg3.fits"
+     ]
+    },
+    {
+     "name": "add",
+     "id": "add",
+     "parents": [
+      "background_0",
+      "background_1",
+      "background_2",
+      "background_3"
+     ],
+     "children": [
+      "viewer"
+     ],
+     "inputFiles": [
+      "bg0.fits",
+      "bg1.fits",
+      "bg2.fits",
+      "bg3.fits"
+     ],
+     "outputFiles": [
+      "mosaic.fits"
+     ]
+    },
+    {
+     "name": "viewer",
+     "id": "viewer",
+     "parents": [
+      "add"
+     ],
+     "children": [],
+     "inputFiles": [
+      "mosaic.fits"
+     ],
+     "outputFiles": [
+      "mosaic.png"
+     ]
+    }
+   ],
+   "files": [
+    {
+     "id": "raw0.fits",
+     "sizeInBytes": 4000000
+    },
+    {
+     "id": "proj0.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "raw1.fits",
+     "sizeInBytes": 4000000
+    },
+    {
+     "id": "proj1.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "raw2.fits",
+     "sizeInBytes": 4000000
+    },
+    {
+     "id": "proj2.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "raw3.fits",
+     "sizeInBytes": 4000000
+    },
+    {
+     "id": "proj3.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "diff0.tbl",
+     "sizeInBytes": 200000
+    },
+    {
+     "id": "diff1.tbl",
+     "sizeInBytes": 200000
+    },
+    {
+     "id": "diff2.tbl",
+     "sizeInBytes": 200000
+    },
+    {
+     "id": "fits.tbl",
+     "sizeInBytes": 50000
+    },
+    {
+     "id": "corrections.tbl",
+     "sizeInBytes": 20000
+    },
+    {
+     "id": "bg0.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "bg1.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "bg2.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "bg3.fits",
+     "sizeInBytes": 16000000
+    },
+    {
+     "id": "mosaic.fits",
+     "sizeInBytes": 60000000
+    },
+    {
+     "id": "mosaic.png",
+     "sizeInBytes": 3000000
+    }
+   ]
+  },
+  "execution": {
+   "makespanInSeconds": 0,
+   "executedAt": "20260101T000000+0000",
+   "tasks": [
+    {
+     "id": "project_0",
+     "runtimeInSeconds": 12.0
+    },
+    {
+     "id": "project_1",
+     "runtimeInSeconds": 15.0
+    },
+    {
+     "id": "project_2",
+     "runtimeInSeconds": 18.0
+    },
+    {
+     "id": "project_3",
+     "runtimeInSeconds": 21.0
+    },
+    {
+     "id": "diff_0",
+     "runtimeInSeconds": 4.0
+    },
+    {
+     "id": "diff_1",
+     "runtimeInSeconds": 5.0
+    },
+    {
+     "id": "diff_2",
+     "runtimeInSeconds": 6.0
+    },
+    {
+     "id": "concat",
+     "runtimeInSeconds": 2.0
+    },
+    {
+     "id": "bgmodel",
+     "runtimeInSeconds": 8.0
+    },
+    {
+     "id": "background_0",
+     "runtimeInSeconds": 5.0
+    },
+    {
+     "id": "background_1",
+     "runtimeInSeconds": 6.0
+    },
+    {
+     "id": "background_2",
+     "runtimeInSeconds": 7.0
+    },
+    {
+     "id": "background_3",
+     "runtimeInSeconds": 8.0
+    },
+    {
+     "id": "add",
+     "runtimeInSeconds": 20.0
+    },
+    {
+     "id": "viewer",
+     "runtimeInSeconds": 3.0
+    }
+   ],
+   "machines": []
+  }
+ }
+}
