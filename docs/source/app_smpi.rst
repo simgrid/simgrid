@@ -900,9 +900,9 @@ source location if compiled with ``smpicc -trace-call-location``). On a segmenta
 the stack of the simulated processes (:ref:`cfg=contexts/stack-size`), or to privatize the global variables
 (:ref:`cfg=smpi/privatization`), as SMPI runs all ranks in one process.
 
-This section only presents the main families of checks. For an exhaustive list, search for ``CHECK`` in the source
-code of SMPI (``grep -rn CHECK src/smpi``): each check is either a ``CHECK_*`` macro or is marked by a ``CHECK:``
-comment.
+This section only presents the main families of checks. For an exhaustive list, search for ``CHECK`` in the source code of SMPI
+(``grep -rn CHECK src/smpi``): each check is either a ``CHECK_*`` macro or is marked by a ``CHECK:`` comment. The file
+``src/smpi/README-SMPI-missing-checks.md`` lists the checks provided by ITAC and MUST that are not covered in SMPI yet.
 
 ............................
 Getting the most out of SMPI

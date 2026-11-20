@@ -2855,6 +2855,7 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
+include src/smpi/README-SMPI-missing-checks.md
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp

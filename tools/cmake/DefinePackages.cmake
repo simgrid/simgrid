@@ -1013,6 +1013,7 @@ set(DOC_SOURCES
   docs/source/Tutorial_Model-checking.rst
 
   CITATION.bib
+  src/smpi/README-SMPI-missing-checks.md
   )
 
 set(DOC_TOOLS
