@@ -146,6 +146,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     }
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
+    // CHECK: message truncation and datatype mismatch between a send and its receive.
     // Both sides of a match call this function, so each problem is reported only once. The group is only retrieved
     // when reporting, as it needs an SMPI actor on MPI_COMM_UNINITIALIZED while matching may run in maestro.
     if ((receiver->flags_ & MPI_REQ_PROBE) == 0 && receiver->real_size_ < sender->real_size_ &&
@@ -170,7 +171,8 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
                receiver->type_->name().c_str());
       receiver->unmatched_types_ = true;
     }
-    // MPI_BYTE matches any datatype, but not a message that ends in the middle of an element of the receiver's datatype
+    // CHECK: MPI_BYTE matches any datatype, but not a message that ends in the middle of an element of the receiver's
+    // datatype
     if (sender->type_ == MPI_BYTE && receiver->type_ != MPI_BYTE && receiver->type_ != MPI_PACKED &&
         receiver->type_->size() > 0 && sender->real_size_ % receiver->type_->size() != 0 &&
         not receiver->unmatched_types_) {

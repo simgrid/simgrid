@@ -857,33 +857,52 @@ do cheaply.
 Families of checks
 ..................
 
-**Local arguments** (always active). Handles must be valid and not freed; counts, ranks, tags and roots must be in
-range; operations must apply to the datatype; ``MPI_IN_PLACE`` must only be used where allowed, and point-to-point
-buffers cannot be ``MPI_BOTTOM`` with a predefined datatype and a positive count. Arrays of requests and indices cannot
-be ``NULL`` unless empty, and ``MPI_Start`` or ``MPI_Startall`` cannot restart a request that is still active, nor start
-the same request twice. The send and receive buffers of a collective must differ, as MPI forbids aliasing of output
-arguments (use ``MPI_IN_PLACE`` instead). The counts and displacements of v-collectives (``MPI_Gatherv`` and friends)
-must be consistent with the buffer, and the data a rank sends to itself must match what it receives.
+**Local arguments** (always active). Handles must be valid and not freed, and datatypes committed; counts, ranks, tags
+and roots must be in range; buffers cannot be ``NULL`` when data is exchanged; operations must apply to the datatype;
+``MPI_IN_PLACE`` must only be used where allowed, and point-to-point buffers cannot be ``MPI_BOTTOM`` with a predefined
+datatype and a positive count. Arrays of requests and indices cannot be ``NULL`` unless empty, and ``MPI_Start`` or
+``MPI_Startall`` cannot restart a request that is still active, nor start the same request twice. The send and receive
+buffers of a collective must differ, as MPI forbids aliasing of output arguments (use ``MPI_IN_PLACE`` instead). The
+counts and displacements of v-collectives (``MPI_Gatherv`` and friends) must be consistent with the buffer, and the data
+a rank sends to itself must match what it receives. Buffered sends need a buffer attached with ``MPI_Buffer_attach``,
+large enough for the message plus ``MPI_BSEND_OVERHEAD``. A Cartesian topology cannot be larger than its communicator (a
+smaller one is reported with :ref:`cfg=smpi/pedantic`).
 
 **Buffer sizes**. When :ref:`cfg=smpi/display-allocs` or :ref:`cfg=smpi/pedantic` is set, SMPI tracks the size of the
 memory allocated with ``malloc()``, and reports MPI calls that would read or write beyond. Buffers on the stack or in
 global variables are not checked.
 
 **Message matching**. A message larger than the receive buffer is an error in MPI (``MPI_ERR_TRUNCATE``), and the
-datatypes of the sender and the receiver must match. Both are reported with the involved ranks and tag. Derived
-datatypes are not compared yet.
+datatypes of the sender and the receiver must match. Both are reported with the involved ranks and tag. ``MPI_BYTE``
+matches any datatype, but a message sent as bytes must not end in the middle of an element of the receiver's datatype.
+Derived datatypes are not compared yet.
+
+**Portability** (only with :ref:`cfg=smpi/pedantic`). Tags above 32767 work in SMPI, but the MPI standard only
+guarantees this value, and some implementations reject larger tags (Intel MPI on InfiniBand stops at 1048575). Each call
+site using such a tag is reported once.
 
 **Consistency across ranks** (only with :ref:`cfg=smpi/pedantic`). MPI requires all ranks of a communicator to call the
-same collectives in the same order, with the same root and operation, and the amount of data sent by each rank to
-another to match what the other receives. SMPI reports the rank that differs. It also checks that the blocks of the
-receive buffer of a v-collective do not overlap, as MPI forbids writing a location twice. These checks cost memory and
-time with many ranks, which is why they are not active by default.
+same collectives in the same order (including ``MPI_Comm_free`` and ``MPI_Comm_disconnect``), with the same root and
+operation, and the amount of data sent by each rank to another to match what the other receives. SMPI reports the rank
+that differs. It also checks that the blocks of the receive buffer of a v-collective do not overlap, as MPI forbids
+writing a location twice. These checks cost memory and time with many ranks, which is why they are not active by
+default.
 
 **Resource leaks**. :ref:`cfg=smpi/list-leaks` reports the MPI handles that were never freed, and
 :ref:`cfg=smpi/display-allocs` the buffers allocated but not freed. With :ref:`cfg=smpi/pedantic`, ``MPI_Finalize``
 also reports the messages sent to the rank and never received, and the receives it posted and that were never matched,
 usually the sign of a wrong rank or tag. Freeing a pending receive request is reported as well: this is legal, but the
 application cannot know anymore when its buffer can be reused.
+
+**Execution problems**. A rank that ends without calling ``MPI_Finalize`` is reported. When all ranks are blocked,
+SimGrid reports the deadlock, and SMPI tells for each blocked rank the peer and tag it waits for (with the MPI call and
+source location if compiled with ``smpicc -trace-call-location``). On a segmentation fault, SimGrid suggests to increase
+the stack of the simulated processes (:ref:`cfg=contexts/stack-size`), or to privatize the global variables
+(:ref:`cfg=smpi/privatization`), as SMPI runs all ranks in one process.
+
+This section only presents the main families of checks. For an exhaustive list, search for ``CHECK`` in the source
+code of SMPI (``grep -rn CHECK src/smpi``): each check is either a ``CHECK_*`` macro or is marked by a ``CHECK:``
+comment.
 
 ............................
 Getting the most out of SMPI

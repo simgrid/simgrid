@@ -70,7 +70,7 @@ int PMPI_Finalize()
 {
   smpi_bench_end();
   CHECK_COLLECTIVE(smpi_process()->comm_world(), "MPI_Finalize")
-  // Communications left in our mailboxes: messages sent to us and never received, or receives never matched
+  // CHECK: communications left in our mailboxes: messages sent to us and never received, or receives never matched
   if (_smpi_cfg_pedantic)
     for (const simgrid::s4u::Mailbox* mbox : {smpi_process()->mailbox(), smpi_process()->mailbox_small()}) {
       if (mbox->empty())

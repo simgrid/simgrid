@@ -311,6 +311,7 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
         smpi_exit_status = res;
     }
     auto self = smpi_process();
+    // CHECK: each rank must call MPI_Finalize()
     if (not self->finalized())
       XBT_CWARN(smpi_linting, "SMPI rank %d did not call MPI_Finalize() before ending its execution. Its state is %s",
                 self->comm_world()->rank(), self->get_state_str());
@@ -624,7 +625,7 @@ int SMPI_is_inited()
 }
 
 // Called either directly from the user code, or from the code called by smpirun
-/* On deadlock, tell what each blocked rank waits for, in MPI terms */
+/* CHECK: on deadlock, tell what each blocked rank waits for, in MPI terms */
 static void smpi_report_deadlock()
 {
   bool header_printed = false;

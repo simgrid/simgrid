@@ -31,6 +31,7 @@ int PMPI_Cart_create(MPI_Comm comm, int ndims, const int* dims, const int* perio
              "%s: the product of dims (%d) is larger than the size of the communicator (%d).\n"
              "  A Cartesian topology cannot have more processes than the communicator it is built from.",
              __func__, product, comm->size())
+  // CHECK: a smaller topology is legal, but often a mistake
   if (_smpi_cfg_pedantic && product < comm->size() && comm->rank() == 0)
     XBT_WARN("%s: the product of dims (%d) is smaller than the size of the communicator (%d), so %d ranks get "
              "MPI_COMM_NULL.\n"

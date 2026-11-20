@@ -166,7 +166,8 @@ int PMPI_Request_free(MPI_Request * request)
 
   const SmpiBenchGuard suspend_bench;
   if (*request != MPI_REQUEST_NULL) {
-    // Legal, but the completion of a pending receive cannot be known anymore, so its buffer cannot be safely reused
+    // CHECK: legal, but the completion of a pending receive cannot be known anymore, so its buffer cannot be safely
+    // reused
     if (_smpi_cfg_pedantic && ((*request)->flags() & MPI_REQ_RECV) &&
         ((*request)->flags() & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0)
       XBT_WARN("%s: freeing a pending receive request.\n"
