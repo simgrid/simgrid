@@ -93,7 +93,8 @@ SMPI (all AI-assisted):
    - Update mpich test suite: Port MPICH3 dtpools test suite into SMPI test tree (coll, pt2pt, rma);
      remove superseded MTestGetDatatypes tests; fix derived datatype extents, MTest harness helpers,
      and Fortran 80-column limits in mpif.h.
- - Add more parameter checks to help students using SMPI to learn MPI
+ - Add more parameter checks to help students using SMPI to learn MPI. We now cover most of what ITAC and MUST provide.
+   See app_smpi.rst for details from user's POV, and src/smpi/README-SMPI-missing-checks.md for an insider POV.
 
 ----------------------------------------------------------------------------
 
