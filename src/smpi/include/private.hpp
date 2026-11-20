@@ -846,10 +846,27 @@ XBT_PRIVATE void private_execute_flops(double flops);
     simgrid::smpi::utils::set_current_handle(info);\
   }
 
+/* Tags are not negative (except MPI_ANY_TAG). In pedantic mode, tags above 32767 are reported once per call site: they
+ * work in SMPI, whose MPI_TAG_UB is INT_MAX, but the MPI standard only guarantees 32767 (attribute MPI_TAG_UB), and
+ * actual implementations go lower than INT_MAX: Intel MPI stops at 1048575 with its mlx provider for InfiniBand, which
+ * broke applications such as DUNE and SAMRAI. MUST reports the same (MUST_WARNING_INTEGER_HIGH_BUT_LESS_TAG_UB).
+ * See https://www.intel.com/content/www/us/en/developer/articles/technical/large-mpi-tags-with-the-intel-mpi.html
+ * https://community.intel.com/t5/Intel-MPI-Library/Intel-MPI-maximum-tag-value-is-much-smaller-with-MLX-provider/td-p/1241310
+ */
 #define CHECK_TAG(num, tag)                                                                                            \
-  CHECK_ARGS(((tag) < 0 && (tag) != MPI_ANY_TAG), MPI_ERR_TAG,                                                         \
-             "%s: param %d %s (=%d) cannot be negative: tags range from 0 to MPI_TAG_UB.", __func__, (num),            \
-             _XBT_STRINGIFY(tag), (tag))
+  {                                                                                                                    \
+    CHECK_ARGS(((tag) < 0 && (tag) != MPI_ANY_TAG), MPI_ERR_TAG,                                                       \
+               "%s: param %d %s (=%d) cannot be negative: tags range from 0 to MPI_TAG_UB.", __func__, (num),          \
+               _XBT_STRINGIFY(tag), (tag))                                                                             \
+    static bool tag_warned_ = false;                                                                                   \
+    if (_smpi_cfg_pedantic && (tag) > 32767 && not tag_warned_) {                                                      \
+      XBT_WARN("%s: param %d %s (=%d) is larger than 32767, the largest tag guaranteed by the MPI standard.\n"         \
+               "  It works in SMPI, but other implementations may reject it (Intel MPI stops at 1048575 on\n"          \
+               "  InfiniBand). Query the MPI_TAG_UB attribute, or use several communicators rather than many tags.",   \
+               __func__, (num), _XBT_STRINGIFY(tag), (tag));                                                           \
+      tag_warned_ = true;                                                                                              \
+    }                                                                                                                  \
+  }
 
 #define CHECK_FILE(num, fh)\
   CHECK_MPI_NULL((num), MPI_FILE_NULL, MPI_ERR_FILE, (fh))

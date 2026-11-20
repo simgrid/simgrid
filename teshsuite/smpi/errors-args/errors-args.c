@@ -47,6 +47,11 @@ static void local_errors(void)
   expect_error(MPI_Recv(rbuf, 2, MPI_INT, 0, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE), "partial element");
   MPI_Wait(&req, MPI_STATUS_IGNORE);
 
+  /* Legal but not portable: only reported as a warning */
+  MPI_Isend(sbuf, 1, MPI_INT, 0, 40000, MPI_COMM_WORLD, &req);
+  MPI_Recv(rbuf, 1, MPI_INT, 0, 40000, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
+
   expect_error(MPI_Bsend(sbuf, 1, MPI_INT, 0, 2, MPI_COMM_WORLD), "no buffer attached");
   int two[1]  = {2};
   int zero[1] = {0};
