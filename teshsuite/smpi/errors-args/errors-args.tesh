@@ -21,6 +21,10 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 1 -platform ${platfdir:=.}/s
 >   The datatypes of a send and of the matching receive must describe the same sequence of basic types,
 >   or the received values are meaningless (for example, the bytes of an int read as a double).
 > [smpi_request/WARNING] recv - returned MPI_ERR_TYPE instead of MPI_SUCCESS
+> [smpi_request/WARNING] Mismatched datatypes: rank 0 sent 6 bytes of MPI_BYTE with tag 4 to rank 0, which receives MPI_INT elements of 4 bytes.
+>   The message ends in the middle of an element. This usually comes from a wrong size computation
+>   (such as a wrong sizeof) in the count of the send.
+> [smpi_request/WARNING] recv - returned MPI_ERR_TYPE instead of MPI_SUCCESS
 > [smpi_pmpi/WARNING] PMPI_Bsend: no buffer attached with MPI_Buffer_attach().
 >   Buffered sends copy the message into the buffer attached with MPI_Buffer_attach(), which
 >   must hold all pending buffered messages, each plus MPI_BSEND_OVERHEAD (see MPI_Pack_size()).

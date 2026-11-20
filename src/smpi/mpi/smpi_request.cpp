@@ -170,6 +170,19 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
                receiver->type_->name().c_str());
       receiver->unmatched_types_ = true;
     }
+    // MPI_BYTE matches any datatype, but not a message that ends in the middle of an element of the receiver's datatype
+    if (sender->type_ == MPI_BYTE && receiver->type_ != MPI_BYTE && receiver->type_ != MPI_PACKED &&
+        receiver->type_->size() > 0 && sender->real_size_ % receiver->type_->size() != 0 &&
+        not receiver->unmatched_types_) {
+      const Group* group = receiver->comm_->group();
+      XBT_WARN("Mismatched datatypes: rank %d sent %zu bytes of MPI_BYTE with tag %d to rank %d, which receives %s "
+               "elements of %zu bytes.\n"
+               "  The message ends in the middle of an element. This usually comes from a wrong size computation\n"
+               "  (such as a wrong sizeof) in the count of the send.",
+               group->rank(sender->src_), sender->real_size_, sender->tag_, group->rank(receiver->dst_),
+               receiver->type_->name().c_str(), receiver->type_->size());
+      receiver->unmatched_types_ = true;
+    }
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
                                            // the receiver

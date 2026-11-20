@@ -43,6 +43,10 @@ static void local_errors(void)
   expect_error(MPI_Recv(&d, 1, MPI_DOUBLE, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE), "type mismatch");
   MPI_Wait(&req, MPI_STATUS_IGNORE);
 
+  MPI_Isend(sbuf, 6, MPI_BYTE, 0, 4, MPI_COMM_WORLD, &req);
+  expect_error(MPI_Recv(rbuf, 2, MPI_INT, 0, 4, MPI_COMM_WORLD, MPI_STATUS_IGNORE), "partial element");
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
+
   expect_error(MPI_Bsend(sbuf, 1, MPI_INT, 0, 2, MPI_COMM_WORLD), "no buffer attached");
   int two[1]  = {2};
   int zero[1] = {0};
