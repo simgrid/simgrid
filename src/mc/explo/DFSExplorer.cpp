@@ -111,7 +111,6 @@ void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t&
 
     // ... Add that fake state and compute races
     state_stack.emplace_back(std::move(next_state));
-    stack_ = &state_stack;
     S.push_transition(executed_transition);
     Reduction::RaceUpdate* todo_updates = reduction_->races_computation(S, stack_);
     reduction_->apply_race_update(get_remote_app(), todo_updates);
@@ -126,7 +125,6 @@ void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t&
     is_execution_descending = false;
 
     state_stack.pop_back();
-    stack_ = &state_stack;
 
     S.remove_last_event();
 
@@ -139,7 +137,6 @@ void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t&
   on_state_creation_signal(next_state.get(), get_remote_app());
 
   state_stack.emplace_back(std::move(next_state));
-  stack_ = &state_stack;
 
   S.push_transition(executed_transition);
 
@@ -173,7 +170,6 @@ void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t&
   is_execution_descending = false;
 
   state_stack.pop_back();
-  stack_ = &state_stack;
 
   S.remove_last_event();
 }
@@ -231,6 +227,7 @@ void DFSExplorer::run()
 
   static stack_t state_stack = std::deque<StatePtr>();
   state_stack.emplace_back(std::move(initial_state));
+  stack_ = &state_stack;
 
   odpor::Execution empty_seq = odpor::Execution();
 

@@ -27,7 +27,7 @@ using EventHandle = uint32_t;
 
 class XBT_PRIVATE DFSExplorer : public ReductedExplorer {
 protected:
-  stack_t* stack_;
+  stack_t* stack_              = nullptr;
   bool is_execution_descending = true;
 
 private:

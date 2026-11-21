@@ -26,8 +26,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
   if (s->has_enabled_actors())
     return new RaceUpdate();
 
-  const auto last_event = E.get_latest_event_handle();
-  auto updates          = new RaceUpdate();
+  auto updates = new RaceUpdate();
   /**
    * ODPOR Race Detection Procedure:
    *
@@ -38,7 +37,7 @@ Reduction::RaceUpdate* ODPOR::races_computation(odpor::Execution& E, stack_t* S,
    */
   XBT_DEBUG("Going to compute all the reversible races (size stack: %zu) on sequence (size sequence: %zu) \n%s",
             S->size(), E.size(), E.get_one_string_textual_trace().c_str());
-  for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime <= last_event.value(); ++e_prime) {
+  for (auto e_prime = static_cast<odpor::Execution::EventHandle>(0); e_prime < E.size(); ++e_prime) {
     if (E.get_event_with_handle(e_prime).has_race_been_computed())
       continue;
 

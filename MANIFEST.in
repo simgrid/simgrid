@@ -1000,6 +1000,8 @@ include teshsuite/mc/mpi/probe_any_source.c
 include teshsuite/mc/mpi/probe_any_source.tesh
 include teshsuite/mc/mpi/probe_deadlock.c
 include teshsuite/mc/mpi/probe_deadlock.tesh
+include teshsuite/mc/mpi/probe_initial_deadlock.c
+include teshsuite/mc/mpi/probe_initial_deadlock.tesh
 include teshsuite/mc/mpi/probe_ok.c
 include teshsuite/mc/mpi/probe_ok.tesh
 include teshsuite/mc/mpi/probe_source.c

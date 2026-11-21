@@ -58,6 +58,11 @@ void CriticalTransitionExplorer::run()
   XBT_INFO("Start the critical transition detection phase.");
   XBT_DEBUG("**************************************************");
 
+  if (stack_->size() == 1) {
+    XBT_INFO("The bug occurs in the initial state, before any transition: no transition is critical.");
+    return;
+  }
+
   odpor::Execution execution_seq_ = odpor::Execution();
   for (auto iter = std::next(stack_->begin()); iter != stack_->end(); ++iter) {
     execution_seq_.push_transition((*iter)->get_transition_in());

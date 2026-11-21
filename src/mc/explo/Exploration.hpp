@@ -92,7 +92,8 @@ public:
 
   bool is_critical_transition_explorer() const { return is_looking_for_critical; }
 
-  /* sanity check returning true if there is no actor to run in the simulation */
+  /* sanity check returning true if there is no actor left in the simulation. Actors that are all blocked are a
+   * deadlock, that the exploration must report. */
   bool empty();
 
   /** @brief Restore the application to that state, by rollback of a previously saved fork and replay the transitions

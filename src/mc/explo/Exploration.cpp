@@ -364,7 +364,7 @@ bool Exploration::empty()
   std::vector<std::optional<simgrid::mc::ActorState>> actors;
   get_remote_app().get_actors_status(actors);
   return std::none_of(actors.begin(), actors.end(),
-                      [](std::optional<simgrid::mc::ActorState> kv) { return kv.has_value() && kv->is_enabled(); });
+                      [](const std::optional<simgrid::mc::ActorState>& kv) { return kv.has_value(); });
 }
 
 bool Exploration::soft_timouted() const

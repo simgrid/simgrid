@@ -146,7 +146,8 @@ if(${enable_testsuite_dpu} AND (NOT SIMGRID_HAVE_MC))
   message(STATUS "DPU tests cannot be executed when MC is disabled.")
 endif()
 
-foreach(x iprobe_ok iprobe_nok probe_any_source probe_deadlock probe_ok probe_source scan_waitany)
+foreach(x iprobe_ok iprobe_nok probe_any_source probe_deadlock probe_initial_deadlock probe_ok probe_source
+          scan_waitany)
   if(NOT DEFINED ${x}_disable)
     set(${x}_disable 0)
   endif()
