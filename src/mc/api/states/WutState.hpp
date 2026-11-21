@@ -46,7 +46,12 @@ public:
 
   unsigned int direct_children() const { return opened_.size() - closed_.size(); }
 
-  bool has_more_to_be_explored() const override { return direct_children() > 0; }
+  // Besides the opened children, an actor may still have variants to execute (e.g., the other communications of a
+  // WaitAny), that are only opened when explored.
+  bool has_more_to_be_explored() const override
+  {
+    return direct_children() > 0 || SleepSetState::has_more_to_be_explored();
+  }
 
   std::unordered_set<Aid> get_sleeping_actors(Aid after_actor) const override;
 

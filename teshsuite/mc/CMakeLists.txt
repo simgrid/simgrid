@@ -148,7 +148,7 @@ endif()
 
 set(probe_deadlock_disable 1)
 set(probe_ok_disable 1)
-foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok)
+foreach(x iprobe_ok iprobe_nok probe_deadlock probe_ok scan_waitany)
   if(NOT DEFINED ${x}_disable)
     set(${x}_disable 0)
   endif()
