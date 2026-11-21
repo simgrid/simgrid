@@ -71,7 +71,7 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 164 cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 166 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
 ### Bugs in MBB (12 cases)
 
@@ -92,11 +92,11 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
   `InvalidParam-array_of_indices-mpi_waitsome-002`, which passes only because its uninitialized pointer happens to be
   `NULL`. Such cases should rather be dropped from MBB.
 
-### Missing checks in SMPI (54 cases)
+### Missing checks in SMPI (56 cases)
 
-- Invalid statuses (14 cases, not detected): `InvalidParam-Status-*` pass `NULL` as status, or `MPI_STATUSES_IGNORE`
-  where a single status is expected, to `MPI_Recv`, `MPI_Sendrecv`, `MPI_Sendrecv_replace` and `MPI_Wait*`. In C,
-  `smpi.h` defines `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` all as `NULL`, so SMPI cannot tell them
+- Invalid statuses (16 cases, not detected): `InvalidParam-Status-*` pass `NULL` as status, or `MPI_STATUSES_IGNORE`
+  where a single status is expected, to `MPI_Probe`, `MPI_Recv`, `MPI_Sendrecv`, `MPI_Sendrecv_replace` and `MPI_Wait*`.
+  In C, `smpi.h` defines `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` all as `NULL`, so SMPI cannot tell them
   apart. They should become distinct sentinel values, as in MPICH.
 - Buffers used after `free()` (8 cases, not detected): `InvalidParam-Buffer-*` of the point-to-point calls free the
   buffer before using it. The interception of `malloc` and `free` should remember the freed blocks, so that
