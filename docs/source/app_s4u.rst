@@ -1389,6 +1389,7 @@ Receiving data
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_init()
       .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe
       .. doxygenfunction:: simgrid::s4u::Mailbox::listen
+      .. doxygenfunction:: simgrid::s4u::Mailbox::probe
       .. doxygenfunction:: simgrid::s4u::Mailbox::ready
 
    .. group-tab:: Python

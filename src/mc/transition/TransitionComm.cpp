@@ -6,6 +6,7 @@
 #include "src/mc/transition/TransitionComm.hpp"
 #include "simgrid/config.h"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
@@ -102,6 +103,39 @@ bool CommTestTransition::reversible_race(const Transition* other, const odpor::E
   return true; // CommTest is always enabled
 }
 
+/* Whether the probe could fire without the given send (or receive, for a sender-side probe) that precedes it: that is
+ * the case if an earlier communication of the same kind on that mailbox could have enabled it instead.
+ * Over-approximated, as allowed for reversible races: such earlier communications count even if they were already
+ * matched, or if the application would refuse them for reasons that are not visible here (such as the communicator). */
+static bool is_probe_fireable_without(const odpor::Execution* exec, EventHandle comm_handle, EventHandle probe_handle)
+{
+  const auto* probe = static_cast<const CommProbeTransition*>(exec->get_transition_for_handle(probe_handle));
+  const auto enabler_type =
+      probe->is_sender_side() ? Transition::Type::COMM_ASYNC_RECV : Transition::Type::COMM_ASYNC_SEND;
+  // A communication of the other kind can only consume what the probe looks for, so it did not enable the probe
+  if (exec->get_transition_for_handle(comm_handle)->type_ != enabler_type)
+    return true;
+
+  for (EventHandle e = 0; e < comm_handle; e++) {
+    const Transition* t = exec->get_transition_for_handle(e);
+    if (t->type_ != enabler_type)
+      continue;
+    unsigned mbox;
+    int tag;
+    if (enabler_type == Transition::Type::COMM_ASYNC_SEND) {
+      mbox = static_cast<const CommSendTransition*>(t)->get_mailbox();
+      tag  = static_cast<const CommSendTransition*>(t)->get_tag();
+    } else {
+      mbox = static_cast<const CommRecvTransition*>(t)->get_mailbox();
+      tag  = static_cast<const CommRecvTransition*>(t)->get_tag();
+    }
+    if (mbox == probe->get_mailbox() && (not probe->get_src().has_value() || t->aid_ == probe->get_src()) &&
+        (probe->is_any_tag() ? tag >= 0 : tag == probe->get_tag()))
+      return true;
+  }
+  return false;
+}
+
 CommRecvTransition::CommRecvTransition(Aid issuer, int times_considered, unsigned comm_, unsigned mbox_, int tag_)
     : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered), comm_(comm_), mbox_(mbox_), tag_(tag_)
 {
@@ -127,6 +161,9 @@ bool CommRecvTransition::reversible_race(const Transition* other, const odpor::E
                                          EventHandle other_handle) const
 {
   xbt_assert(type_ == Type::COMM_ASYNC_RECV, "Unexpected transition type %s", to_c_str(type_));
+
+  if (other->type_ == Type::COMM_PROBE)
+    return is_probe_fireable_without(exec, this_handle, other_handle);
 
   // If this recv enabled the comm_wait, then it's not reversible
   if (other->type_ == Type::COMM_WAIT) {
@@ -172,6 +209,9 @@ bool CommSendTransition::reversible_race(const Transition* other, const odpor::E
 {
   xbt_assert(type_ == Type::COMM_ASYNC_SEND, "Unexpected transition type %s", to_c_str(type_));
 
+  if (other->type_ == Type::COMM_PROBE)
+    return is_probe_fireable_without(exec, this_handle, other_handle);
+
   // If this send enabled the comm_wait, then it's not reversible
   if (other->type_ == Type::COMM_WAIT) {
     const auto* wait = static_cast<const CommWaitTransition*>(other);
@@ -189,36 +229,32 @@ bool CommSendTransition::reversible_race(const Transition* other, const odpor::E
   return true;
 }
 
-CommIprobeTransition::CommIprobeTransition(Aid issuer, int times_considered, bool is_sender, unsigned mbox, int tag)
-    : Transition(Type::COMM_IPROBE, issuer, times_considered), is_sender_(is_sender), mbox_(mbox), tag_(tag)
-{
-}
-CommIprobeTransition::CommIprobeTransition(Aid issuer, int times_considered, mc::Channel& channel)
-    : Transition(Type::COMM_IPROBE, issuer, times_considered)
+CommProbeTransition::CommProbeTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
+    : Transition(type, issuer, times_considered)
 {
   mbox_      = channel.unpack<unsigned>();
   is_sender_ = channel.unpack<bool>();
   tag_       = channel.unpack<int>();
+  any_tag_   = channel.unpack<bool>();
+  auto src   = channel.unpack<aid_t>();
+  src_       = src == -1 ? Aid::INVALID : Aid{(int)src};
 
-  XBT_DEBUG("SendTransition mbox:%u %s tag:%d", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+  XBT_DEBUG("%s mbox:%u %s tag:%d any_tag:%d src:%d", to_c_str(type_), mbox_,
+            (is_sender_ ? "sender side" : "recv side"), tag_, any_tag_, src_.c_val());
 }
 
-std::string CommIprobeTransition::to_string(bool verbose) const
+std::string CommProbeTransition::to_string(bool verbose) const
 {
+  const char* name = type_ == Type::COMM_PROBE ? "Probe" : "iProbe";
   if (not verbose)
-    return xbt::string_printf("iProbe(mbox=%u, %s)", mbox_, (is_sender_ ? "sender side" : "recv side"));
+    return xbt::string_printf("%s(mbox=%u, %s)", name, mbox_, (is_sender_ ? "sender side" : "recv side"));
   else
-    return xbt::string_printf("iProbe(mbox=%u, %s, tag=%d)", mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
+    return xbt::string_printf("%s(mbox=%u, %s, tag=%d)", name, mbox_, (is_sender_ ? "sender side" : "recv side"), tag_);
 }
-bool CommIprobeTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
-                                           EventHandle this_handle, EventHandle other_handle) const
+bool CommProbeTransition::reversible_race(const Transition* other, const odpor::Execution* exec,
+                                          EventHandle this_handle, EventHandle other_handle) const
 {
-  // In every cases, we can execute Iprobe before someone else
-  return true;
-}
-bool CommIprobeTransition::can_be_co_enabled(const Transition* o) const
-{
-  // Iprobe can be executed at any time
+  // A probe enables nothing, so whatever comes after it could have been executed before it
   return true;
 }
 

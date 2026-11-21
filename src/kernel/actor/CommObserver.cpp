@@ -56,29 +56,44 @@ std::string CommIrecvSimcall::to_string() const
   return "CommAsyncRecv(comm_id: " + std::to_string(comm_ ? comm_->get_id() : 0) +
          " mbox:" + std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) + ")";
 }
-IprobeSimcall::IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
-                             const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data)
-    : SimcallObserver(actor), mbox_(mbox), kind_(kind), match_fun_(match_fun), match_data_(match_data)
+ProbeSimcall::ProbeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
+                           const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data,
+                           bool blocking)
+    : DelayedSimcallObserver(actor, nullptr)
+    , mbox_(mbox)
+    , kind_(kind)
+    , blocking_(blocking)
+    , match_fun_(match_fun)
+    , match_data_(match_data)
 {
 #if HAVE_SMPI
   auto req = static_cast<smpi::Request*>(match_data);
   tag_     = req->tag();
+  any_tag_ = tag_ == MPI_ANY_TAG;
+  src_     = req->src() == MPI_ANY_SOURCE ? -1 : req->src();
 #endif
 }
 
-void IprobeSimcall::serialize(mc::Channel& channel) const
+bool ProbeSimcall::is_enabled()
 {
-  channel.pack(mc::Transition::Type::COMM_IPROBE);
+  return not blocking_ || mbox_->iprobe(kind_, match_fun_, match_data_) != nullptr;
+}
+
+void ProbeSimcall::serialize(mc::Channel& channel) const
+{
+  channel.pack(blocking_ ? mc::Transition::Type::COMM_PROBE : mc::Transition::Type::COMM_IPROBE);
   channel.pack<unsigned>(mbox_->get_id());
   channel.pack<bool>((kind_ == s4u::Mailbox::IprobeKind::SEND));
   channel.pack<int>(tag_);
-  XBT_DEBUG("IprobeObserver mbox:%u kind:%s tag:%d", mbox_->get_id(),
-            (kind_ == s4u::Mailbox::IprobeKind::SEND ? "send" : "recv"), tag_);
+  channel.pack<bool>(any_tag_);
+  channel.pack<aid_t>(src_);
+  XBT_DEBUG("ProbeObserver blocking:%d mbox:%u kind:%s tag:%d any_tag:%d src:%ld", blocking_, mbox_->get_id(),
+            (kind_ == s4u::Mailbox::IprobeKind::SEND ? "send" : "recv"), tag_, any_tag_, src_);
 }
-std::string IprobeSimcall::to_string() const
+std::string ProbeSimcall::to_string() const
 {
-  return "Iprobe(mbox:" + std::to_string(mbox_->get_id()) + " tag: " + std::to_string(tag_) +
-         " kind:" + (kind_ == s4u::Mailbox::IprobeKind::SEND ? "send" : "recv") + ")";
+  return std::string(blocking_ ? "Probe" : "Iprobe") + "(mbox:" + std::to_string(mbox_->get_id()) +
+         " tag: " + std::to_string(tag_) + " kind:" + (kind_ == s4u::Mailbox::IprobeKind::SEND ? "send" : "recv") + ")";
 }
 
 void MessIputSimcall::serialize(mc::Channel& channel) const

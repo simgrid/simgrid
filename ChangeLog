@@ -11,6 +11,8 @@ S4U:
    left in the queue, where a later put() or get() could match it (writing in a variable that was gone, in the case of
    get), and canceling it raised a CancelException in the canceling actor.
  - Host energy plugin: fix idle energy accounting for parallel executions (AI-assisted).
+ - New Mailbox::probe(), blocking until a matching communication is in the mailbox, without consuming it
+   (AI-assisted).
 
 Python:
  - Fix Host.set_speed_profile(), Host.set_state_profile(), Link.set_bandwidth_profile(),
@@ -44,6 +46,7 @@ Model-Checker:
  - Merge the support to observe the race conditions into our code base rather than relying on an external repository [Mt].
  - New compile option enable_lib_in_sthread to embed SimGrid within sthread, to enable the verification of simgrid 
    in simgrid [Mt]
+ - Support MPI_Probe, as a transition that is only enabled when a matching message is in the mailbox (AI-assisted).
 
 Core:
  - Allow to switch dynamically the stacktrace backend. --cfg=debug/stacktrace:addr2line is super slow but very robust [Mt].
@@ -95,6 +98,9 @@ SMPI (all AI-assisted):
      and Fortran 80-column limits in mpif.h.
  - Add more parameter checks to help students using SMPI to learn MPI. We now cover most of what ITAC and MUST provide.
    See app_smpi.rst for details from user's POV, and src/smpi/README-SMPI-missing-checks.md for an insider POV.
+ - MPI_Probe now blocks until a matching message arrives, instead of polling with MPI_Iprobe. It returns when the
+   message arrives, without the delays and the CPU usage set by smpi/iprobe and smpi/iprobe-cpu-usage. It still polls
+   when smpi/async-small-thresh is set, as messages may then arrive in either of two mailboxes.
 
 ----------------------------------------------------------------------------
 

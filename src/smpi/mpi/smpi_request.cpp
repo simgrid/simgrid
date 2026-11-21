@@ -908,15 +908,33 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
     return MPI_SUCCESS;
 }
 
-void Request::probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
-  int flag=0;
-  //FIXME find another way to avoid busy waiting ?
-  // the issue here is that we have to wait on a nonexistent comm
-  xbt_assert(not(MC_is_active() || MC_record_replay_is_active()), "MPI_Probe is not supported yet in MC mode.");
-  while(flag==0){
-    iprobe(source, tag, comm, &flag, status);
-    XBT_DEBUG("Busy Waiting on probing : %d", flag);
+void Request::probe(int source, int tag, MPI_Comm comm, MPI_Status* status)
+{
+  // The blocking probe watches a single mailbox, while small messages may land in either mailbox: poll both instead
+  if (smpi_cfg_async_small_thresh() > 0) {
+    xbt_assert(not(MC_is_active() || MC_record_replay_is_active()),
+               "MPI_Probe is not supported in MC mode with smpi/async-small-thresh > 0.");
+    int flag = 0;
+    while (flag == 0)
+      iprobe(source, tag, comm, &flag, status);
+    return;
   }
+
+  auto* request =
+      new Request(nullptr, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : comm->group()->actor(source),
+                  simgrid::s4u::this_actor::get_pid(), tag, comm, MPI_REQ_PERSISTENT | MPI_REQ_RECV | MPI_REQ_PROBE);
+  request->print_request("New probe");
+  auto comm_impl = boost::static_pointer_cast<kernel::activity::CommImpl>(
+      smpi_process()->mailbox()->probe(s4u::Mailbox::IprobeKind::RECV, &match_recv, static_cast<void*>(request)));
+  const Request* req = static_cast<MPI_Request>(comm_impl->src_match_data_);
+  if (status != MPI_STATUS_IGNORE && (req->flags_ & MPI_REQ_PREPARED) == 0) {
+    status->MPI_SOURCE = comm->group()->rank(req->src_);
+    status->MPI_TAG    = req->tag_;
+    status->MPI_ERROR  = MPI_SUCCESS;
+    status->count      = req->real_size_;
+  }
+  unref(&request);
+  xbt_assert(request == MPI_REQUEST_NULL);
 }
 
 void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){

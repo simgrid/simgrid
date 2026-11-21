@@ -6,6 +6,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/actor/CommObserver.hpp"
 
 #include <unordered_map>
 
@@ -51,6 +52,19 @@ void MailboxImpl::push(const CommImplPtr& comm)
 {
   comm->set_mailbox(this);
   this->comm_queue_.push_back(comm);
+
+  // Wake up the probers that now find a matching communication, and forget the ones that were killed meanwhile
+  std::erase_if(probers_, [this](const actor::ActorImplPtr& prober) {
+    if (prober->wannadie())
+      return true;
+    auto* observer    = static_cast<actor::ProbeSimcall*>(prober->simcall_.observer_);
+    CommImplPtr match = iprobe(observer->get_kind(), observer->get_match_fun(), observer->get_match_data());
+    if (match == nullptr)
+      return false;
+    observer->set_result(match);
+    prober->simcall_answer();
+    return true;
+  });
 }
 
 /** @brief Removes a communication activity from a mailbox

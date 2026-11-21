@@ -79,7 +79,8 @@ Transition* deserialize_transition(Aid issuer, int times_considered, mc::Channel
     case Transition::Type::COMM_ASYNC_SEND:
       return new CommSendTransition(issuer, times_considered, channel);
     case Transition::Type::COMM_IPROBE:
-      return new CommIprobeTransition(issuer, times_considered, channel);
+    case Transition::Type::COMM_PROBE:
+      return new CommProbeTransition(issuer, times_considered, simcall, channel);
     case Transition::Type::COMM_TEST:
       return new CommTestTransition(issuer, times_considered, channel);
     case Transition::Type::COMM_WAIT:
@@ -212,14 +213,13 @@ enum class DependencyAction : uint8_t {
 
   // Communication rules. Many combinations need a specific treatment
   EVAL_COMM_RECV_RECV,
-  EVAL_COMM_RECV_IPROBE,
+  EVAL_COMM_RECV_PROBE,
   EVAL_COMM_RECV_TEST,
   EVAL_COMM_RECV_WAIT,
   EVAL_COMM_SEND_SEND,
-  EVAL_COMM_SEND_IPROBE,
+  EVAL_COMM_SEND_PROBE,
   EVAL_COMM_SEND_TEST,
   EVAL_COMM_SEND_WAIT,
-  EVAL_COMM_IPROBE_MBOX,
   EVAL_COMM_WAIT_WAIT,
   EVAL_COMM_TEST_WAIT
 };
@@ -404,16 +404,21 @@ static constexpr auto dependency_table = []() consteval {
       .fill_group(group_comm, DependencyAction::ALWAYS_INDEP)
 
       .rule(Type::COMM_ASYNC_RECV, Type::COMM_ASYNC_RECV, DependencyAction::EVAL_COMM_RECV_RECV, true)
-      .rule(Type::COMM_ASYNC_RECV, Type::COMM_IPROBE, DependencyAction::EVAL_COMM_RECV_IPROBE, true)
+      // A reception may consume the message that a probe would see
+      .rule(Type::COMM_ASYNC_RECV, Type::COMM_IPROBE, DependencyAction::EVAL_COMM_RECV_PROBE, true)
+      .rule(Type::COMM_ASYNC_RECV, Type::COMM_PROBE, DependencyAction::EVAL_COMM_RECV_PROBE, true)
       .rule(Type::COMM_ASYNC_RECV, Type::COMM_TEST, DependencyAction::EVAL_COMM_RECV_TEST, true)
       .rule(Type::COMM_ASYNC_RECV, Type::COMM_WAIT, DependencyAction::EVAL_COMM_RECV_WAIT, true)
 
       .rule(Type::COMM_ASYNC_SEND, Type::COMM_ASYNC_SEND, DependencyAction::EVAL_COMM_SEND_SEND, true)
-      .rule(Type::COMM_ASYNC_SEND, Type::COMM_IPROBE, DependencyAction::EVAL_COMM_SEND_IPROBE, true)
+      // A send may push the message that a probe looks for
+      .rule(Type::COMM_ASYNC_SEND, Type::COMM_IPROBE, DependencyAction::EVAL_COMM_SEND_PROBE, true)
+      .rule(Type::COMM_ASYNC_SEND, Type::COMM_PROBE, DependencyAction::EVAL_COMM_SEND_PROBE, true)
       .rule(Type::COMM_ASYNC_SEND, Type::COMM_TEST, DependencyAction::EVAL_COMM_SEND_TEST, true)
       .rule(Type::COMM_ASYNC_SEND, Type::COMM_WAIT, DependencyAction::EVAL_COMM_SEND_WAIT, true)
 
-      .rule(Type::COMM_IPROBE, Type::COMM_IPROBE, DependencyAction::EVAL_COMM_IPROBE_MBOX, true)
+      // Probes only read the mailbox, so they keep the default of the group: independent of each other, of tests and of
+      // waits, even with a timeout (a wait times out depending on the matching of its comm, not on probes)
 
       .rule(Type::COMM_TEST, Type::COMM_WAIT, DependencyAction::EVAL_COMM_TEST_WAIT, true)
       .rule(Type::COMM_WAIT, Type::COMM_WAIT, DependencyAction::EVAL_COMM_WAIT_WAIT, true)
@@ -624,21 +629,17 @@ bool Transition::dispatch_depends(const Transition* other) const
       return static_cast<const CommRecvTransition*>(t1)->get_mailbox() ==
              static_cast<const CommRecvTransition*>(t2)->get_mailbox();
 
-    case DependencyAction::EVAL_COMM_RECV_IPROBE:
+    case DependencyAction::EVAL_COMM_RECV_PROBE:
       return static_cast<const CommRecvTransition*>(t1)->get_mailbox() ==
-             static_cast<const CommIprobeTransition*>(t2)->get_mailbox();
+             static_cast<const CommProbeTransition*>(t2)->get_mailbox();
 
     case DependencyAction::EVAL_COMM_SEND_SEND:
       return static_cast<const CommSendTransition*>(t1)->get_mailbox() ==
              static_cast<const CommSendTransition*>(t2)->get_mailbox();
 
-    case DependencyAction::EVAL_COMM_SEND_IPROBE:
+    case DependencyAction::EVAL_COMM_SEND_PROBE:
       return static_cast<const CommSendTransition*>(t1)->get_mailbox() ==
-             static_cast<const CommIprobeTransition*>(t2)->get_mailbox();
-
-    case DependencyAction::EVAL_COMM_IPROBE_MBOX:
-      return static_cast<const CommIprobeTransition*>(t1)->get_mailbox() ==
-             static_cast<const CommIprobeTransition*>(t2)->get_mailbox();
+             static_cast<const CommProbeTransition*>(t2)->get_mailbox();
 
     case DependencyAction::EVAL_COMM_TEST_WAIT:
       // Timeouts are not considered by the independence theorem, thus assumed dependent

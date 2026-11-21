@@ -71,7 +71,7 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 168 cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 164 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
 ### Bugs in MBB (12 cases)
 
@@ -114,13 +114,12 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
 - `MPI_Intercomm_create` is not implemented (12 cases, reported as `UNIMPLEMENTED`), as SMPI has no intercommunicators
   at all. This is a significant work.
 
-### Limitations of simgrid-mc (59 cases)
+### Limitations of simgrid-mc (55 cases)
 
-- Probes (59 cases): `MPI_Probe` aborts under the model-checker (`smpi_request.cpp`: "MPI_Probe is not supported yet
-  in MC mode"), in 4 cases (`CallOrdering-mpi_probe-*`, `GlobalParameterMissmatch-Tag-mpi_probe-*`,
-  `InvalidParam-Status-mpi_probe-*`). `MPI_Mprobe` and `MPI_Improbe` (55 cases, including the ones using `MPI_Mrecv`
-  and `MPI_Imrecv`) are not even implemented in SMPI. They all need a dedicated transition in the model-checker,
-  depending on the sends to the probed mailbox, and only enabled when a matching message exists.
+- Matched probes (55 cases, reported as `UNIMPLEMENTED`): `MPI_Mprobe` and `MPI_Improbe` (including the cases using
+  `MPI_Mrecv` and `MPI_Imrecv`) are not implemented in SMPI. They need `MPI_Message` handles, as a matched message
+  must be removed from the mailbox and kept for a later reception, and a model-checker transition removing it, built
+  on the one of `MPI_Probe`.
 
 ### Out of reach for now (25 cases)
 

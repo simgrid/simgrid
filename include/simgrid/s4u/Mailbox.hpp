@@ -106,6 +106,9 @@ public:
   XBT_DECLARE_ENUM_CLASS(IprobeKind, SEND, RECV);
   kernel::activity::ActivityImplPtr
   iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
+  /** Blocks until a communication matching @p match_fun is in the mailbox, and returns it without consuming it */
+  kernel::activity::ActivityImplPtr
+  probe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
   /** Blocking data transmission.
    *
    * Please note that if you send a pointer to some data, you must ensure that your data remains live during the

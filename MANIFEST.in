@@ -996,10 +996,16 @@ include teshsuite/mc/mpi/iprobe_nok.c
 include teshsuite/mc/mpi/iprobe_nok.tesh
 include teshsuite/mc/mpi/iprobe_ok.c
 include teshsuite/mc/mpi/iprobe_ok.tesh
+include teshsuite/mc/mpi/probe_any_source.c
+include teshsuite/mc/mpi/probe_any_source.tesh
 include teshsuite/mc/mpi/probe_deadlock.c
 include teshsuite/mc/mpi/probe_deadlock.tesh
 include teshsuite/mc/mpi/probe_ok.c
 include teshsuite/mc/mpi/probe_ok.tesh
+include teshsuite/mc/mpi/probe_source.c
+include teshsuite/mc/mpi/probe_source.tesh
+include teshsuite/mc/mpi/scan_waitany.c
+include teshsuite/mc/mpi/scan_waitany.tesh
 include teshsuite/mc/mutex-handling/mutex-handling.cpp
 include teshsuite/mc/mutex-handling/mutex-handling.tesh
 include teshsuite/mc/mutex-handling/without-mutex-handling.tesh

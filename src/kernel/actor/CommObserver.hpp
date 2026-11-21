@@ -121,19 +121,27 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
-class IprobeSimcall final : public SimcallObserver {
+/* Observer of iprobe (never blocks) and probe (blocks until a matching communication is in the mailbox). The result is
+ * only used by probe: iprobe returns the value of its simcall. */
+class ProbeSimcall final : public DelayedSimcallObserver<activity::CommImplPtr> {
   activity::MailboxImpl* mbox_;
   s4u::Mailbox::IprobeKind kind_;
-  int tag_ = 0;
+  bool blocking_;
+  int tag_      = 0;
+  bool any_tag_ = false; // Whether the probe matches any non-negative tag, as MPI_ANY_TAG
+  aid_t src_    = -1;    // Actor whose communications are probed, or -1 for any (as MPI_ANY_SOURCE)
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   void* match_data_; // Actually, that's the smpi request
 
 public:
-  IprobeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
-                const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data);
+  ProbeSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, s4u::Mailbox::IprobeKind kind,
+               const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun, void* match_data,
+               bool blocking);
 
+  bool is_enabled() override;
   void serialize(mc::Channel& channel) const override;
   std::string to_string() const override;
+  s4u::Mailbox::IprobeKind get_kind() const { return kind_; }
   auto const& get_match_fun() const { return match_fun_; }
   void* get_match_data() const { return match_data_; }
 };

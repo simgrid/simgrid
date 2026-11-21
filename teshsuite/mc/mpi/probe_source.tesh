@@ -1,0 +1,9 @@
+#!/usr/bin/env tesh
+
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor --log=xbt_cfg.thresh:warning -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 3 "${bindir:=.}/mpi_probe_source"
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> rank 0 received all messages
+> rank 0 received all messages
+> rank 0 received all messages
+> rank 0 received all messages
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 38 unique states visited; 4 explored traces (3 transition replays, 41 states visited overall)

@@ -1,3 +1,25 @@
 #!/usr/bin/env tesh
 
-$ $VALGRIND_NO_TRACE_CHILDREN ../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../bin/simgrid-mc" -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 3 ./probe_deadlock
+! expect return 2
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc" --cfg=model-check/reduction:odpor --log=xbt_cfg.thresh:warning -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_probe_deadlock"
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
+> [0.000000] [mc_global/INFO] **************************
+> [0.000000] [ker_engine/INFO] 1 actor is still active, awaiting something. Here is its status:
+> [0.000000] [ker_engine/INFO]  - pid 1 (0@node-0.simgrid.org) simcall Probe(mbox:2 tag: -444 kind:recv)
+> [0.000000] [mc_global/INFO] Counter-example execution trace:
+> [0.000000] [mc_global/INFO]   Actor 1 in :0:() ==> simcall: iRecv(mbox=2)
+> [0.000000] [mc_global/INFO]   Actor 2 in :0:() ==> simcall: iSend(mbox=2)
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 0 explored traces (0 transition replays, 3 states visited overall)
+> [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] *** CRITICAL TRANSITION FOUND ***
+> [0.000000] [mc_ct/INFO] *********************************
+> [0.000000] [mc_ct/INFO] Current knowledge of explored stack:
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 1 in :0:() ==> simcall: iRecv(mbox=2, comm=1, tag=0)
+> [0.000000] [mc_ct/INFO]   (INCORRECT) Actor 2 in :0:() ==> simcall: iSend(mbox=2, comm=1, tag=0)
+> [0.000000] [mc_ct/INFO] The critical transition explorer reached the beginning of the stack without finding a correct execution. The program may have no correct behavior.
+> [0.000000] [mc_ct/INFO] Found the critical transition: Actor 1 ==> simcall: iRecv(mbox=2, comm=1, tag=0)
+> Execution failed with code 2.

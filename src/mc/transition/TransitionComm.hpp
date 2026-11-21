@@ -73,24 +73,29 @@ public:
   unsigned get_mailbox() const { return mbox_; }
 };
 
-class CommIprobeTransition final : public Transition {
+/** COMM_IPROBE is always enabled, while COMM_PROBE is only enabled when a matching communication is in the mailbox */
+class CommProbeTransition final : public Transition {
   bool is_sender_;
   unsigned mbox_;
   int tag_;
+  bool any_tag_;
+  Aid src_;
 
 public:
-  CommIprobeTransition(Aid issuer, int times_considered, bool is_sender, unsigned mbox, int tag);
-  CommIprobeTransition(Aid issuer, int times_considered, mc::Channel& channel);
+  CommProbeTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel);
   std::string to_string(bool verbose) const override;
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;
-  bool can_be_co_enabled(const Transition* o) const override;
 
   bool is_sender_side() const { return is_sender_; }
   /** Mailbox ID */
   unsigned get_mailbox() const { return mbox_; }
   /** If using SMPI, the tag */
   int get_tag() const { return tag_; }
+  /** Whether any non-negative tag matches, as with MPI_ANY_TAG */
+  bool is_any_tag() const { return any_tag_; }
+  /** Actor whose communications are probed, or Aid::INVALID for any */
+  Aid get_src() const { return src_; }
 };
 
 class CommRecvTransition final : public Transition {

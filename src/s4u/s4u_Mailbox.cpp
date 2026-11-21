@@ -149,9 +149,28 @@ Mailbox::iprobe(IprobeKind kind, const std::function<bool(void*, void*, kernel::
                 void* data)
 {
   auto self = kernel::actor::ActorImpl::self();
-  kernel::actor::IprobeSimcall observer(self, pimpl_, kind, match_fun, data);
+  kernel::actor::ProbeSimcall observer(self, pimpl_, kind, match_fun, data, /*blocking*/ false);
   return kernel::actor::simcall_answered(
       [this, kind, &match_fun, data] { return pimpl_->iprobe(kind, match_fun, data); }, &observer);
+}
+
+kernel::activity::ActivityImplPtr
+Mailbox::probe(IprobeKind kind, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun,
+               void* data)
+{
+  auto* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ProbeSimcall observer(issuer, pimpl_, kind, match_fun, data, /*blocking*/ true);
+  return kernel::actor::simcall_blocking<kernel::activity::CommImplPtr>(
+      [this, issuer, kind, &match_fun, data, &observer] {
+        if (auto comm = pimpl_->iprobe(kind, match_fun, data)) {
+          observer.set_result(comm);
+          issuer->simcall_answer();
+        } else {
+          // MailboxImpl::push() answers once a matching communication arrives
+          pimpl_->probers_.emplace_back(issuer);
+        }
+      },
+      &observer);
 }
 
 void Mailbox::clear()

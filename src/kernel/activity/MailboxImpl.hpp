@@ -24,6 +24,8 @@ class MailboxImpl {
   std::deque<CommImplPtr> comm_queue_;
   // messages already received in the permanent receive mode
   std::deque<CommImplPtr> done_comm_queue_;
+  // actors blocked in s4u::Mailbox::probe() until a matching communication is pushed
+  std::vector<actor::ActorImplPtr> probers_;
 
   friend s4u::Engine;
   friend s4u::Mailbox;
