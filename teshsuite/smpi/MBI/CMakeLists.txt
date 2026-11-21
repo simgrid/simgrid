@@ -92,5 +92,6 @@ set(teshsuite_src ${teshsuite_src}
                   ${CMAKE_CURRENT_SOURCE_DIR}/generator_utils.py
                   ${CMAKE_CURRENT_SOURCE_DIR}/MBI.py
                   ${CMAKE_CURRENT_SOURCE_DIR}/MBIutils.py
+                  ${CMAKE_CURRENT_SOURCE_DIR}/README.md
                   ${CMAKE_CURRENT_SOURCE_DIR}/simgrid.py
                   PARENT_SCOPE)

@@ -1261,6 +1261,7 @@ include teshsuite/smpi/MBI/P2PMessageRaceGenerator.py
 include teshsuite/smpi/MBI/P2PMessageRaceTagsGenerator.py
 include teshsuite/smpi/MBI/P2PProbeGenerator.py
 include teshsuite/smpi/MBI/P2PSendrecvArgGenerator.py
+include teshsuite/smpi/MBI/README.md
 include teshsuite/smpi/MBI/RMAArgGenerator.py
 include teshsuite/smpi/MBI/RMAInvalidArgGenerator.py
 include teshsuite/smpi/MBI/RMALocalLocalConcurrencyGenerator.py

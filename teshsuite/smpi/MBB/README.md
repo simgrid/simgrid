@@ -71,7 +71,7 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 168 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
 ### Bugs in MBB (12 cases)
 
@@ -92,14 +92,16 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
   `InvalidParam-array_of_indices-mpi_waitsome-002`, which passes only because its uninitialized pointer happens to be
   `NULL`. Such cases should rather be dropped from MBB.
 
-### Missing checks in SMPI (64 cases)
+### Missing checks in SMPI (54 cases)
 
 - Invalid statuses (14 cases, not detected): `InvalidParam-Status-*` pass `NULL` as status, or `MPI_STATUSES_IGNORE`
-  where a single status is expected. In C, `smpi.h` defines `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` all
-  as `NULL`, so SMPI cannot tell them apart. They should become distinct sentinel values, as in MPICH.
-- Buffers used after `free()` (8 cases, not detected): `InvalidParam-Buffer-*-005` free the buffer before using it.
-  The interception of `malloc` and `free` should remember the freed blocks, so that `CHECK_BUFFER` rejects them.
-- Mismatched datatypes between sender and receiver (42 cases, not detected): `GlobalParameterMissmatch-Dtype-*` and
+  where a single status is expected, to `MPI_Recv`, `MPI_Sendrecv`, `MPI_Sendrecv_replace` and `MPI_Wait*`. In C,
+  `smpi.h` defines `MPI_STATUS_IGNORE`, `MPI_STATUSES_IGNORE` and `NULL` all as `NULL`, so SMPI cannot tell them
+  apart. They should become distinct sentinel values, as in MPICH.
+- Buffers used after `free()` (8 cases, not detected): `InvalidParam-Buffer-*` of the point-to-point calls free the
+  buffer before using it. The interception of `malloc` and `free` should remember the freed blocks, so that
+  `CHECK_BUFFER` rejects them.
+- Mismatched datatypes between sender and receiver (32 cases, not detected): `GlobalParameterMissmatch-Dtype-*` and
   `GlobalParameterMissmatch-Type-mpi_bcast-*`. `Request::match_types()` accepts `MPI_BYTE` and `MPI_PACKED` with any
   other datatype, and never compares derived datatypes, so a `MPI_BYTE` received as `MPI_INT`, or a
   `contiguous(2, MPI_INT)` received as `MPI_DOUBLE`, go unnoticed. Comparing the type signatures (the flattened
@@ -112,20 +114,13 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
 - `MPI_Intercomm_create` is not implemented (12 cases, reported as `UNIMPLEMENTED`), as SMPI has no intercommunicators
   at all. This is a significant work.
 
-### Limitations of simgrid-mc (85 cases)
+### Limitations of simgrid-mc (59 cases)
 
 - Probes (59 cases): `MPI_Probe` aborts under the model-checker (`smpi_request.cpp`: "MPI_Probe is not supported yet
   in MC mode"), in 4 cases (`CallOrdering-mpi_probe-*`, `GlobalParameterMissmatch-Tag-mpi_probe-*`,
-  `InvalidParam-Status-mpi_probe-*`). `MPI_Mprobe` and `MPI_Improbe` (55 cases) are not even implemented in SMPI. They
-  all need a dedicated transition in the model-checker, depending on the sends to the probed mailbox, and only enabled
-  when a matching message exists.
-- Timeouts (26 cases): `Correct-lockall-*` and `Correct-rmarequest-*` on 3 ranks, all involving atomic RMA operations
-  (`MPI_Accumulate`, `MPI_Raccumulate`, `MPI_Get_accumulate`, `MPI_Fetch_and_op`, `MPI_Compare_and_swap`) or
-  `MPI_Rget`. The state space is estimated to 10^8 to 10^9 states with ODPOR, for programs of a dozen lines. In a
-  trace of about 270 transitions, 27% are lock/wait/unlock of the `Win::mut_` mutexes, that each rank takes on the
-  windows of the others, and 67% are point-to-point messages coming from the barriers and collectives used by the
-  window creation and synchronization. `Win::mut_` is not needed with cooperative scheduling, and removing it is the
-  first thing to try. The collectives used by the RMA synchronization are the next suspects.
+  `InvalidParam-Status-mpi_probe-*`). `MPI_Mprobe` and `MPI_Improbe` (55 cases, including the ones using `MPI_Mrecv`
+  and `MPI_Imrecv`) are not even implemented in SMPI. They all need a dedicated transition in the model-checker,
+  depending on the sends to the probed mailbox, and only enabled when a matching message exists.
 
 ### Out of reach for now (25 cases)
 
