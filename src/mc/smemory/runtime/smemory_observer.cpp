@@ -77,11 +77,13 @@ void __libc_free(void* ptr);
 void* __libc_memalign(size_t alignment, size_t size);
 }
 
-// The blocks allocated by the application and not freed yet
+// The blocks allocated by the application and not freed yet. The set is never destroyed: its destructor would free its
+// nodes through the intercepted free(), which would search them in the set under destruction (and some blocks may still
+// be freed after the destruction of the static variables, when the program exits).
 static std::unordered_set<void*>& application_blocks()
 {
-  static std::unordered_set<void*> blocks;
-  return blocks;
+  static auto* blocks = new std::unordered_set<void*>();
+  return *blocks;
 }
 
 static void record_allocation(void* ptr, size_t size)
