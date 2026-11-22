@@ -6,6 +6,7 @@
 #include "src/mc/smemory/SlabTrackState.hpp"
 
 #include <algorithm>
+#include <iterator>
 
 namespace simgrid::mc::smemory {
 static_assert(sizeof(SlabTrackState::Slab) == 12,
@@ -263,8 +264,10 @@ void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, 
 
 void SlabTrackState::clean_before(const smemory::VectorClock& global_min)
 {
-  // The slabs must stop referencing the obsolete VCs before the pool frees them
-  std::erase_if(pages_, [this, &global_min](auto& entry) { return entry.second.clean_before(global_min, pool_); });
+  // The slabs must stop referencing the obsolete VCs before the pool frees them. This modifies the pages, which is not
+  // allowed in the predicate of std::erase_if (some versions of libstdc++ pass the elements as const).
+  for (auto it = pages_.begin(); it != pages_.end();)
+    it = it->second.clean_before(global_min, pool_) ? pages_.erase(it) : std::next(it);
   pool_.clean_before(global_min);
 }
 
