@@ -316,8 +316,8 @@ void Exploration::log_data_race(const McDataRace& e, const RecordTrace& trace)
     XBT_INFO("  %s", frame.c_str());
   if (xbt_log_no_loc)
     XBT_INFO("To see the source line of each access, rerun this execution through simgrid-mc with the same options, "
-             "adding --cfg=model-check/replay:'%s' The --cfg=model-check/watch option is also useful to get more "
-             "information, but I cannot tell the exact option to pass because --no-loc is used.",
+             "adding --cfg=model-check/replay:'%s' (the --cfg=model-check/watch option is also useful to get more "
+             "information, but I cannot tell the exact option to pass because --log=no_loc is used)",
              trace.to_string().c_str());
   else
     XBT_INFO("To see the source line of each access, rerun this execution through simgrid-mc with the same options, "

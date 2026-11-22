@@ -18,5 +18,5 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=mod
 > [0.000000] [mc_explo/INFO]   #4 Actor 3 in simcall ActorExit()
 > [0.000000] [mc_explo/INFO]   #5 Actor 1 in simcall ActorJoin(target 3, no timeout)
 > [0.000000] [mc_explo/INFO]   #6 Actor 1 in simcall ActorExit()     <== access 2 (READ by actor 1) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;3;1;1' The --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --no-loc is used.
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;3;1;1' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 7 unique states visited; 0 explored traces (0 transition replays, 6 states visited overall)
