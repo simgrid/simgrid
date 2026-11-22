@@ -39,11 +39,12 @@ constexpr short granularity = 1;
  * increase this value if you want to explore larger apps at a slower pace.*/
 constexpr short max_threads = 32;
 
-/* The maximal time_considered can be kept low unless you verify a MPI application using Waitany on a vector of more
- * than 256 requests, or something similar. To be honnest, keeping this value low is not as important as keeping
- * max_threads low. In particular, there is no gain if the max_considered is not the maximal value of a given type such
- * as uint8_t, uint16_t or uint32_t. In other words, the only interesting values are 256, 65535 or 2^32 */
-constexpr short max_time_considered = 256;
+/* The bound on times_considered, i.e. on the number of variants of a transition (a Waitany on N requests has N
+ * variants). The replay rejects the values reaching this bound, and also uses max_time_considered - 1 to mark the end
+ * of the first sequence of its messages. Increase this value to verify, e.g., a MPI application using Waitany on more
+ * requests. This is much less critical than max_threads: it only changes the size of time_considered_t, which is sent
+ * once per transition in the replay messages. */
+constexpr int max_time_considered = 256;
 
 /* **** End of the configuration part **** */
 
@@ -63,7 +64,10 @@ static_assert(max_time_considered != 0 && ((max_time_considered & (max_time_cons
 
 // Define the mc::mc_aid_t type as the smallest integer that can contain the max_threads value
 
-// Define mc::time_considered_t as the smallest integer that can contain the max_times_considered value
+/* The type of the times_considered values in the replay messages. It uses < and not <= (uint16_t for 256) because the
+ * overflow checks of the replay are done after the conversion to this type: it must hold the values above
+ * max_time_considered for these checks to see them instead of a wrapped value. Transition::times_considered_ is an
+ * unsigned short, so uint16_t holds all of its values. */
 using time_considered_t =
     std::conditional_t<(static_config::max_time_considered < 256), std::uint8_t,
                        std::conditional_t<(static_config::max_time_considered < 65536), std::uint16_t, std::uint32_t>>;
