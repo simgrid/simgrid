@@ -116,7 +116,8 @@ public:
   /* Get a VectorClock from its index (super quick) */
   [[nodiscard]] const VectorClock& get(index_t index) const;
 
-  /* Garbage collection: removes all entries that are in the past according to the previous function
+  /* Garbage collection: removes all entries that are in the past of global_min (see is_past()).
+   * Their indexes get reused, so nobody may reference them anymore (see SlabTrackState::clean_before()).
    * This is an heavy operation so don't do that too often. */
   void clean_before(const VectorClock& global_min) noexcept;
 

@@ -49,11 +49,11 @@
  *   - if the selector bit is 1, then the other 31 bits are an index that uniquely represent a given VectorClock in the
  *     VectorClockPool (which boils down to a vector of VectorClock).
  *
- * This design allows to store each VectorClock only once in memory. In the future, we should remove old VCs when they
- * become unused. Refcounting would be too expansive, but VectorClockPool contains all the needed code to remove all VCs
- * that are in the past of a given reference vector clock. The idea is to regularly prune the VectorClockPool when the
- * exploration clocks advance, re-merging the slabs that only differ in obsolete accesses. This is still TBD in
- * SlabTrackState itself.
+ * This design allows to store each VectorClock only once in memory. Refcounting the VCs would be too expensive, so
+ * clean_before() collects the garbage instead: given a vector clock global_min that happens before every future
+ * access, it resets to BOTTOM the epochs and VCs that are in the past of global_min (such accesses cannot race
+ * anymore), merges the slabs that become identical, drops the pages that become empty and frees the obsolete VCs of the
+ * pool. When to trigger it (every N transitions, or when the pool grows past a threshold) is still TBD.
  *
  * Another future optimization would be to augment the code instrumentation so that padding bytes are merged into the
  * observed memory accesses. The insight is that the padding byte content is completely transparent to the application,
@@ -66,6 +66,19 @@
  * uint32 each), so that two VCs are compared with a few SIMD instructions. The VC stores Epochs rather
  * than Clocks even if the process ID is already known from the position in the VC vector, but this small data redudancy
  * greatly reduces the amount of data conversion along the hot code path.
+ *
+ * # Clock convention
+ *
+ * Clock 0 is the bottom value: it means "no access" in a Slab and "nothing known" in a vector clock. Every Slab starts
+ * with BOTTOM as write and read epochs, and a write resets the reads to BOTTOM.
+ *
+ * apply_transition() receives the accesses done by an actor t during one segment of its execution, along with the
+ * vector clock of that segment. Its component u is Epoch(u, c) where c is the clock of the last segment of actor u that
+ * happens before the current segment, or 0 if there is none. Its component t is the epoch of the current segment
+ * itself, whose clock must be at least 1 to differ from BOTTOM. The clocks of the successive segments of a given actor
+ * must increase.
+ *
+ * An access done during the segment of epoch (u, c) races with the current segment iff u != t and c > thread_vc[u].
  */
 
 #ifndef SIMGRID_MC_SHADOW_INTERVAL_MAP_HPP
@@ -73,6 +86,7 @@
 
 #include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "src/mc/smemory/VectorClockPool.hpp"
+#include "xbt/asserts.h"
 
 #include <unordered_map>
 
@@ -134,6 +148,10 @@ public:
                                 const smemory::VectorClock& thread_vc, smemory::VectorClockPool& pool,
                                 std::vector<Slab>& scratchpad);
 
+    /** Resets to BOTTOM the epochs that are in the past of global_min and merges the slabs that become identical.
+     *  Returns whether the page is back to its initial state. */
+    bool clean_before(const smemory::VectorClock& global_min, const smemory::VectorClockPool& pool);
+
     Page(Epoch init_W, Epoch init_R)
     {
       slabs_.emplace_back(0, static_cast<uint16_t>(static_config::page_size), init_W, init_R);
@@ -143,23 +161,27 @@ public:
 private:
   std::unordered_map<uintptr_t, Page> pages_;
   smemory::VectorClockPool pool_; // Where the VC are interned
-  Epoch initial_epoch_;
 
   Page& get_or_create_page(uintptr_t page_base)
   {
     auto it = pages_.find(page_base);
     if (it == pages_.end()) {
-      it = pages_.emplace(page_base, Page(initial_epoch_, initial_epoch_)).first;
+      it = pages_.emplace(page_base, Page(BOTTOM, BOTTOM)).first;
     }
     return it->second;
   }
 
 public:
-  SlabTrackState(Epoch init_epoch) : initial_epoch_(init_epoch) {}
+  static constexpr Epoch BOTTOM{Aid{0}, Clock{0}}; // Epoch of no access at all (see the clock convention above)
 
-  // Apply every accesses contained in the record to the current SlabTrackState, detecting the dataraces as we go
-  void apply_transition(const smemory::MemoryAccessTrace& tracker, Aid t, Clock c,
-                        const smemory::VectorClock& thread_vc);
+  // Apply every accesses done by actor t during the segment of vector clock thread_vc, detecting the dataraces as we go
+  void apply_transition(const smemory::MemoryAccessTrace& tracker, Aid t, const smemory::VectorClock& thread_vc);
+
+  /** Forget the accesses that are in the past of global_min, and free the memory they used.
+   *
+   *  The thread_vc given to every later call to apply_transition() must be greater or equal to global_min, component
+   *  wise. Otherwise, the races with the forgotten accesses are missed. */
+  void clean_before(const smemory::VectorClock& global_min);
 };
 
 } // namespace simgrid::mc::smemory

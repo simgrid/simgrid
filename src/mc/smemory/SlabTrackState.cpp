@@ -145,7 +145,7 @@ void SlabTrackState::Page::apply_batch_operations(const smemory::MemoryAccessTra
       if (access_it->type == smemory::MemOpType::Write) {
         check_write_race(overlap, t, thread_vc, pool);
         overlap.write_ = current_epoch;
-        overlap.reads_ = Epoch(t, Clock{0}); // Wipe reads on successful write. clock := 0
+        overlap.reads_ = BOTTOM; // Wipe reads on successful write
       } else {
         check_read_race(overlap, t, thread_vc);
         update_read_epoch(overlap, t, c, thread_vc, pool);
@@ -169,12 +169,41 @@ void SlabTrackState::Page::apply_batch_operations(const smemory::MemoryAccessTra
   }
 }
 
+bool SlabTrackState::Page::clean_before(const smemory::VectorClock& global_min, const smemory::VectorClockPool& pool)
+{
+  auto is_past = [&global_min](Epoch e) { return e.get_clock() <= global_min.clocks[e.get_aid().value()].get_clock(); };
+
+  // The slabs are contiguous, so merging a slab into the previous one only requires to extend the previous one
+  size_t kept = 0;
+  for (Slab slab : slabs_) {
+    if (is_past(slab.write_))
+      slab.write_ = BOTTOM;
+    if (slab.reads_.is_pure_epoch() ? is_past(slab.reads_) : pool.is_past(slab.reads_.get_pool_index(), global_min))
+      slab.reads_ = BOTTOM;
+
+    if (kept > 0 && slabs_[kept - 1].has_same_epochs(slab))
+      slabs_[kept - 1].end_ = slab.end_;
+    else
+      slabs_[kept++] = slab;
+  }
+  slabs_.erase(slabs_.begin() + kept, slabs_.end());
+
+  return slabs_.size() == 1 && slabs_.front().has_same_epochs(Slab(0, 0, BOTTOM, BOTTOM));
+}
+
 /* ********************** Container implementation ********************** */
 /* ********************************************************************** */
 
-void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, Aid t, Clock c,
+void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, Aid t,
                                       const smemory::VectorClock& thread_vc)
 {
+  const Epoch current = thread_vc.clocks[t.value()];
+  xbt_assert(current.get_aid() == t, "Component %d of the vector clock belongs to actor %d", t.c_val(),
+             current.get_aid().c_val());
+  const Clock c = current.get_clock();
+  xbt_assert(c.value() >= 1, "Clock 0 is reserved for BOTTOM, it cannot be used for the accesses of actor %d",
+             t.c_val());
+
   std::vector<Slab> scratchpad;
 
   // For each page of the MemoryAccessTrace, merge it to the corresponding page of the SlabTrackState
@@ -184,6 +213,13 @@ void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, 
 
     page.apply_batch_operations(access_it, t, c, thread_vc, pool_, scratchpad);
   }
+}
+
+void SlabTrackState::clean_before(const smemory::VectorClock& global_min)
+{
+  // The slabs must stop referencing the obsolete VCs before the pool frees them
+  std::erase_if(pages_, [this, &global_min](auto& entry) { return entry.second.clean_before(global_min, pool_); });
+  pool_.clean_before(global_min);
 }
 
 } // namespace simgrid::mc::smemory
