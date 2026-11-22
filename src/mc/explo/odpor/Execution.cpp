@@ -202,8 +202,8 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
       Clock second_op{(int)std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
                                          [&](auto event) { return event.get_transition()->aid_ == second_aid; })};
 
-      throw McDataRace(Epoch(first_aid, first_op), Epoch(second_aid, second_op), dr.location_, dr.size1_, dr.size2_,
-                       dr.second_mem_op_);
+      throw McDataRace(Epoch(first_aid, first_op), smemory::MemOpType::Write, Epoch(second_aid, second_op),
+                       dr.second_mem_op_, dr.location_, dr.size1_, dr.size2_);
     }
   }
 }

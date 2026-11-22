@@ -13,31 +13,36 @@ static_assert(sizeof(SlabTrackState::Slab) == 12,
 /* ***************************************************************** */
 
 /* ********************** FastTrack Rules ********************** */
-void SlabTrackState::Page::check_read_race(const Slab& node, Aid t, const smemory::VectorClock& thread_vc) const
+void SlabTrackState::Page::check_read_race(const Slab& node, uintptr_t page_base, Epoch current,
+                                           const smemory::VectorClock& thread_vc) const
 {
-  if (node.write_.get_aid() != t &&
-      node.write_.get_clock() > thread_vc.clocks[node.write_.get_aid().value()].get_clock()) [[unlikely]] {
-    throw DataRaceException("FastTrack: Read DataRace detected (Write-Read conflict)");
-  }
+  const unsigned size = node.end_ - node.start_;
+  if (node.write_.get_aid() != current.get_aid() &&
+      node.write_.get_clock() > thread_vc.clocks[node.write_.get_aid().value()].get_clock()) [[unlikely]]
+    throw McDataRace(node.write_, MemOpType::Write, current, MemOpType::Read, page_base + node.start_, size, size);
 }
 
-void SlabTrackState::Page::check_write_race(const Slab& node, Aid t, const smemory::VectorClock& thread_vc,
+void SlabTrackState::Page::check_write_race(const Slab& node, uintptr_t page_base, Epoch current,
+                                            const smemory::VectorClock& thread_vc,
                                             const smemory::VectorClockPool& pool) const
 {
-  if (node.write_.get_aid() != t &&
-      node.write_.get_clock() > thread_vc.clocks[node.write_.get_aid().value()].get_clock()) [[unlikely]] {
-    throw DataRaceException("FastTrack: Write DataRace detected (Write-Write conflict)");
-  }
+  const unsigned size = node.end_ - node.start_;
+  if (node.write_.get_aid() != current.get_aid() &&
+      node.write_.get_clock() > thread_vc.clocks[node.write_.get_aid().value()].get_clock()) [[unlikely]]
+    throw McDataRace(node.write_, MemOpType::Write, current, MemOpType::Write, page_base + node.start_, size, size);
 
   if (node.reads_.is_pure_epoch()) {
-    if (node.reads_.get_aid() != t &&
-        node.reads_.get_clock() > thread_vc.clocks[node.reads_.get_aid().value()].get_clock()) [[unlikely]] {
-      throw DataRaceException("FastTrack: Write DataRace detected (Read-Write conflict on Exclusive Read)");
-    }
-  } else {
-    if (not pool.is_past(node.reads_.get_pool_index(), thread_vc)) [[unlikely]] {
-      throw DataRaceException("FastTrack: Write DataRace detected (Read-Write conflict on Shared Read)");
-    }
+    if (node.reads_.get_aid() != current.get_aid() &&
+        node.reads_.get_clock() > thread_vc.clocks[node.reads_.get_aid().value()].get_clock()) [[unlikely]]
+      throw McDataRace(node.reads_, MemOpType::Read, current, MemOpType::Write, page_base + node.start_, size, size);
+  } else if (not pool.is_past(node.reads_.get_pool_index(), thread_vc)) [[unlikely]] {
+    // Report one of the readers that are not in the past of the current access
+    const smemory::VectorClock& readers = pool.get(node.reads_.get_pool_index());
+    for (std::size_t i = 0; i < static_config::max_threads; ++i)
+      if (thread_vc.clocks[i] < readers.clocks[i])
+        throw McDataRace(readers.clocks[i], MemOpType::Read, current, MemOpType::Write, page_base + node.start_, size,
+                         size);
+    xbt_die("is_past() found a racy reader that cannot be found anymore");
   }
 }
 
@@ -143,11 +148,11 @@ void SlabTrackState::Page::apply_batch_operations(const smemory::MemoryAccessTra
       overlap.end_   = overlap_end;
 
       if (access_it->type == smemory::MemOpType::Write) {
-        check_write_race(overlap, t, thread_vc, pool);
+        check_write_race(overlap, accesses.page_base_addr, current_epoch, thread_vc, pool);
         overlap.write_ = current_epoch;
         overlap.reads_ = BOTTOM; // Wipe reads on successful write
       } else {
-        check_read_race(overlap, t, thread_vc);
+        check_read_race(overlap, accesses.page_base_addr, current_epoch, thread_vc);
         update_read_epoch(overlap, t, c, thread_vc, pool);
       }
 

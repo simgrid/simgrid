@@ -129,7 +129,17 @@ TEST_CASE("SlabTrackState: Write-Write Data Race detection", "[SlabTrackState]")
   tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 100, 4);
 
   // Works for both FastTrack and SlabTrack as both access are on the exact same address
-  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), DataRaceException);
+  try {
+    state.apply_transition(tracker2, Aid{3}, make_vc(3, 1));
+    FAIL("The race was not detected");
+  } catch (const McDataRace& race) {
+    REQUIRE(race.first_mem_op_ == Epoch(Aid{2}, Clock{1}));
+    REQUIRE(race.first_mem_type_ == MemOpType::Write);
+    REQUIRE(race.second_mem_op_ == Epoch(Aid{3}, Clock{1}));
+    REQUIRE(race.second_mem_type_ == MemOpType::Write);
+    REQUIRE(race.location_ == memory_page_addr + 100);
+    REQUIRE(race.sizes_[0] == (MemoryAccessTrace::is_coalescing() ? 4 : MemoryAccessTrace::get_bucket_size()));
+  }
 }
 
 TEST_CASE("SlabTrackState: Synchronization prevents race", "[SlabTrackState]")
@@ -188,7 +198,7 @@ TEST_CASE("SlabTrackState: Write-Read race detection (unsynced read after write)
   MemoryAccessTrace tracker2;
   tracker2.create_memory_access(MemOpType::Read, memory_page_addr + 300, 8);
 
-  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), DataRaceException);
+  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
 }
 
 TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive in SlabTrack", "[SlabTrackState]")
@@ -206,7 +216,7 @@ TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive in SlabT
 
   if (MemoryAccessTrace::is_coalescing()) {
     // SlabTrack detects the problem despite the partial overlap!
-    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), DataRaceException);
+    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
   } else {
     // FastTrack sees two distinct variables (100 & 112) and misses the datarace
     REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)));
@@ -305,7 +315,7 @@ TEST_CASE("SlabTrackState: Write after shared read without sync throws", "[SlabT
   MemoryAccessTrace tracker3;
   tracker3.create_memory_access(MemOpType::Write, memory_page_addr + 200, 4);
 
-  REQUIRE_THROWS_AS(state.apply_transition(tracker3, Aid{4}, make_vc(4, 1)), DataRaceException);
+  REQUIRE_THROWS_AS(state.apply_transition(tracker3, Aid{4}, make_vc(4, 1)), McDataRace);
 }
 
 TEST_CASE("SlabTrackState: Write after shared read with full sync does not throw", "[SlabTrackState][SharedRead]")
@@ -344,7 +354,38 @@ TEST_CASE("SlabTrackState: Write after shared read with partial sync throws", "[
   tracker3.create_memory_access(MemOpType::Write, memory_page_addr + 200, 4);
 
   // T3 synchronized only with T1, not T2
-  REQUIRE_THROWS_AS(state.apply_transition(tracker3, Aid{4}, make_full_sync_vc({{4, 1}, {2, 1}})), DataRaceException);
+  try {
+    state.apply_transition(tracker3, Aid{4}, make_full_sync_vc({{4, 1}, {2, 1}}));
+    FAIL("The race was not detected");
+  } catch (const McDataRace& race) {
+    REQUIRE(race.first_mem_op_ == Epoch(Aid{3}, Clock{1})); // The reader that T4 does not know
+    REQUIRE(race.first_mem_type_ == MemOpType::Read);
+    REQUIRE(race.second_mem_op_ == Epoch(Aid{4}, Clock{1}));
+    REQUIRE(race.second_mem_type_ == MemOpType::Write);
+    REQUIRE(race.location_ == memory_page_addr + 200);
+  }
+}
+
+TEST_CASE("SlabTrackState: reset forgets every access", "[SlabTrackState]")
+{
+  SlabTrackState state;
+
+  MemoryAccessTrace tracker1;
+  tracker1.create_memory_access(MemOpType::Read, memory_page_addr + 200, 4);
+  state.apply_transition(tracker1, Aid{2}, make_vc(2, 1));
+  MemoryAccessTrace tracker2;
+  tracker2.create_memory_access(MemOpType::Read, memory_page_addr + 200, 4);
+  state.apply_transition(tracker2, Aid{3}, make_vc(3, 1));
+  REQUIRE(state.pool_.size() == 2);
+
+  state.reset();
+  REQUIRE(state.pages_.empty());
+  REQUIRE(state.pool_.size() == 1);
+
+  // Without the reset, this write would race with both reads
+  MemoryAccessTrace tracker3;
+  tracker3.create_memory_access(MemOpType::Write, memory_page_addr + 200, 4);
+  REQUIRE_NOTHROW(state.apply_transition(tracker3, Aid{4}, make_vc(4, 1)));
 }
 
 // ============================================================================
@@ -400,7 +441,7 @@ TEST_CASE("SlabTrackState: Write-Write race is detected on partial overlap", "[S
 
   if (MemoryAccessTrace::is_coalescing()) {
     // SlabTrack detects the problem
-    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), DataRaceException);
+    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
   } else {
     // FastTrack sees 2 variables and misses the datarace
     REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)));
@@ -495,6 +536,6 @@ TEST_CASE("SlabTrackState: clean_before forgets the past accesses only", "[SlabT
     MemoryAccessTrace write6b;
     write6b.create_memory_access(MemOpType::Write, memory_page_addr + 2000, 4);
     REQUIRE_THROWS_AS(state.apply_transition(write6b, Aid{6}, make_full_sync_vc({{6, 2}, {2, 1}, {3, 1}, {4, 1}})),
-                      DataRaceException);
+                      McDataRace);
   }
 }

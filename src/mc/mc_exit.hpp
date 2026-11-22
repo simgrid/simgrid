@@ -7,6 +7,7 @@
 #define SIMGRID_MC_EXIT_HPP
 
 #include "src/mc/api/Epoch.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
 
 #include <exception>
 
@@ -27,18 +28,21 @@ struct McError : public std::exception {
   explicit McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
 
+/** A race between two memory accesses, located at location_. Each access has its epoch, type and size in bytes. */
 struct McDataRace : public std::exception {
   const ExitStatus value;
   const Epoch first_mem_op_;
   const Epoch second_mem_op_;
+  smemory::MemOpType first_mem_type_;
   smemory::MemOpType second_mem_type_;
   uintptr_t location_;
-  unsigned char sizes_[2];
-  explicit McDataRace(Epoch first_mem_op, Epoch second_mem_op, uintptr_t location, unsigned char size1,
-                      unsigned char size2, smemory::MemOpType second_mem_type)
+  unsigned sizes_[2];
+  explicit McDataRace(Epoch first_mem_op, smemory::MemOpType first_mem_type, Epoch second_mem_op,
+                      smemory::MemOpType second_mem_type, uintptr_t location, unsigned size1, unsigned size2)
       : value(ExitStatus::DATA_RACE)
       , first_mem_op_(first_mem_op)
       , second_mem_op_(second_mem_op)
+      , first_mem_type_(first_mem_type)
       , second_mem_type_(second_mem_type)
       , location_(location)
   {

@@ -84,6 +84,7 @@
 #ifndef SIMGRID_MC_SHADOW_INTERVAL_MAP_HPP
 #define SIMGRID_MC_SHADOW_INTERVAL_MAP_HPP
 
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "src/mc/smemory/VectorClockPool.hpp"
 #include "xbt/asserts.h"
@@ -91,11 +92,6 @@
 #include <unordered_map>
 
 namespace simgrid::mc::smemory {
-
-class DataRaceException : public std::runtime_error {
-public:
-  explicit DataRaceException(const char* msg) : std::runtime_error(msg) {}
-};
 
 class SlabTrackState {
 public:
@@ -128,9 +124,10 @@ public:
   private:
     std::vector<Slab> slabs_;
 
-    // Isolated FastTrack rules to keep the merge algorithm readable
-    void check_read_race(const Slab& node, Aid t, const smemory::VectorClock& thread_vc) const;
-    void check_write_race(const Slab& node, Aid t, const smemory::VectorClock& thread_vc,
+    // Isolated FastTrack rules to keep the merge algorithm readable. They throw McDataRace on races.
+    void check_read_race(const Slab& node, uintptr_t page_base, Epoch current,
+                         const smemory::VectorClock& thread_vc) const;
+    void check_write_race(const Slab& node, uintptr_t page_base, Epoch current, const smemory::VectorClock& thread_vc,
                           const smemory::VectorClockPool& pool) const;
 
     void update_read_epoch(Slab& node, Aid t, Clock c, const smemory::VectorClock& thread_vc,
@@ -174,7 +171,8 @@ private:
 public:
   static constexpr Epoch BOTTOM{Aid{0}, Clock{0}}; // Epoch of no access at all (see the clock convention above)
 
-  // Apply every accesses done by actor t during the segment of vector clock thread_vc, detecting the dataraces as we go
+  // Apply every accesses done by actor t during the segment of vector clock thread_vc, throwing McDataRace on races.
+  // The races are searched in address order, and the first one found is reported.
   void apply_transition(const smemory::MemoryAccessTrace& tracker, Aid t, const smemory::VectorClock& thread_vc);
 
   /** Forget the accesses that are in the past of global_min, and free the memory they used.
@@ -182,6 +180,13 @@ public:
    *  The thread_vc given to every later call to apply_transition() must be greater or equal to global_min, component
    *  wise. Otherwise, the races with the forgotten accesses are missed. */
   void clean_before(const smemory::VectorClock& global_min);
+
+  // Forget every access, as if this object was just created
+  void reset()
+  {
+    pages_.clear();
+    pool_ = smemory::VectorClockPool();
+  }
 };
 
 } // namespace simgrid::mc::smemory
