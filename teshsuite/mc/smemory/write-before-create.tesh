@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} write-before-create.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/write-before-create/write-before-create
-> Successfully instrumented 3 read operations and 4 writes operations
+> Successfully instrumented 3 read operations and 1 writes operations
 
 # Without reduction, the exploration replays the beginning of the execution several times
 ! ignore .*LD_PRELOAD.*

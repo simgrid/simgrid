@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} same-offset.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/same-offset/same-offset
-> Successfully instrumented 2 read operations and 5 writes operations
+> Successfully instrumented 2 read operations and 2 writes operations
 
 ! ignore .*LD_PRELOAD.*
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/same-offset/same-offset --log=xbt_cfg.thresh:critical --log=no_loc

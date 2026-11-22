@@ -15,8 +15,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smem_mark, smemory, "Tracking memory accesses");
 
 namespace simgrid::mc::smemory {
 
-void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, unsigned short size)
+void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, size_t size)
 {
+  if (size == 0) // e.g., a memset of 0 bytes
+    return;
   // Save the memory access to the bitmap
   uintptr_t addr = reinterpret_cast<uintptr_t>(where);
 
@@ -41,7 +43,7 @@ void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, un
   }
   uintptr_t end = addr + size;
 
-  XBT_DEBUG("Marking %u bytes at %p as %s", size, (void*)where, to_c_str(type));
+  XBT_DEBUG("Marking %zu bytes at %p as %s", size, (void*)where, to_c_str(type));
 
   while (addr < end) {
 

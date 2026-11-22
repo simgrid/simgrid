@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} main-last-access.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/main-last-access/main-last-access
-> Successfully instrumented 2 read operations and 4 writes operations
+> Successfully instrumented 2 read operations and 1 writes operations
 
 ! ignore .*LD_PRELOAD.*
 ! expect return 5

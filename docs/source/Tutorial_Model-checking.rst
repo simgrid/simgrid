@@ -648,7 +648,7 @@ Do not forget the ``-g`` flag, or the messages will be less informative.
          $ git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking.git
          $ cd tutorial-model-checking.git
          $ ./simgrid.sh mclang plusplus.c -o plusplus -g
-         Successfully instrumented 4 read operations and 3 writes operations
+         Successfully instrumented 4 read operations and 1 writes operations
 
    .. group-tab:: simgrid/tuto-mc
 
@@ -658,7 +658,7 @@ Do not forget the ``-g`` flag, or the messages will be less informative.
       
          $ cp /source/tutorial-model-checking.git/plusplus.c .
          $ mclang plusplus.c -o plusplus -g
-         Successfully instrumented 4 read operations and 3 writes operations
+         Successfully instrumented 4 read operations and 1 writes operations
 
 Looking at the `source code <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/plusplus.c>`_, there is a
 clear data race condition between the two threads on the variable ``i``. This is because incrementing an integer is not an atomic

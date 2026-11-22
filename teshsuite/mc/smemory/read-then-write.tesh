@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} read-then-write.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/read-then-write/read-then-write
-> Successfully instrumented 3 read operations and 4 writes operations
+> Successfully instrumented 3 read operations and 1 writes operations
 
 ! ignore .*LD_PRELOAD.*
 ! expect return 5

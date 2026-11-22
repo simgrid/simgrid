@@ -14,7 +14,7 @@ using namespace simgrid::mc::smemory;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smemory);
 
-static void create_memory_access(MemOpType type, uintptr_t where, unsigned char size)
+static void create_memory_access(MemOpType type, uintptr_t where, uint64_t size)
 {
   static bool instrument = true;
 
@@ -61,11 +61,11 @@ static void create_memory_access(MemOpType type, uintptr_t where, unsigned char 
   instrument = true;
 }
 
-void __mcsimgrid_write(uintptr_t where, unsigned char size)
+void __mcsimgrid_write(uintptr_t where, uint64_t size)
 {
   create_memory_access(MemOpType::Write, where, size);
 }
-void __mcsimgrid_read(uintptr_t where, unsigned char size)
+void __mcsimgrid_read(uintptr_t where, uint64_t size)
 {
   create_memory_access(MemOpType::Read, where, size);
 }

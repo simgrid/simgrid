@@ -74,7 +74,7 @@ private:
 
 public:
   /* Main input method. The observation uses this method only */
-  void create_memory_access(MemOpType type, uintptr_t where, unsigned short size);
+  void create_memory_access(MemOpType type, uintptr_t where, size_t size); // size in bytes
 
   bool was_written(uintptr_t where) const { return was_marked(where, MemOpType::Write); }
   bool was_read(uintptr_t where) const
