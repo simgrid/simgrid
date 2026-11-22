@@ -122,10 +122,6 @@ static const char* signal_name(int status)
 
 std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
 {
-  std::vector<Clock> actor_epoch;
-  if (race != nullptr)
-    actor_epoch.resize(kernel::actor::ActorImpl::get_maxpid() + 1);
-
   std::vector<std::string> trace;
   for (auto const& transition : get_record_trace()) {
     auto const& call_location = transition->get_call_location();
@@ -136,49 +132,15 @@ std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
       trace.push_back(
           xbt::string_printf("Actor %d in simcall %s", transition->aid_.c_val(), transition->to_string().c_str()));
 
-    if (race != nullptr) {
-      if (transition->aid_ == race->first_mem_op_.get_aid()) {
-        if (race->first_mem_op_.get_clock() == Clock(0) && actor_epoch[transition->aid_.value()] == 0) {
-          if (smemory::MemoryAccessTrace::is_coalescing())
-            trace.back().append(xbt::string_printf(
-                "     <== racy WRITE of size %ub on %p by actor %d between its creation and this operation",
-                race->sizes_[0], reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
-                race->first_mem_op_.get_aid().c_val()));
-          else
-            trace.back().append(
-                xbt::string_printf("     <== racy WRITE on %p by actor %d between its creation and this operation",
-                                   reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
-                                   (race->first_mem_op_.get_aid().c_val())));
-        }
-        actor_epoch[transition->aid_.value()]++;
-        if (actor_epoch[transition->aid_.value()] == race->first_mem_op_.get_clock())
-          trace.back().append(
-              xbt::string_printf("     <== racy WRITE of size %ub on %p right after this operation", race->sizes_[0],
-                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_)));
-      }
-      if (transition->aid_ == race->second_mem_op_.get_aid()) {
-        if (race->second_mem_op_.get_clock() == 0 && actor_epoch[transition->aid_.value()] == 0) {
-          if (smemory::MemoryAccessTrace::is_coalescing())
-            trace.back().append(xbt::string_printf(
-                "     <== racy %s of size %ub on %p by actor %d between its creation and this operation",
-                race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-                reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
-                race->second_mem_op_.get_aid().c_val()));
-          else
-            trace.back().append(
-                xbt::string_printf("     <== racy %s on %p by actor %d between its creation and this operation",
-                                   race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-                                   reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
-                                   race->second_mem_op_.get_aid().c_val()));
-        }
-        actor_epoch[transition->aid_.value()]++;
-        if (actor_epoch[transition->aid_.value()] == race->second_mem_op_.get_clock())
-          trace.back().append(
-              xbt::string_printf("     <== racy %s of size %ub on %p right after this operation",
-                                 race->second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", race->sizes_[1],
-                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_)));
-      }
-    }
+    // The clock of each racing access is the rank of the transition that ends its segment, starting from 1
+    if (race != nullptr)
+      for (auto const& [epoch, type] : {std::pair{race->first_mem_op_, race->first_mem_type_},
+                                        std::pair{race->second_mem_op_, race->second_mem_type_}})
+        if (epoch.get_clock() == Clock(trace.size()))
+          trace.back().append(xbt::string_printf("     <== racy %s on %p by actor %d before this transition",
+                                                 type == smemory::MemOpType::Read ? "READ" : "WRITE",
+                                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
+                                                 epoch.get_aid().c_val()));
   }
   return trace;
 }

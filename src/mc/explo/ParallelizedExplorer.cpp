@@ -286,6 +286,7 @@ void Explorer(ThreadLocalExplorer& local_explorer)
 
       local_explorer.stack.emplace_back(std::move(next_state));
       local_explorer.execution_seq.push_transition(std::move(executed_transition));
+      local_explorer.race_detector.check(local_explorer.execution_seq);
     }
 
     XBT_DEBUG("[tid: Explorer %d] Ended exploration, going to wait for next state. (%lu explored traces so far)",

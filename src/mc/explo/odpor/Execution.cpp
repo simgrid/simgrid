@@ -10,7 +10,6 @@
 #include "src/mc/api/static_config.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_exit.hpp"
 #include "src/mc/transition/Transition.hpp"
 #include "src/mc/transition/TransitionActor.hpp"
 
@@ -48,83 +47,6 @@ std::string one_string_textual_trace(const PartialExecution& w)
     res += "\n";
   }
   return res;
-}
-
-struct EventDataRace : public std::exception {
-  uintptr_t location_;
-  const unsigned char size1_;
-  const unsigned char size2_;
-  const smemory::MemOpType first_mem_op_;
-  const smemory::MemOpType second_mem_op_;
-  const EventHandle first_event_;
-  const EventHandle second_event_;
-  explicit EventDataRace(uintptr_t location, const unsigned char size1, const unsigned char size2,
-                         smemory::MemOpType first_mem_op, smemory::MemOpType second_mem_op, EventHandle first_event,
-                         EventHandle second_event)
-      : location_(location)
-      , size1_(size1)
-      , size2_(size2)
-      , first_mem_op_(first_mem_op)
-      , second_mem_op_(second_mem_op)
-      , first_event_(first_event)
-      , second_event_(second_event)
-  {
-  }
-};
-
-void Event::initialize_epoch()
-{
-  Aid event_aid_ = transition_->aid_;
-  for (const auto& access_it : transition_->get_memory_trace())
-    for (auto [location, size, kind] : access_it)
-      if (kind == smemory::MemOpType::Write)
-        last_write_.insert_or_assign(location, Epoch{event_aid_, clock_vector_.get(event_aid_).value() - 1});
-}
-
-void Event::update_epoch_from(const ClockVector prev_clock, const Event& prev_event)
-{
-  XBT_VERB("Updating epoch");
-  last_write_      = prev_event.last_write_;
-  Aid event_aid_   = transition_->aid_;
-
-  for (const auto& access_it : transition_->get_memory_trace())
-    for (auto [location, size, kind] : access_it) {
-
-      auto prev_write = last_write_.find(location);
-
-      if (prev_write != last_write_.end() and prev_write->second.get_aid() == event_aid_)
-        continue; // Cannot race with myself
-
-      if (kind == smemory::MemOpType::Read) {
-
-        if (prev_write != last_write_.end()) {
-          const auto aid   = prev_write->second.get_aid();
-          const auto clock = prev_write->second.get_clock();
-          if (clock >= prev_clock.get(aid)) {
-            // TODO: We need to retrieve the size of the first access
-            throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Read,
-                                clock.value() + 1, this->clock_vector_.get(event_aid_).value());
-            // +1 is here to find the right transition in replay mode
-          }
-        }
-
-      } else {
-
-        if (prev_write != last_write_.end()) {
-          const auto aid   = prev_write->second.get_aid();
-          const auto clock = prev_write->second.get_clock();
-          if (clock >= prev_clock.get(aid))
-            throw EventDataRace(location, size, size, smemory::MemOpType::Write, smemory::MemOpType::Write,
-                                clock.value() + 1, this->clock_vector_.get(event_aid_).value());
-          // +1 is here to find the right transition in replay mode
-        }
-
-        // Record the new write as it happened juste before this transition
-        // the -1 is here because we receive reads and writes AFTER the transition while
-        // in reality it happened BEFORE
-        last_write_.insert_or_assign(location, Epoch(event_aid_, clock_vector_.get(event_aid_).value() - 1));
-      }
-    }
 }
 
 PartialExecution Execution::preallocated_partial_execution_ = PartialExecution();
@@ -176,36 +98,11 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
   max_clock_vector[t->aid_] = this->size();
   if (skip_list_.size() <= t->aid_.value())
     skip_list_.resize(t->aid_.value() + 1, {});
-  auto prev_event_of_aid = find_pre_event_of_aid(t->aid_);
-  contents_.push_back(Event(t, std::move(max_clock_vector), prev_event_of_aid));
+  contents_.push_back(Event(t, std::move(max_clock_vector), find_pre_event_of_aid(t->aid_)));
   skip_list_[t->aid_.value()].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
     contents_.back().consider_races();
-
-  if (contents_.size() == 1)
-    contents_.back().initialize_epoch();
-  else {
-    ClockVector clock =
-        prev_event_of_aid.has_value() ? contents_[prev_event_of_aid.value()].get_clock_vector() : ClockVector(0);
-    try {
-      contents_.back().update_epoch_from(clock, *(std::prev(contents_.end(), 2)));
-    } catch (EventDataRace& dr) {
-
-      Aid first_aid  = contents_[dr.first_event_].get_transition()->aid_;
-      Aid second_aid = contents_[dr.second_event_].get_transition()->aid_;
-
-      // count the number of previously recorded transition made by the corresponding actor
-      // this way the replayed app can pinpoint which transition has done the transition and display the right backtrace
-      Clock first_op{(int)std::count_if(contents_.begin(), contents_.begin() + dr.first_event_,
-                                        [&](auto event) { return event.get_transition()->aid_ == first_aid; })};
-      Clock second_op{(int)std::count_if(contents_.begin(), contents_.begin() + dr.second_event_,
-                                         [&](auto event) { return event.get_transition()->aid_ == second_aid; })};
-
-      throw McDataRace(Epoch(first_aid, first_op), smemory::MemOpType::Write, Epoch(second_aid, second_op),
-                       dr.second_mem_op_, dr.location_, dr.size1_, dr.size2_);
-    }
-  }
 }
 
 void Execution::remove_last_event()

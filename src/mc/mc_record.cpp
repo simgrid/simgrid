@@ -8,6 +8,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -62,6 +63,9 @@ void RecordTrace::replay() const
   auto checker_side = std::make_unique<Channel>(sockets[1]);
 
   auto exec = std::make_unique<odpor::Execution>();
+#if SIMGRID_HAVE_MC
+  odpor::RaceDetector race_detector;
+#endif
 
   for (const simgrid::mc::Transition* transition : transitions_) {
     kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_.value());
@@ -87,18 +91,13 @@ void RecordTrace::replay() const
     xbt_assert(simcall->observer_ != nullptr, "null observer, :'(");
 
 #if SIMGRID_HAVE_MC
-    auto t = create_mc_transition(actor, *app_side.get(), *checker_side.get());
+    exec->push_transition(create_mc_transition(actor, *app_side.get(), *checker_side.get()));
     try {
-      exec->push_transition(t); // Race detection is done here
+      race_detector.check(*exec);
     } catch (const McDataRace& e) {
       XBT_INFO("Found a datarace at location %p", reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_));
-      // Printing the epoch is not very interesting for the user
-      XBT_DEBUG("Race between actor %d at step %u and actor %d at step %u", e.first_mem_op_.get_aid().c_val(),
-                e.first_mem_op_.get_clock().value(), e.second_mem_op_.get_aid().c_val(),
-                e.second_mem_op_.get_clock().value());
-
-      XBT_INFO("First operation was a WRITE made by actor %d", e.first_mem_op_.get_aid().c_val());
-
+      XBT_INFO("First operation was a %s made by actor %d",
+               e.first_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.first_mem_op_.get_aid().c_val());
       XBT_INFO("Second operation was a %s made by actor %d",
                e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.second_mem_op_.get_aid().c_val());
 

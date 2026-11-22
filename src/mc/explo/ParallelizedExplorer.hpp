@@ -11,6 +11,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -137,6 +138,7 @@ public:
 
   stack_t stack;
   odpor::Execution execution_seq;
+  odpor::RaceDetector race_detector;
 
   RemoteApp& get_remote_app() { return *remote_app_.get(); }
   int get_explorer_id() const { return explorer_id; }

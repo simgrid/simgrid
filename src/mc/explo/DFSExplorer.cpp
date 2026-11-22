@@ -139,6 +139,8 @@ void DFSExplorer::step_exploration(odpor::Execution& S, Aid next_actor, stack_t&
   state_stack.emplace_back(std::move(next_state));
 
   S.push_transition(executed_transition);
+  if (race_detector_.has_value())
+    race_detector_->check(S);
 
   // Backtrack if we reached the maximum depth
   if (size_t max = _sg_mc_max_depth; max > 0 && state_stack.size() > max) {

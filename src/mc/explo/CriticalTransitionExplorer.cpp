@@ -117,6 +117,7 @@ CriticalTransitionExplorer::CriticalTransitionExplorer(std::unique_ptr<RemoteApp
                                                        std::unique_ptr<Reduction> reduction, stack_t* stack)
     : DFSExplorer(std::move(remote_app), std::move(reduction))
 {
+  race_detector_.reset(); // The data races are not searched while looking for the critical transition
   stack_ = stack;
   for (auto const& state : get_stack())
     initial_bugged_stack.emplace_back(state, state->get_transition_out());

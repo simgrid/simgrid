@@ -132,6 +132,7 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
 set(MC_UNIT_TESTS src/mc/api/BasicTypes_test.cpp
                   src/mc/explo/odpor/ClockVector_test.cpp
                   src/mc/explo/odpor/Execution_test.cpp
+                  src/mc/explo/odpor/RaceDetector_test.cpp
                   src/mc/explo/odpor/WakeupTree_test.cpp
                   
                   src/mc/explo/udpor/Unfolding_test.cpp

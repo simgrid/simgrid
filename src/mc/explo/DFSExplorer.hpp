@@ -10,6 +10,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/explo/reduction/DPOR.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -29,6 +30,8 @@ class XBT_PRIVATE DFSExplorer : public ReductedExplorer {
 protected:
   stack_t* stack_              = nullptr;
   bool is_execution_descending = true;
+  // Data race detector, applied to every executed transition (disabled by the critical transition explorer)
+  std::optional<odpor::RaceDetector> race_detector_{std::in_place};
 
 private:
   // For statistics. Starts at one because we only track the act of starting a new trace

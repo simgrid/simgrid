@@ -235,6 +235,7 @@ void BeFSExplorer::run()
 
     stack_.emplace_back(std::move(next_state));
     execution_seq_.push_transition(std::move(executed_transition));
+    race_detector_.check(execution_seq_);
 
     if (dot_output_ != nullptr)
       dot_output("\"%lu\" -> \"%lu\" [%s];\n", state->get_num(), stack_.back()->get_num(),

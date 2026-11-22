@@ -10,6 +10,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/explo/reduction/Reduction.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -46,6 +47,7 @@ private:
    * which is used by SDPOR and ODPOR
    */
   odpor::Execution execution_seq_;
+  odpor::RaceDetector race_detector_;
 
   /** Opened states are states that still contains todo actors.
    *  When backtracking, we pick a state from it*/

@@ -593,6 +593,8 @@ set(MC_SRC_STATELESS
 
   src/mc/explo/odpor/Execution.cpp
   src/mc/explo/odpor/Execution.hpp
+  src/mc/explo/odpor/RaceDetector.cpp
+  src/mc/explo/odpor/RaceDetector.hpp
   src/mc/explo/odpor/WakeupTree.cpp
   src/mc/explo/odpor/WakeupTree.hpp
   src/mc/explo/odpor/odpor_forward.hpp

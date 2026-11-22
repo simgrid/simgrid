@@ -8,7 +8,6 @@
 
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/ClockVector.hpp"
-#include "src/mc/api/Epoch.hpp"
 #include "src/mc/explo/odpor/odpor_forward.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -18,7 +17,6 @@
 #include <map>
 #include <optional>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -38,8 +36,6 @@ class Event {
   TransitionPtr transition_;
   ClockVector clock_vector_;
   std::optional<uint32_t> predecessor_; // Previous event of the same actor, or the event that created that actor
-
-  std::unordered_map<uintptr_t, Epoch> last_write_;
 
   // Have reversible races between this event and its prefix already been computed ?
   mutable bool race_considered_ = false;
@@ -61,8 +57,6 @@ public:
 
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }
-  void initialize_epoch();
-  void update_epoch_from(const ClockVector prev_clock, const Event& prev_event);
 };
 
 /**
