@@ -176,6 +176,16 @@ void ExplorerHandler(ThreadLocalExplorer* local_explorer, ExitStatus* exploratio
     local_explorer->races_list->push(nullptr);
 
     *exploration_result = error.value;
+  } catch (const McDataRace& race) {
+    // Report the race from this thread, which owns the corresponding stack, and stop the Tree Handler
+    static std::mutex report_mutex; // Keeps each report in one piece if several explorers find a race at once
+    {
+      const std::scoped_lock lock(report_mutex);
+      Exploration::log_data_race(race, get_record_trace_from_stack(local_explorer->stack));
+    }
+    local_explorer->races_list->push(nullptr);
+
+    *exploration_result = race.value;
   }
 
   // close the connection properly: remember that the exploration might not be over if another explorer found an error

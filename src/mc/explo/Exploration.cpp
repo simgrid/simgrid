@@ -120,10 +120,10 @@ static const char* signal_name(int status)
   }
 }
 
-std::vector<std::string> Exploration::get_textual_trace(const McDataRace* race)
+std::vector<std::string> Exploration::get_textual_trace(const RecordTrace& record, const McDataRace* race)
 {
   std::vector<std::string> trace;
-  for (auto const& transition : get_record_trace()) {
+  for (auto const& transition : record) {
     auto const& call_location = transition->get_call_location();
     if (not call_location.empty())
       trace.push_back(xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_.c_val(),
@@ -302,18 +302,23 @@ void Exploration::report_correct_execution(State* last_state)
     throw McError(ExitStatus::SUCCESS);
 }
 
-void Exploration::report_data_race(const McDataRace& e)
+void Exploration::log_data_race(const McDataRace& e, const RecordTrace& trace)
 {
   XBT_INFO("Found a datarace at location %p between actor %d and actor %d after the following "
            "execution:",
            reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_), e.first_mem_op_.get_aid().c_val(),
            e.second_mem_op_.get_aid().c_val());
-  for (auto const& frame : Exploration::get_instance()->get_textual_trace(&e))
+  for (auto const& frame : get_textual_trace(trace, &e))
     XBT_INFO("  %s", frame.c_str());
   XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
            "--cfg=model-check/replay:'%s'",
-           Exploration::get_instance()->get_record_trace().to_string().c_str());
-  Exploration::get_instance()->log_state();
+           trace.to_string().c_str());
+}
+
+void Exploration::report_data_race(const McDataRace& e)
+{
+  log_data_race(e, get_record_trace());
+  log_state();
 
   if (_sg_mc_autoreplay)
     debug_replay(e.location_);

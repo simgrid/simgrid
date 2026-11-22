@@ -118,8 +118,15 @@ public:
   /** Retrieve the current stack to build an execution trace */
   virtual RecordTrace get_record_trace() = 0;
 
+  /** Generate a textual description of the given trace, annotated with the racing accesses if a race is given */
+  static std::vector<std::string> get_textual_trace(const RecordTrace& trace, const McDataRace* race = nullptr);
   /** Generate a textual execution trace of the simulated application */
-  std::vector<std::string> get_textual_trace(const McDataRace* race = nullptr);
+  std::vector<std::string> get_textual_trace(const McDataRace* race = nullptr)
+  {
+    return get_textual_trace(get_record_trace(), race);
+  }
+  /** Log a data race found at the end of the given trace */
+  static void log_data_race(const McDataRace& e, const RecordTrace& trace);
 
   /** Log additional information about the state of the model-checker */
   virtual void log_state();
