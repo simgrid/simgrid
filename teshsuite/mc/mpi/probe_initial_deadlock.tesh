@@ -10,7 +10,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quie
 > [0.000000] [ker_engine/INFO]  - pid 1 (0@node-0.simgrid.org) simcall Probe(mbox:2 tag: 0 kind:recv)
 > [0.000000] [ker_engine/INFO]  - pid 2 (1@node-1.simgrid.org) simcall Probe(mbox:3 tag: 0 kind:recv)
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
-> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:''
+> [0.000000] [mc_session/INFO] You can debug the problem (and see the whole details) by rerunning it through simgrid-mc with the same options, adding --cfg=model-check/replay:''
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 1 unique states visited; 0 explored traces (0 transition replays, 1 states visited overall)
 > [0.000000] [mc_ct/INFO] Start the critical transition detection phase.
 > [0.000000] [mc_ct/INFO] The bug occurs in the initial state, before any transition: no transition is critical.

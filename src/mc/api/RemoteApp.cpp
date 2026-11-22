@@ -216,8 +216,8 @@ bool RemoteApp::check_deadlock(bool verbose) const
       XBT_CINFO(mc_global, "Counter-example execution trace:");
       for (auto const& frame : explo->get_textual_trace())
         XBT_CINFO(mc_global, "  %s", frame.c_str());
-      XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-               "--cfg=model-check/replay:'%s'",
+      XBT_INFO("You can debug the problem (and see the whole details) by rerunning it through simgrid-mc with the same "
+               "options, adding --cfg=model-check/replay:'%s'",
                explo->get_record_trace().to_string().c_str());
       explo->log_state();
     }

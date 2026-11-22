@@ -403,8 +403,8 @@ Before that critical transition, SimGrid displays some information on how to rep
 
 .. code-block:: console
 
-   [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc 
-                                with --cfg=model-check/replay:'1;1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
+   [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning it through simgrid-mc
+                                with the same options, adding --cfg=model-check/replay:'1;1;1;1;1;2;2;3;2;3;4;3;4;5;4;5;6;5;6;6'
    [0.000000] [mc_dfs/INFO] DFS exploration ended. 390 unique states visited; 15 explored traces (322 transition replays, 696 states visited overall)
 
 As stated in the first message, you can rerun the faulty execution trace directly with the given extra parameter. This can be
@@ -695,7 +695,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555804c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
          [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
          [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
@@ -705,7 +705,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
          [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
          [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
-         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
+         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555803c
          [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
    .. group-tab:: simgrid/tuto-mc
@@ -718,7 +718,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555804c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
          [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
          [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
@@ -728,7 +728,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
          [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
          [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
-         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
+         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555803c
          [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
 To see where each access is done, replay this execution as suggested by the last line of the output above. The replay must
@@ -743,25 +743,19 @@ one of the variable in the replayed execution.
       
          # From within the container, directory /source/tutorial/
       
-         $ ./simgrid.sh simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
+         $ ./simgrid.sh simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555803c
          # (verbose description of the first execution steps, that are not that informative)
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a datarace at location 0x55555555804c
-         [0.000000] [mc_record/INFO] First operation was a WRITE made by actor 2:
-           ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
-           ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8
-           ->  #2 auto sthread_create::$_0::operator()<void* (void*), void>(void* (*)(void*), void*) const at src/sthread/sthread_impl.cpp:154
-           ->  #3 std::function<void ()>::operator()() const at /usr/lib/gcc/x86_64-linux-gnu/15/../../../../include/c++/15/bits/std_function.h:593
-           ->  #4 
-      
-         [0.000000] [mc_record/INFO] Second operation was a READ made by actor 3:
-           ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
-           ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8
-           ->  #2 auto sthread_create::$_0::operator()<void* (void*), void>(void* (*)(void*), void*) const at src/sthread/sthread_impl.cpp:154
-           ->  #3 std::function<void ()>::operator()() const at /usr/lib/gcc/x86_64-linux-gnu/15/../../../../include/c++/15/bits/std_function.h:593
-           ->  #4 
+         [0.000000] [mc_record/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_record/INFO]   Access 1: WRITE by actor 2, done after path chunk #1 and before path chunk #3, at:
+           #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
+           #1 thread_code() at plusplus.c:8 in plusplus
+         [0.000000] [mc_record/INFO]   Access 2: WRITE by actor 3, done after path chunk #2 and before path chunk #5, at:
+           #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
+           #1 thread_code() at plusplus.c:8 in plusplus
+         [0.000000] [mc_record/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
 
    .. group-tab:: simgrid/tuto-mc
 
@@ -769,28 +763,22 @@ one of the variable in the replayed execution.
       
          # From within the container, directory /source/tutorial/
 
-         $ simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
+         $ simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555803c
          # (verbose description of the first execution steps, that are not that informative)
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a datarace at location 0x55555555804c
-         [0.000000] [mc_record/INFO] First operation was a WRITE made by actor 2:
-           ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
-           ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8
-           ->  #2 auto sthread_create::$_0::operator()<void* (void*), void>(void* (*)(void*), void*) const at src/sthread/sthread_impl.cpp:154
-           ->  #3 std::function<void ()>::operator()() const at /usr/lib/gcc/x86_64-linux-gnu/15/../../../../include/c++/15/bits/std_function.h:593
-           ->  #4 
+         [0.000000] [mc_record/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_record/INFO]   Access 1: WRITE by actor 2, done after path chunk #1 and before path chunk #3, at:
+           #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
+           #1 thread_code() at plusplus.c:8 in plusplus
+         [0.000000] [mc_record/INFO]   Access 2: WRITE by actor 3, done after path chunk #2 and before path chunk #5, at:
+           #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
+           #1 thread_code() at plusplus.c:8 in plusplus
+         [0.000000] [mc_record/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
 
-         [0.000000] [mc_record/INFO] Second operation was a READ made by actor 3:
-           ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
-           ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8
-           ->  #2 auto sthread_create::$_0::operator()<void* (void*), void>(void* (*)(void*), void*) const at src/sthread/sthread_impl.cpp:154
-           ->  #3 std::function<void ()>::operator()() const at /usr/lib/gcc/x86_64-linux-gnu/15/../../../../include/c++/15/bits/std_function.h:593
-           ->  #4 
-
-When you know where to look, you from this output that the bug comes from a READ and a WRITE, both occuring at line
-``plusplus.c:8`` in the function ``thread_code`` of the provided example.
+This output shows that the bug comes from two WRITE accesses, both occurring at line ``plusplus.c:8`` (the ``i++``) in
+the function ``thread_code`` of the provided example, done by two threads that never synchronize with each other.
 
 Lab3: non-deterministic receive (S4U or MPI)
 --------------------------------------------
@@ -971,8 +959,8 @@ now read it together. It can be split in several parts:
 
     .. code-block:: console
 
-       [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out 
-                                  of simgrid-mc with --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
+       [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning it through
+                                  simgrid-mc with the same options, adding --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
 
     This is the magical string (here: ``1;2;1;1;2;4;1;1;3;1``) that you should pass to your simulator to follow the same
     execution path, but this time with many additional information. You can also add valgrind or a sanitizer to the party to

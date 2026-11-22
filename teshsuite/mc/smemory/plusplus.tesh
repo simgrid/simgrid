@@ -21,7 +21,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=mod
 > [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
 > [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
 > [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3'
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' The --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --no-loc is used.
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
 # The same race, found by the BeFS explorer
@@ -41,7 +41,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=mod
 > [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
 > [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
 > [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3'
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' The --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --no-loc is used.
 > [0.000000] [mc_befs/INFO] BeFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 6 states visited overall)
 
 # The same race, found by the parallel explorer. It is reported by the thread that found it, and the other threads are
@@ -64,7 +64,7 @@ $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=mod
 > [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
 > [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
 > [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3'
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' The --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --no-loc is used.
 
 ! setenv LD_PRELOAD=${libsthread}
 ! expect signal SIGIOT

@@ -185,8 +185,8 @@ XBT_ATTRIB_NORETURN void Exploration::report_crash(int status)
     XBT_INFO("Counter-example execution trace:");
     for (auto const& s : get_textual_trace())
       XBT_INFO("  %s", s.c_str());
-    XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-             "--cfg=model-check/replay:'%s'",
+    XBT_INFO("You can debug the problem (and see the whole details) by rerunning it through simgrid-mc with the same "
+             "options, adding --cfg=model-check/replay:'%s'",
              get_record_trace().to_string().c_str());
     log_state();
   }
@@ -216,8 +216,8 @@ XBT_ATTRIB_NORETURN void Exploration::report_assertion_failure()
     XBT_INFO("Counter-example execution trace:");
     for (auto const& s : get_textual_trace())
       XBT_INFO("  %s", s.c_str());
-    XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-             "--cfg=model-check/replay:'%s'",
+    XBT_INFO("You can debug the problem (and see the whole details) by rerunning it through simgrid-mc with the same "
+             "options, adding --cfg=model-check/replay:'%s'",
              get_record_trace().to_string().c_str());
     log_state();
   }
