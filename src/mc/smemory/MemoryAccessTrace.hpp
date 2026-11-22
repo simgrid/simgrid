@@ -18,6 +18,7 @@
 #include <optional>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 /* This structure keeps track the read and write accesses to the memory during execution of a given transition, to
@@ -63,12 +64,18 @@ private:
     std::array<uint64_t, words_per_page_> write_bits{};
   };
   std::unordered_map<uintptr_t, Page> pages_;
+  // The memory blocks allocated during the transition (start address and size). Nothing done to these addresses before
+  // the allocation can race with what is done after.
+  std::vector<std::pair<uintptr_t, size_t>> allocations_;
 
   bool was_marked(uintptr_t where, MemOpType type) const;
 
 public:
-  /* Main input method. The observation uses this method only */
+  /* Main input methods, used by the observation */
   void create_memory_access(MemOpType type, uintptr_t where, size_t size); // size in bytes
+  void create_allocation(uintptr_t where, size_t size) { allocations_.emplace_back(where, size); }
+
+  const std::vector<std::pair<uintptr_t, size_t>>& get_allocations() const { return allocations_; }
 
   bool was_written(uintptr_t where) const { return was_marked(where, MemOpType::Write); }
   bool was_read(uintptr_t where) const
@@ -188,8 +195,12 @@ public:
 
   PageIterator begin() const { return PageIterator(pages_.begin(), pages_.end()); }
   PageIterator end() const { return PageIterator(pages_.end(), pages_.end()); }
-  bool empty() const { return pages_.empty(); }
-  void clear() { pages_.clear(); }
+  bool empty() const { return pages_.empty() && allocations_.empty(); }
+  void clear()
+  {
+    pages_.clear();
+    allocations_.clear();
+  }
 };
 
 } // namespace simgrid::mc::smemory

@@ -200,6 +200,35 @@ bool SlabTrackState::Page::clean_before(const smemory::VectorClock& global_min, 
   return std::ranges::all_of(slabs_, [](const Slab& slab) { return slab.has_same_epochs(Slab(0, 0, BOTTOM, BOTTOM)); });
 }
 
+void SlabTrackState::Page::reset(uint16_t start, uint16_t end, std::vector<Slab>& scratchpad)
+{
+  scratchpad.clear();
+  auto push = [&scratchpad](const Slab& slab) {
+    if (slab.start_ >= slab.end_)
+      return;
+    if (static_config::coalescing && not scratchpad.empty() && scratchpad.back().has_same_epochs(slab))
+      scratchpad.back().end_ = slab.end_;
+    else
+      scratchpad.push_back(slab);
+  };
+
+  // The slabs cover the whole page in order, so the reset slab is pushed when meeting the first slab that overlaps it
+  bool reset_pushed = false;
+  for (const Slab& slab : slabs_) {
+    if (slab.end_ <= start || slab.start_ >= end) {
+      push(slab);
+      continue;
+    }
+    push(Slab(slab.start_, start, slab.write_, slab.reads_)); // Part before the reset range (if any)
+    if (not reset_pushed) {
+      push(Slab(start, end, BOTTOM, BOTTOM));
+      reset_pushed = true;
+    }
+    push(Slab(end, slab.end_, slab.write_, slab.reads_)); // Part after the reset range (if any)
+  }
+  slabs_.swap(scratchpad);
+}
+
 /* ********************** Container implementation ********************** */
 /* ********************************************************************** */
 
@@ -212,6 +241,16 @@ void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, 
   const Clock c = current.get_clock();
   xbt_assert(c.value() >= 1, "Clock 0 is reserved for BOTTOM, it cannot be used for the accesses of actor %d",
              t.c_val());
+
+  // Forget the previous accesses to the blocks allocated during the segment. The segment does not keep the order of its
+  // events, so its accesses are all considered to be done after its allocations.
+  for (auto const& [addr, size] : record.get_allocations())
+    for (uintptr_t page_base = addr & ~(static_config::page_size - 1); page_base < addr + size;
+         page_base += static_config::page_size)
+      if (auto it = pages_.find(page_base); it != pages_.end())
+        it->second.reset(static_cast<uint16_t>(std::max(addr, page_base) - page_base),
+                         static_cast<uint16_t>(std::min(addr + size, page_base + static_config::page_size) - page_base),
+                         scratchpad_);
 
   // For each page of the MemoryAccessTrace, merge it to the corresponding page of the SlabTrackState
   for (const auto& access_it : record) {

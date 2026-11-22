@@ -85,11 +85,16 @@ void MemoryAccessTrace::serialize(Channel& channel)
     for (unsigned rit = 0; rit < words_per_page_; rit++)
       channel.pack<uint64_t>(page.read_bits[rit]);
   }
-  pages_.clear();
+  channel.pack<unsigned int>(allocations_.size());
+  for (auto const& [addr, size] : allocations_) {
+    channel.pack<uintptr_t>(addr);
+    channel.pack<size_t>(size);
+  }
+  clear();
 }
 void MemoryAccessTrace::deserialize(Channel& channel)
 {
-  xbt_assert(pages_.empty(), "Cannot deserialize a memory tracker when the receiver is not empty");
+  xbt_assert(empty(), "Cannot deserialize a memory tracker when the receiver is not empty");
 
   auto page_count = channel.unpack<unsigned int>();
   XBT_DEBUG("Deserialize a transition with %u pages", page_count);
@@ -102,6 +107,11 @@ void MemoryAccessTrace::deserialize(Channel& channel)
       page.write_bits[wit] = channel.unpack<uint64_t>();
     for (unsigned rit = 0; rit < words_per_page_; rit++)
       page.read_bits[rit] = channel.unpack<uint64_t>();
+  }
+  auto allocation_count = channel.unpack<unsigned int>();
+  for (unsigned ait = 0; ait < allocation_count; ait++) {
+    auto addr = channel.unpack<uintptr_t>();
+    allocations_.emplace_back(addr, channel.unpack<size_t>());
   }
 }
 

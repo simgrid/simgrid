@@ -149,6 +149,9 @@ public:
      *  Returns whether the page is back to its initial state. */
     bool clean_before(const smemory::VectorClock& global_min, const smemory::VectorClockPool& pool);
 
+    /** Forgets the accesses to [start, end), which become a single BOTTOM slab */
+    void reset(uint16_t start, uint16_t end, std::vector<Slab>& scratchpad);
+
     Page(Epoch init_W, Epoch init_R)
     {
       slabs_.emplace_back(0, static_cast<uint16_t>(static_config::page_size), init_W, init_R);
@@ -173,6 +176,7 @@ public:
   static constexpr Epoch BOTTOM{Aid{0}, Clock{0}}; // Epoch of no access at all (see the clock convention above)
 
   // Apply every accesses done by actor t during the segment of vector clock thread_vc, throwing McDataRace on races.
+  // The memory blocks allocated during the segment are reset first, so that their previous accesses cannot race.
   // The races are searched in address order, and the first one found is reported.
   void apply_transition(const smemory::MemoryAccessTrace& tracker, Aid t, const smemory::VectorClock& thread_vc);
 

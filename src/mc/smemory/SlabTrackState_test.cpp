@@ -489,6 +489,54 @@ TEST_CASE("SlabTrackState: Successive writes by same thread do not race", "[Slab
 }
 
 // ============================================================================
+// Allocation Tests
+// ============================================================================
+
+TEST_CASE("SlabTrackState: an allocation forgets the previous accesses to its block", "[SlabTrackState][Allocation]")
+{
+  SlabTrackState state;
+
+  // T2 writes [96, 108)
+  MemoryAccessTrace tracker2;
+  tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 96, 12);
+  state.apply_transition(tracker2, Aid{2}, make_vc(2, 1));
+
+  // T3 allocates [100, 108) and writes its first half: no race with the former accesses to the block
+  MemoryAccessTrace tracker3;
+  tracker3.create_allocation(memory_page_addr + 100, 8);
+  tracker3.create_memory_access(MemOpType::Write, memory_page_addr + 100, 4);
+  REQUIRE_NOTHROW(state.apply_transition(tracker3, Aid{3}, make_vc(3, 1)));
+
+  // The second half of the block is not racy anymore, but its first half was written by T3
+  MemoryAccessTrace tracker4a;
+  tracker4a.create_memory_access(MemOpType::Write, memory_page_addr + 104, 4);
+  REQUIRE_NOTHROW(state.apply_transition(tracker4a, Aid{4}, make_vc(4, 1)));
+  MemoryAccessTrace tracker4b;
+  tracker4b.create_memory_access(MemOpType::Write, memory_page_addr + 100, 4);
+  REQUIRE_THROWS_AS(state.apply_transition(tracker4b, Aid{4}, make_vc(4, 2)), McDataRace);
+
+  // The accesses out of the block are kept
+  MemoryAccessTrace tracker5;
+  tracker5.create_memory_access(MemOpType::Write, memory_page_addr + 96, 4);
+  REQUIRE_THROWS_AS(state.apply_transition(tracker5, Aid{5}, make_vc(5, 1)), McDataRace);
+}
+
+TEST_CASE("SlabTrackState: an allocation can span several pages", "[SlabTrackState][Allocation]")
+{
+  SlabTrackState state;
+
+  MemoryAccessTrace tracker2;
+  tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 4000, 96); // The end of the page
+  state.apply_transition(tracker2, Aid{2}, make_vc(2, 1));
+
+  // T3 allocates a block from the end of this page to the next one (which has no accesses yet), and uses all of it
+  MemoryAccessTrace tracker3;
+  tracker3.create_allocation(memory_page_addr + 4000, 200);
+  tracker3.create_memory_access(MemOpType::Write, memory_page_addr + 4000, 200);
+  REQUIRE_NOTHROW(state.apply_transition(tracker3, Aid{3}, make_vc(3, 1)));
+}
+
+// ============================================================================
 // Garbage Collection Tests
 // ============================================================================
 
