@@ -62,8 +62,8 @@
  * it needs no memory per state of the exploration. The events that carry no access are never applied: removing them
  * does not trigger any rebuild, so an exploration without memory instrumentation never rebuilds anything.
  *
- * check() stops at the first race and throws McDataRace. The shadow memory is then left in an inconsistent state, so
- * the next call to check() rebuilds it.
+ * check() stops at the first race and throws McDataRace, completed with the transitions that start the two racing
+ * segments. The shadow memory is then left in an inconsistent state, so the next call to check() rebuilds it.
  */
 
 #ifndef SIMGRID_MC_ODPOR_RACE_DETECTOR_HPP
@@ -73,9 +73,15 @@
 #include "src/mc/smemory/SlabTrackState.hpp"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 namespace simgrid::mc::odpor {
+
+/** Describes a data race to the user, in four lines: the header, the two accesses and why they race. The racing
+ *  segments are given with ranks in the execution, starting from 1, that are named after step_name (e.g. "transition").
+ */
+std::vector<std::string> describe_data_race(const McDataRace& race, const char* step_name);
 
 /** Detects the data races of the executions explored by the model checker (see the top of this file). */
 class RaceDetector {

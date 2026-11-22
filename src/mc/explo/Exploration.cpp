@@ -12,12 +12,12 @@
 #include "src/mc/explo/CriticalTransitionExplorer.hpp"
 #include "src/mc/explo/ReductedExplorer.hpp"
 #include "src/mc/explo/odpor/Execution.hpp"
+#include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_environ.h"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "src/mc/transition/Transition.hpp"
-#include "src/mc/transition/TransitionActor.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 #include "xbt/string.hpp"
@@ -309,31 +309,8 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::log_data_race(const McDataRace& e, const RecordTrace& trace)
 {
-  const std::vector<const Transition*> transitions(trace.begin(), trace.end());
-
-  // Describes the segment of the given epoch: the accesses happened after the previous transition of the same actor
-  // (or after the creation of that actor), and before the transition that ends the segment
-  auto describe_segment = [&transitions](Epoch epoch) {
-    const size_t end = epoch.get_clock().value(); // Rank of the transition ending the segment, starting from 1
-    const Aid actor  = epoch.get_aid();
-    for (size_t rank = end - 1; rank >= 1; rank--) {
-      const Transition* t = transitions[rank - 1];
-      if (t->aid_ == actor || (t->type_ == Transition::Type::ACTOR_CREATE &&
-                               static_cast<const ActorCreateTransition*>(t)->get_child() == actor))
-        return xbt::string_printf("done after transition #%zu and before transition #%zu", rank, end);
-    }
-    return xbt::string_printf("done before transition #%zu", end);
-  };
-
-  XBT_INFO("Found a data race at location %p: two actors access this memory without synchronization, and at least one "
-           "of them writes it.",
-           reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_));
-  XBT_INFO("  Access 1: %s by actor %d, %s", e.first_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-           e.first_mem_op_.get_aid().c_val(), describe_segment(e.first_mem_op_).c_str());
-  XBT_INFO("  Access 2: %s by actor %d, %s", e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
-           e.second_mem_op_.get_aid().c_val(), describe_segment(e.second_mem_op_).c_str());
-  XBT_INFO("  No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may "
-           "happen in any order.");
+  for (auto const& line : odpor::describe_data_race(e, "transition"))
+    XBT_INFO("%s", line.c_str());
   XBT_INFO("Execution leading to the race:");
   for (auto const& frame : get_textual_trace(trace, &e))
     XBT_INFO("  %s", frame.c_str());

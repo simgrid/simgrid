@@ -92,6 +92,12 @@ std::vector<uintptr_t>& get_mc_watch_addresses()
   return addresses;
 }
 
+std::vector<WatchedAccess>& get_mc_watched_accesses()
+{
+  static std::vector<WatchedAccess> accesses;
+  return accesses;
+}
+
 // Whether the addresses of this process change from one execution to the next
 static bool address_randomization_is_enabled()
 {

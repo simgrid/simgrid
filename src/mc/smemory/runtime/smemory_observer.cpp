@@ -44,12 +44,18 @@ static void create_memory_access(MemOpType type, uintptr_t where, unsigned char 
       break;
     }
   }
+  auto* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (watched) {
-    XBT_INFO("%s access on the watched variable %p", type == MemOpType::Read ? "READ" : "WRITE", (void*)where);
-    xbt_backtrace_display_current();
+    if (simgrid::mc::get_model_checking_mode() == simgrid::mc::ModelCheckingMode::REPLAY) {
+      // The replay shows where the accesses were done when it reports a data race on them
+      get_mc_watched_accesses().push_back(
+          {issuer ? issuer->get_pid() : -1, type == MemOpType::Write, 0, simgrid::xbt::Backtrace()});
+    } else {
+      XBT_INFO("%s access on the watched variable %p", type == MemOpType::Read ? "READ" : "WRITE", (void*)where);
+      xbt_backtrace_display_current();
+    }
   }
 
-  auto* issuer = simgrid::kernel::actor::ActorImpl::self();
   if (issuer)
     issuer->get_memory_trace()->create_memory_access(type, where, size);
   instrument = true;

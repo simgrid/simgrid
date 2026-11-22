@@ -10,6 +10,7 @@
 #include "src/mc/explo/odpor/Execution.hpp"
 #include "src/mc/explo/odpor/RaceDetector.hpp"
 #include "src/mc/mc_base.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"
@@ -74,8 +75,9 @@ void RecordTrace::replay() const
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
 
+    const int chunk = frame_count++;
     XBT_INFO("***********************************************************************************");
-    XBT_INFO("* Path chunk #%d '%d/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_.c_val(),
+    XBT_INFO("* Path chunk #%d '%d/%i' Actor %s(pid:%ld): %s", chunk, transition->aid_.c_val(),
              transition->times_considered_, simcall->issuer_->get_cname(), simcall->issuer_->get_pid(),
              simcall->observer_->to_string().c_str());
     XBT_INFO("***********************************************************************************");
@@ -87,6 +89,10 @@ void RecordTrace::replay() const
 
     // Execute the request:
     simcall->issuer_->simcall_handle(transition->times_considered_);
+    // The watched accesses that this actor did before this transition belong to the segment that it ends
+    for (auto& access : get_mc_watched_accesses())
+      if (access.actor == actor->get_pid() && access.segment_end == 0)
+        access.segment_end = chunk;
 
     xbt_assert(simcall->observer_ != nullptr, "null observer, :'(");
 
@@ -95,11 +101,31 @@ void RecordTrace::replay() const
     try {
       race_detector.check(*exec);
     } catch (const McDataRace& e) {
-      XBT_INFO("Found a datarace at location %p", reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_));
-      XBT_INFO("First operation was a %s made by actor %d",
-               e.first_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.first_mem_op_.get_aid().c_val());
-      XBT_INFO("Second operation was a %s made by actor %d",
-               e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE", e.second_mem_op_.get_aid().c_val());
+      // Find where an access was done, if its address was watched. Prefer an access of the same type in its segment.
+      auto find_source = [](Epoch epoch, smemory::MemOpType type) -> const WatchedAccess* {
+        const WatchedAccess* res = nullptr;
+        for (auto const& access : get_mc_watched_accesses())
+          if (access.actor == epoch.get_aid().c_val() && access.segment_end == epoch.get_clock().value() &&
+              (res == nullptr || access.is_write == (type == smemory::MemOpType::Write)))
+            res = &access;
+        return res;
+      };
+      auto log_access = [&find_source](const std::string& line, Epoch epoch, smemory::MemOpType type) {
+        const WatchedAccess* source = xbt_log_no_loc ? nullptr : find_source(epoch, type);
+        if (source == nullptr)
+          XBT_INFO("%s", line.c_str());
+        else
+          XBT_INFO("%s, at:\n%s", line.c_str(), source->backtrace.resolve().c_str());
+      };
+
+      const auto lines = odpor::describe_data_race(e, "path chunk");
+      XBT_INFO("%s", lines[0].c_str());
+      log_access(lines[1], e.first_mem_op_, e.first_mem_type_);
+      log_access(lines[2], e.second_mem_op_, e.second_mem_type_);
+      XBT_INFO("%s", lines[3].c_str());
+      if (not xbt_log_no_loc && get_mc_watch_addresses().empty())
+        XBT_INFO("To see the source line of each access, add --cfg=model-check/watch:%p to this command",
+                 reinterpret_cast<void*>(e.location_));
 
       abort();
     }

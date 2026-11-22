@@ -6,8 +6,11 @@
 #ifndef MC_CONFIG_HPP
 #define MC_CONFIG_HPP
 
+#include "simgrid/forward.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/base.h"
 #include <cstdint>
+#include <vector>
 #include <xbt/config.hpp>
 
 /********************************** Configuration of MC **************************************/
@@ -44,5 +47,14 @@ extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_nofork;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_search_critical_transition;
 extern XBT_PUBLIC simgrid::config::Flag<int> _sg_mc_soft_timeout;
 extern XBT_PUBLIC std::vector<uintptr_t>& get_mc_watch_addresses();
+
+/** An access to a watched address, recorded during the replay to show where it was done if it races */
+struct WatchedAccess {
+  aid_t actor;
+  bool is_write;
+  unsigned segment_end; // Rank of the next transition of this actor in the replayed path (0 until it is executed)
+  simgrid::xbt::Backtrace backtrace;
+};
+extern XBT_PUBLIC std::vector<WatchedAccess>& get_mc_watched_accesses();
 
 #endif

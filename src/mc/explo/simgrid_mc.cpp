@@ -69,23 +69,23 @@ int main(int argc, char** argv)
   }
 
   if (replay) {
-    /* Prepare the execve parameters */
+    /* Prepare the execve parameters, from the original command line (xbt_log_init removed the --log options) */
     std::vector<char*> params;
     int i = 1;
     // Search the command line for the executable name
-    while (argv[i] != nullptr && argv[i][0] == '-')
+    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-')
       i++;
     // Push the executable and all its options
-    while (argv[i] != nullptr) {
-      params.push_back(argv[i]);
+    while (argv_copy[i] != nullptr) {
+      params.push_back(argv_copy[i]);
       i++;
     }
     // Push all options that were passed to simgrid-mc (i.e., before the executable name) so that sthread finds it
     // (skip "--sthread": we deal with it just below)
     i = 1;
-    while (argv[i] != nullptr && argv[i][0] == '-') {
-      if (strcmp(argv[i], "--sthread") != 0)
-        params.push_back(argv[i]);
+    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-') {
+      if (strcmp(argv_copy[i], "--sthread") != 0)
+        params.push_back(argv_copy[i]);
       i++;
     }
     params.push_back(nullptr);

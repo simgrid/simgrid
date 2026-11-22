@@ -5,11 +5,33 @@
 
 #include "src/mc/explo/odpor/RaceDetector.hpp"
 
+#include "xbt/log.h"
+#include "xbt/string.hpp"
+
 #include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_race_detector, mc, "Data race detection of the model-checker");
 
 namespace simgrid::mc::odpor {
+
+std::vector<std::string> describe_data_race(const McDataRace& race, const char* step_name)
+{
+  auto describe_access = [step_name](int access, smemory::MemOpType type, Epoch epoch, std::optional<unsigned> start) {
+    std::string res = xbt::string_printf("  Access %d: %s by actor %d, done ", access,
+                                         type == smemory::MemOpType::Read ? "READ" : "WRITE", epoch.get_aid().c_val());
+    if (start.has_value())
+      res += xbt::string_printf("after %s #%u and ", step_name, *start);
+    return res + xbt::string_printf("before %s #%u", step_name, epoch.get_clock().value());
+  };
+
+  return {xbt::string_printf("Found a data race at location %p: two actors access this memory without synchronization, "
+                             "and at least one of them writes it.",
+                             reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race.location_)),
+          describe_access(1, race.first_mem_type_, race.first_mem_op_, race.first_segment_start_),
+          describe_access(2, race.second_mem_type_, race.second_mem_op_, race.second_segment_start_),
+          "  No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may "
+          "happen in any order."};
+}
 
 void RaceDetector::check(const Execution& exec)
 {
@@ -36,7 +58,18 @@ void RaceDetector::check(const Execution& exec)
       known_.emplace_back(exec.get_event_with_handle(e).get_transition());
     if (exec.get_transition_for_handle(e)->get_memory_trace_or_null() != nullptr) {
       last_applied_ = e; // Set before applying, so that the shadow gets rebuilt after a race
-      apply(exec, e);
+      try {
+        apply(exec, e);
+      } catch (McDataRace& race) {
+        // Add the rank of the transition after which each racing segment started: the predecessor of its event
+        auto segment_start = [&exec](Epoch epoch) -> std::optional<unsigned> {
+          auto predecessor = exec.get_event_with_handle(epoch.get_clock().value() - 1).get_predecessor();
+          return predecessor.has_value() ? std::optional<unsigned>(*predecessor + 1) : std::nullopt;
+        };
+        race.first_segment_start_  = segment_start(race.first_mem_op_);
+        race.second_segment_start_ = segment_start(race.second_mem_op_);
+        throw;
+      }
     }
   }
 }

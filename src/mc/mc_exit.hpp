@@ -10,6 +10,7 @@
 #include "src/mc/smemory/MemoryAccessTrace.hpp"
 
 #include <exception>
+#include <optional>
 
 namespace simgrid::mc {
 
@@ -28,7 +29,10 @@ struct McError : public std::exception {
   explicit McError(ExitStatus v = ExitStatus::ERROR) : value(v) {}
 };
 
-/** A race between two memory accesses, located at location_. Each access has its epoch, type and size in bytes. */
+/** A race between two memory accesses, located at location_. Each access has its epoch, type and size in bytes.
+ *
+ * The clock of each epoch is the rank (starting from 1) of the transition that ends the segment of the access, and the
+ * segment starts are the ranks of the transitions after which the segments started, if any (see RaceDetector.hpp). */
 struct McDataRace : public std::exception {
   const ExitStatus value;
   const Epoch first_mem_op_;
@@ -37,6 +41,8 @@ struct McDataRace : public std::exception {
   smemory::MemOpType second_mem_type_;
   uintptr_t location_;
   unsigned sizes_[2];
+  std::optional<unsigned> first_segment_start_;
+  std::optional<unsigned> second_segment_start_;
   explicit McDataRace(Epoch first_mem_op, smemory::MemOpType first_mem_type, Epoch second_mem_op,
                       smemory::MemOpType second_mem_type, uintptr_t location, unsigned size1, unsigned size2)
       : value(ExitStatus::DATA_RACE)
