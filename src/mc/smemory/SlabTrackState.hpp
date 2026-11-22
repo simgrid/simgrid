@@ -158,6 +158,7 @@ public:
 private:
   std::unordered_map<uintptr_t, Page> pages_;
   smemory::VectorClockPool pool_; // Where the VC are interned
+  std::vector<Slab> scratchpad_;  // Buffer of the out-of-place merges, kept to avoid allocations
 
   Page& get_or_create_page(uintptr_t page_base)
   {

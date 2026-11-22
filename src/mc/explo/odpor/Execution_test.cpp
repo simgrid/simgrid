@@ -32,6 +32,24 @@ TEST_CASE("simgrid::mc::odpor::Execution: Constructing Executions")
   REQUIRE_FALSE(execution.get_latest_event_handle().has_value());
 }
 
+TEST_CASE("simgrid::mc::odpor::Execution: Predecessor of each event")
+{
+  Execution execution;
+  execution.push_transition(new IndependentAction(Transition::Type::UNKNOWN, 1u));
+  execution.push_transition(new IndependentAction(Transition::Type::UNKNOWN, 2u));
+  execution.push_transition(new IndependentAction(Transition::Type::UNKNOWN, 1u));
+  execution.push_transition(new IndependentAction(Transition::Type::UNKNOWN, 1u));
+
+  REQUIRE_FALSE(execution.get_event_with_handle(0).get_predecessor().has_value());
+  REQUIRE_FALSE(execution.get_event_with_handle(1).get_predecessor().has_value());
+  REQUIRE(execution.get_event_with_handle(2).get_predecessor() == 0u);
+  REQUIRE(execution.get_event_with_handle(3).get_predecessor() == 2u);
+
+  execution.remove_last_event();
+  execution.push_transition(new IndependentAction(Transition::Type::UNKNOWN, 2u));
+  REQUIRE(execution.get_event_with_handle(3).get_predecessor() == 1u);
+}
+
 TEST_CASE("simgrid::mc::odpor::Execution: Testing Happens-Before")
 {
   SECTION("Example 1")

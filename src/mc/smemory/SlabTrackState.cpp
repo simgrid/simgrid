@@ -209,14 +209,12 @@ void SlabTrackState::apply_transition(const smemory::MemoryAccessTrace& record, 
   xbt_assert(c.value() >= 1, "Clock 0 is reserved for BOTTOM, it cannot be used for the accesses of actor %d",
              t.c_val());
 
-  std::vector<Slab> scratchpad;
-
   // For each page of the MemoryAccessTrace, merge it to the corresponding page of the SlabTrackState
   for (const auto& access_it : record) {
 
     Page& page = get_or_create_page(access_it.page_base_addr);
 
-    page.apply_batch_operations(access_it, t, c, thread_vc, pool_, scratchpad);
+    page.apply_batch_operations(access_it, t, c, thread_vc, pool_, scratchpad_);
   }
 }
 

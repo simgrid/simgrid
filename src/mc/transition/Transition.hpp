@@ -82,6 +82,11 @@ public:
       memory_trace_ = std::make_unique<smemory::MemoryAccessTrace>();
     return *memory_trace_;
   }
+  /** The memory accesses done by the actor since its previous transition, or nullptr if there is none */
+  const smemory::MemoryAccessTrace* get_memory_trace_or_null() const
+  {
+    return memory_trace_ == nullptr || memory_trace_->empty() ? nullptr : memory_trace_.get();
+  }
 
   /* Which transition was executed for this simcall
    *

@@ -37,6 +37,7 @@ std::string one_string_textual_trace(const PartialExecution& w);
 class Event {
   TransitionPtr transition_;
   ClockVector clock_vector_;
+  std::optional<uint32_t> predecessor_; // Previous event of the same actor, or the event that created that actor
 
   std::unordered_map<uintptr_t, Epoch> last_write_;
 
@@ -48,10 +49,15 @@ public:
   Event(Event&&)                 = default;
   Event(const Event&)            = default;
   Event& operator=(const Event&) = default;
-  explicit Event(TransitionPtr transition, ClockVector vc) : transition_(transition), clock_vector_(vc) {}
+  explicit Event(TransitionPtr transition, ClockVector vc, std::optional<uint32_t> predecessor)
+      : transition_(transition), clock_vector_(vc), predecessor_(predecessor)
+  {
+  }
 
   Transition* get_transition() const { return transition_.get(); }
   const ClockVector& get_clock_vector() const { return clock_vector_; }
+  /** Handle of the previous event of the same actor, or of the event that created that actor (if any) */
+  std::optional<uint32_t> get_predecessor() const { return predecessor_; }
 
   bool has_race_been_computed() const { return race_considered_; }
   void consider_races() const { race_considered_ = true; }

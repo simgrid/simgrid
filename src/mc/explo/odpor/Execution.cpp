@@ -174,10 +174,10 @@ void Execution::push_transition(TransitionPtr t, bool are_we_restoring_execution
     }
   }
   max_clock_vector[t->aid_] = this->size();
-  contents_.push_back(Event(t, std::move(max_clock_vector)));
   if (skip_list_.size() <= t->aid_.value())
     skip_list_.resize(t->aid_.value() + 1, {});
   auto prev_event_of_aid = find_pre_event_of_aid(t->aid_);
+  contents_.push_back(Event(t, std::move(max_clock_vector), prev_event_of_aid));
   skip_list_[t->aid_.value()].push_back(this->size() - 1);
 
   if (are_we_restoring_execution)
