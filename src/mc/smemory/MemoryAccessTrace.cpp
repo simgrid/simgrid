@@ -193,11 +193,8 @@ void MemoryAccessTrace::serialize(Channel& channel)
 
   if (XBT_LOG_ISENABLED(smem_mark, xbt_log_priority_verbose)) {
     unsigned long hit_count = 0;
-    auto iter               = begin();
-    while (iter != end()) {
-      hit_count++;
-      ++iter;
-    }
+    for (const auto& page_accesses : *this)
+      hit_count += std::distance(page_accesses.begin(), page_accesses.end());
     XBT_VERB("Serialize a transition with %u pages, each of size %" PRIxPTR " (%lu accesses in this tracker)",
              page_count, words_per_page_ * sizeof(uint64_t) * 2, hit_count);
   }

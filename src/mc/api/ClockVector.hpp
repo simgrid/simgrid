@@ -42,12 +42,7 @@ public:
   auto begin() const { return this->contents_.begin(); }
   auto end() const { return this->contents_.end(); }
 
-  Clock& operator[](const Aid aid)
-  {
-    if (not aid.has_value())
-      return Clock::INVALID;
-    return contents_[aid.value()];
-  }
+  Clock& operator[](const Aid aid) { return contents_[aid.value()]; } // Throws on INVALID
 
   /**
    * @brief Retrieves the value mapped to the given actor if it is contained in this clock vector

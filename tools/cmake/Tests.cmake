@@ -129,7 +129,8 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/utils/iter/subsets_tests.cpp
                 src/kernel/lmm/maxmin_test.cpp)
 
-set(MC_UNIT_TESTS src/mc/explo/odpor/ClockVector_test.cpp
+set(MC_UNIT_TESTS src/mc/api/BasicTypes_test.cpp
+                  src/mc/explo/odpor/ClockVector_test.cpp
                   src/mc/explo/odpor/Execution_test.cpp
                   src/mc/explo/odpor/WakeupTree_test.cpp
                   

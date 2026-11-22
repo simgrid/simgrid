@@ -32,7 +32,7 @@ private:
   storage_type value_;
 
 public:
-  static Clock INVALID;                        // Similar to std::nullopt, this represents an invalid value
+  static const Clock INVALID;                  // Similar to std::nullopt, this represents an invalid value
   constexpr Clock() : value_(INVALID_VALUE) {} // The default constructor gives the invalid value
   // Constructor used for literals and constants
   constexpr Clock(int val) : value_(static_cast<storage_type>(verify_clock_is_not_negative(val))) {}
@@ -40,7 +40,9 @@ public:
   // The constructor for unsigned variables.
   template <typename T>
     requires std::integral<T> && std::unsigned_integral<T>
-  constexpr Clock(T val) : value_(static_cast<storage_type>(val))
+  constexpr Clock(T val)
+      : value_(val < INVALID_VALUE ? static_cast<storage_type>(val)
+                                   : throw InvalidClock("Error: This clock value is too large to be stored"))
   {
   }
 

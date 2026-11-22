@@ -2698,6 +2698,7 @@ include src/kernel/xml/simgrid_dtd.h
 include src/mc/api/ActorState.hpp
 include src/mc/api/Aid.hpp
 include src/mc/api/BasicTypes.cpp
+include src/mc/api/BasicTypes_test.cpp
 include src/mc/api/Clock.hpp
 include src/mc/api/ClockVector.cpp
 include src/mc/api/ClockVector.hpp

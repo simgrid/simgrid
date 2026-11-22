@@ -6,5 +6,5 @@
 #include "src/mc/api/Aid.hpp"
 #include "src/mc/api/Clock.hpp"
 
-simgrid::mc::Clock simgrid::mc::Clock::INVALID = Clock::INVALID_VALUE;
-simgrid::mc::Aid simgrid::mc::Aid::INVALID{Aid::INVALID_VALUE, false};
+const simgrid::mc::Clock simgrid::mc::Clock::INVALID{};
+const simgrid::mc::Aid simgrid::mc::Aid::INVALID{};

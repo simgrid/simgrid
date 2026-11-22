@@ -49,7 +49,9 @@ private:
 public:
   Epoch() = delete; // The epoch must be correctly initialized
   explicit constexpr Epoch(Aid aid, Clock clock) // This is the constructor to use for real Epochs
-      : data_((static_cast<uint32_t>(aid.value()) << CLOCK_BITS) | (static_cast<uint32_t>(clock.value()) & CLOCK_MASK))
+      : data_((static_cast<uint32_t>(aid.value()) << CLOCK_BITS) |
+              (clock.value() <= CLOCK_MASK ? clock.value()
+                                           : throw InvalidClock("Error: This clock value does not fit in an Epoch")))
   {
   }
   explicit constexpr Epoch(uint32_t idx) : data_(idx | SELECTOR_MASK)
