@@ -123,7 +123,15 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation. Do not activate sthread yet: creating
    * contextes won't like it */
-  sg4::ActorPtr main_actor = lilibeth->add_actor("main thread", raw_main, argc, argv, envp);
+  sg4::ActorPtr main_actor = lilibeth->add_actor(
+      "main thread",
+      [raw_main](int argc, char** argv, char** envp) {
+        raw_main(argc, argv, envp);
+        // End with an ActorExit simcall as the other threads, so that the model checker sees the last accesses of main
+        sthread_disable();
+        sthread_exit(nullptr);
+      },
+      argc, argv, envp);
   sg4::Engine::get_instance()->run();
 
   if (not sthread_quiet)

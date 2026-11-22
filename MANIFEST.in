@@ -1014,6 +1014,8 @@ include teshsuite/mc/mutex-handling/without-mutex-handling.tesh
 include teshsuite/mc/random-bug/random-bug-replay.tesh
 include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
+include teshsuite/mc/smemory/main-last-access.c
+include teshsuite/mc/smemory/main-last-access.tesh
 include teshsuite/mc/smemory/plusplus.c
 include teshsuite/mc/smemory/plusplus.tesh
 include teshsuite/mc/smemory/read-then-write.c
