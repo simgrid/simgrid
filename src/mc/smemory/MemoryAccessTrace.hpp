@@ -195,6 +195,7 @@ public:
   PageIterator begin() const { return PageIterator(pages_.begin(), pages_.end()); }
   PageIterator end() const { return PageIterator(pages_.end(), pages_.end()); }
   bool empty() const { return pages_.empty(); }
+  void clear() { pages_.clear(); }
 };
 
 } // namespace simgrid::mc::smemory

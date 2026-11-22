@@ -8,10 +8,12 @@
  * # Where the memory accesses come from
  *
  * When the verified application is compiled with the smemory LLVM pass, each load and store calls the smemory runtime,
- * which records the access in the MemoryAccessTrace of the current actor. When an actor reaches its next simcall, its
- * trace is sent to the checker along with the corresponding transition, and the actor's trace is emptied. So each
- * Transition carries the accesses that its actor did since its previous transition: we call this a segment of the
- * actor. Transition::get_memory_trace_or_null() returns nullptr when the segment did no access.
+ * which records the access in the MemoryAccessTrace of the current actor. When the checker executes the pending
+ * simcall of an actor, the application sends back the corresponding transition along with the actor's trace, and
+ * empties that trace. When the application replays a transition that the checker already knows, it empties the trace
+ * without sending it. So each Transition carries the accesses that its actor did since its previous transition: we
+ * call this a segment of the actor. Transition::get_memory_trace_or_null() returns nullptr when the segment did no
+ * access.
  *
  * # Which accesses race
  *

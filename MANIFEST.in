@@ -1016,6 +1016,8 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/mc/smemory/plusplus.c
 include teshsuite/mc/smemory/plusplus.tesh
+include teshsuite/mc/smemory/write-before-create.c
+include teshsuite/mc/smemory/write-before-create.tesh
 include teshsuite/models/cloud-matrix/cloud-matrix.cpp
 include teshsuite/models/cloud-matrix/cloud-matrix.py
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw-bmf.tesh

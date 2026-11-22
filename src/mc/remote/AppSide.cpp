@@ -203,6 +203,9 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     }
 
     actor->simcall_handle(times_considered);
+    // The checker already knows the accesses done by this actor before this transition: forget them, so that they are
+    // not sent again with the next transition of this actor
+    actor->get_memory_trace()->clear();
     simgrid::mc::execute_actors();
   }
   i++;
