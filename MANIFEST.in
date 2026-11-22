@@ -1022,6 +1022,8 @@ include teshsuite/mc/smemory/read-then-write.c
 include teshsuite/mc/smemory/read-then-write.tesh
 include teshsuite/mc/smemory/same-offset.c
 include teshsuite/mc/smemory/same-offset.tesh
+include teshsuite/mc/smemory/struct-copy.c
+include teshsuite/mc/smemory/struct-copy.tesh
 include teshsuite/mc/smemory/write-before-create.c
 include teshsuite/mc/smemory/write-before-create.tesh
 include teshsuite/models/cloud-matrix/cloud-matrix.cpp

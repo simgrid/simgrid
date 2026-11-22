@@ -24,8 +24,9 @@ std::vector<std::string> describe_data_race(const McDataRace& race, const char* 
     return res + xbt::string_printf("before %s #%u", step_name, epoch.get_clock().value());
   };
 
-  return {xbt::string_printf("Found a data race at location %p: two actors access this memory without synchronization, "
-                             "and at least one of them writes it.",
+  return {xbt::string_printf("Found a data race on %u byte%s at location %p: two actors access this memory without "
+                             "synchronization, and at least one of them writes it.",
+                             race.sizes_[0], race.sizes_[0] > 1 ? "s" : "",
                              reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race.location_)),
           describe_access(1, race.first_mem_type_, race.first_mem_op_, race.first_segment_start_),
           describe_access(2, race.second_mem_type_, race.second_mem_op_, race.second_segment_start_),

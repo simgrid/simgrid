@@ -101,14 +101,13 @@ TEST_CASE("SlabTrackState: First write triggers scratchpad/out-of-place", "[Slab
   SlabTrackState::Page& page = state.get_or_create_page(reinterpret_cast<uintptr_t>(memory_page));
   const auto& intervals      = page.slabs_;
 
-  uint16_t expected_end =
-      MemoryAccessTrace::is_coalescing() ? (1024 + 16) : (1024 + MemoryAccessTrace::get_bucket_size());
-
-  REQUIRE(intervals.size() == 3);
+  // With coalescing, the write is a single slab. Without, each bucket is a separate slab.
+  const size_t bucket = MemoryAccessTrace::get_bucket_size();
+  REQUIRE(intervals.size() == 2 + (MemoryAccessTrace::is_coalescing() ? 1 : 16 / bucket));
   REQUIRE(intervals[1].start_ == 1024);
-  REQUIRE(intervals[1].end_ == expected_end);
+  REQUIRE(intervals[1].end_ == (MemoryAccessTrace::is_coalescing() ? 1024 + 16 : 1024 + bucket));
   REQUIRE(intervals[1].write_ == Epoch(Aid{2}, Clock{1}));
-  REQUIRE(intervals[2].start_ == expected_end);
+  REQUIRE(intervals.back().start_ == 1024 + 16);
 }
 
 TEST_CASE("SlabTrackState: Contiguous writes coalesce", "[SlabTrackState]")
@@ -128,23 +127,14 @@ TEST_CASE("SlabTrackState: Contiguous writes coalesce", "[SlabTrackState]")
   SlabTrackState::Page& page = state.get_or_create_page(reinterpret_cast<uintptr_t>(memory_page));
   const auto& intervals      = page.slabs_;
 
-  if (MemoryAccessTrace::is_coalescing()) { // SlabTrack mode
+  if (MemoryAccessTrace::is_coalescing()) { // SlabTrack: a single slab
     REQUIRE(intervals.size() == 3);
     REQUIRE(intervals[1].start_ == 100);
     REQUIRE(intervals[1].end_ == 132); // 100 + 16 + 16
-  } else {                             // orignal FastTrack mode: isolated writes
-    uint16_t bucket_size = MemoryAccessTrace::get_bucket_size();
-
-    // Page: [0-100), [100-101), [101-116), [116-117), [117-4096)
-    REQUIRE(intervals.size() == 5);
-
-    REQUIRE(intervals[1].start_ == 100);
-    REQUIRE(intervals[1].end_ == 100 + bucket_size);
-    REQUIRE(intervals[1].write_ == Epoch(Aid{2}, Clock{1}));
-
-    REQUIRE(intervals[3].start_ == 116);
-    REQUIRE(intervals[3].end_ == 116 + bucket_size);
-    REQUIRE(intervals[3].write_ == Epoch(Aid{2}, Clock{1}));
+  } else {                             // Original FastTrack: one slab per bucket
+    REQUIRE(intervals.size() == 2 + 32 / MemoryAccessTrace::get_bucket_size());
+    for (size_t i = 1; i + 1 < intervals.size(); i++)
+      REQUIRE(intervals[i].write_ == Epoch(Aid{2}, Clock{1}));
   }
 }
 // ============================================================================
@@ -248,13 +238,8 @@ TEST_CASE("SlabTrackState: Write-Read race is partial-overlap-sensitive in SlabT
   MemoryAccessTrace tracker2;
   tracker2.create_memory_access(MemOpType::Read, memory_page_addr + 112, 8);
 
-  if (MemoryAccessTrace::is_coalescing()) {
-    // SlabTrack detects the problem despite the partial overlap!
-    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
-  } else {
-    // FastTrack sees two distinct variables (100 & 112) and misses the datarace
-    REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)));
-  }
+  // Detected despite the partial overlap
+  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
 }
 
 // ============================================================================
@@ -439,10 +424,10 @@ TEST_CASE("SlabTrackState: Split preserves epochs of untouched segments", "[Slab
   SlabTrackState::Page& page = state.get_or_create_page(memory_page_addr);
   const auto& intervals      = page.slabs_;
 
-  uint16_t expected_end =
+  // With coalescing, the write is a single slab. Without, each bucket is a separate slab.
+  const uint16_t expected_end =
       MemoryAccessTrace::is_coalescing() ? (1000 + 24) : (1000 + MemoryAccessTrace::get_bucket_size());
-
-  REQUIRE(intervals.size() == 3);
+  REQUIRE(intervals.size() == 2 + (MemoryAccessTrace::is_coalescing() ? 1 : 24 / MemoryAccessTrace::get_bucket_size()));
 
   // Prefix [0, 1000) — untouched, must keep BOTTOM
   REQUIRE(intervals[0].start_ == 0);
@@ -454,10 +439,10 @@ TEST_CASE("SlabTrackState: Split preserves epochs of untouched segments", "[Slab
   REQUIRE(intervals[1].end_ == expected_end);
   REQUIRE(intervals[1].write_ == Epoch(Aid{2}, Clock{1}));
 
-  // Suffix [expected_end, 4096) — untouched, must keep BOTTOM
-  REQUIRE(intervals[2].start_ == expected_end);
-  REQUIRE(intervals[2].end_ == 4096);
-  REQUIRE(intervals[2].write_ == SlabTrackState::BOTTOM);
+  // Suffix [1024, 4096) — untouched, must keep BOTTOM
+  REQUIRE(intervals.back().start_ == 1000 + 24);
+  REQUIRE(intervals.back().end_ == 4096);
+  REQUIRE(intervals.back().write_ == SlabTrackState::BOTTOM);
 }
 
 TEST_CASE("SlabTrackState: Write-Write race is detected on partial overlap", "[SlabTrackState]")
@@ -473,13 +458,7 @@ TEST_CASE("SlabTrackState: Write-Write race is detected on partial overlap", "[S
   MemoryAccessTrace tracker2;
   tracker2.create_memory_access(MemOpType::Write, memory_page_addr + 120, 32);
 
-  if (MemoryAccessTrace::is_coalescing()) {
-    // SlabTrack detects the problem
-    REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
-  } else {
-    // FastTrack sees 2 variables and misses the datarace
-    REQUIRE_NOTHROW(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)));
-  }
+  REQUIRE_THROWS_AS(state.apply_transition(tracker2, Aid{3}, make_vc(3, 1)), McDataRace);
 }
 
 TEST_CASE("SlabTrackState: Read on initial epoch never throws", "[SlabTrackState]")
@@ -555,13 +534,12 @@ TEST_CASE("SlabTrackState: clean_before forgets the past accesses only", "[SlabT
     state.clean_before(make_full_sync_vc({{2, 1}, {3, 1}, {4, 1}}));
     REQUIRE(state.pool_.free_list_.size() == 1);
 
-    const auto& slabs = state.get_or_create_page(memory_page_addr).slabs_;
-    REQUIRE(slabs.size() == 3); // [0, 2000) and the end of the page are back to BOTTOM, and merged
-    REQUIRE(slabs[0].start_ == 0);
-    REQUIRE(slabs[0].write_ == SlabTrackState::BOTTOM);
-    REQUIRE(slabs[0].reads_ == SlabTrackState::BOTTOM);
-    REQUIRE(slabs[1].start_ == 2000);
-    REQUIRE(slabs[1].write_ == Epoch(Aid{5}, Clock{1}));
+    const auto& page = state.get_or_create_page(memory_page_addr);
+    if (MemoryAccessTrace::is_coalescing())
+      REQUIRE(page.slabs_.size() == 3); // [0, 2000) and the end of the page are back to BOTTOM, and merged
+    REQUIRE(find_interval(page, 100).write_ == SlabTrackState::BOTTOM);
+    REQUIRE(find_interval(page, 100).reads_ == SlabTrackState::BOTTOM);
+    REQUIRE(find_interval(page, 2000).write_ == Epoch(Aid{5}, Clock{1}));
 
     // T6 knows global_min but not the write of T5
     MemoryAccessTrace write6;

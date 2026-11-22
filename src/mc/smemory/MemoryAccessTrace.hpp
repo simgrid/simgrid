@@ -10,6 +10,7 @@
 #include "src/mc/remote/Channel.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -35,7 +36,8 @@
  *
  * This structure comes with a two-level online iterator. The outer iterator traverses the memory pages touched during
  * the transition. The inner iterator yields `PageInterval`s on the fly, merging contiguous bits together into a single
- * interval without heap allocations. This hierarchical design enables O(1) FastPaths in the SlabTrackState.
+ * interval (unless static_config::coalescing is false) without heap allocations. This hierarchical design enables O(1)
+ * FastPaths in the SlabTrackState.
  */
 
 namespace simgrid::mc::smemory {
@@ -56,17 +58,9 @@ private:
   static_assert(buckets_per_page_ % 64 == 0,
                 "4096/granularity must be multiple of 64 (because words of the bitfield are uint64_t)");
 
-  // Whether all bytes of a memory area shall be marked and whether adjacent bytes shall be considered as a single
-  // (larger) access
-  static constexpr bool coalescing_ = false;
-
   struct Page {
-    std::vector<uint64_t> read_bits  = std::vector<uint64_t>(words_per_page_, 0);
-    std::vector<uint64_t> write_bits = std::vector<uint64_t>(words_per_page_, 0);
-
-    void mark_bucket(uintptr_t bucket, MemOpType type);
-    std::optional<uintptr_t> find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
-    std::optional<uintptr_t> find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const;
+    std::array<uint64_t, words_per_page_> read_bits{};
+    std::array<uint64_t, words_per_page_> write_bits{};
   };
   std::unordered_map<uintptr_t, Page> pages_;
 
@@ -82,7 +76,7 @@ public:
     return (not was_marked(where, MemOpType::Write)) && was_marked(where, MemOpType::Read);
   }
   constexpr static size_t get_bucket_size() { return static_config::granularity; }
-  constexpr static bool is_coalescing() { return coalescing_; }
+  constexpr static bool is_coalescing() { return static_config::coalescing; }
 
   // ============================================================
   //                    Serialization

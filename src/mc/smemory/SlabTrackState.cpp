@@ -5,6 +5,8 @@
 
 #include "src/mc/smemory/SlabTrackState.hpp"
 
+#include <algorithm>
+
 namespace simgrid::mc::smemory {
 static_assert(sizeof(SlabTrackState::Slab) == 12,
               "SlabTrackState::Slab must be exactly 12 bytes for optimal cache packing");
@@ -83,16 +85,18 @@ void SlabTrackState::Page::apply_batch_operations(const smemory::MemoryAccessTra
   size_t read_idx   = 0;
 
   // This lambda pushes one slab to the vector that we built so far, possibly, coalescing it to the last slab of the
-  // vector
+  // vector (unless the coalescing is disabled, to get the original FastTrack)
   auto push_and_coalesce = [&](const Slab& inv) {
     if (out_of_place) {
-      if (not scratchpad.empty() && scratchpad.back().end_ == inv.start_ && scratchpad.back().has_same_epochs(inv))
+      if (static_config::coalescing && not scratchpad.empty() && scratchpad.back().end_ == inv.start_ &&
+          scratchpad.back().has_same_epochs(inv))
         scratchpad.back().end_ = inv.end_;
       else
         scratchpad.push_back(inv);
 
     } else {
-      if (write_idx > 0 && slabs_[write_idx - 1].end_ == inv.start_ && slabs_[write_idx - 1].has_same_epochs(inv)) {
+      if (static_config::coalescing && write_idx > 0 && slabs_[write_idx - 1].end_ == inv.start_ &&
+          slabs_[write_idx - 1].has_same_epochs(inv)) {
         slabs_[write_idx - 1].end_ = inv.end_;
       } else {
         if (write_idx <= read_idx) { // Safe in-place write: we are behind or at the read cursor
@@ -186,14 +190,14 @@ bool SlabTrackState::Page::clean_before(const smemory::VectorClock& global_min, 
     if (slab.reads_.is_pure_epoch() ? is_past(slab.reads_) : pool.is_past(slab.reads_.get_pool_index(), global_min))
       slab.reads_ = BOTTOM;
 
-    if (kept > 0 && slabs_[kept - 1].has_same_epochs(slab))
+    if (static_config::coalescing && kept > 0 && slabs_[kept - 1].has_same_epochs(slab))
       slabs_[kept - 1].end_ = slab.end_;
     else
       slabs_[kept++] = slab;
   }
   slabs_.erase(slabs_.begin() + kept, slabs_.end());
 
-  return slabs_.size() == 1 && slabs_.front().has_same_epochs(Slab(0, 0, BOTTOM, BOTTOM));
+  return std::ranges::all_of(slabs_, [](const Slab& slab) { return slab.has_same_epochs(Slab(0, 0, BOTTOM, BOTTOM)); });
 }
 
 /* ********************** Container implementation ********************** */

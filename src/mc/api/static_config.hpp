@@ -34,6 +34,13 @@ constexpr uintptr_t page_size = 4096;
  * sharing. */
 constexpr short granularity = 1;
 
+/* Whether adjacent buckets accessed the same way are merged into a single interval, both in the trace of each
+ * transition (MemoryAccessTrace) and in the shadow memory (SlabTrackState). This is the main idea of SlabTrack.
+ *
+ * Setting it to false gives back the original FastTrack algorithm, where each bucket is a separate location with its
+ * own epochs. This is only meant to compare both algorithms, e.g. in benchmarks. */
+constexpr bool coalescing = true;
+
 /* The maximal amount of threads is arguably very low, but keep in mind that the exploration of large applications will
  * certainly not terminate, while reducing this maximal amount of threads allow for many optimizations. Feel free to
  * increase this value if you want to explore larger apps at a slower pace.*/

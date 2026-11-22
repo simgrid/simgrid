@@ -3,12 +3,12 @@
 
 set(plusplus_directory smemory)
 set(plusplus_ext c)
-foreach(x main-last-access read-then-write same-offset write-before-create)
+foreach(x main-last-access read-then-write same-offset struct-copy write-before-create)
   set(${x}_directory smemory)
   set(${x}_ext c)
 endforeach()
 
-foreach(x random-bug mutex-handling plusplus main-last-access read-then-write same-offset write-before-create)
+foreach(x random-bug mutex-handling plusplus main-last-access read-then-write same-offset struct-copy write-before-create)
 
   if(NOT DEFINED ${x}_directory)
     set(${x}_directory ${x})
@@ -55,7 +55,7 @@ IF(SIMGRID_HAVE_MC)
   ADD_TESH(mc-random-bug                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/mc/random-bug --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/random-bug random-bug.tesh)
 ENDIF()
 if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_SMEMORY)
-  foreach(x plusplus main-last-access read-then-write same-offset write-before-create)
+  foreach(x plusplus main-last-access read-then-write same-offset struct-copy write-before-create)
     ADD_TESH(mc-mem-${x} --setenv bindir=${CMAKE_BINARY_DIR} --setenv "clang=${CMAKE_C_COMPILER}" --setenv "smemory_pass=$<TARGET_FILE:smemory_pass>" --setenv "libsthread=$<TARGET_FILE:sthread>" --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/mc/smemory ${x}.tesh)
   endforeach()
   add_dependencies(tests-mc smemory_pass)

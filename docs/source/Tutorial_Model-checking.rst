@@ -695,7 +695,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
          [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
          [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
@@ -718,7 +718,7 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
          [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
          [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
@@ -748,7 +748,7 @@ one of the variable in the replayed execution.
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_record/INFO] Found a data race on 4 bytes at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_record/INFO]   Access 1: WRITE by actor 2, done after path chunk #1 and before path chunk #3, at:
            #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
            #1 thread_code() at plusplus.c:8 in plusplus
@@ -768,7 +768,7 @@ one of the variable in the replayed execution.
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a data race at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_record/INFO] Found a data race on 4 bytes at location 0x55555555803c: two actors access this memory without synchronization, and at least one of them writes it.
          [0.000000] [mc_record/INFO]   Access 1: WRITE by actor 2, done after path chunk #1 and before path chunk #3, at:
            #0 create_memory_access(simgrid::mc::smemory::MemOpType, unsigned long, unsigned char) at src/mc/smemory/runtime/smemory_observer.cpp:52 in libsthread.so
            #1 thread_code() at plusplus.c:8 in plusplus

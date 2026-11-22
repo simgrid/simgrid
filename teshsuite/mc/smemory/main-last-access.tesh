@@ -7,7 +7,7 @@ $ ${clang:=clang} -g -fpass-plugin=${smemory_pass} main-last-access.c ${libsthre
 ! expect return 5
 $ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/main-last-access/main-last-access --log=xbt_cfg.thresh:critical --log=no_loc
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_explo/INFO] Found a data race at location 0xdeadbeaf: two actors access this memory without synchronization, and at least one of them writes it.
+> [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0xdeadbeaf: two actors access this memory without synchronization, and at least one of them writes it.
 > [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
 > [0.000000] [mc_explo/INFO]   Access 2: READ by actor 1, done after transition #5 and before transition #6
 > [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.

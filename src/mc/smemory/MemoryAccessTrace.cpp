@@ -7,6 +7,8 @@
 #include "xbt/asserts.h"
 #include "xbt/log.h"
 
+#include <algorithm>
+#include <bit>
 #include <cstdint>
 #include <inttypes.h>
 
@@ -19,72 +21,30 @@ void MemoryAccessTrace::create_memory_access(MemOpType type, uintptr_t where, si
 {
   if (size == 0) // e.g., a memset of 0 bytes
     return;
-  // Save the memory access to the bitmap
-  uintptr_t addr = reinterpret_cast<uintptr_t>(where);
-
-  if (not coalescing_) {
-    XBT_DEBUG("Marking the first byte of memory at %p as %s", (void*)where, to_c_str(type));
-    uintptr_t page_index = addr >> page_shift_;
-    uintptr_t page_base  = page_index << page_shift_;
-    uintptr_t offset     = addr - page_base;
-    Page& page           = pages_.try_emplace(page_index).first->second;
-
-    uintptr_t first_bucket = offset >> bucket_shift_;
-    uintptr_t word_index   = first_bucket >> 6;
-    uintptr_t first_bit    = first_bucket & 63;
-    uint64_t mask          = 1ULL << first_bit;
-
-    if (type == MemOpType::Write)
-      page.write_bits[word_index] |= mask;
-    else
-      page.read_bits[word_index] |= mask;
-
-    return;
-  }
-  uintptr_t end = addr + size;
 
   XBT_DEBUG("Marking %zu bytes at %p as %s", size, (void*)where, to_c_str(type));
-
+  uintptr_t addr      = where;
+  const uintptr_t end = where + size;
   while (addr < end) {
+    const uintptr_t page_index = addr >> page_shift_;
+    const uintptr_t page_base  = page_index << page_shift_;
+    Page& page                 = pages_.try_emplace(page_index).first->second;
+    auto& bits                 = type == MemOpType::Write ? page.write_bits : page.read_bits;
 
-    uintptr_t page_index = addr >> page_shift_;
-
-    uintptr_t page_base = page_index << page_shift_;
-    uintptr_t page_end  = page_base + static_config::page_size;
-
-    // The end of what can be written to a single page from what needs to be marked
-    uintptr_t limit = (end < page_end) ? end : page_end;
-
-    // We call mark_bytes() for each word of the underlying bitmap
+    // Mark the buckets of this page, one word of the bitfield at a time
+    const uintptr_t limit = std::min(end, page_base + static_config::page_size);
     while (addr < limit) {
-      uintptr_t offset = addr - page_base;
+      const uintptr_t offset   = addr - page_base;
+      const uintptr_t word_end = page_base + (((offset >> word_shift_) + 1) << word_shift_);
+      const uintptr_t chunk    = std::min(word_end, limit) - addr;
 
-      // End of the current word (as an address, in bytes)
-      uintptr_t word_end = page_base + (((offset >> word_shift_) + 1) << word_shift_);
-      // End of what needs to be marked as read (resp. written)
-      uintptr_t chunk_end = (word_end < limit) ? word_end : limit;
+      const uintptr_t first_bucket = offset >> bucket_shift_;
+      const uintptr_t last_bucket  = (offset + chunk - 1) >> bucket_shift_;
+      const uintptr_t bit_count    = last_bucket - first_bucket + 1; // up to 64
+      const uint64_t mask          = (bit_count == 64 ? ~0ULL : (1ULL << bit_count) - 1) << (first_bucket & 63);
+      bits[first_bucket >> 6] |= mask;
 
-      //      mark_bytes(page_index, offset, chunk_end - addr, type);
-      /* Go and mark the corresponding word */
-      Page& page = pages_.try_emplace(page_index).first->second;
-
-      uintptr_t first_bucket = offset >> bucket_shift_;
-      uintptr_t last_bucket  = (offset + (chunk_end - addr) - 1) >> bucket_shift_;
-
-      uintptr_t word_index = first_bucket >> 6;
-
-      uintptr_t first_bit = first_bucket & 63;
-      uintptr_t last_bit  = last_bucket & 63;
-
-      uint64_t mask = ((1ULL << (last_bit - first_bit + 1)) - 1) << first_bit;
-
-      if (type == MemOpType::Write)
-        page.write_bits[word_index] |= mask;
-      else
-        page.read_bits[word_index] |= mask;
-
-      /* Advance to after this word */
-      addr = chunk_end;
+      addr += chunk;
     }
   }
 }
@@ -106,88 +66,6 @@ bool MemoryAccessTrace::was_marked(uintptr_t where, MemOpType type) const
   const auto& word_ctn = type == MemOpType::Read ? it->second.read_bits[word] : it->second.write_bits[word];
   return word_ctn & (1ULL << bit);
 }
-void MemoryAccessTrace::Page::mark_bucket(uintptr_t bucket, MemOpType type)
-{
-  uintptr_t word_index = bucket >> 6;
-  uintptr_t bit_index  = bucket & 63;
-
-  auto& word = type == MemOpType::Read ? read_bits[word_index] : write_bits[word_index];
-  word |= 1ULL << bit_index;
-}
-
-// Search the marked bucket at or before start_bucket (including start_bucket)
-//
-// Returns std::nullopt if no suck bucket exists in this page
-std::optional<uintptr_t> MemoryAccessTrace::Page::find_prev_marked_bucket(uintptr_t start_bucket, MemOpType type) const
-{
-  xbt_assert(start_bucket < buckets_per_page_);
-
-  const auto& bitfield = MemOpType::Write == type ? write_bits : read_bits;
-  // --- Find the bucket in the bitfield ---
-  const uintptr_t start_word = start_bucket >> 6;
-  const uintptr_t bit_index  = start_bucket & 63; // bit in word
-
-  // --- First look in the current word (fast path)
-  // Mask of all bits of index <= start_bucket, to compare in the first word where we want to ignore some bits
-  const uint64_t word = bitfield[start_word];
-  // In masked_first_word, we handle separately the case where bit_index==63 to avoid an overflow at (1ULL << 64)
-  uint64_t masked_first_word = bit_index == 63 ? word : (word & ((1ULL << (bit_index + 1)) - 1));
-  if (masked_first_word != 0) {
-    // index of most significant bit set in this mask using _builtin_clzll (number of leading 0-bits in x \in uint64_t)
-    unsigned highest_bit = 63 - __builtin_clzll(masked_first_word);
-    return (start_word << 6) + highest_bit;
-  }
-
-  // --- If not found, look the other words iteratively
-  for (uintptr_t wi = start_word; wi > 0;) {
-    wi--;
-    uint64_t word_it = bitfield[wi];
-    if (word_it != 0) {
-      unsigned highest_bit = 63 - __builtin_clzll(word_it);
-      return (wi << 6) + highest_bit;
-    }
-  }
-
-  // Not found
-  return std::nullopt;
-}
-
-// Search the marked bucket at or after start_bucket (including start_bucket)
-//
-// Returns std::nullopt if no such bucket exists in this page
-std::optional<uintptr_t> MemoryAccessTrace::Page::find_next_marked_bucket(uintptr_t start_bucket, MemOpType type) const
-{
-  xbt_assert(start_bucket < buckets_per_page_);
-
-  const auto& bitfield = (MemOpType::Write == type) ? write_bits : read_bits;
-
-  const uintptr_t start_word = start_bucket >> 6;
-  const uintptr_t bit_index  = start_bucket & 63;
-
-  // --- First look in the current word (fast path)
-  const uint64_t word = bitfield[start_word];
-
-  // Keep only bits >= bit_index
-  const uint64_t masked_first_word = word & (~0ULL << bit_index);
-
-  if (masked_first_word != 0) {
-    // index of least significant bit set
-    unsigned lowest_bit = __builtin_ctzll(masked_first_word);
-    return (start_word << 6) + lowest_bit;
-  }
-
-  // --- If not found, look the other words iteratively
-  for (uintptr_t wi = start_word + 1; wi < words_per_page_; ++wi) {
-    const uint64_t word_it = bitfield[wi];
-    if (word_it != 0) {
-      unsigned lowest_bit = __builtin_ctzll(word_it);
-      return (wi << 6) + lowest_bit;
-    }
-  }
-
-  return std::nullopt;
-}
-
 void MemoryAccessTrace::serialize(Channel& channel)
 {
   unsigned int page_count = pages_.size();
@@ -252,43 +130,38 @@ void MemoryAccessTrace::AccessIterator::advance()
     return;
   }
 
+  // Find the next marked bucket, skipping the empty words at once
   while (bucket_pos_ < buckets_per_page_) {
-    uintptr_t word = bucket_pos_ >> 6;
-    uintptr_t bit  = bucket_pos_ & 63;
-    uint64_t mask  = 1ULL << bit;
+    const uintptr_t word   = bucket_pos_ >> 6;
+    const uint64_t pending = (page_->write_bits[word] | page_->read_bits[word]) >> (bucket_pos_ & 63);
+    if (pending == 0) {
+      bucket_pos_ = (word + 1) << 6;
+      continue;
+    }
+    bucket_pos_ += std::countr_zero(pending);
 
-    bool is_write = page_->write_bits[word] & mask;
-    bool is_read  = is_write || (page_->read_bits[word] & mask); // Write dominates
+    // A bucket both read and written is reported as written: the checks of a write include the ones of a read
+    const uintptr_t start_bucket = bucket_pos_;
+    const MemOpType type = (page_->write_bits[word] >> (bucket_pos_ & 63)) & 1 ? MemOpType::Write : MemOpType::Read;
+    bucket_pos_++;
 
-    if (is_write || is_read) {
-      MemOpType type         = is_write ? MemOpType::Write : MemOpType::Read;
-      uintptr_t start_bucket = bucket_pos_;
-
-      bucket_pos_++;
-
-      if (coalescing_) {
-        while (bucket_pos_ < buckets_per_page_) {
-          uintptr_t next_word = bucket_pos_ >> 6;
-          uintptr_t next_bit  = bucket_pos_ & 63;
-          uint64_t next_mask  = 1ULL << next_bit;
-
-          bool next_w = page_->write_bits[next_word] & next_mask;
-          bool next_r = page_->read_bits[next_word] & next_mask;
-
-          if ((type == MemOpType::Write && next_w) || (type == MemOpType::Read && next_r && not next_w)) {
-            bucket_pos_++;
-          } else {
-            break;
-          }
-        }
+    // Extend the interval to the following buckets accessed the same way
+    if (static_config::coalescing) {
+      while (bucket_pos_ < buckets_per_page_) {
+        const uintptr_t next_word = bucket_pos_ >> 6;
+        const uint64_t same  = type == MemOpType::Write ? page_->write_bits[next_word]
+                                                        : page_->read_bits[next_word] & ~page_->write_bits[next_word];
+        const unsigned shift = bucket_pos_ & 63;
+        const unsigned run   = std::countr_one(same >> shift);
+        bucket_pos_ += std::min(run, 64 - shift);
+        if (run < 64 - shift)
+          break;
       }
-
-      current_interval_ = {static_cast<uint16_t>(start_bucket * static_config::granularity),
-                           static_cast<uint16_t>(bucket_pos_ * static_config::granularity), type};
-      return;
     }
 
-    bucket_pos_++;
+    current_interval_ = {static_cast<uint16_t>(start_bucket * static_config::granularity),
+                         static_cast<uint16_t>(bucket_pos_ * static_config::granularity), type};
+    return;
   }
 
   is_end_ = true;
