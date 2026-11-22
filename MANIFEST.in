@@ -1016,6 +1016,8 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/mc/smemory/free-race.c
 include teshsuite/mc/smemory/free-race.tesh
+include teshsuite/mc/smemory/late-heap.c
+include teshsuite/mc/smemory/late-heap.tesh
 include teshsuite/mc/smemory/main-last-access.c
 include teshsuite/mc/smemory/main-last-access.tesh
 include teshsuite/mc/smemory/plusplus.c
@@ -1024,6 +1026,8 @@ include teshsuite/mc/smemory/read-then-write.c
 include teshsuite/mc/smemory/read-then-write.tesh
 include teshsuite/mc/smemory/same-offset.c
 include teshsuite/mc/smemory/same-offset.tesh
+include teshsuite/mc/smemory/shared-stack.c
+include teshsuite/mc/smemory/shared-stack.tesh
 include teshsuite/mc/smemory/struct-copy.c
 include teshsuite/mc/smemory/struct-copy.tesh
 include teshsuite/mc/smemory/write-before-create.c
@@ -2818,7 +2822,6 @@ include src/mc/smemory/VectorClockPool_test.cpp
 include src/mc/smemory/mclang++.in
 include src/mc/smemory/mclang.in
 include src/mc/smemory/pass/smemory_pass.cpp
-include src/mc/smemory/runtime/smemory_memorymaps.cpp
 include src/mc/smemory/runtime/smemory_observer.cpp
 include src/mc/smemory/runtime/smemory_observer.h
 include src/mc/transition/Transition.cpp

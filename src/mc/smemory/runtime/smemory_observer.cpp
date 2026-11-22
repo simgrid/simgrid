@@ -28,20 +28,6 @@ static void create_memory_access(MemOpType type, uintptr_t where, uint64_t size)
     return;
   in_observer = true;
 
-  // Do not track data on a stack, there is no datarace there
-  if (smemory_is_on_stack(where)) {
-    XBT_DEBUG("%p is on stack, ignore it", (void*)where);
-    in_observer = false;
-    return;
-  }
-
-  // Do not track data on read-only segments
-  if (not smemory_is_rw_segment(where)) {
-    XBT_DEBUG("%p is on a read-only segment, ignore it", (void*)where);
-    in_observer = false;
-    return;
-  }
-
   bool watched = false;
   for (auto a : get_mc_watch_addresses()) {
     if (a == where) {

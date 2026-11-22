@@ -1,0 +1,21 @@
+#!/usr/bin/env tesh
+
+$ ${clang:=clang} -g -fpass-plugin=${smemory_pass} shared-stack.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/shared-stack/shared-stack
+> Successfully instrumented 3 read operations and 2 writes operations
+
+! ignore .*LD_PRELOAD.*
+! expect return 5
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/shared-stack/shared-stack --log=xbt_cfg.thresh:critical --log=no_loc
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0xdeadbeaf: two actors access this memory without synchronization, and at least one of them writes it.
+> [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
+> [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
+> [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
+> [0.000000] [mc_explo/INFO] Execution leading to the race:
+> [0.000000] [mc_explo/INFO]   #1 Actor 1 in simcall ActorCreate(child 2)
+> [0.000000] [mc_explo/INFO]   #2 Actor 1 in simcall ActorCreate(child 3)
+> [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
+> [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
+> [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
