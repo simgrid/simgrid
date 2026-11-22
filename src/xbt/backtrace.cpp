@@ -499,7 +499,7 @@ void Backtrace::display() const
 {
   std::string backtrace = resolve();
   std::fprintf(stderr, "Backtrace (displayed in actor %s%s):\n%s\n",
-               kernel::EngineImpl::get_instance() == nullptr
+               not s4u::Engine::has_instance() // Displaying a backtrace must not create an engine
                    ? "(null simulation engine -- something's fishy)"
                    : (simgrid::s4u::Actor::is_maestro() ? "maestro" : sg_actor_self_get_name()),
                (xbt_log_no_loc ? " -- short trace because of --log=no_loc" : ""),
