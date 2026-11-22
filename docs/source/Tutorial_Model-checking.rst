@@ -695,13 +695,17 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a datarace at location 0x561ce34d004c between actor 2 and 3 after the following execution:
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
-         [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorJoin(target 2, no timeout)
-         [0.000000] [mc_explo/INFO]   Actor 3 in simcall ActorExit()
-         [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;1;3'
+         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555804c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
+         [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
+         [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
+         [0.000000] [mc_explo/INFO] Execution leading to the race:
+         [0.000000] [mc_explo/INFO]   #1 Actor 1 in simcall ActorCreate(child 2)
+         [0.000000] [mc_explo/INFO]   #2 Actor 1 in simcall ActorCreate(child 3)
+         [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
+         [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
+         [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
+         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
          [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
    .. group-tab:: simgrid/tuto-mc
@@ -714,17 +718,22 @@ But if you run this program within the model checker, it detects the issue insta
          [0.000000] [mc_checkerside/INFO] setenv 'LD_PRELOAD'='/usr/lib/x86_64-linux-gnu/libsthread.so'
          sthread is intercepting the execution of ./plusplus. If it's not what you want, export STHREAD_IGNORE_BINARY=./plusplus
          [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-         [0.000000] [mc_explo/INFO] Found a datarace at location 0x55d463ce604c between actor 2 and 3 after the following execution:
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 2)
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorCreate(child 3)
-         [0.000000] [mc_explo/INFO]   Actor 2 in simcall ActorExit()
-         [0.000000] [mc_explo/INFO]   Actor 1 in simcall ActorJoin(target 2, no timeout)
-         [0.000000] [mc_explo/INFO]   Actor 3 in simcall ActorExit()
-         [0.000000] [mc_explo/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;1;2;1;3'
+         [0.000000] [mc_explo/INFO] Found a data race at location 0x55555555804c: two actors access this memory without synchronization, and at least one of them writes it.
+         [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 2, done after transition #1 and before transition #3
+         [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 3, done after transition #2 and before transition #5
+         [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
+         [0.000000] [mc_explo/INFO] Execution leading to the race:
+         [0.000000] [mc_explo/INFO]   #1 Actor 1 in simcall ActorCreate(child 2)
+         [0.000000] [mc_explo/INFO]   #2 Actor 1 in simcall ActorCreate(child 3)
+         [0.000000] [mc_explo/INFO]   #3 Actor 2 in simcall ActorExit()     <== access 1 (WRITE by actor 2) happened before this transition
+         [0.000000] [mc_explo/INFO]   #4 Actor 1 in simcall ActorJoin(target 2, no timeout)
+         [0.000000] [mc_explo/INFO]   #5 Actor 3 in simcall ActorExit()     <== access 2 (WRITE by actor 3) happened before this transition
+         [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
          [0.000000] [mc_dfs/INFO] DFS exploration ended. 6 unique states visited; 0 explored traces (0 transition replays, 5 states visited overall)
 
-To replay the execution to get more details, you must inject sthread manually through ``LD_PRELOAD``. The syntax is given in the
-first line of the ``simgrid-mc`` output shown above.
+To see where each access is done, replay this execution as suggested by the last line of the output above. The replay must
+go through ``simgrid-mc``, which disables the address space randomization: otherwise, the watched address would not be the
+one of the variable in the replayed execution.
 
 .. tabs::
 
@@ -734,12 +743,12 @@ first line of the ``simgrid-mc`` output shown above.
       
          # From within the container, directory /source/tutorial/
       
-         $ ./simgrid.sh simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3'
+         $ ./simgrid.sh simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
          # (verbose description of the first execution steps, that are not that informative)
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a datarace at location 0x562a1c30c04c
+         [0.000000] [mc_record/INFO] Found a datarace at location 0x55555555804c
          [0.000000] [mc_record/INFO] First operation was a WRITE made by actor 2:
            ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
            ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8
@@ -760,12 +769,12 @@ first line of the ``simgrid-mc`` output shown above.
       
          # From within the container, directory /source/tutorial/
 
-         $ simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3'
+         $ simgrid-mc --sthread ./plusplus --cfg=model-check/replay:'1;1;2;1;3' --cfg=model-check/watch:0x55555555804c
          # (verbose description of the first execution steps, that are not that informative)
          [0.000000] [mc_record/INFO] ***********************************************************************************
          [0.000000] [mc_record/INFO] * Path chunk #5 '3/0' Actor thread 2(pid:3): ActorExit()
          [0.000000] [mc_record/INFO] ***********************************************************************************
-         [0.000000] [mc_record/INFO] Found a datarace at location 0x562a1c30c04c
+         [0.000000] [mc_record/INFO] Found a datarace at location 0x55555555804c
          [0.000000] [mc_record/INFO] First operation was a WRITE made by actor 2:
            ->  #0 simgrid::xbt::BacktraceImpl::BacktraceImpl() at src/xbt/backtrace.cpp:48
            ->  #1 thread_code at /tmp/tutorial-model-checking.git/plusplus.c:8

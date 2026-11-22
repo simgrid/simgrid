@@ -17,6 +17,7 @@
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include "src/mc/transition/Transition.hpp"
+#include "src/mc/transition/TransitionActor.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
 #include "xbt/string.hpp"
@@ -125,22 +126,26 @@ std::vector<std::string> Exploration::get_textual_trace(const RecordTrace& recor
   std::vector<std::string> trace;
   for (auto const& transition : record) {
     auto const& call_location = transition->get_call_location();
+    std::string line          = race == nullptr ? "" : xbt::string_printf("#%zu ", trace.size() + 1);
     if (not call_location.empty())
-      trace.push_back(xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_.c_val(),
-                                         call_location.c_str(), transition->to_string().c_str()));
+      line += xbt::string_printf("Actor %d in %s ==> simcall: %s", transition->aid_.c_val(), call_location.c_str(),
+                                 transition->to_string().c_str());
     else
-      trace.push_back(
-          xbt::string_printf("Actor %d in simcall %s", transition->aid_.c_val(), transition->to_string().c_str()));
+      line += xbt::string_printf("Actor %d in simcall %s", transition->aid_.c_val(), transition->to_string().c_str());
+    trace.push_back(std::move(line));
 
     // The clock of each racing access is the rank of the transition that ends its segment, starting from 1
-    if (race != nullptr)
+    if (race != nullptr) {
+      int access = 1;
       for (auto const& [epoch, type] : {std::pair{race->first_mem_op_, race->first_mem_type_},
-                                        std::pair{race->second_mem_op_, race->second_mem_type_}})
+                                        std::pair{race->second_mem_op_, race->second_mem_type_}}) {
         if (epoch.get_clock() == Clock(trace.size()))
-          trace.back().append(xbt::string_printf("     <== racy %s on %p by actor %d before this transition",
-                                                 type == smemory::MemOpType::Read ? "READ" : "WRITE",
-                                                 reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : race->location_),
+          trace.back().append(xbt::string_printf("     <== access %d (%s by actor %d) happened before this transition",
+                                                 access, type == smemory::MemOpType::Read ? "READ" : "WRITE",
                                                  epoch.get_aid().c_val()));
+        access++;
+      }
+    }
   }
   return trace;
 }
@@ -304,15 +309,43 @@ void Exploration::report_correct_execution(State* last_state)
 
 void Exploration::log_data_race(const McDataRace& e, const RecordTrace& trace)
 {
-  XBT_INFO("Found a datarace at location %p between actor %d and actor %d after the following "
-           "execution:",
-           reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_), e.first_mem_op_.get_aid().c_val(),
-           e.second_mem_op_.get_aid().c_val());
+  const std::vector<const Transition*> transitions(trace.begin(), trace.end());
+
+  // Describes the segment of the given epoch: the accesses happened after the previous transition of the same actor
+  // (or after the creation of that actor), and before the transition that ends the segment
+  auto describe_segment = [&transitions](Epoch epoch) {
+    const size_t end = epoch.get_clock().value(); // Rank of the transition ending the segment, starting from 1
+    const Aid actor  = epoch.get_aid();
+    for (size_t rank = end - 1; rank >= 1; rank--) {
+      const Transition* t = transitions[rank - 1];
+      if (t->aid_ == actor || (t->type_ == Transition::Type::ACTOR_CREATE &&
+                               static_cast<const ActorCreateTransition*>(t)->get_child() == actor))
+        return xbt::string_printf("done after transition #%zu and before transition #%zu", rank, end);
+    }
+    return xbt::string_printf("done before transition #%zu", end);
+  };
+
+  XBT_INFO("Found a data race at location %p: two actors access this memory without synchronization, and at least one "
+           "of them writes it.",
+           reinterpret_cast<void*>(xbt_log_no_loc ? 0xDEADBEAF : e.location_));
+  XBT_INFO("  Access 1: %s by actor %d, %s", e.first_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+           e.first_mem_op_.get_aid().c_val(), describe_segment(e.first_mem_op_).c_str());
+  XBT_INFO("  Access 2: %s by actor %d, %s", e.second_mem_type_ == smemory::MemOpType::Read ? "READ" : "WRITE",
+           e.second_mem_op_.get_aid().c_val(), describe_segment(e.second_mem_op_).c_str());
+  XBT_INFO("  No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may "
+           "happen in any order.");
+  XBT_INFO("Execution leading to the race:");
   for (auto const& frame : get_textual_trace(trace, &e))
     XBT_INFO("  %s", frame.c_str());
-  XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
-           "--cfg=model-check/replay:'%s'",
-           trace.to_string().c_str());
+  if (xbt_log_no_loc)
+    XBT_INFO("To see the source line of each access, rerun this execution through simgrid-mc with the same options, "
+             "adding --cfg=model-check/replay:'%s' The --cfg=model-check/watch option is also useful to get more "
+             "information, but I cannot tell the exact option to pass because --no-loc is used.",
+             trace.to_string().c_str());
+  else
+    XBT_INFO("To see the source line of each access, rerun this execution through simgrid-mc with the same options, "
+             "adding --cfg=model-check/replay:'%s' --cfg=model-check/watch:%p",
+             trace.to_string().c_str(), reinterpret_cast<void*>(e.location_));
 }
 
 void Exploration::report_data_race(const McDataRace& e)

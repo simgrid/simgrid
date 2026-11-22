@@ -10,9 +10,13 @@
 #include "xbt/config.hpp"
 #include <boost/algorithm/string.hpp>
 #include <exception>
+#include <fstream>
 #include <simgrid/modelchecker.h>
 #include <string>
 #include <vector>
+#ifdef __linux__
+#include <sys/personality.h>
+#endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
@@ -87,6 +91,20 @@ std::vector<uintptr_t>& get_mc_watch_addresses()
   static std::vector<uintptr_t> addresses;
   return addresses;
 }
+
+// Whether the addresses of this process change from one execution to the next
+static bool address_randomization_is_enabled()
+{
+#ifdef __linux__
+  if (personality(0xffffffff) & ADDR_NO_RANDOMIZE)
+    return false;
+  int level = 1;
+  std::ifstream("/proc/sys/kernel/randomize_va_space") >> level;
+  return level != 0;
+#else
+  return true;
+#endif
+}
 static simgrid::config::Flag<std::string> _cfg_mc_watch{
     "model-check/watch", "List of addresses to watch during exploration, comma-separated.", "",
     [](std::string_view value) {
@@ -102,6 +120,12 @@ static simgrid::config::Flag<std::string> _cfg_mc_watch{
       } catch (const std::exception& e) {
         throw std::string("Invalid value for model-check/watch: ") + e.what();
       }
+      // The checker itself does not watch anything: it starts the application without address randomization
+      if (simgrid::mc::get_model_checking_mode() != simgrid::mc::ModelCheckingMode::CHECKER_SIDE &&
+          address_randomization_is_enabled())
+        XBT_WARN("The address space randomization (ASLR) is enabled, so the addresses given to model-check/watch "
+                 "probably do not match this execution. Run your program through simgrid-mc, which disables it "
+                 "(e.g. simgrid-mc ./program --cfg=model-check/replay:...), or disable it with setarch -R.");
     }};
 
 simgrid::config::Flag<int> _sg_mc_cached_states_interval{

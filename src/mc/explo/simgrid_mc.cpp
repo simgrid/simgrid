@@ -24,6 +24,9 @@
 #endif
 
 #include <iostream>
+#ifdef __linux__
+#include <sys/personality.h>
+#endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
 XBT_LOG_EXTERNAL_CATEGORY(mc_dfs);
@@ -36,6 +39,12 @@ int main(int argc, char** argv)
 
   // Currently, we need this before sg_config_init:
   simgrid::mc::set_model_checking_mode(simgrid::mc::ModelCheckingMode::CHECKER_SIDE);
+
+#ifdef __linux__
+  // Disable the address space randomization in the processes that we start (explored or replayed application), so that
+  // the addresses are the same from one execution to the next. This does not change the address space of this process.
+  personality(personality(0xffffffff) | ADDR_NO_RANDOMIZE);
+#endif
 
   // The initialization function can touch argv.
   // We make a copy of argv before modifying it in order to pass the original value to the model-checked application:

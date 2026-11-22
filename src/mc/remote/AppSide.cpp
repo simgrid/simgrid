@@ -157,8 +157,7 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     simgrid_mc_replay_show_backtraces = true;
   if (msg->watch != 0) {
     XBT_INFO("Watching %p (%s)", reinterpret_cast<void*>(msg->watch), msg->debug ? "debug enabled" : "no debug");
-    auto addresses = get_mc_watch_addresses();
-    addresses.push_back(msg->watch);
+    get_mc_watch_addresses().push_back(msg->watch);
   }
 
   auto [more_aid, aids] = channel_.receive(sizeof(Aid::storage_type) * replay_size);

@@ -31,10 +31,6 @@
 #include <sys/wait.h>
 #include <vector>
 
-#ifdef __linux__
-#include <sys/personality.h>
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
@@ -80,11 +76,6 @@ RemoteApp::RemoteApp(const std::vector<char*>& args, const std::string additionn
              serv_addr.sun_path + 1, strerror(errno));
 
   xbt_assert(listen(master_socket_, SOMAXCONN) >= 0, "Cannot listen to the master socket: %s.", strerror(errno));
-
-#ifdef __linux__
-  // Reduce the randomness under Linux
-  personality(ADDR_NO_RANDOMIZE);
-#endif
 
   if (_sg_mc_nofork) {
     checker_side_ = std::make_unique<simgrid::mc::CheckerSide>(app_args_);
