@@ -64,7 +64,7 @@ TEST_CASE("VectorClockPool - Initialization and interning rules", "[VectorClockP
   }
 }
 
-TEST_CASE("VectorClockPool - Validate is_past() that uses AVX2", "[VectorClockPool][SIMD]")
+TEST_CASE("VectorClockPool - Validate is_past()", "[VectorClockPool][SIMD]")
 {
   VectorClockPool pool;
 

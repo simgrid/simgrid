@@ -289,6 +289,18 @@ enable_sthead (ON/off)
   Build the sthread module, in charge of intercepting the pthread actions at runtime, so that unmodified applications can run on top of the simulator, or on top of the model checker.
   It is Linux-only, so it's ON by default on this system while OFF by default on other systems (in particular Mac and FreeBSD).
 
+enable_smemory (AUTO/on/off)
+  Build the smemory module, in charge of intercepting the memory accesses of the verified application so that the model
+  checker can detect data races. It requires sthread, clang and the LLVM development kit. With AUTO, it is built only if
+  these dependencies are found, while ON makes the configuration fail if they are missing.
+
+enable_smemory_avx2 (on/OFF)
+  Let the data race detector of smemory use AVX2 instructions, which makes it faster. This option turns
+  ``enable_smemory`` from AUTO to ON, so the configuration fails if smemory cannot be built. It also fails if the
+  processor does not support AVX2. SimGrid is then built with ``-march=native``, so the resulting library only runs on
+  processors similar to the one used for the compilation. Leave this option off to build a portable library, for example
+  for a distribution package.
+
 enable_testsuite_dpu (on/OFF)
   Adds several extra tests for the model checker module (targeting threaded applications), from https://github.com/cesaro/dpu.
 

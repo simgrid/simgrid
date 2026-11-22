@@ -66,6 +66,7 @@ endmacro()
 
 option(enable_sthread "Whether the pthread intercepter is built" ${default_enable_sthread})
 declare_tristate(enable_smemory "Whether the memory intercepter is built")
+option(enable_smemory_avx2 "Whether smemory uses AVX2 (SimGrid is then built with -march=native)" off)
 
 option(enable_smpi "Whether SMPI is included in the library." on)
 option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)

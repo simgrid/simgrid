@@ -63,7 +63,7 @@
  *
  * One could argue that 32 processes is too few while 67M transitions is too much, but this setting (which can be
  * adjusted through the max_threads constant) ensure that each VC is only 128 bytes (one Epoch per thread, i.e. one
- * uint32 each). This enables the use of superfast AVX2 operations on these vector clocks. The VC stores Epochs rather
+ * uint32 each), so that two VCs are compared with a few SIMD instructions. The VC stores Epochs rather
  * than Clocks even if the process ID is already known from the position in the VC vector, but this small data redudancy
  * greatly reduces the amount of data conversion along the hot code path.
  */

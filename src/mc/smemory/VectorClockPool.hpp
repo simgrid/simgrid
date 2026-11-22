@@ -18,9 +18,6 @@
 #if HAVE_XXHASH
 #include <xxhash.h>
 #endif
-#if SIMGRID_HAVE_SMEMORY
-#include <immintrin.h> /* x86-only*/
-#endif
 
 /* VectorClockPool centralizes the instances of VectorClocks to reduce the memory usage
  * (see https://en.wikipedia.org/wiki/String_interning)
@@ -29,7 +26,8 @@
  * rather than Clocks to reduce the amount of data conversions between the Epoch that FastTrack uses and Clock that
  * other VectorClock use.
  *
- * The code also uses AVX2 and strive to pack its data in few cache lines to optimize as much as possible.
+ * The code packs its data in few cache lines, and uses AVX2 when the compiler targets it (see the cmake option
+ * enable_smemory_avx2).
  */
 
 namespace simgrid::mc::smemory {
@@ -122,7 +120,7 @@ public:
    * This is an heavy operation so don't do that too often. */
   void clean_before(const VectorClock& global_min) noexcept;
 
-  /* Check (using AVX2) whether all components of the VC behind that index are less or equal to global_min
+  /* Check whether all components of the VC behind that index are less or equal to global_min
    * This will fail if called on a free index (no verification done internally), so don't do that. */
   [[nodiscard]] bool is_past(index_t index, const VectorClock& global_min) const noexcept;
 

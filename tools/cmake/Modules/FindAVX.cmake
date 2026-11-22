@@ -1,181 +1,45 @@
-# This script checks for the highest level of AVX support on the host
-# by compiling and running small C++ programs that use AVX intrinsics.
+# Find the most recent AVX instruction set (AVX2 or AVX) supported by both the compiler and the processor.
 #
-# You can invoke this module using the following command:
+#   find_package(AVX [version] [QUIET] [REQUIRED])
 #
-#   FIND_PACKAGE(AVX [major[.minor]] [EXACT] [QUIET|REQUIRED])
-#
-# where the version string is one of:
-#
-#   1.0 for AVX support
-#   2.0 for AVX2 support
-#
-# Note that any ".0" in the above version string is optional.
-#
-# If any AVX support is detected, the following variables are set:
-#
-#   AVX_FOUND   = 1
-#   AVX_VERSION = the requested version, if EXACT is true, or
-#                 the highest AVX version found.
-#   AVX_FLAGS = compile flags for the version of AVX found
-#
-# If AVX is not supported on the host platform, these variables are
-# not set. If QUIET is true, the module does not print a message if
-# AVX if missing. If REQUIRED is true, the module produces a fatal
-# error if AVX support is missing.
-#
-# It was copied from https://github.com/ipc-sim/IPC 
-# The LICENCE file of this project reads:
-#
-# MIT License
-# 
-# Copyright (c) 2020 ipc-sim
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-set(AVX_FLAGS)
-set(AVX_FOUND)
-set(DETECTED_AVX_10)
-set(DETECTED_AVX_20)
-
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} "-dumpversion" OUTPUT_VARIABLE GCC_VERSION_STRING)
-  if(GCC_VERSION_STRING VERSION_GREATER 4.2 AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING)
-    SET(AVX_FLAGS "${AVX_FLAGS} -march=native")
-    message(STATUS "Using CPU native flags for AVX optimization: ${AVX_FLAGS}")
-  endif()
-endif()
+# Sets AVX_FOUND, and AVX_VERSION to "2.0" (AVX2) or "1.0" (AVX).
+# The detection runs a test program, so it checks the processor of the build machine.
 
 include(CheckCXXSourceRuns)
-set(CMAKE_REQUIRED_FLAGS)
+include(CMakePushCheckState)
 
+cmake_push_check_state(RESET)
+set(CMAKE_REQUIRED_QUIET ${AVX_FIND_QUIETLY})
 
-# Generate a list of AVX versions to test.
-if(AVX_FIND_VERSION_EXACT)
-  if(AVX_FIND_VERSION VERSION_EQUAL "2.0")
-    set(_AVX_TEST_20 1)
-  elseif(AVX_FIND_VERSION VERSION_EQUAL "1.0")
-    set(_AVX_TEST_10 1)
-  endif()
-else()
-  if(NOT AVX_FIND_VERSION VERSION_GREATER "2.0")
-    set(_AVX_TEST_20 1)
-  endif()
-  if(NOT AVX_FIND_VERSION VERSION_GREATER "1.0")
-    set(_AVX_TEST_10 1)
-  endif()
-endif()
-
-# Check for AVX2 support.
-if(_AVX_TEST_20)
-  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_REQUIRED_FLAGS "-mavx2")
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_REQUIRED_FLAGS "-xHost")
-  elseif(MSVC AND NOT CMAKE_CL_64)
-    set(CMAKE_REQUIRED_FLAGS "/arch:AVX2")
-  endif()
-  check_cxx_source_runs("
+set(CMAKE_REQUIRED_FLAGS "-mavx2")
+check_cxx_source_runs("
   #include <immintrin.h>
   int main()
-    {
-    __m256i a = _mm256_set_epi32 (-1, 2, -3, 4, -1, 2, -3, 4);
-    __m256i result = _mm256_abs_epi32 (a);
-    return 0;
-    }" DETECTED_AVX_20)
-endif()
+  {
+    volatile int x = -1; // Prevents the compiler from computing the result at compile time
+    return _mm256_extract_epi32(_mm256_abs_epi32(_mm256_set1_epi32(x)), 0) == 1 ? 0 : 1;
+  }" AVX_HAS_AVX2)
 
-# Check for AVX support.
-if(_AVX_TEST_10)
-  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_REQUIRED_FLAGS "-mavx")
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_REQUIRED_FLAGS "-xHost")
-  elseif(MSVC AND NOT CMAKE_CL_64)
-    set(CMAKE_REQUIRED_FLAGS "/arch:AVX")
-  endif()
+if(NOT AVX_HAS_AVX2)
+  set(CMAKE_REQUIRED_FLAGS "-mavx")
   check_cxx_source_runs("
-  #include <immintrin.h>
-  int main()
+    #include <immintrin.h>
+    int main()
     {
-    __m256 a = _mm256_set_ps (-1.0f, 2.0f, -3.0f, 4.0f, -1.0f, 2.0f, -3.0f, 4.0f);
-    __m256 b = _mm256_set_ps (1.0f, 2.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f, 4.0f);
-    __m256 result = _mm256_add_ps (a, b);
-    return 0;
-    }" DETECTED_AVX_10)
+      volatile float x = 1.0f; // Prevents the compiler from computing the result at compile time
+      __m256 a = _mm256_set1_ps(x);
+      return _mm256_cvtss_f32(_mm256_add_ps(a, a)) == 2.0f ? 0 : 1;
+    }" AVX_HAS_AVX)
 endif()
 
-set(CMAKE_REQUIRED_FLAGS)
+cmake_pop_check_state()
 
-
-if(DETECTED_AVX_20)
+unset(AVX_VERSION)
+if(AVX_HAS_AVX2)
   set(AVX_VERSION "2.0")
-  set(AVX_STR "2_0")
-  set(AVX_FOUND 1)
-elseif(DETECTED_AVX_10)
+elseif(AVX_HAS_AVX)
   set(AVX_VERSION "1.0")
-  set(AVX_STR "1_0")
-  set(AVX_FOUND 1)
 endif()
 
-
-if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  if(DETECTED_AVX_20)
-      SET(AVX_FLAGS "${AVX_FLAGS} -mavx2")
-  elseif(DETECTED_AVX_10)
-      SET(AVX_FLAGS "${AVX_FLAGS} -mavx")
-  endif()
-  # TODO: Check for AVX512 support
-  SET(AVX_FLAGS "${AVX_FLAGS} -mno-avx512f") # -mno-avx512pf -mno-avx512er -mno-avx512cd")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(AVX_FLAGS "-xHost")
-elseif(MSVC)
-  if(DETECTED_AVX_20)
-      SET(AVX_FLAGS "${AVX_FLAGS} /arch:AVX2")
-  elseif(DETECTED_AVX_10)
-      SET(AVX_FLAGS "${AVX_FLAGS} /arch:AVX")
-  endif()
-endif()
-
-if(AVX_FOUND)
-  message(STATUS "  Found AVX ${AVX_VERSION} extensions, using flags: ${AVX_FLAGS}")
-else()
-  message(STATUS "  No AVX support found")
-  set(AVX_FLAGS "")
-endif()
-
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${AVX_FLAGS}")
-#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${AVX_FLAGS}")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${AVX_FLAGS}")
-
-return()
-#-------------------------------------
-
-# If no AVX support is found, print an error message.
-if(AVX_FIND_VERSION)
-  set(_AVX_ERROR_MESSAGE "AVX ${AVX_FIND_VERSION} support is not found on this architecture")
-else()
-  set(_AVX_ERROR_MESSAGE "AVX support is not found on this architecture")
-endif()
-
-if(AVX_FIND_REQUIRED)
-  message(FATAL_ERROR "${_AVX_ERROR_MESSAGE}")
-elseif(NOT AVX_FIND_QUIETLY)
-  message(STATUS "${_AVX_ERROR_MESSAGE}")
-endif()
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(AVX REQUIRED_VARS AVX_VERSION VERSION_VAR AVX_VERSION)

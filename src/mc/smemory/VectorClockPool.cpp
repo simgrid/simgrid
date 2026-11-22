@@ -4,14 +4,18 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "VectorClockPool.hpp"
-#include "src/internal_config.h"
 
 #include <utility>
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
 
 namespace simgrid::mc::smemory {
 
-static_assert(alignof(VectorClock) == 32 || alignof(VectorClock) == 64,
-              "VectorClock must be aligned to 32 or 64 for maximal speed of AVX2.");
+#ifdef __AVX2__
+static_assert(alignof(VectorClock) % 32 == 0 && static_config::max_threads % 8 == 0,
+              "The AVX2 version of is_past() loads VectorClocks as aligned chunks of 8 Epochs");
+#endif
 
 constexpr index_t INVALID_INDEX =
     0x7FFFFFFF; // We cannot use indexes larger than this value, because the indexes are 31 bits only in Epoch
@@ -82,42 +86,24 @@ const VectorClock& VectorClockPool::get(index_t index) const
 
 bool VectorClockPool::is_past(index_t index, const VectorClock& global_min) const noexcept
 {
-#if SIMGRID_HAVE_SMEMORY
   if (index >= pool_.size()) [[unlikely]]
     return false;
+  const VectorClock& vc = *pool_[index];
 
-  // Aligned loads, as requested by AVX2
-  const __m256i* a_ptr = reinterpret_cast<const __m256i*>(pool_[index]->clocks.data());
-  const __m256i* b_ptr = reinterpret_cast<const __m256i*>(global_min.clocks.data());
-
-  __m256i accumulator = _mm256_setzero_si256();
-
-  constexpr std::size_t simd_chunks = static_config::max_threads / 8;
-#pragma unroll
-  for (std::size_t i = 0; i < simd_chunks; ++i) {
-    __m256i a = _mm256_load_si256(a_ptr + i);
-    __m256i b = _mm256_load_si256(b_ptr + i);
-
-    /* TECHNICAL NOTE:
-     * _mm256_cmpgt_epi32() does a signed comparison, but there is no equivalent for unsigned data (Epoch is an
-     * uint32_t).
-     *
-     * It works for us anyway because every component of the VectorClock contains an Epoch.
-     * Since that Epoch is really one and not an index in desguise, the MSB bit is 0.
-     * So, _mm256_cmpgt_epi32() will be called only on positive values, making it correct provided that the VectorClock
-     * does not contain garbage.
-     */
-    /* TECHNICAL NOTE:
-     * The */
-    __m256i gt  = _mm256_cmpgt_epi32(a, b);
-    accumulator = _mm256_or_si256(accumulator, gt);
-  }
-
-  // _mm256_testz_si256 returns 1 of (accumulator & accumulator) == 0.
-  // If at least one component of 'a' was strictly greater, some bits are on, and testz returns 0.
-  return _mm256_testz_si256(accumulator, accumulator) != 0;
+#ifdef __AVX2__
+  // Signed comparisons are correct here: the components are pure Epochs, whose most significant bit is 0
+  const auto* a   = reinterpret_cast<const __m256i*>(vc.clocks.data());
+  const auto* b   = reinterpret_cast<const __m256i*>(global_min.clocks.data());
+  __m256i greater = _mm256_setzero_si256();
+  for (std::size_t i = 0; i < static_config::max_threads / 8; ++i)
+    greater = _mm256_or_si256(greater, _mm256_cmpgt_epi32(_mm256_load_si256(a + i), _mm256_load_si256(b + i)));
+  return _mm256_testz_si256(greater, greater) != 0;
 #else
-  xbt_die("Using smemory without AVX2 is not supported yet");
+  // An unsigned accumulator and no early exit let the compiler vectorize the loop
+  unsigned greater = 0;
+  for (std::size_t i = 0; i < static_config::max_threads; ++i)
+    greater |= global_min.clocks[i] < vc.clocks[i];
+  return greater == 0;
 #endif
 }
 

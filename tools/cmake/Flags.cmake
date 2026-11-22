@@ -73,7 +73,7 @@ if(enable_compile_warnings)
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 
   # libeigen has a little error when compiled with AVX2
-  if(SIMGRID_HAVE_EIGEN3 AND AVX_FOUND)
+  if(SIMGRID_HAVE_EIGEN3 AND enable_smemory_avx2)
     set_source_files_properties(src/kernel/resource/models/ptask_L07.cpp PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
     set_source_files_properties(src/kernel/lmm/System.cpp                PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
     set_source_files_properties(src/kernel/lmm/bmf.cpp                   PROPERTIES COMPILE_FLAGS -Wno-error=unused-variable)
@@ -198,8 +198,20 @@ if(NOT enable_debug)
   set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS} ${AVX_FLAGS}")
-set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS} ${AVX_FLAGS}")
+# The race detector of smemory uses AVX2 when the compiler targets it.
+# AVX-512 and AVX10 are disabled: they are useless here, and clang 18 rejects the AVX10 features that -march=native
+# enables on recent processors (invalid feature combination).
+if(enable_smemory_avx2)
+  set(optCFLAGS "${optCFLAGS} -march=native -mno-avx512f")
+  include(CheckCXXCompilerFlag)
+  check_cxx_compiler_flag(-mno-avx10.1-256 COMPILER_HAS_MNO_AVX10)
+  if(COMPILER_HAS_MNO_AVX10)
+    set(optCFLAGS "${optCFLAGS} -mno-avx10.1-256")
+  endif()
+endif()
+
+set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
+set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more compliant to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
