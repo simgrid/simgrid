@@ -28,7 +28,8 @@ std::string BarrierTransition::to_string(bool verbose) const
 BarrierTransition::BarrierTransition(Aid issuer, int times_considered, Type type, mc::Channel& channel)
     : Transition(type, issuer, times_considered)
 {
-  bar_ = channel.unpack<unsigned>();
+  bar_   = channel.unpack<unsigned>();
+  round_ = channel.unpack<unsigned>();
 }
 bool BarrierTransition::reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                                         EventHandle other_handle) const

@@ -17,6 +17,7 @@ namespace simgrid::mc {
 
 class BarrierTransition final : public Transition {
   unsigned bar_;
+  unsigned round_; // Round of the barrier that this transition takes part in
 
 public:
   std::string to_string(bool verbose) const override;
@@ -38,7 +39,8 @@ public:
     if (type_ == Type::BARRIER_WAIT && other->type_ == Type::BARRIER_WAIT)
       return false;
 
-    return true; // LOCK/WAIT is dependent because lock may enable wait
+    // LOCK/WAIT is dependent because lock may enable wait, which only holds within the same round
+    return round_ == other->round_;
   }
   bool reversible_race(const Transition* other, const odpor::Execution* exec, EventHandle this_handle,
                        EventHandle other_handle) const override;

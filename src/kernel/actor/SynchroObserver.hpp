@@ -86,6 +86,8 @@ class BarrierObserver final : public DelayedSimcallObserver<bool> {
   mc::Transition::Type type_;
   activity::BarrierImpl* const barrier_                = nullptr;
   activity::BarrierAcquisitionImpl* const acquisition_ = nullptr;
+  // Round of the barrier, taken before the lock executes as the lock that completes a round starts the next one
+  const unsigned round_;
   const double timeout_;
 
 public:

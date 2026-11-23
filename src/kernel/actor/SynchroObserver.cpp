@@ -116,13 +116,13 @@ std::string SemaphoreAcquisitionObserver::to_string() const
 }
 
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar)
-    : DelayedSimcallObserver(actor, false), type_(type), barrier_(bar), timeout_(-1)
+    : DelayedSimcallObserver(actor, false), type_(type), barrier_(bar), round_(bar->get_round()), timeout_(-1)
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_ASYNC_LOCK);
 }
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                                  double timeout)
-    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), round_(acqui->round_), timeout_(timeout)
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_WAIT);
 }
@@ -131,6 +131,7 @@ void BarrierObserver::serialize(mc::Channel& channel) const
   xbt_assert(barrier_ != nullptr || (acquisition_ != nullptr && acquisition_->barrier_ != nullptr));
   channel.pack(type_);
   channel.pack<unsigned>((barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()));
+  channel.pack<unsigned>(round_);
 }
 std::string BarrierObserver::to_string() const
 {

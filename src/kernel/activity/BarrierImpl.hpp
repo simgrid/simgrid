@@ -20,6 +20,7 @@ namespace simgrid::kernel::activity {
 class XBT_PUBLIC BarrierAcquisitionImpl : public ActivityImpl_T<BarrierAcquisitionImpl> {
   actor::ActorImpl* issuer_ = nullptr;
   BarrierImpl* barrier_     = nullptr;
+  unsigned round_           = 0; // Round of the barrier that this acquisition takes part in
   bool granted_             = false;
 
   friend actor::BarrierObserver;
@@ -41,7 +42,8 @@ class XBT_PUBLIC BarrierImpl {
   unsigned int expected_actors_;
   std::deque<BarrierAcquisitionImplPtr> ongoing_acquisitions_;
   static unsigned next_id_;
-  unsigned id_ = next_id_++;
+  unsigned id_    = next_id_++;
+  unsigned round_ = 0; // Number of times that all expected actors arrived
 
   friend BarrierAcquisitionImpl;
   friend s4u::Barrier;
@@ -53,6 +55,7 @@ public:
 
   BarrierAcquisitionImplPtr acquire_async(actor::ActorImpl* issuer);
   unsigned get_id() const { return id_; }
+  unsigned get_round() const { return round_; }
   bool was_last() const { return ongoing_acquisitions_.empty(); }
 
   friend void intrusive_ptr_add_ref(BarrierImpl* barrier)

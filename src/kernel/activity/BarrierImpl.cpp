@@ -40,7 +40,8 @@ unsigned BarrierImpl::next_id_ = 0;
 
 BarrierAcquisitionImplPtr BarrierImpl::acquire_async(actor::ActorImpl* issuer)
 {
-  auto res = BarrierAcquisitionImplPtr(new kernel::activity::BarrierAcquisitionImpl(issuer, this), true);
+  auto res    = BarrierAcquisitionImplPtr(new kernel::activity::BarrierAcquisitionImpl(issuer, this), true);
+  res->round_ = round_;
 
   XBT_DEBUG("%s acquires barrier #%u (%zu of %u)", issuer->get_cname(), id_, ongoing_acquisitions_.size(),
             expected_actors_);
@@ -59,6 +60,7 @@ BarrierAcquisitionImplPtr BarrierImpl::acquire_async(actor::ActorImpl* issuer)
       // else, the issuer is not blocked on this acquisition so no need to release it
     }
     ongoing_acquisitions_.clear(); // Rearm the barier for subsequent uses
+    round_++;
     res->granted_ = true;
   }
   return res;

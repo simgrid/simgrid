@@ -5,11 +5,11 @@ $ "${bindir:=.}/../../smpi_script/bin/smpicc" -smemory -g "${srcdir:=.}/mpi/rma_
 
 p The put of rank 0 races with a write of rank 1 in the same epoch
 ! expect return 5
-$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" write
-> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" write
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0xdeadbeaf: two actors access this memory without synchronization, and at least one of them writes it.
 > [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 1, done after transition #16 and before transition #17
-> [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 2, done after transition #27 and before transition #29
+> [0.000000] [mc_explo/INFO]   Access 2: WRITE by actor 2, done after transition #28 and before transition #29
 > [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
 > [0.000000] [mc_explo/INFO] Execution leading to the race:
 > [0.000000] [mc_explo/INFO]   #1 Actor 1 in :0:() ==> simcall: iSend(mbox=2)
@@ -38,20 +38,20 @@ $ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quie
 > [0.000000] [mc_explo/INFO]   #24 Actor 1 in simcall iProbe(mbox=1, recv side)
 > [0.000000] [mc_explo/INFO]   #25 Actor 1 in :0:() ==> simcall: iRecv(mbox=1)
 > [0.000000] [mc_explo/INFO]   #26 Actor 1 in simcall MUTEX_UNLOCK(mutex: 1, owner: -1)
-> [0.000000] [mc_explo/INFO]   #27 Actor 2 in simcall BARRIER_WAIT(barrier: 1)
-> [0.000000] [mc_explo/INFO]   #28 Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 1)
+> [0.000000] [mc_explo/INFO]   #27 Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 1)
+> [0.000000] [mc_explo/INFO]   #28 Actor 2 in simcall BARRIER_WAIT(barrier: 1)
 > [0.000000] [mc_explo/INFO]   #29 Actor 2 in simcall BARRIER_ASYNC_LOCK(barrier: 1)     <== access 2 (WRITE by actor 2) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;1;1;2;2;2;2;2;1;1;2;2;1;1;1;1;1;1;1;1;1;1;1;2;1;2' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 241 unique states visited; 9 explored traces (818 transition replays, 983 states visited overall)
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;1;1;2;2;2;2;2;1;1;2;2;1;1;1;1;1;1;1;1;1;1;1;1;2;2' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 30 unique states visited; 0 explored traces (0 transition replays, 29 states visited overall)
 > Execution failed with code 5.
 
 p The put of rank 0 races with the read of the origin buffer of a put of rank 1
 ! expect return 5
-$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" put
-> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" put
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
 > [0.000000] [mc_explo/INFO] Found a data race on 4 bytes at location 0xdeadbeaf: two actors access this memory without synchronization, and at least one of them writes it.
 > [0.000000] [mc_explo/INFO]   Access 1: WRITE by actor 1, done after transition #16 and before transition #17
-> [0.000000] [mc_explo/INFO]   Access 2: READ by actor 2, done after transition #27 and before transition #29
+> [0.000000] [mc_explo/INFO]   Access 2: READ by actor 2, done after transition #28 and before transition #29
 > [0.000000] [mc_explo/INFO]   No synchronization (such as a join or a mutex) forces access 1 to happen before access 2, so they may happen in any order.
 > [0.000000] [mc_explo/INFO] Execution leading to the race:
 > [0.000000] [mc_explo/INFO]   #1 Actor 1 in :0:() ==> simcall: iSend(mbox=2)
@@ -80,14 +80,14 @@ $ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quie
 > [0.000000] [mc_explo/INFO]   #24 Actor 1 in simcall iProbe(mbox=1, recv side)
 > [0.000000] [mc_explo/INFO]   #25 Actor 1 in :0:() ==> simcall: iRecv(mbox=1)
 > [0.000000] [mc_explo/INFO]   #26 Actor 1 in simcall MUTEX_UNLOCK(mutex: 1, owner: -1)
-> [0.000000] [mc_explo/INFO]   #27 Actor 2 in simcall BARRIER_WAIT(barrier: 1)
-> [0.000000] [mc_explo/INFO]   #28 Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 1)
+> [0.000000] [mc_explo/INFO]   #27 Actor 1 in simcall BARRIER_ASYNC_LOCK(barrier: 1)
+> [0.000000] [mc_explo/INFO]   #28 Actor 2 in simcall BARRIER_WAIT(barrier: 1)
 > [0.000000] [mc_explo/INFO]   #29 Actor 2 in simcall MUTEX_ASYNC_LOCK(mutex: 0, owner: 2)     <== access 2 (READ by actor 2) happened before this transition
-> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;1;1;2;2;2;2;2;1;1;2;2;1;1;1;1;1;1;1;1;1;1;1;2;1;2' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 253 unique states visited; 9 explored traces (1048 transition replays, 1225 states visited overall)
+> [0.000000] [mc_explo/INFO] To see the source line of each access, rerun this execution through simgrid-mc with the same options, adding --cfg=model-check/replay:'1;1;2;1;1;1;2;2;2;2;2;1;1;2;2;1;1;1;1;1;1;1;1;1;1;1;1;2;2' (the --cfg=model-check/watch option is also useful to get more information, but I cannot tell the exact option to pass because --log=no_loc is used)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 30 unique states visited; 0 explored traces (0 transition replays, 29 states visited overall)
 > Execution failed with code 5.
 
 p A write after the fence that closes the epoch is ordered after the put
-$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" after
-> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 1937 unique states visited; 81 explored traces (7377 transition replays, 8704 states visited overall)
+$ $VALGRIND_NO_TRACE_CHILDREN "${bindir:=.}/../../smpi_script/bin/smpirun" -quiet -wrapper "${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/reduction:odpor" --log=xbt_cfg.thresh:warning --log=no_loc -platform ${srcdir:=.}/../../examples/platforms/cluster_backbone.xml -np 2 "${bindir:=.}/mpi_rma_put_race" after
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: odpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 47 unique states visited; 1 explored traces (0 transition replays, 47 states visited overall)
