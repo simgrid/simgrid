@@ -59,6 +59,20 @@ if (enable_testsuite_smpi_MBB)
   message(STATUS "Removed ${len} concurrency tests that would fail because we cannot intercept modifications of local variables.")
   unset(len)
 
+  # Remove the tests using an uninitialized pointer (named not_allocated by the generators): this is undefined behavior
+  # that no runtime can reliably detect, so their outcome depends on the garbage left on the stack.
+  file(GLOB_RECURSE cfiles ${CMAKE_BINARY_DIR}/MBB/tmp/*.c)
+  set(len 0)
+  foreach(cfile ${cfiles})
+    file(STRINGS ${cfile} uninitialized REGEX "not_allocated" LIMIT_COUNT 1)
+    if (uninitialized)
+      file(REMOVE ${cfile})
+      math(EXPR len "${len} + 1")
+    endif()
+  endforeach()
+  message(STATUS "Removed ${len} tests using an uninitialized pointer, as their outcome is random.")
+  unset(len)
+
   # The generator sorts the cases in subdirectories, but their names are unique
   file(GLOB_RECURSE cfiles RELATIVE ${CMAKE_BINARY_DIR}/MBB/tmp ${CMAKE_BINARY_DIR}/MBB/tmp/*.c)
   foreach(cfile ${cfiles})

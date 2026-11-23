@@ -71,11 +71,16 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 162 cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 156 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
-### Bugs in MBB (12 cases)
+### Bugs in MBB (11 cases)
 
 These cases are wrong: SimGrid rightfully reports an error on a correct program, or the program is not erroneous.
+
+Uninitialized pointers and handles are undefined behavior that no runtime can reliably detect: the outcome depends on
+the garbage left on the stack. The 30 cases using an uninitialized pointer (named `not_allocated` by the generators)
+are thus removed at configure time. The `InvalidParam-*` case calling `MPI_Win_fence` on an uninitialized `MPI_Win` is
+not removed, and currently passes only by chance.
 
 - `Correct-mpi_gather-002` (1 case, reported as `MPI_ERR_BUFFER`): `errors/coll/ParamMatchingType.py` passes
   `MPI_IN_PLACE` as the send buffer on every rank, while MPI only allows it at the root of rooted collectives. The
@@ -87,10 +92,6 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
 - `InvalidParam-Request-mpi_waitany-001` and `InvalidParam-Request-mpi_waitsome-001` (2 cases, not detected): the
   request appears twice in the array, but `count` is 1, so only the first entry is used and the program is correct.
   The generator should pass a count of 2.
-- The `InvalidParam-*` case calling `MPI_Win_fence` on an uninitialized `MPI_Win` (1 case, crashing): uninitialized
-  handles or pointers are undefined behavior that no runtime can reliably detect. The same goes for
-  `InvalidParam-array_of_indices-mpi_waitsome-002`, which passes only because its uninitialized pointer happens to be
-  `NULL`. Such cases should rather be dropped from MBB.
 
 ### Missing checks in SMPI (56 cases)
 
@@ -112,9 +113,9 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
 - `MPI_Intercomm_create` is not implemented (12 cases, reported as `UNIMPLEMENTED`), as SMPI has no intercommunicators
   at all. This is a significant work.
 
-### Limitations of simgrid-mc (57 cases)
+### Limitations of simgrid-mc (52 cases)
 
-- Matched probes (57 cases, reported as `UNIMPLEMENTED`): `MPI_Mprobe` and `MPI_Improbe` (including the cases using
+- Matched probes (52 cases, reported as `UNIMPLEMENTED`): `MPI_Mprobe` and `MPI_Improbe` (including the cases using
   `MPI_Mrecv` and `MPI_Imrecv`) are not implemented in SMPI. They need `MPI_Message` handles, as a matched message
   must be removed from the mailbox and kept for a later reception, and a model-checker transition removing it, built
   on the one of `MPI_Probe`.
