@@ -122,7 +122,11 @@ BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, ac
 }
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                                  double timeout)
-    : DelayedSimcallObserver(actor, false), type_(type), acquisition_(acqui), round_(acqui->round_), timeout_(timeout)
+    : DelayedSimcallObserver(actor, false)
+    , type_(type)
+    , acquisition_(acqui)
+    , round_(acqui != nullptr ? acqui->round_ : 0) // There is no acquisition out of the model checker
+    , timeout_(timeout)
 {
   xbt_assert(type_ == mc::Transition::Type::BARRIER_WAIT);
 }
