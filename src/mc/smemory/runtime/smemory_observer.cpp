@@ -86,7 +86,8 @@ static std::unordered_set<void*>& application_blocks()
   return *blocks;
 }
 
-static void record_allocation(void* ptr, size_t size)
+// Records the allocation of a block, whose whole usable size is reset (the free() of the block writes all of it too)
+static void record_allocation(void* ptr)
 {
   if (ptr == nullptr || in_observer || not sthread_is_enabled())
     return;
@@ -94,7 +95,7 @@ static void record_allocation(void* ptr, size_t size)
   if (issuer == nullptr)
     return;
   in_observer = true;
-  issuer->get_memory_trace()->create_allocation(reinterpret_cast<uintptr_t>(ptr), size);
+  issuer->get_memory_trace()->create_allocation(reinterpret_cast<uintptr_t>(ptr), malloc_usable_size(ptr));
   application_blocks().insert(ptr);
   in_observer = false;
 }
@@ -113,20 +114,20 @@ static void record_free(void* ptr)
 void* malloc(size_t size)
 {
   void* res = __libc_malloc(size);
-  record_allocation(res, size);
+  record_allocation(res);
   return res;
 }
 void* calloc(size_t count, size_t size)
 {
   void* res = __libc_calloc(count, size);
-  record_allocation(res, count * size);
+  record_allocation(res);
   return res;
 }
 void* realloc(void* ptr, size_t size)
 {
   record_free(ptr); // The old block may be moved: consider it freed
   void* res = __libc_realloc(ptr, size);
-  record_allocation(res, size);
+  record_allocation(res);
   return res;
 }
 void free(void* ptr)
@@ -137,7 +138,7 @@ void free(void* ptr)
 void* memalign(size_t alignment, size_t size)
 {
   void* res = __libc_memalign(alignment, size);
-  record_allocation(res, size);
+  record_allocation(res);
   return res;
 }
 void* aligned_alloc(size_t alignment, size_t size)
