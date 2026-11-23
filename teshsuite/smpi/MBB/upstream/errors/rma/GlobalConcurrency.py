@@ -119,8 +119,19 @@ class GlobalConcurrencyErrorRMA(ErrorGenerator):
 
         tm.register_instruction(
             lock1, rank_to_execute=op2.get_rank_executing())
+        # the local buffer accesses are RMA calls to another target, which needs its own access epoch
+        op2_target = op2.get_arg("target_rank") if isinstance(op2, MPICall) and op2.has_arg("target_rank") else "1"
+        if op2_target != "1":
+            lock_target = self.cfmpi.mpi_win_lock()
+            lock_target.set_arg("rank", op2_target)
+            lock_target.set_arg("lock_type", "MPI_LOCK_SHARED")
+            unlock_target = self.cfmpi.mpi_win_unlock()
+            unlock_target.set_arg("rank", op2_target)
+            tm.register_instruction(lock_target, rank_to_execute=op2.get_rank_executing())
         tm.register_instruction(alloc2)
         tm.register_instruction(op2, "OP2")
+        if op2_target != "1":
+            tm.register_instruction(unlock_target, rank_to_execute=op2.get_rank_executing())
         tm.register_instruction(
             unlock1, rank_to_execute=op2.get_rank_executing())
 

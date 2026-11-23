@@ -17,6 +17,8 @@ checkout to extract them. Local changes not merged upstream yet:
 - Allocations no longer cast to the allocated type (invalid C for anonymous structs such as the MPI_2INT buffer),
   and `mpi_intercomm_create_from_groups` builds its groups with `MPI_Group_range_incl` and a valid last rank.
 - The RMA GlobalConcurrency cases only use a third rank when both accesses are remote ones.
+- In the lock mode of the RMA GlobalConcurrency cases, the local buffer accesses (RMA calls to rank 0) also lock the
+  window of rank 0, as an RMA call needs an access epoch on its target.
 - The generators are discovered in a sorted order, so that the cases are numbered the same way on every machine.
 
 To update the copy from an MBB checkout in `$MBB`:
