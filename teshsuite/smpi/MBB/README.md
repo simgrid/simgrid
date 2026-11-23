@@ -32,6 +32,31 @@ find . -name __pycache__ -prune -exec rm -rf {} +
 
 Then check that the local changes listed above are still needed, reapply them, and update the commit above.
 
+## Removed and commented-out cases
+
+The generator only produces the cases using MPI 3.1 (`--mpi_version 3.1`), the version implemented by SMPI. At levels 2
+and 4, it only produces the cases that are common in real-world codes (see the scoring table below).
+
+Some generated cases are then removed at configure time (counts at level 2):
+
+- `LocalConcurrency-*` (67 cases), where a process touches a buffer used by one of its own pending operations. The data
+  race detection only compares the accesses of distinct actors, so it cannot see these errors.
+- `GlobalConcurrency-*` (58 cases), data races between processes on RMA windows, only when SimGrid is built without
+  smemory. Otherwise, they are compiled with `smpicc -smemory -O0`, so that the memory accesses of the application
+  are instrumented (`-O0` keeps the accesses whose result is unused). SMPI records the accesses that the RMA calls do
+  on behalf of the application, the model-checker reports the data races, and `MBB.py` classifies them as concurrency
+  errors.
+- The cases using an uninitialized pointer (30 cases, named `not_allocated` by the generators). This is undefined
+  behavior that no runtime can reliably detect, so their outcome depends on the garbage left on the stack. The
+  `InvalidParam-*` case calling `MPI_Win_fence` on an uninitialized `MPI_Win` is not removed, and currently passes only
+  by chance.
+
+The following cases are commented out in the upstream generators, so they are never generated:
+
+- `errors/pt2pt/InvalidRequest.py`: `InvalidParam-Request-mpi_request_free`, freeing an active persistent request. The
+  comment notes that MPI permits it.
+- `errors/pt2pt/InvalidTag.py`: the invalid tags of `MPI_Sendrecv` and `MPI_Sendrecv_replace`. No reason is given.
+
 ## The scoring table
 
 Generation levels 2 and 4 only produce the cases that are common in real-world codes. MBB scores them with a scoring
@@ -73,24 +98,26 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 156 cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 154 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
-### Bugs in MBB (11 cases)
+### Bugs in MBB (9 cases)
 
 These cases are wrong: SimGrid rightfully reports an error on a correct program, or the program is not erroneous.
-
-Uninitialized pointers and handles are undefined behavior that no runtime can reliably detect: the outcome depends on
-the garbage left on the stack. The 30 cases using an uninitialized pointer (named `not_allocated` by the generators)
-are thus removed at configure time. The `InvalidParam-*` case calling `MPI_Win_fence` on an uninitialized `MPI_Win` is
-not removed, and currently passes only by chance.
 
 - `Correct-mpi_gather-002` (1 case, reported as `MPI_ERR_BUFFER`): `errors/coll/ParamMatchingType.py` passes
   `MPI_IN_PLACE` as the send buffer on every rank, while MPI only allows it at the root of rooted collectives. The
   generator should only use `MPI_IN_PLACE` at the root.
-- `Correct-lock-*_localbuf*` (8 cases, reported as `MPI_ERR_WIN`): in the `lock` synchronization of
-  `errors/rma/GlobalConcurrency.py`, rank 1 locks the window of rank 1, but the `localbufread` and `localbufwrite`
-  accesses are implemented as RMA calls (`MPI_Put` or `MPI_Get` from the local window buffer) targeting rank 0,
-  where no epoch is open. The generator should also lock rank 0, or use a plain load or store for these accesses.
+- `Correct-rmarequest-*` (4 cases, reported as data races): in the `rmarequest` synchronization of
+  `errors/rma/GlobalConcurrency.py`, rank 0 waits for the local completion of its request-based RMA call on the window
+  of rank 1, while another rank accesses the same location: rank 1 gets data into it (`raccumulate_localbufwrite` and
+  `rget_accumulate_localbufwrite`), or rank 2 puts data into it (`rget_put` and `rget_rput`). This wait does not order
+  anything with the other rank, so the program has a data race. The generator should synchronize both ranks, for
+  instance with a barrier after the wait.
+- `GlobalConcurrency-lock-compare_and_swap_bufread-001` and `GlobalConcurrency-lock-fetch_and_op_bufread-001` (2
+  cases, not detected): the `bufread` and `bufwrite` instructions of `errors/rma/GlobalConcurrency.py` access
+  `winbuf[1]`, while `MPI_Compare_and_swap` and `MPI_Fetch_and_op` only update `winbuf[0]`. MPI only forbids
+  conflicting accesses to the same location, so these programs have no data race. The other RMA calls of these cases
+  update 10 elements, which include `winbuf[1]`. The generator should access `winbuf[0]` instead.
 - `InvalidParam-Request-mpi_waitany-001` and `InvalidParam-Request-mpi_waitsome-001` (2 cases, not detected): the
   request appears twice in the array, but `count` is 1, so only the first entry is used and the program is correct.
   The generator should pass a count of 2.

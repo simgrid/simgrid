@@ -63,10 +63,6 @@ planned). The source of each check is given in parentheses: ITAC tag, or MUST id
   - How: MUST's wait-for graph over pending operations. SimGrid's model checker already explores interleavings, a
     heavier but more complete alternative.
 
-- **H4. RMA (one-sided) races** (MUST, pedantic)
-  - Why: conflicting `MPI_Put`, `MPI_Get` and local accesses within an epoch are undefined.
-  - How: accessed ranges per window and epoch, checked at synchronization. A whole subsystem.
-
 - **H5. Freed or read-only buffers** (`LOCAL:MEMORY:INACCESSIBLE`, under Valgrind or ASan)
   - Why: passing a buffer that cannot be read or written.
   - How: only feasible with Valgrind or ASan hooks, as M4.
@@ -74,7 +70,10 @@ planned). The source of each check is given in parentheses: ITAC tag, or MUST id
 - **H6. Application accessing memory owned by MPI** (`LOCAL:MEMORY:ILLEGAL_ACCESS`, under Valgrind)
   - Why: reading a receive buffer, or writing a send buffer, before the operation completes.
   - How: mark the buffers of pending operations as inaccessible for Valgrind (`VALGRIND_MAKE_MEM_NOACCESS`) and restore
-    them at completion; covers reads, unlike M5.
+    them at completion; covers reads, unlike M5. Applications compiled with `smpicc -smemory` could instead check each
+    instrumented access against the buffers of the pending operations of the same actor, which would also cover M5
+    and the RMA origin buffers. The data race detection of the model checker cannot see these errors, as both
+    accesses come from the same actor.
 
 - **H7. Buffer memory not matching the datatype** (MUST with TypeART, compile-time instrumentation)
   - Why: passing an array of `double` with `MPI_INT` corrupts data, and is invisible at the MPI level.
@@ -175,8 +174,11 @@ Their status in SMPI:
   in the middle of an element.
 - **Partially covered**: type matching of derived datatypes (`TYPEMATCH_*`, H1), overlaps (`OVERLAPPED_SEND`,
   `OVERLAPPED_RECV`, `SELFOVERLAPPED`: M6, M7, M8), deadlocks (`DEADLOCK`, H2), space of the buffered sends
-  (`BUFFER_OUTSIZED`, M1).
+  (`BUFFER_OUTSIZED`, M1), and RMA races. The data race detection of the model checker reports the conflicting
+  accesses of distinct ranks to window memory (puts, gets, atomic updates and plain loads and stores) in applications
+  compiled with `smpicc -smemory` and run under `simgrid-mc`. Concurrent atomic updates are allowed. It does not see a
+  rank touching the origin buffer of its own pending RMA call (H6).
 - **Not covered**: thread level (`THREADLEVEL`, E10), struct alignment (`DATATYPE_BAD_ALIGNMENT`, M9), buffer types
-  with TypeART (`TYPEMATCH_ALIGNMENT`, H7), RMA races (H4), races with threads and OpenMP (`DATARACE`,
+  with TypeART (`TYPEMATCH_ALIGNMENT`, H7), races with threads and OpenMP (`DATARACE`,
   `MPI_MULTIPLE_THREADS`, `OPENMP`: NP4), partitioned communication (NP5), and the warnings on legal arguments
   (`INTEGER_ZERO`, `INTEGER_NOT_ONE_OR_ZERO`, `DATATYPE_COMMITED`, ...: NP1, NP3).

@@ -102,6 +102,12 @@ SMPI (all AI-assisted):
    message arrives, without the delays and the CPU usage set by smpi/iprobe and smpi/iprobe-cpu-usage. It still polls
    when smpi/async-small-thresh is set, as messages may then arrive in either of two mailboxes.
 
+Test suites (AI-assisted):
+ - MBB: Integrate the MPI BugBench collection. Some tests are still broken, but the collection itself is bugged.
+   See teshsuite/smpi/MBB/README.md
+ - MBI: Activate the GlobalConcurrency tests and fix all the things. This collection now passes.
+   See teshsuite/smpi/MBI/README.md
+
 ----------------------------------------------------------------------------
 
 SimGrid (4.1) November 11. 2025
