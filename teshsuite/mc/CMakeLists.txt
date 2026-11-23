@@ -174,6 +174,12 @@ foreach(x iprobe_ok iprobe_nok probe_any_source probe_deadlock probe_initial_dea
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/${x}.c)
 endforeach()
 
+# Compiled by its tesh, with the memory instrumentation
+if(SIMGRID_HAVE_MC AND SIMGRID_HAVE_SMEMORY AND enable_smpi)
+  ADD_TESH(mc-mpi-rma_put_race --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/rma_put_race.tesh)
+endif()
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/mpi/rma_put_race.tesh)
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/mpi/rma_put_race.c)
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/random-bug/random-bug-replay.tesh

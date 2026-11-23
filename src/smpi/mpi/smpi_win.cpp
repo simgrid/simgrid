@@ -13,8 +13,10 @@
 #include "smpi_info.hpp"
 #include "smpi_keyvals.hpp"
 #include "smpi_request.hpp"
-#include "src/smpi/include/smpi_actor.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 
 #include <algorithm>
 #include <mutex> // std::scoped_lock
@@ -215,6 +217,18 @@ int Win::fence(int assert)
   return MPI_SUCCESS;
 }
 
+/* Records an access that SMPI does on behalf of the calling actor, for the data race detection of the model checker.
+ * The RMA calls record their accesses at the call, as MPI allows the transfer to happen anywhere until the end of the
+ * epoch. A non-contiguous datatype is recorded as the whole range of its data, holes included. */
+static void record_rma_access(simgrid::mc::smemory::MemOpType type, const void* addr, int count, MPI_Datatype datatype)
+{
+#if SIMGRID_HAVE_SMEMORY
+  if (MC_is_active() && count > 0)
+    simgrid::kernel::actor::ActorImpl::self()->get_memory_trace()->create_memory_access(
+        type, reinterpret_cast<uintptr_t>(addr) + datatype->lb(), count * datatype->get_extent());
+#endif
+}
+
 int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request)
 {
@@ -225,6 +239,8 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   CHECK_RMA_REMOTE_WIN("MPI_Put", recv_win)
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
+  record_rma_access(simgrid::mc::smemory::MemOpType::Read, origin_addr, origin_count, origin_datatype);
+  record_rma_access(simgrid::mc::smemory::MemOpType::Write, recv_addr, target_count, target_datatype);
 
   if (target_rank != rank_) { // This is not for myself, so we need to send messages
     XBT_DEBUG("Entering MPI_Put to remote rank %d", target_rank);
@@ -270,6 +286,8 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
 
   const void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
+  record_rma_access(simgrid::mc::smemory::MemOpType::Read, send_addr, target_count, target_datatype);
+  record_rma_access(simgrid::mc::smemory::MemOpType::Write, origin_addr, origin_count, origin_datatype);
 
   if (target_rank != rank_) {
     //prepare send_request
@@ -314,6 +332,10 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
+  // Concurrent accumulates are legal, and there is no atomic kind of access: the update of the target is recorded as a
+  // read, which misses its conflicts with the gets and the plain reads of the target
+  record_rma_access(simgrid::mc::smemory::MemOpType::Read, origin_addr, origin_count, origin_datatype);
+  record_rma_access(simgrid::mc::smemory::MemOpType::Read, recv_addr, target_count, target_datatype);
   // As the tag will be used for ordering of the operations, subtract count from it (to avoid collisions with other
   // SMPI tags, SMPI_RMA_TAG is set below all the other ones we use)
   // prepare send_request
