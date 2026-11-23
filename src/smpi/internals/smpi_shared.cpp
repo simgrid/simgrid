@@ -39,16 +39,22 @@
 #include <map>
 
 #include "private.hpp"
+#include "simgrid/modelchecker.h"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 
 #include <cerrno>
 
 #include "smpi_utils.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/smemory/MemoryAccessTrace.hpp"
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
+#if SIMGRID_HAVE_SMEMORY
+#include <malloc.h>
+#endif
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -320,10 +326,33 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
   return mem;
 }
 
+/* For the data race detection of the model checker, as the allocation functions that smemory intercepts outside of
+ * SMPI: a new block resets the shadow memory of its range (nothing done there before can race with what is done after),
+ * and freeing a block writes it whole. The shared blocks are not recorded, as all ranks access them by design. */
+static void record_allocation(const void* ptr, size_t size)
+{
+#if SIMGRID_HAVE_SMEMORY
+  auto* issuer = simgrid::kernel::actor::ActorImpl::self();
+  if (MC_is_active() && ptr != nullptr && issuer != nullptr)
+    issuer->get_memory_trace()->create_allocation(reinterpret_cast<uintptr_t>(ptr), size);
+#endif
+}
+
+static void record_free(void* ptr)
+{
+#if SIMGRID_HAVE_SMEMORY
+  auto* issuer = simgrid::kernel::actor::ActorImpl::self();
+  if (MC_is_active() && ptr != nullptr && issuer != nullptr && not allocs_metadata.contains(ptr))
+    issuer->get_memory_trace()->create_memory_access(simgrid::mc::smemory::MemOpType::Write,
+                                                     reinterpret_cast<uintptr_t>(ptr), malloc_usable_size(ptr));
+#endif
+}
+
 void* smpi_shared_malloc_intercept(size_t size, const char* file, int line)
 {
   if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()){
     void* ptr = xbt_malloc(size);
+    record_allocation(ptr, size);
     if(not smpi_cfg_trace_call_use_absolute_path())
       simgrid::smpi::utils::account_malloc_size(size, simgrid::xbt::Path(file).get_base_name(), line, ptr);
     else
@@ -340,6 +369,7 @@ void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char*
   size_t size = elem_size * num_elm;
   if (smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()) {
     void* ptr = xbt_malloc0(size);
+    record_allocation(ptr, size);
     if(not smpi_cfg_trace_call_use_absolute_path())
       simgrid::smpi::utils::account_malloc_size(size, simgrid::xbt::Path(file).get_base_name(), line, ptr);
     else
@@ -363,7 +393,10 @@ void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, i
   auto meta = allocs_metadata.find(data);
   if (meta == allocs_metadata.end()) {
     XBT_DEBUG("Classical realloc(%p, %zu)", data, size);
-    return xbt_realloc(data, size);
+    record_free(data); // The block may be moved: consider it freed
+    void* ptr = xbt_realloc(data, size);
+    record_allocation(ptr, size);
+    return ptr;
   }
 
   XBT_DEBUG("Shared realloc(%p, %zu) (old size: %zu)", data, size, meta->second.size);
@@ -456,6 +489,7 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 
 void smpi_shared_free(void *ptr)
 {
+  record_free(ptr);
   simgrid::smpi::utils::account_free(ptr);
   if (smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
     auto meta = allocs_metadata.find(ptr);
