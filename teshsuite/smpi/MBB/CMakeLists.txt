@@ -47,16 +47,19 @@ if (enable_testsuite_smpi_MBB)
   add_dependencies(tests tests-mbb)
   add_dependencies(tests-mbb simgrid-mc smpimain)
 
-  # Remove Concurrency tests that are out of reach because SimGrid does not intercept local modifications yet.
-  # An idea could be to extend the data race detection of src/mc/smemory (SlabTrackState): each pending MPI operation
-  # would be a pseudo-thread accessing its buffer, joined into its caller upon completion (wait, test, fence, unlock).
-  file(GLOB_RECURSE cfiles ${CMAKE_BINARY_DIR}/MBB/tmp/LocalConcurrency-*.c
-                          ${CMAKE_BINARY_DIR}/MBB/tmp/GlobalConcurrency-*.c)
+  # Remove the concurrency cases that are out of reach. The GlobalConcurrency ones are data races between processes,
+  # detected by src/mc/smemory when the application is instrumented. The LocalConcurrency ones are not detected yet, as
+  # both accesses come from the same process.
+  set(removed_cases ${CMAKE_BINARY_DIR}/MBB/tmp/LocalConcurrency-*.c)
+  if (NOT SIMGRID_HAVE_SMEMORY)
+    list(APPEND removed_cases ${CMAKE_BINARY_DIR}/MBB/tmp/GlobalConcurrency-*.c)
+  endif()
+  file(GLOB_RECURSE cfiles ${removed_cases})
   foreach(cfile ${cfiles})
     file(REMOVE ${cfile})
   endforeach()
   list(LENGTH cfiles len)
-  message(STATUS "Removed ${len} concurrency tests that would fail because we cannot intercept modifications of local variables.")
+  message(STATUS "Removed ${len} concurrency tests that SimGrid cannot detect in this configuration.")
   unset(len)
 
   # Remove the tests using an uninitialized pointer (named not_allocated by the generators): this is undefined behavior
@@ -91,6 +94,11 @@ if (enable_testsuite_smpi_MBB)
     target_compile_options(mbb_${basefile} PRIVATE "-Wno-unused-but-set-variable")
     # The InvalidParam-Request cases pass MPI_REQUEST_NULL where a MPI_Request* is expected
     target_compile_options(mbb_${basefile} PRIVATE "-Wno-error=incompatible-pointer-types")
+    if (basefile MATCHES "^GlobalConcurrency-")
+      # Without optimization, which removes the accesses whose result is not used
+      target_compile_options(mbb_${basefile} PRIVATE "-smemory" "-O0")
+      target_link_options(mbb_${basefile} PRIVATE "-smemory")
+    endif()
     set_target_properties(mbb_${basefile} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/MBB)
     add_dependencies(tests-mbb mbb_${basefile})
 

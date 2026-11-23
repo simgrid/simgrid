@@ -53,7 +53,7 @@ try:
                               ('Not yet implemented', 'UNIMPLEMENTED'), ('CRASH IN THE PROGRAM', 'failure'),
                               # MBB never frees its plain buffers, so only leaked MPI handles are errors
                               (r'Probable memory leaks in your code: SMPI detected \d+ unfreed MPI handles', 'resleak'),
-                              ('DFS exploration ended.', 'OK')]:
+                              ('Found a data race', 'concurrency'), ('DFS exploration ended.', 'OK')]:
         if re.search(pattern, output):
             outcome = result
             break

@@ -98,6 +98,8 @@ class Tool(mbi.AbstractTool):
             return 'failure'
         if re.search('Probable memory leaks in your code: SMPI detected', output):
             return 'resleak'
+        if re.search('Found a data race', output):
+            return 'concurrency'
         if re.search('DFS exploration ended.', output):
             return 'OK'
 

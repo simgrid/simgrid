@@ -38,16 +38,19 @@ if (enable_testsuite_smpi_MBI)
   add_dependencies(tests tests-mbi)
   add_dependencies(tests-mbi simgrid-mc smpimain)
 
-  # Remove Concurrency tests that are out of reach because SimGrid does not intercept local modifications yet
-  # An idea could be to use ASan on the verified application, along with https://github.com/google/sanitizers/wiki/AddressSanitizerManualPoisoning
-  # But currently, ASan is not usable at all, since the Checker dislikes this trick when it tries to read the memory of the app.
-  # We should change the checker to not read the app when verifying safty properties
-  file(GLOB cfiles ${CMAKE_BINARY_DIR}/MBI/tmp/LocalConcurrency*.c ${CMAKE_BINARY_DIR}/MBI/tmp/GlobalConcurrency*.c )
+  # Remove the concurrency cases that are out of reach. The GlobalConcurrency ones are data races between processes,
+  # detected by src/mc/smemory when the application is instrumented. The LocalConcurrency ones are not detected yet, as
+  # both accesses come from the same process.
+  set(removed_cases ${CMAKE_BINARY_DIR}/MBI/tmp/LocalConcurrency*.c)
+  if (NOT SIMGRID_HAVE_SMEMORY)
+    list(APPEND removed_cases ${CMAKE_BINARY_DIR}/MBI/tmp/GlobalConcurrency*.c)
+  endif()
+  file(GLOB cfiles ${removed_cases})
   foreach(cfile ${cfiles})
     file(REMOVE ${cfile})
   endforeach()
   list(LENGTH cfiles len)
-  message(STATUS "Removed ${len} concurrency tests that would fail because we cannot intercept modifications of local variables.")
+  message(STATUS "Removed ${len} concurrency tests that SimGrid cannot detect in this configuration.")
   unset(len)
 
   file(GLOB cfiles RELATIVE ${CMAKE_BINARY_DIR}/MBI/tmp ${CMAKE_BINARY_DIR}/MBI/tmp/*.c )
@@ -65,6 +68,11 @@ if (enable_testsuite_smpi_MBI)
     target_link_libraries(mbi_${basefile} simgrid)
     target_compile_options(mbi_${basefile} PRIVATE "-Wno-unused-variable")
     target_compile_options(mbi_${basefile} PRIVATE "-Wno-unused-but-set-variable")
+    if (basefile MATCHES "^GlobalConcurrency")
+      # Without optimization, which removes the accesses whose result is not used
+      target_compile_options(mbi_${basefile} PRIVATE "-smemory" "-O0")
+      target_link_options(mbi_${basefile} PRIVATE "-smemory")
+    endif()
     set_target_properties(mbi_${basefile} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/MBI)
     add_dependencies(tests-mbi mbi_${basefile})
 
