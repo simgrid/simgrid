@@ -332,10 +332,12 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
 
   void* recv_addr = static_cast<char*>(recv_win->base_) + target_disp * recv_win->disp_unit_;
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
-  // Concurrent accumulates are legal, and there is no atomic kind of access: the update of the target is recorded as a
-  // read, which misses its conflicts with the gets and the plain reads of the target
   record_rma_access(simgrid::mc::smemory::MemOpType::Read, origin_addr, origin_count, origin_datatype);
-  record_rma_access(simgrid::mc::smemory::MemOpType::Read, recv_addr, target_count, target_datatype);
+  // Concurrent atomic updates are legal: they are ordered by the atomic mutex of the target, so that they do not race
+  if (SIMGRID_HAVE_SMEMORY && MC_is_active()) {
+    const std::scoped_lock lock(*recv_win->atomic_mut_);
+    record_rma_access(simgrid::mc::smemory::MemOpType::Write, recv_addr, target_count, target_datatype);
+  }
   // As the tag will be used for ordering of the operations, subtract count from it (to avoid collisions with other
   // SMPI tags, SMPI_RMA_TAG is set below all the other ones we use)
   // prepare send_request
@@ -405,6 +407,9 @@ int Win::compare_and_swap(const void* origin_addr, const void* compare_addr, voi
   XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
   MPI_Request req = MPI_REQUEST_NULL;
   const std::scoped_lock lock(*send_win->atomic_mut_);
+  // An atomic update of the target, even when the comparison fails
+  record_rma_access(simgrid::mc::smemory::MemOpType::Write,
+                    static_cast<char*>(send_win->base_) + target_disp * send_win->disp_unit_, 1, datatype);
   get(result_addr, 1, datatype, target_rank,
               target_disp, 1, datatype, &req);
   if (req != MPI_REQUEST_NULL)

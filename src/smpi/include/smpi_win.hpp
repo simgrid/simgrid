@@ -35,7 +35,7 @@ class Win : public F2C, public Keyval {
   MPI_Group dst_group_      = MPI_GROUP_NULL; // for start/complete
   int count_                = 0; // for ordering the accs
   s4u::MutexPtr lock_mut_   = s4u::Mutex::create();
-  s4u::MutexPtr atomic_mut_ = s4u::Mutex::create();
+  s4u::MutexPtr atomic_mut_ = s4u::Mutex::create(true); // Recursive, as accumulate() locks it inside get_accumulate()
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
   int mode_ = 0; // exclusive or shared lock
