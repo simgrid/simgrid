@@ -71,6 +71,9 @@ while [ $# -gt 0 ]; do
             printf '%b\n' "$SIMGRID_GITHASH"
             exit 0
             ;;
+        '-smemory')
+            smemory=1
+            ;;
         '-compiler-version' | '--compiler-version')
             ${CXX} --version
             ;;
@@ -83,6 +86,19 @@ while [ $# -gt 0 ]; do
       ;;
   esac
 done
+
+if [ "x$smemory" = x1 ]; then
+    if [ "@SIMGRID_HAVE_SMEMORY@" != "ON" ] || [ "@CMAKE_CXX_COMPILER_ID@" != "Clang" ]; then
+        echo "smpicxx: -smemory requires SimGrid built with clang and -Denable_smemory=ON" >&2
+        exit 1
+    fi
+    # Instrument the memory accesses, for the data race detection of the model checker
+    list_add CMDARGS "-fpass-plugin=@libdir@/smemory_pass.so"
+    # The observer of the accesses is in libsthread (CMAKE_LINKARGS is empty when only compiling)
+    if [ -n "${CMAKE_LINKARGS}" ]; then
+        list_add LINKARGS "-lsthread"
+    fi
+fi
 
 list_add CMDARGS "-fPIC"
 
