@@ -136,6 +136,8 @@ WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Comm_delete_attr ,(MPI_Comm comm, int 
 WRAPPED_PMPI_CALL_ERRHANDLER(int,MPI_Comm_disconnect,(MPI_Comm * comm),(comm), (*comm))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Comm_dup,(MPI_Comm comm, MPI_Comm * newcomm),(comm, newcomm))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Comm_dup_with_info,(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm),(comm,info,newcomm))
+WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int, MPI_Comm_idup, (MPI_Comm comm, MPI_Comm* newcomm, MPI_Request* request),
+                                  (comm, newcomm, request))
 WRAPPED_PMPI_CALL(int,MPI_Comm_free_keyval,(int* keyval) ,( keyval))
 WRAPPED_PMPI_CALL_ERRHANDLER(int,MPI_Comm_free,(MPI_Comm * comm),(comm), (*comm))
 WRAPPED_PMPI_CALL_ERRHANDLER_COMM(int,MPI_Comm_get_attr ,(MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag),(comm, comm_keyval, attribute_val, flag))
@@ -422,8 +424,7 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_accept,(const char *port_name, MPI_
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_Comm_connect,
                                 (const char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm),
                                 (port_name, info, root, comm, newcomm))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_get_parent,( MPI_Comm *parent),( parent))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_idup,( MPI_Comm comm, MPI_Comm *newcomm, MPI_Request* request),( comm,  newcomm, request))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_Comm_get_parent, (MPI_Comm * parent), (parent))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_join,( int fd, MPI_Comm *intercomm),( fd, intercomm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_remote_group,(MPI_Comm comm, MPI_Group* group) ,(comm, group))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_remote_size,(MPI_Comm comm, int* size) ,(comm, size))

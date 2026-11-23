@@ -71,7 +71,7 @@ MBB does not cover everything that `../MBI/` tests yet, at any generation level.
 
 ## Known failures
 
-Categorization of the 166 cases still failing at level 2 (November 2026), by where the fix probably belongs.
+Categorization of the 162 cases still failing at level 2 (November 2026), by where the fix probably belongs.
 
 ### Bugs in MBB (12 cases)
 
@@ -107,16 +107,14 @@ These cases are wrong: SimGrid rightfully reports an error on a correct program,
   `contiguous(2, MPI_INT)` received as `MPI_DOUBLE`, go unnoticed. Comparing the type signatures (the flattened
   sequences of basic types) would fix it, at least in pedantic mode.
 
-### Missing features in SMPI (18 cases)
+### Missing features in SMPI (12 cases)
 
-- `MPI_Comm_idup` is not implemented (6 cases, reported as `UNIMPLEMENTED`). It should be easy to add on top of
-  `MPI_Comm_dup`.
 - `MPI_Intercomm_create` is not implemented (12 cases, reported as `UNIMPLEMENTED`), as SMPI has no intercommunicators
   at all. This is a significant work.
 
-### Limitations of simgrid-mc (55 cases)
+### Limitations of simgrid-mc (57 cases)
 
-- Matched probes (55 cases, reported as `UNIMPLEMENTED`): `MPI_Mprobe` and `MPI_Improbe` (including the cases using
+- Matched probes (57 cases, reported as `UNIMPLEMENTED`): `MPI_Mprobe` and `MPI_Improbe` (including the cases using
   `MPI_Mrecv` and `MPI_Imrecv`) are not implemented in SMPI. They need `MPI_Message` handles, as a matched message
   must be removed from the mailbox and kept for a later reception, and a model-checker transition removing it, built
   on the one of `MPI_Probe`.

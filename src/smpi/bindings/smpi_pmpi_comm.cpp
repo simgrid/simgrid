@@ -82,6 +82,14 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
   return comm->dup(newcomm);
 }
 
+int PMPI_Comm_idup(MPI_Comm comm, MPI_Comm* newcomm, MPI_Request* request)
+{
+  CHECK_NULL(3, MPI_ERR_ARG, request)
+  // The duplication only exchanges the identifier of the new communicator, so it is done right away
+  *request = MPI_REQUEST_NULL;
+  return PMPI_Comm_dup(comm, newcomm);
+}
+
 int PMPI_Comm_dup_with_info(MPI_Comm comm, MPI_Info info, MPI_Comm * newcomm)
 {
   CHECK_COMM(1)

@@ -6,9 +6,9 @@ if(enable_smpi AND enable_testsuite_smpi_MPICH3)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   foreach(file cmfree cmfree2 cmsplit2 cmsplit cmsplit_type commcreate1 comm_create_group comm_group_half comm_group_rand
-          comm_info comm_info2 ctxalloc ctxsplit dup dup_with_info commname)
+          comm_idup_mul comm_idup_overlap comm_info comm_info2 ctxalloc ctxsplit dup dup_with_info commname)
     # not compiled files
-    # comm_idup comm_idup_mul comm_idup_overlap  dupic ic1 ic2 iccreate icgroup icm icsplit probe-intercomm
+    # comm_idup dupic ic1 ic2 iccreate icgroup icm icsplit probe-intercomm
     add_executable(${file} EXCLUDE_FROM_ALL ${file}.c)
     add_dependencies(tests ${file})
     target_link_libraries(${file} simgrid mtest_c)
