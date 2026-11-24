@@ -70,9 +70,9 @@ public:
 
   /** Ask the application to run a full sequence of transition. The checker will receive |to_replay_and_actor_status|
    *  answers of type actor_status. */
-  void handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
-                     std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                     uintptr_t location);
+  std::vector<uint64_t> handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                                      std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status,
+                                      bool debug, uintptr_t location, bool check_traces);
 
   /** Read the aid in the SIMCALL_EXECUTE message that is expected to be next on the wire */
   Aid get_aid_of_next_transition();

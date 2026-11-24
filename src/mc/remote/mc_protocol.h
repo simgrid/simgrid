@@ -50,6 +50,7 @@ struct s_mc_message_int_t {
 struct s_mc_message_replay_t {
   simgrid::mc::MessageType type;
   bool debug;
+  bool check_traces; // Whether to send back the hashes of the memory traces of the first part, not sent otherwise
   uintptr_t watch;
   uint64_t length;
 };

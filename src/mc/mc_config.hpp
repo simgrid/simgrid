@@ -25,6 +25,7 @@ XBT_PUBLIC void set_model_checking_mode(ModelCheckingMode mode);
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_buffering;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_property_file;
+extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_check_replays;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_comms_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_send_determinism;
 extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_mc_debug;

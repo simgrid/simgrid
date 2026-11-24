@@ -74,6 +74,7 @@ public:
 private:
   static const std::string empty_string; // Trick to return an empty string when no call_location was provided
   std::unique_ptr<smemory::MemoryAccessTrace> memory_trace_ = nullptr;
+  uint64_t memory_trace_hash_                               = 0; // Of the trace received from the application
 
 public:
   smemory::MemoryAccessTrace& get_memory_trace()
@@ -169,6 +170,7 @@ public:
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
 
   void deserialize_memory_tracker(mc::Channel& channel);
+  uint64_t get_memory_trace_hash() const { return memory_trace_hash_; }
 };
 
 /** Make a new transition from serialized description */

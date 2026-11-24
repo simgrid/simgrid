@@ -88,6 +88,10 @@ public:
   // ============================================================
   //                    Serialization
   // ============================================================
+  /** A hash of the accesses, which does not depend on the order of the pages in memory. The allocations are left out:
+   *  the stacks of the actors, for instance, are not always allocated at the same address in the first execution of a
+   *  transition and in its replays, as the application does not do the same work for the checker in both cases. */
+  uint64_t hash() const;
   void serialize(Channel& chan);
   void deserialize(Channel& chan);
 

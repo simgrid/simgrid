@@ -66,6 +66,26 @@ bool MemoryAccessTrace::was_marked(uintptr_t where, MemOpType type) const
   const auto& word_ctn = type == MemOpType::Read ? it->second.read_bits[word] : it->second.write_bits[word];
   return word_ctn & (1ULL << bit);
 }
+uint64_t MemoryAccessTrace::hash() const
+{
+  auto mix = [](uint64_t x) { // The finalizer of splitmix64
+    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+    return x ^ (x >> 31);
+  };
+  // The hashes of the pages are summed, so that the order of the unordered_map does not matter
+  uint64_t result = 0;
+  for (auto const& [key, page] : pages_) {
+    uint64_t h = mix(key);
+    for (auto bits : page.read_bits)
+      h = mix(h ^ bits);
+    for (auto bits : page.write_bits)
+      h = mix(h ^ bits);
+    result += h;
+  }
+  return result;
+}
+
 void MemoryAccessTrace::serialize(Channel& channel)
 {
   unsigned int page_count = pages_.size();

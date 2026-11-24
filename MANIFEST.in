@@ -1020,10 +1020,14 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/mc/smemory/free-race.c
 include teshsuite/mc/smemory/free-race.tesh
+include teshsuite/mc/smemory/large-transition.c
+include teshsuite/mc/smemory/large-transition.tesh
 include teshsuite/mc/smemory/late-heap.c
 include teshsuite/mc/smemory/late-heap.tesh
 include teshsuite/mc/smemory/main-last-access.c
 include teshsuite/mc/smemory/main-last-access.tesh
+include teshsuite/mc/smemory/nondeterministic.c
+include teshsuite/mc/smemory/nondeterministic.tesh
 include teshsuite/mc/smemory/plusplus.c
 include teshsuite/mc/smemory/plusplus.tesh
 include teshsuite/mc/smemory/read-then-write.c

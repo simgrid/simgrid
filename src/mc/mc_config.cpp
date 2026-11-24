@@ -181,6 +181,13 @@ simgrid::config::Flag<int> _sg_mc_k_alternatives{"model-check/k-alternatives",
                                                  "value of k to be used for k-alternatives UDPOR algorithm", -1,
                                                  [](int) { _mc_cfg_cb_check("k-Alternatives"); }};
 
+simgrid::config::Flag<std::string> _sg_mc_check_replays{
+    "model-check/check-replays",
+    "What to do when a replayed transition does not do the same memory accesses as when it was first explored, which "
+    "makes the data race detection unreliable",
+    "error",
+    {{"error", "Stop the exploration with an error (the default)"}, {"warning", "Warn once and continue"}}};
+
 simgrid::config::Flag<bool> _sg_mc_comms_determinism{
     "model-check/communications-determinism", "Whether to enable the detection of communication determinism", false,
     [](bool) {

@@ -297,9 +297,10 @@ Transition* CheckerSide::handle_simcall(Aid aid, int times_considered, bool new_
   return nullptr;
 }
 
-void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
-                                std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                                uintptr_t location)
+std::vector<uint64_t>
+CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                           std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
+                           uintptr_t location, bool check_traces)
 {
   long unsigned msg_length = to_replay.size() + to_replay_and_actor_status.size() + 1;
 
@@ -307,6 +308,7 @@ void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to
   replay_msg.type                  = MessageType::REPLAY;
   replay_msg.debug                 = debug;
   replay_msg.watch                 = location;
+  replay_msg.check_traces          = check_traces;
   replay_msg.length                = msg_length;
 
   Aid::storage_type* aids  = (Aid::storage_type*)alloca(sizeof(Aid::storage_type) * msg_length);
@@ -345,9 +347,17 @@ void CheckerSide::handle_replay(std::deque<std::pair<Aid, time_considered_t>> to
 
   xbt_assert(get_channel().send() == 0, "Could not send message to the app: %s", strerror(errno));
 
+  std::vector<uint64_t> trace_hashes;
+  if (check_traces && not to_replay.empty()) { // One hash per transition of to_replay
+    auto [more, hashes] = get_channel().receive(sizeof(uint64_t) * to_replay.size());
+    xbt_assert(more, "Could not receive the hashes of the memory traces of the replay");
+    trace_hashes.assign(static_cast<uint64_t*>(hashes), static_cast<uint64_t*>(hashes) + to_replay.size());
+  }
+
   // Wait for the application to signal that it is waiting
   if (to_replay_and_actor_status.size() == 0)
     sync_with_app();
+  return trace_hashes;
 }
 
 void CheckerSide::finalize(bool terminate_asap)

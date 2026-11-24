@@ -239,11 +239,12 @@ Transition* RemoteApp::handle_simcall(Aid aid, int times_considered, bool new_tr
   return checker_side_->handle_simcall(aid, times_considered, new_transition);
 }
 
-void RemoteApp::replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
-                                std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
-                                uintptr_t location)
+std::vector<uint64_t>
+RemoteApp::replay_sequence(std::deque<std::pair<Aid, time_considered_t>> to_replay,
+                           std::deque<std::pair<Aid, time_considered_t>> to_replay_and_actor_status, bool debug,
+                           uintptr_t location, bool check_traces)
 {
-  checker_side_->handle_replay(to_replay, to_replay_and_actor_status, debug, location);
+  return checker_side_->handle_replay(to_replay, to_replay_and_actor_status, debug, location, check_traces);
 }
 
 void RemoteApp::finalize_app(bool terminate_asap)

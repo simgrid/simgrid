@@ -168,6 +168,8 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
   if (not more_times)
     ::_Exit(0); // Nobody's listening to that process anymore => exit as quickly as possible.
 
+  // The hashes of the memory traces of the first part of the replay, whose traces are not sent to the checker
+  std::vector<uint64_t> trace_hashes;
   XBT_DEBUG("Going to replay %u transitions", replay_size - 1);
   unsigned i = 0;
   for (; i < replay_size; i++) {
@@ -201,6 +203,8 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
       XBT_INFO("***********************************************************************************");
     }
 
+    if (msg->check_traces)
+      trace_hashes.push_back(actor->get_memory_trace()->hash());
     actor->simcall_handle(times_considered);
     // The checker already knows the accesses done by this actor before this transition: forget them, so that they are
     // not sent again with the next transition of this actor
@@ -208,6 +212,9 @@ void AppSide::handle_replay(const s_mc_message_replay_t* msg)
     simgrid::mc::execute_actors();
   }
   i++;
+  if (not trace_hashes.empty())
+    xbt_assert(channel_.send(trace_hashes.data(), sizeof(uint64_t) * trace_hashes.size()) == 0,
+               "Could not send the hashes of the memory traces to model-checker: %s", strerror(errno));
   XBT_DEBUG("Now going to ask for actor status for the next %u transitions", replay_size - i - 1);
   if (i >= replay_size)
     // Say the server that the replay is over and that it should proceed

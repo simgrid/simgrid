@@ -112,6 +112,7 @@ Existing Configuration Items
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/communications-determinism:** :ref:`cfg=model-check/communications-determinism`
 - **model-check/cached-states-interval:** :ref:`cfg=model-check/cached-states-interval`
+- **model-check/check-replays:** :ref:`cfg=model-check/check-replays`
 - **model-check/dot-output:** :ref:`cfg=model-check/dot-output`
 - **model-check/max-depth:** :ref:`cfg=model-check/max-depth`
 - **model-check/max-errors:** :ref:`cfg=model-check/max-errors`
@@ -772,6 +773,29 @@ removed from the memory once they become useless, so your resource consumption *
 exploration. This is not true when the randomized exploration strategy is used, as it keeps exploring random branches that must
 be stored, while branches can only removed once every branches on their left was explored. A random exploration results in
 sparsly explored trees where no memory can be reclaimed.
+
+.. _cfg=model-check/check-replays:
+
+Checking that the replays are deterministic
+...........................................
+
+**Option** ``model-check/check-replays`` **Default:** "error"
+
+To explore another execution branch, the model checker restores an earlier state of the application and replays the transitions
+that lead to the decision point, as explained above. When the application is instrumented to detect data races (for instance with
+``mclang`` or ``smpicc -smemory``), the replayed transitions do not send their memory accesses to the model checker again: the
+data race detection keeps using the accesses recorded when they were first explored, possibly in another process. This is only
+correct if the application does the same memory accesses each time it runs the same transitions.
+
+So during each replay, the application sends a hash of the memory accesses done by each replayed transition, which the model
+checker compares with the hash of their first execution. The allocations are left out of this comparison. If a replayed
+transition did not do the same accesses, the application is not deterministic (for instance, it depends on its process
+identifier, on the time, or on data read from the outside), and the data races reported may compare accesses of different
+executions. This check is cheap (a few percent of the exploration time) and cannot be disabled, but you can choose what happens
+when it fails:
+
+ - **error**: Stop the exploration with an error, and the exit code 3 (non-determinism). This is the default.
+ - **warning**: Warn once, and continue the exploration anyway.
 
 .. _cfg=model-check/no-fork:
 

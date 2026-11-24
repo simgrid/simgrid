@@ -59,6 +59,7 @@ void Transition::replay(RemoteApp& app) const
 void Transition::deserialize_memory_tracker(mc::Channel& channel)
 {
   get_memory_trace().deserialize(channel);
+  memory_trace_hash_ = get_memory_trace().hash();
 
   XBT_DEBUG("Created a memory access tracker for the new transition");
 }

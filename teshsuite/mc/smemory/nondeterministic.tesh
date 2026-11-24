@@ -1,0 +1,28 @@
+#!/usr/bin/env tesh
+
+$ ${clang:=clang} -g -fpass-plugin=${smemory_pass} nondeterministic.c ${libsthread} -o ${bindir:=.}/teshsuite/mc/nondeterministic/nondeterministic
+> Successfully instrumented 5 read operations and 4 writes operations
+
+p A deterministic program: its replays do the same accesses as their first execution
+! ignore .*LD_PRELOAD.*
+! ignore .*sthread is intercepting.*
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/nondeterministic/nondeterministic same --log=xbt_cfg.thresh:critical --log=no_loc
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 56 unique states visited; 4 explored traces (12 transition replays, 65 states visited overall)
+
+p A program whose accesses depend on the pid: a replay, done in another process, does other accesses
+! ignore .*LD_PRELOAD.*
+! ignore .*sthread is intercepting.*
+! expect return 3
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/nondeterministic/nondeterministic pid --log=xbt_cfg.thresh:critical --log=no_loc
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_explo/ERROR] The replay of 'MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)' by actor 1 did not do the same memory accesses as when it was first explored. The application is not deterministic, so the data race detection would compare accesses of different executions. Use --cfg=model-check/check-replays:warning to continue anyway.
+
+p The same program, with the exploration continuing after a warning
+! ignore .*LD_PRELOAD.*
+! ignore .*sthread is intercepting.*
+$ $VALGRIND_NO_TRACE_CHILDREN ${bindir:=.}/bin/simgrid-mc --log=no_loc --cfg=model-check/check-replays:warning --cfg=model-check/setenv:LD_PRELOAD=${libsthread} -- ${bindir:=.}/teshsuite/mc/nondeterministic/nondeterministic pid --log=xbt_cfg.thresh:critical --log=no_loc
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/check-replays' to 'warning'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_explo/WARNING] The replay of 'MUTEX_ASYNC_LOCK(mutex: 0, owner: 1)' by actor 1 did not do the same memory accesses as when it was first explored. The application is not deterministic, so the data races reported may compare accesses of different executions.
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 56 unique states visited; 4 explored traces (12 transition replays, 65 states visited overall)

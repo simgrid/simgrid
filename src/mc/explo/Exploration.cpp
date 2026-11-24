@@ -397,7 +397,29 @@ void Exploration::backtrack_remote_app_to_state(RemoteApp& remote_app, State* ta
                             })
                 .c_str());
 
-  remote_app.replay_sequence(recipe, recipe_needing_actor_status);
+  // The application does not send back the memory traces of the transitions of recipe: the race detection keeps
+  // using the ones of their first execution, which may come from another process. Check that they did not change.
+  auto trace_hashes = remote_app.replay_sequence(recipe, recipe_needing_actor_status, false, 0, true);
+  for (unsigned i = 0; i < trace_hashes.size(); i++) {
+    const auto* transition = replayed_transitions[i];
+    if (trace_hashes[i] == transition->get_memory_trace_hash())
+      continue;
+    if (_sg_mc_check_replays.get() == "error") {
+      XBT_ERROR("The replay of '%s' by actor %d did not do the same memory accesses as when it was first explored. The "
+                "application is not deterministic, so the data race detection would compare accesses of different "
+                "executions. Use --cfg=model-check/check-replays:warning to continue anyway.",
+                transition->to_string().c_str(), transition->aid_.c_val());
+      throw McError(ExitStatus::NON_DETERMINISM);
+    }
+    static bool warned = false;
+    if (not warned)
+      XBT_WARN("The replay of '%s' by actor %d did not do the same memory accesses as when it was first explored. The "
+               "application is not deterministic, so the data races reported may compare accesses of different "
+               "executions.",
+               transition->to_string().c_str(), transition->aid_.c_val());
+    warned = true;
+    break;
+  }
 
   XBT_DEBUG("Need to initialize %zu states (%zu in the replay actor_status side)", state_needing_actor_status.size(),
             recipe_needing_actor_status.size());
