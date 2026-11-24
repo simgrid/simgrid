@@ -9,12 +9,13 @@
 # When more symbols get intercepted by sthread, you want to export them here
 # too. The git grep to regenerate the list is given below.
 #
-# DON'T FORGET to also export mcsimgrid_write and mcsimgrid_read.
-# They are not intercepted by LD_PRELOAD but must still be exported here.
+# DON'T FORGET to also export mcsimgrid_write and mcsimgrid_read, which are called by the instrumented code, and the
+# allocation functions of src/mc/smemory/runtime/smemory_observer.cpp, which are not found by the git grep below.
 {
     # git grep 'dlsym(RTLD_NEXT'|sed 's/.*dlsym(RTLD_NEXT, "//'|sed 's/");/;/'|tr '\n' ' '|sed 's/$/\n/'
     global: syscall; pthread_create; pthread_detach; pthread_join; pthread_mutex_init; pthread_mutex_lock; pthread_mutex_trylock; pthread_mutex_unlock; pthread_mutex_destroy; pthread_mutexattr_init; pthread_mutexattr_settype; pthread_mutexattr_gettype; pthread_mutexattr_getrobust; pthread_mutexattr_setrobust; pthread_barrier_init; pthread_barrier_wait; pthread_barrier_destroy; pthread_cond_init; pthread_cond_signal; pthread_cond_broadcast; pthread_cond_wait; pthread_cond_timedwait; pthread_cond_destroy; sleep; usleep; time; gettimeofday; sem_open; sem_init; sem_wait; sem_post; sem_destroy; sem_trywait; sem_timedwait; open; close; read; write; pread; pwrite; lseek; fstat; readv; writev; preadv; pwritev; preadv2; pwritev2; unlink; __libc_start_main; 
-     __mcsimgrid_write;__mcsimgrid_read;
+     __mcsimgrid_write; __mcsimgrid_read;
+     malloc; calloc; realloc; free; memalign; aligned_alloc; posix_memalign;
 
     local: *;
 };
