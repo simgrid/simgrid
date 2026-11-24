@@ -203,7 +203,9 @@ mark_as_advanced(GCCLIBATOMIC_LIBRARY)
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
 if (enable_lib_in_sthread)
-  target_link_libraries(sthread ${SIMGRID_DEP})
+  # libsthread bundles the sources of libsimgrid, so it needs all the libraries linked to libsimgrid above
+  get_target_property(simgrid_libraries simgrid LINK_LIBRARIES)
+  target_link_libraries(sthread ${simgrid_libraries})
 endif()
 
 # Dependencies from maintainer mode
