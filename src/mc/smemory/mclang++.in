@@ -1,2 +1,5 @@
 #! /bin/sh
-@CMAKE_CXX_COMPILER@ -Wno-unused-command-line-argument "-fpass-plugin=@CMAKE_INSTALL_FULL_LIBDIR@/smemory_pass.so" -lsthread $@
+# The explicit -L takes precedence over the system directories, where an older libsthread may be installed, and
+# the rpath makes the instrumented programs load this libsthread too
+@CMAKE_CXX_COMPILER@ -Wno-unused-command-line-argument "-fpass-plugin=@CMAKE_INSTALL_FULL_LIBDIR@/smemory_pass.so" "$@" \
+    -L@CMAKE_INSTALL_FULL_LIBDIR@ -Wl,-rpath,@CMAKE_INSTALL_FULL_LIBDIR@ -lsthread
