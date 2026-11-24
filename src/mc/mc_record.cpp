@@ -22,7 +22,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sys/socket.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");
 
@@ -54,14 +53,11 @@ void RecordTrace::replay() const
   else
     simgrid_mc_replay_show_backtraces = true;
 
-  // Creating two non-blocking sockets locally so we can simulate the application talking to MC
-  // This way we can use everything already in place in the model checker code despite being in the App side
-  int sockets[2];
-  xbt_assert(socketpair(AF_UNIX, SOCK_STREAM, 0, sockets) != -1,
-             "Could not create socketpair: %s.\nPlease increase the file limit with `ulimit -n 10000`.",
-             strerror(errno));
-  auto app_side     = std::make_unique<Channel>(sockets[0]);
-  auto checker_side = std::make_unique<Channel>(sockets[1]);
+  // Two channels connected in memory, to feed the race detector as the model checker would be. A socket would block
+  // when a transition exceeds its capacity, as nobody would read it while it is written.
+  auto app_side     = std::make_unique<Channel>();
+  auto checker_side = std::make_unique<Channel>();
+  app_side->connect_loopback(*checker_side);
 
   auto exec = std::make_unique<odpor::Execution>();
 #if SIMGRID_HAVE_MC

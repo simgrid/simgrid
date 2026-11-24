@@ -30,10 +30,16 @@ class Channel {
   size_t buffer_in_size_ = 0;
   char buffer_out_[MC_MESSAGE_LENGTH];
   size_t buffer_out_size_ = 0;
+  // When set, what is sent is received by this channel of the same process, without any socket
+  Channel* loopback_ = nullptr;
+  std::string loopback_data_; // Received through the loopback, not copied in buffer_in_ yet
 
 public:
   Channel() = default;
   explicit Channel(int sock) : socket_(sock) {}
+  /** Sends everything to the given channel of the same process. Unlike a socket, it does not block when the data
+   * exceeds some capacity, so a single thread can send a whole message before receiving it. */
+  void connect_loopback(Channel& receiver) { loopback_ = &receiver; }
   Channel(int sock, Channel const& other);
   ~Channel();
 

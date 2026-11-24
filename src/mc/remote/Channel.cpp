@@ -16,6 +16,7 @@
 #include <alloca.h>
 #endif
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <limits>
@@ -123,6 +124,11 @@ int Channel::send(const void* message, size_t size)
     xbt_assert(size > 0, "Request to send a 0-sized message! Please fix your code.");
   }
 
+  if (loopback_ != nullptr) {
+    loopback_->loopback_data_.append(static_cast<const char*>(message), size);
+    return 0;
+  }
+
   int todo  = size;
   char* pos = (char*)message;
   while (todo > 0) {
@@ -198,7 +204,16 @@ std::pair<bool, void*> Channel::peek(size_t size)
   while (buffer_in_size_ < size) {
     /* Receive as much data as we can (filling MC_MESSAGE_LENGTH bytes in the buffer) to save some recv syscalls */
     int avail = MC_MESSAGE_LENGTH - (buffer_in_next_ + buffer_in_size_);
-    int got   = recv(this->socket_, buffer_in_ + buffer_in_next_ + buffer_in_size_, avail, 0);
+    if (socket_ == -1) { // Only fed through a loopback
+      if (loopback_data_.empty())
+        return std::make_pair(false, nullptr);
+      size_t got = std::min<size_t>(avail, loopback_data_.size());
+      memcpy(buffer_in_ + buffer_in_next_ + buffer_in_size_, loopback_data_.data(), got);
+      loopback_data_.erase(0, got);
+      buffer_in_size_ += got;
+      continue;
+    }
+    int got = recv(this->socket_, buffer_in_ + buffer_in_next_ + buffer_in_size_, avail, 0);
     xbt_enforce(got != -1 || errno == EAGAIN, "[tid:%s] Channel::receive failure: %s", simgrid::xbt::gettid().c_str(),
                 strerror(errno));
     if (got == 0) {
