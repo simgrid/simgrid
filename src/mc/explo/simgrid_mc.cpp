@@ -80,13 +80,25 @@ int main(int argc, char** argv)
       params.push_back(argv_copy[i]);
       i++;
     }
-    // Push all options that were passed to simgrid-mc (i.e., before the executable name) so that sthread finds it
-    // (skip "--sthread": we deal with it just below)
-    i = 1;
-    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-') {
+    // Pass the options of simgrid-mc (before the executable name, except "--sthread") to the application, the replay
+    // path first, as some options are only accepted once it is set. Under sthread, they go through STHREAD_ARGS, after
+    // the options it already holds: the engine of sthread would otherwise parse the whole command line, including the
+    // options of the verified program.
+    std::vector<char*> options;
+    for (i = 1; argv_copy[i] != nullptr && argv_copy[i][0] == '-'; i++)
       if (strcmp(argv_copy[i], "--sthread") != 0)
-        params.push_back(argv_copy[i]);
-      i++;
+        options.push_back(argv_copy[i]);
+    std::stable_partition(options.begin(), options.end(), [&replay_arg](const char* option) {
+      return std::string_view(option).starts_with(replay_arg);
+    });
+    if (want_sthread) {
+      const char* env  = getenv("STHREAD_ARGS");
+      std::string args = env == nullptr ? "" : env;
+      for (const char* option : options)
+        args += (args.empty() ? "" : " ") + std::string(option);
+      setenv("STHREAD_ARGS", args.c_str(), 1);
+    } else {
+      params.insert(params.end(), options.begin(), options.end());
     }
     params.push_back(nullptr);
 
