@@ -1117,13 +1117,17 @@ This example shows how to do it.
 DAG and failures
 ----------------
 
-This example shows how to deal with host or network failures while scheduling DAGs of activities.
+This example shows how to deal with host or network failures while scheduling DAGs of activities. The Python version
+schedules a whole WfFormat workflow with HEFT, Min-Min or a failure-aware placement while hosts are turned off and back
+on, and reports the makespan, the re-executed tasks and the energy.
 
 .. tabs::
 
    .. example-tab:: examples/cpp/dag-failure/s4u-dag-failure.cpp
 
    .. example-tab:: examples/java/dag_failure/dag_failure.java
+
+   .. example-tab:: examples/python/dag-failure-scheduling/dag-failure-scheduling.py
 
 .. _s4u_ex_IPC:
 
